@@ -51,7 +51,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
             <span className="sr-only">Toggle notifications</span>
           </Button>
         </div>
-        <ScrollArea className="md:h-minusHeader_md lg:h-minusHeader_lg w-full">
+        <ScrollArea className="w-full md:h-minusHeader_md lg:h-minusHeader_lg">
           <Accordion
             type="multiple"
             value={isCollapse ? [] : accordionValue}
@@ -71,7 +71,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
               <AccordionTrigger className="px-5 text-gray-500">
                 {!isCollapse ? (
                   <div className="flex">
-                    <Home className="h-5 w-5 mr-2" />
+                    <Home className="mr-2 h-5 w-5" />
                     Trang chủ
                   </div>
                 ) : (
@@ -94,7 +94,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
                   </Link>
                   <Link
                     to="/detail/detailPage"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary bg-muted"
+                    className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
                   >
                     Detail
                   </Link>
@@ -113,7 +113,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
               <AccordionTrigger className="px-5">
                 {!isCollapse ? (
                   <div className="flex">
-                    <Home className="h-5 w-5 mr-2" />
+                    <Home className="mr-2 h-5 w-5" />
                     Giám sát cổng
                   </div>
                 ) : (
@@ -136,7 +136,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
                   </Link>
                   <Link
                     to="/detail/detailPage"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary bg-muted"
+                    className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
                   >
                     Detail
                   </Link>
@@ -154,7 +154,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
               <AccordionTrigger className="px-5">
                 {!isCollapse ? (
                   <div className="flex">
-                    <Home className="h-5 w-5 mr-2" />
+                    <Home className="mr-2 h-5 w-5" />
                     Giám sát cổng
                   </div>
                 ) : (
@@ -177,7 +177,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
                   </Link>
                   <Link
                     to="/detail/detailPage"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary transition-all hover:text-primary bg-muted"
+                    className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
                   >
                     Detail
                   </Link>

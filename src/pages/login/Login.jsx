@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { setMenu } from "@/redux/slice/menuSlice";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -34,13 +34,6 @@ export default function Login() {
         }}
       >
         Login
-      </Button>
-      <Button
-        onClick={() => {
-          localStorage.removeItem("token");
-        }}
-      >
-        Logout
       </Button>
     </div>
   );

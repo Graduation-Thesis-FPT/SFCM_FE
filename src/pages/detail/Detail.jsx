@@ -16,7 +16,7 @@ export default function Detail() {
 
   return (
     <>
-      <div className="w-full h-[500px]">
+      <div className="h-[500px] w-full">
         <HotTable
           data={data}
           rowHeaders={true}

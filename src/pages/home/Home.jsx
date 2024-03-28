@@ -71,7 +71,7 @@ export default function Home() {
   }, []);
   return (
     <div className="flex flex-col">
-      <div className="w-full h-[500px]">
+      <div className="h-[500px] w-full">
         <HotTable
           className="hot-table-custom"
           ref={hotTableRef}

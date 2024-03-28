@@ -28,8 +28,12 @@ export default function MainLayout() {
         <div className="hidden border-r bg-muted/40 md:block">
           <MenuWeb handleScale={() => setIsCollapse(!isCollapse)} isCollapse={isCollapse} />
         </div>
-        <div className="flex flex-col z-10">
-          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 ">
+        <div className="z-10 flex flex-col">
+          <header
+            className="flex h-14 items-center gap-4
+             border-b bg-muted/40 px-4
+           lg:h-[60px] lg:px-6 "
+          >
             <MenuMobile />
 
             <div className="w-full flex-1">
@@ -64,7 +68,7 @@ export default function MainLayout() {
           <main
             className={`${isCollapse ? "md:w-minusMenu_isCollapse" : "md:w-minusMenu_notCollapse"}`}
           >
-            <div className="overflow-y-auto lg:h-minusHeader_lg p-4">
+            <div className="overflow-y-auto p-4 lg:h-minusHeader_lg">
               <Outlet />
             </div>
           </main>
