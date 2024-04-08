@@ -3,7 +3,7 @@ import MainLayout from "@/layout/MainLayout";
 import Detail from "@/pages/detail/Detail";
 import Home from "@/pages/home/Home";
 import Login from "@/pages/login/Login";
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 

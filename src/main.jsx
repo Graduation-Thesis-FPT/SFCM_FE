@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import "handsontable/dist/handsontable.full.min.css";
 import { registerAllModules } from "handsontable/registry";
 import Router from "@/routes/Router";
-import { store } from "@/redux/store";
+import { store } from "./redux/store";
 registerAllModules();
 
 ReactDOM.createRoot(document.getElementById("root")).render(

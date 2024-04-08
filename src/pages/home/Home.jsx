@@ -2,8 +2,10 @@ import { HotTable } from "@handsontable/react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { v4 as uuidv4 } from "uuid";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
+  const { toast } = useToast();
   const hotTableRef = useRef(null);
   const [data, setData] = useState([]);
 
@@ -71,6 +73,17 @@ export default function Home() {
   }, []);
   return (
     <div className="flex flex-col">
+      <Button
+        onClick={() => {
+          toast({
+            variant: "error",
+            title: "Scheduled: Catch up",
+            description: "Friday, February 10, 2023 at 5:57 PM"
+          });
+        }}
+      >
+        Toast
+      </Button>
       <div className="h-[500px] w-full">
         <HotTable
           className="hot-table-custom"

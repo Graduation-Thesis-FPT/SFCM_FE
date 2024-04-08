@@ -1,4 +1,3 @@
-import { Toaster } from "@/components/ui/sonner";
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import MenuMobile from "@/layout/menu/MenuMobile";
@@ -14,6 +13,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function MainLayout() {
   const [isCollapse, setIsCollapse] = useState(false);
