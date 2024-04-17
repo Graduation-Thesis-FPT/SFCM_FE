@@ -17,7 +17,10 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function MainLayout() {
   const [isCollapse, setIsCollapse] = useState(false);
-
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
   return (
     <>
       <div
@@ -61,7 +64,13 @@ export default function MainLayout() {
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                >
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </header>

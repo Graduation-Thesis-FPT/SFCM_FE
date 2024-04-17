@@ -1,36 +1,71 @@
 import { useRef, useState, useEffect } from "react";
-import { HotTable } from "@handsontable/react";
-import { registerAllModules } from "handsontable/registry";
+import { Spreadsheet, Worksheet } from "@jspreadsheet/react";
+import "jsuites/dist/jsuites.css";
+import "jspreadsheet/dist/jspreadsheet.css";
+
+const license = import.meta.env.VITE_JSPREADSHEET_LICENSE;
 
 export default function Detail() {
-  const hotRef = useRef(null);
-  // generate an array of arrays with dummy data
-  const data = new Array(100) // number of rows
-    .fill()
-    .map((_, row) =>
-      new Array(50) // number of columns
-        .fill()
-        .map((_, column) => `${row}, ${column}`)
-    );
-  useEffect(() => {});
+  // Spreadsheet array of worksheets
+  const spreadsheet = useRef();
+  // Console
+  const console = useRef();
+  // Data
+  const data = [
+    {
+      name: "Jorge",
+      address: {
+        number: "201",
+        city: "New York"
+      }
+    },
+    {
+      name: "Paul",
+      address: {
+        number: "1",
+        city: "New Jersey"
+      }
+    }
+  ];
+  // Columns
+  const columns = [
+    {
+      // Path to the data property for this column
+      name: "name",
+      title: "Full name",
+      type: "text",
+      width: "200px"
+    },
+    {
+      // Path to the data property for this column
+      name: "address.number",
+      title: "Number",
+      type: "text",
+      width: "200px"
+    },
+    {
+      // Path to the data property for this column
+      name: "address.city",
+      title: "City",
+      type: "text",
+      width: "600px"
+    }
+  ];
+  // Render data grid component
 
   return (
     <>
-      <div className="h-[500px] w-full">
-        <HotTable
+      <Spreadsheet ref={spreadsheet} license={license}>
+        <Worksheet
           data={data}
-          rowHeaders={true}
-          colHeaders={true}
-          width="100%"
-          height="100%"
-          stretchH="all"
-          // rowHeights={23}
-          // colWidths={100}
-
-          licenseKey="non-commercial-and-evaluation"
-          ref={hotRef}
+          tableOverflow={true}
+          columns={columns}
+          minDimensions
+          search
+          pagination="25"
+          paginationOptions={[10, 25, 50, 100]}
         />
-      </div>
+      </Spreadsheet>
     </>
   );
 }
