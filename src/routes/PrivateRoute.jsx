@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { setMenu } from "@/redux/slice/menuSlice";
 import { useDispatch } from "react-redux";
 const data = [
@@ -8,7 +8,7 @@ const data = [
     url: "userManagement",
     icon: "Users",
     child: [
-      { name: "Nhóm người dùng", url: "1", component: "ErrorPage" },
+      { name: "Nhóm người dùng", url: "1", component: "Detail" },
       { name: "Người dùng", url: "2", component: "ErrorPage" },
       { name: "Phân quyền", url: "3", component: "ErrorPage" }
     ]

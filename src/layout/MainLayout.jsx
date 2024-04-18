@@ -32,13 +32,8 @@ export default function MainLayout() {
           <MenuWeb handleScale={() => setIsCollapse(!isCollapse)} isCollapse={isCollapse} />
         </div>
         <div className="z-10 flex flex-col">
-          <header
-            className="flex h-14 items-center gap-4
-             border-b bg-muted/40 px-4
-           lg:h-[60px] lg:px-6 "
-          >
+          <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
             <MenuMobile />
-
             <div className="w-full flex-1">
               <form>
                 <div className="relative">

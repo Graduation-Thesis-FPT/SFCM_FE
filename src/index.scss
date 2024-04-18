@@ -80,20 +80,6 @@ body {
   overflow: hidden;
 }
 
-.hot-table-custom {
-  .handsontable th {
-    vertical-align: middle;
-    font-weight: 600;
-  }
-  .handsontable td {
-    padding: 8px 4px;
-  }
-  .handsontableInput {
-    align-content: center;
-    text-align: center;
-  }
-}
-
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;

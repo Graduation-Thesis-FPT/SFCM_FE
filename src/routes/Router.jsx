@@ -1,14 +1,13 @@
 import ErrorPage from "@/layout/ErrorPage";
 import MainLayout from "@/layout/MainLayout";
 import Detail from "@/pages/detail/Detail";
-import Home from "@/pages/home/Home";
 import Login from "@/pages/login/Login";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 
-const components = { Detail, Home, ErrorPage };
+const components = { Detail, ErrorPage };
 
 export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
