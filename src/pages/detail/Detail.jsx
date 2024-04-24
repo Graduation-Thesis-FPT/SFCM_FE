@@ -1,17 +1,24 @@
 import { useRef, useState, useEffect } from "react";
-import { Spreadsheet, Worksheet } from "@jspreadsheet/react";
-import "jsuites/dist/jsuites.css";
-import "jspreadsheet/dist/jspreadsheet.css";
-
-const license = import.meta.env.VITE_JSPREADSHEET_LICENSE;
+import Jspreadsheet from "@/components/jspreadsheet/Jspreadsheet";
+import AgGrid from "@/components/aggridreact/AgGrid";
+import { Button } from "@/components/ui/button";
+import { getTest } from "@/apis/user.api";
 
 export default function Detail() {
-  // Spreadsheet array of worksheets
-  const spreadsheet = useRef();
-  // Console
-  const console = useRef();
-  // Data
-  const data = [
+  const [rowData, setRowData] = useState([
+    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
+    { make: "Ford", model: "F-Series", price: 33850, electric: false },
+    { make: "Toyota", model: "Corolla", price: 29600, electric: false }
+  ]);
+
+  // Column Definitions: Defines the columns to be displayed.
+  const [colDefs, setColDefs] = useState([
+    { field: "make", flex: 0.2 },
+    { field: "model" },
+    { field: "price", editable: false },
+    { field: "electric" }
+  ]);
+  const [data, setData] = useState([
     {
       name: "Jorge",
       address: {
@@ -26,46 +33,42 @@ export default function Detail() {
         city: "New Jersey"
       }
     }
-  ];
-  // Columns
+  ]);
+
   const columns = [
     {
-      // Path to the data property for this column
       name: "name",
       title: "Full name",
       type: "text",
-      width: "200px"
+      width: "500px"
     },
     {
-      // Path to the data property for this column
       name: "address.number",
       title: "Number",
       type: "text",
-      width: "200px"
+      width: "300px"
     },
     {
-      // Path to the data property for this column
       name: "address.city",
       title: "City",
       type: "text",
-      width: "600px"
+      width: "900px"
     }
   ];
-  // Render data grid component
 
   return (
     <>
-      <Spreadsheet ref={spreadsheet} license={license}>
-        <Worksheet
-          data={data}
-          tableOverflow={true}
-          columns={columns}
-          minDimensions
-          search
-          pagination="25"
-          paginationOptions={[10, 25, 50, 100]}
-        />
-      </Spreadsheet>
+      <Button
+        onClick={() => {
+          getTest().then(res => {
+            console.log(res);
+          });
+        }}
+      >
+        Click me
+      </Button>
+      <Jspreadsheet dataSource={data} columns={columns} />
+      <AgGrid rowData={rowData} colDefs={colDefs} />
     </>
   );
 }
