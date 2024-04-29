@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Toaster } from "@/components/ui/toaster";
 
 export default function MainLayout() {
   const [isCollapse, setIsCollapse] = useState(false);
@@ -78,7 +77,6 @@ export default function MainLayout() {
           </main>
         </div>
       </div>
-      <Toaster />
     </>
   );
 }
