@@ -60,9 +60,13 @@ export default function Detail() {
     <>
       <Button
         onClick={() => {
-          getTest().then(res => {
-            console.log(res);
-          });
+          getTest()
+            .then(res => {
+              console.log(res);
+            })
+            .catch(err => {
+              console.log(123);
+            });
         }}
       >
         Click me

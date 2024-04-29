@@ -8,8 +8,8 @@ const data = [
     url: "userManagement",
     icon: "Users",
     child: [
-      { name: "Nhóm người dùng", url: "1", component: "Detail" },
-      { name: "Người dùng", url: "2", component: "ErrorPage" },
+      { name: "Nhóm người dùng", url: "1", component: "ErrorPage" },
+      { name: "Người dùng", url: "2", component: "UserAccounts" },
       { name: "Phân quyền", url: "3", component: "ErrorPage" }
     ]
   },

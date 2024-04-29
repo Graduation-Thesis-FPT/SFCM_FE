@@ -77,7 +77,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
           <Accordion
             className="w-full"
             type="single"
-            value={isCollapse ? [] : accordionValue}
+            value={isCollapse ? "" : accordionValue}
             collapsible
             onValueChange={value => {
               setAccordionValue(value);
