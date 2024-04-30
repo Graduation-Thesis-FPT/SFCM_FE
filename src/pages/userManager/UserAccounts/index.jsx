@@ -1,9 +1,24 @@
 import AgGrid from "@/components/aggridreact/AgGrid";
 import React, { useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
-import { getTest } from "@/apis/user.api";
-import BtnAddRow from "@/components/BtnAddRow";
+import { fnAddKey } from "@/lib/fnTable";
+
+let data = [
+  {
+    USER_GROUP_NAME: "Nhóm người dùng",
+    USER_NAME: "Tên tài khoản",
+    BIRTHDAY: "Ngày sinh",
+    ADDRESS: "Địa chỉ",
+    TELPHONE: "Số điện thoại",
+    EMAIL: "Email",
+    IS_ACTIVE: "Trạng thái",
+    REMARK: "Ghi chú",
+    CREATE_BY: "Người tạo",
+    CREATE_DATE: "Ngày tạo",
+    UPDATE_BY: "Người cập nhật",
+    UPDATE_DATE: "Ngày cập nhật"
+  }
+];
 
 export default function UserAccounts() {
   const [rowData, setRowData] = useState([]);
@@ -23,36 +38,27 @@ export default function UserAccounts() {
     { field: "UPDATE_DATE", headerName: "Ngày cập nhật", editable: false }
   ];
 
-  const handleAddNewRow = num => {
-    console.log("🚀 ~ handleAddNewRow ~ num:", num);
-    let temp = [];
-    colDefs.map(data => {
-      temp[data.field] = "";
-    });
-    setRowData([temp, ...rowData]);
-  };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setRowData(fnAddKey(data));
+  }, []);
   return (
     <>
-      <Button
+      {/* <Button
         onClick={() => {
-          getTest()
-            .then(data => {
-              console.log(data);
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          console.log(rowData);
         }}
       >
-        Test
-      </Button>
-      <BtnAddRow
-        addNewRow={num => {
-          handleAddNewRow(num);
+        Log row Data
+      </Button> */}
+      <AgGrid
+        className="h-[500px]"
+        rowData={rowData}
+        colDefs={colDefs}
+        defaultColDef={true}
+        onChangeRowData={data => {
+          setRowData(data);
         }}
       />
-      <AgGrid rowData={rowData} colDefs={colDefs} defaultColDef={true} className="h-[500px]" />
     </>
   );
 }

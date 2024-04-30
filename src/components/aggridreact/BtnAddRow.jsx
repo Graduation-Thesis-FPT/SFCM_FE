@@ -20,10 +20,11 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 const formSchema = z.object({
   number: z.coerce.number().min(1, "Tối thiểu 1 dòng").max(60, "Tối đa 60 dòng")
 });
-export default function BtnAddRow({ addNewRow }) {
+export default function BtnAddRow({ addNewRow, ...props }) {
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -39,7 +40,9 @@ export default function BtnAddRow({ addNewRow }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Thêm dòng</Button>
+      <Button onClick={() => setOpen(true)} {...props}>
+        Thêm dòng
+      </Button>
       <Dialog
         open={open}
         onOpenChange={() => {
