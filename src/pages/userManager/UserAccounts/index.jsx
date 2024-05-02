@@ -4,7 +4,10 @@ import { fnAddKey, fnAddRows, fnDeleteRows } from "@/lib/fnTable";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { BtnAddRow } from "@/components/aggridreact/BtnAddRow";
 import { BtnDeleteRow } from "@/components/aggridreact/BtnDeleteRow";
-
+import { Loader, Loader2, Plus } from "lucide-react";
+import { BtnSave } from "@/components/aggridreact/BtnSave";
+import { BtnCreateAccount } from "./BtnCreateAccount";
+import { FormCreateAccount } from "./FormCreateAccount";
 let data = [
   {
     USER_GROUP_NAME: "Nhóm người dùng",
@@ -25,6 +28,8 @@ let data = [
 export default function UserAccounts() {
   const ref = useRef(null);
   const [rowData, setRowData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
   const colDefs = [
     { field: "USER_GROUP_NAME", headerName: "Nhóm người dùng" },
     { field: "USER_NAME", headerName: "Tên tài khoản" },
@@ -56,15 +61,14 @@ export default function UserAccounts() {
   return (
     <>
       <div className="mb-2 flex justify-end gap-2">
-        <Button variant="red" onClick={handleDeleteRows}>
-          Xóa
-        </Button>
-        {/* <BtnDeleteRow tableRef={ref} deleteRow={() => handleDeleteRows()} /> */}
-        <BtnAddRow
-          addNewRow={numOfNewRow => {
-            handleAddRows(numOfNewRow);
+        <BtnDeleteRow isLoading={isLoading} deleteRow={() => handleDeleteRows()} />
+        <BtnCreateAccount
+          onClick={() => {
+            setOpenForm(true);
           }}
         />
+
+        <BtnSave isLoading={isLoading} />
       </div>
       <AgGrid
         ref={ref}
@@ -74,6 +78,12 @@ export default function UserAccounts() {
         defaultColDef={true}
         setRowData={data => {
           setRowData(data);
+        }}
+      />
+      <FormCreateAccount
+        open={openForm}
+        setOpen={status => {
+          setOpenForm(status);
         }}
       />
     </>

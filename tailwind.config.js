@@ -90,6 +90,14 @@ module.exports = {
         red: {
           DEFAULT: "hsl(var(--red))",
           foreground: "hsl(var(--red-foreground))"
+        },
+        orange: {
+          DEFAULT: "hsl(var(--orange))",
+          foreground: "hsl(var(--orange-foreground))"
+        },
+        yellow: {
+          DEFAULT: "hsl(var(--yellow))",
+          foreground: "hsl(var(--yellow-foreground))"
         }
       },
       borderRadius: {

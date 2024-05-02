@@ -2,29 +2,23 @@ import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form";
-import { cn } from "@/lib/utils";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Plus } from "lucide-react";
+
 const formSchema = z.object({
   number: z.coerce.number().min(1, "Tối thiểu 1 dòng").max(60, "Tối đa 60 dòng")
 });
+
 export function BtnAddRow({ addNewRow, ...props }) {
   const [open, setOpen] = useState(false);
 
@@ -41,9 +35,19 @@ export function BtnAddRow({ addNewRow, ...props }) {
 
   return (
     <>
-      <Button variant="blue" onClick={() => setOpen(true)} {...props}>
-        Thêm dòng
-      </Button>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="icon" variant="blue" onClick={() => setOpen(true)} {...props}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Thêm dòng</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <Dialog
         open={open}
         onOpenChange={() => {
@@ -75,7 +79,7 @@ export function BtnAddRow({ addNewRow, ...props }) {
                 )}
               />
               <DialogFooter>
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="blue">
                   Thêm
                 </Button>
               </DialogFooter>
