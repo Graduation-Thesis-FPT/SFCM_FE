@@ -37,7 +37,7 @@ export default function Login() {
     localStorage.setItem("token", "token");
     navigate("/");
     toast({
-      variant: "success",
+      variant: "green",
       title: "Đăng nhập thành công!"
     });
   }

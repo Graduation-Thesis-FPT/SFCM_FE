@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from "react";
 import Jspreadsheet from "@/components/jspreadsheet/Jspreadsheet";
-import AgGrid from "@/components/aggridreact/AgGrid";
 import { Button } from "@/components/ui/button";
 import { getTest } from "@/apis/user.api";
 
@@ -72,7 +71,6 @@ export default function Detail() {
         Click me
       </Button>
       <Jspreadsheet dataSource={data} columns={columns} />
-      <AgGrid rowData={rowData} colDefs={colDefs} />
     </>
   );
 }

@@ -1,7 +1,9 @@
-import AgGrid from "@/components/aggridreact/AgGrid";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { fnAddKey } from "@/lib/fnTable";
+import { fnAddKey, fnAddRows, fnDeleteRows } from "@/lib/fnTable";
+import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { BtnAddRow } from "@/components/aggridreact/BtnAddRow";
+import { BtnDeleteRow } from "@/components/aggridreact/BtnDeleteRow";
 
 let data = [
   {
@@ -21,8 +23,8 @@ let data = [
 ];
 
 export default function UserAccounts() {
+  const ref = useRef(null);
   const [rowData, setRowData] = useState([]);
-
   const colDefs = [
     { field: "USER_GROUP_NAME", headerName: "Nhóm người dùng" },
     { field: "USER_NAME", headerName: "Tên tài khoản" },
@@ -38,24 +40,39 @@ export default function UserAccounts() {
     { field: "UPDATE_DATE", headerName: "Ngày cập nhật", editable: false }
   ];
 
+  const handleAddRows = numOfNewRow => {
+    let temp = fnAddRows(numOfNewRow, rowData);
+    setRowData(temp);
+  };
+
+  const handleDeleteRows = () => {
+    let selectedRows = ref.current.api.getSelectedRows();
+    setRowData(fnDeleteRows(selectedRows, rowData));
+  };
+
   useEffect(() => {
     setRowData(fnAddKey(data));
   }, []);
   return (
     <>
-      {/* <Button
-        onClick={() => {
-          console.log(rowData);
-        }}
-      >
-        Log row Data
-      </Button> */}
+      <div className="mb-2 flex justify-end gap-2">
+        <Button variant="red" onClick={handleDeleteRows}>
+          Xóa
+        </Button>
+        {/* <BtnDeleteRow tableRef={ref} deleteRow={() => handleDeleteRows()} /> */}
+        <BtnAddRow
+          addNewRow={numOfNewRow => {
+            handleAddRows(numOfNewRow);
+          }}
+        />
+      </div>
       <AgGrid
+        ref={ref}
         className="h-[500px]"
         rowData={rowData}
         colDefs={colDefs}
         defaultColDef={true}
-        onChangeRowData={data => {
+        setRowData={data => {
           setRowData(data);
         }}
       />

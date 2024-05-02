@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
@@ -24,7 +25,7 @@ import { cn } from "@/lib/utils";
 const formSchema = z.object({
   number: z.coerce.number().min(1, "Tối thiểu 1 dòng").max(60, "Tối đa 60 dòng")
 });
-export default function BtnAddRow({ addNewRow, ...props }) {
+export function BtnAddRow({ addNewRow, ...props }) {
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -40,7 +41,7 @@ export default function BtnAddRow({ addNewRow, ...props }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} {...props}>
+      <Button variant="blue" onClick={() => setOpen(true)} {...props}>
         Thêm dòng
       </Button>
       <Dialog
@@ -73,7 +74,11 @@ export default function BtnAddRow({ addNewRow, ...props }) {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Submit</Button>
+              <DialogFooter>
+                <Button type="submit" variant="primary">
+                  Thêm
+                </Button>
+              </DialogFooter>
             </form>
           </Form>
         </DialogContent>
