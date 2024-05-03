@@ -8,7 +8,7 @@ export function BtnSave({ isLoading, ...props }) {
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button disabled={isLoading} size="icon" variant="green" {...props}>
+          <Button disabled={isLoading} size="icon" variant="green-outline" {...props}>
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

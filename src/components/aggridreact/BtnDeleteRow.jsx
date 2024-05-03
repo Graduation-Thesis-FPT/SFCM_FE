@@ -21,7 +21,7 @@ export function BtnDeleteRow({ isLoading, tableRef, deleteRow, ...props }) {
             <Button
               disabled={isLoading}
               size="icon"
-              variant="red"
+              variant="red-outline"
               onClick={() => setOpen(true)}
               {...props}
             >

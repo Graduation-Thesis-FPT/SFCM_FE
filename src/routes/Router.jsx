@@ -6,9 +6,10 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import UserAccounts from "@/pages/userManager/UserAccounts";
+import UserAccounts from "@/pages/userManager/userAccounts";
+import UserGroups from "@/pages/userManager/userGroups";
 
-const components = { Detail, ErrorPage, UserAccounts };
+const components = { Detail, ErrorPage, UserAccounts, UserGroups };
 
 export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);

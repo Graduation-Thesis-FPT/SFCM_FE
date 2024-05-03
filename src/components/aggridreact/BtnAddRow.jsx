@@ -38,7 +38,7 @@ export function BtnAddRow({ addNewRow, ...props }) {
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="blue" onClick={() => setOpen(true)} {...props}>
+            <Button size="icon" variant="blue-outline" onClick={() => setOpen(true)} {...props}>
               <Plus className="h-4 w-4" />
             </Button>
           </TooltipTrigger>

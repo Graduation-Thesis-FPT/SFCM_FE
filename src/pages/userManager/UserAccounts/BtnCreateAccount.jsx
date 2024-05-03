@@ -9,7 +9,7 @@ export function BtnCreateAccount({ ...props }) {
       <TooltipProvider delayDuration={200}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="icon" variant="blue" {...props}>
+            <Button size="icon" variant="blue-outline" {...props}>
               <Plus className="h-4 w-4" />
             </Button>
           </TooltipTrigger>

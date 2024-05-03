@@ -18,7 +18,13 @@ const buttonVariants = cva(
         //custom
         blue: "bg-blue text-blue-foreground hover:bg-blue/80",
         green: "bg-green text-green-foreground hover:bg-green/80",
-        red: "bg-red text-red-foreground hover:bg-red/80"
+        red: "bg-red text-red-foreground hover:bg-red/80",
+        "blue-outline":
+          "border border-blue bg-background hover:bg-blue text-blue hover:text-blue-foreground",
+        "green-outline":
+          "border border-green bg-background hover:bg-green text-green hover:text-green-foreground",
+        "red-outline":
+          "border border-red bg-background hover:bg-red text-red hover:text-red-foreground"
       },
       size: {
         default: "h-10 px-4 py-2",
