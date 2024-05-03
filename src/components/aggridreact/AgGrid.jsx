@@ -19,15 +19,35 @@ const AgGrid = forwardRef(
           <AgGridReact
             ref={ref}
             rowData={rowData}
-            columnDefs={colDefs.map((item, index) => {
-              if (index === 0) {
-                return { ...item, checkboxSelection: true, headerCheckboxSelection: true };
-              } else {
-                return item;
-              }
-            })}
+            // columnDefs={colDefs.map((item, index) => {
+            //   if (index === 0) {
+            //     return { ...item, checkboxSelection: true, headerCheckboxSelection: true };
+            //   } else {
+            //     return item;
+            //   }
+            // })}
+            columnDefs={[
+              {
+                headerName: "#",
+                flex: 0,
+                width: 100,
+                checkboxSelection: true,
+                headerCheckboxSelection: true,
+                editable: false,
+                comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
+                  return nodeA.rowIndex - nodeB.rowIndex;
+                },
+                valueFormatter: params => {
+                  return Number(params.node.id) + 1;
+                }
+              },
+              ...colDefs
+            ]}
             rowSelection={"multiple"}
             // onSelectionChanged={onSelectionChanged}
+            pagination={true}
+            paginationPageSize={10}
+            paginationPageSizeSelector={[10, 30, 50, 100]}
             suppressRowClickSelection={true}
             defaultColDef={defaultColDef ? style : null}
             onCellValueChanged={e => {

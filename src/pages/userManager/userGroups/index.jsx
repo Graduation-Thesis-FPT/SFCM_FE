@@ -1,4 +1,6 @@
 import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { BtnAddRow } from "@/components/aggridreact/BtnAddRow";
+import { fnAddRows } from "@/lib/fnTable";
 import React, { useRef, useState } from "react";
 const colDefs = [
   { field: "USER_GROUP_CODE", headerName: "Mã nhóm người dùng" },
@@ -12,8 +14,19 @@ const colDefs = [
 export default function UserGroups() {
   const ref = useRef(null);
   const [rowData, setRowData] = useState([]);
+
+  const handleAddRows = numOfNewRow => {
+    let temp = fnAddRows(numOfNewRow, rowData);
+    setRowData(temp);
+  };
+
   return (
     <>
+      <BtnAddRow
+        onAddRows={num => {
+          handleAddRows(num);
+        }}
+      />
       <AgGrid
         ref={ref}
         className="h-[500px]"

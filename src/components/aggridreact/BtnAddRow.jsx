@@ -19,7 +19,7 @@ const formSchema = z.object({
   number: z.coerce.number().min(1, "Tối thiểu 1 dòng").max(60, "Tối đa 60 dòng")
 });
 
-export function BtnAddRow({ addNewRow, ...props }) {
+export function BtnAddRow({ onAddRows, ...props }) {
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -30,7 +30,7 @@ export function BtnAddRow({ addNewRow, ...props }) {
   function onSubmit(values) {
     form.reset();
     setOpen(false);
-    addNewRow(values.number);
+    onAddRows(values.number);
   }
 
   return (
