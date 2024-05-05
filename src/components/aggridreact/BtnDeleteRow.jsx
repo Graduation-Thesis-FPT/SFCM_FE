@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,17 @@ import { Button } from "../ui/button";
 import { Loader2, Trash } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-export function BtnDeleteRow({ isLoading, tableRef, deleteRow, ...props }) {
+export const BtnDeleteRow = forwardRef(({ isLoading, deleteRow, ...props }, ref) => {
   const [open, setOpen] = useState(false);
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+  };
+
+  useImperativeHandle(ref, () => ({
+    handleCloseDialog
+  }));
+
   return (
     <>
       <TooltipProvider delayDuration={200}>
@@ -66,4 +75,4 @@ export function BtnDeleteRow({ isLoading, tableRef, deleteRow, ...props }) {
       </Dialog>
     </>
   );
-}
+});

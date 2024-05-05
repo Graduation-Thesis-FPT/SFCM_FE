@@ -1,8 +1,12 @@
+import { deleteUserGroup, getAllUserGroup } from "@/apis/user-group.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { BtnAddRow } from "@/components/aggridreact/BtnAddRow";
+import { BtnDeleteRow } from "@/components/aggridreact/BtnDeleteRow";
 import { BtnSave } from "@/components/aggridreact/BtnSave";
+import { useToast } from "@/components/ui/use-toast";
 import { fnAddRows } from "@/lib/fnTable";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
 const colDefs = [
   { field: "USER_GROUP_CODE", headerName: "Mã nhóm người dùng" },
   { field: "USER_GROUP_NAME", headerName: "Tên nhóm người dùng" },
@@ -14,22 +18,67 @@ const colDefs = [
 
 export default function UserGroups() {
   const ref = useRef(null);
+  const refBtnDelete = useRef(null);
   const [rowData, setRowData] = useState([]);
+  const { toast } = useToast();
 
   const handleAddRows = numOfNewRow => {
     let temp = fnAddRows(numOfNewRow, rowData);
     setRowData(temp);
   };
 
+  const handleSave = () => {
+    let data = rowData.filter(row => row.status);
+    console.log(data);
+    if (data.length === 0) {
+      toast({
+        variant: "red",
+        title: "Không có dữ liệu thay đổi"
+      });
+      return;
+    }
+  };
+
+  const handleDeleteRow = () => {
+    let selectedRows = ref.current.api.getSelectedRows();
+    deleteUserGroup(selectedRows.map(row => row.ROWGUID))
+      .then(res => {
+        console.log("🚀 ~ handleDeleteRow ~ res:", res);
+      })
+      .catch(err => {
+        toast({
+          variant: "red",
+          title: err.message
+        });
+      })
+      .finally(() => {
+        refBtnDelete.current.handleCloseDialog();
+      });
+  };
+
+  useEffect(() => {
+    getAllUserGroup()
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast({
+          variant: "red",
+          title: err.message
+        });
+      });
+  }, []);
+
   return (
     <>
       <div className="mb-2 flex justify-end gap-2">
+        <BtnDeleteRow ref={refBtnDelete} deleteRow={handleDeleteRow} />
         <BtnAddRow
           onAddRows={num => {
             handleAddRows(num);
           }}
         />
-        <BtnSave />
+        <BtnSave onClick={handleSave} />
       </div>
 
       <AgGrid
