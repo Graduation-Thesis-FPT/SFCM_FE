@@ -1,5 +1,6 @@
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { BtnAddRow } from "@/components/aggridreact/BtnAddRow";
+import { BtnSave } from "@/components/aggridreact/BtnSave";
 import { fnAddRows } from "@/lib/fnTable";
 import React, { useRef, useState } from "react";
 const colDefs = [
@@ -22,11 +23,15 @@ export default function UserGroups() {
 
   return (
     <>
-      <BtnAddRow
-        onAddRows={num => {
-          handleAddRows(num);
-        }}
-      />
+      <div className="mb-2 flex justify-end gap-2">
+        <BtnAddRow
+          onAddRows={num => {
+            handleAddRows(num);
+          }}
+        />
+        <BtnSave />
+      </div>
+
       <AgGrid
         ref={ref}
         className="h-[500px]"
