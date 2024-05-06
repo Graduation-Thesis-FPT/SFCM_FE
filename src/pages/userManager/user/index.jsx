@@ -40,7 +40,7 @@ const colDefs = [
   { field: "UPDATE_BY", headerName: "Người cập nhật", editable: false },
   { field: "UPDATE_DATE", headerName: "Ngày cập nhật", editable: false }
 ];
-export default function UserAccounts() {
+export default function User() {
   const ref = useRef(null);
   const [rowData, setRowData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

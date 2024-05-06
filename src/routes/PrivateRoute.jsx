@@ -5,12 +5,12 @@ import { useDispatch } from "react-redux";
 const data = [
   {
     name: "Quản lý người dùng",
-    url: "userManagement",
+    url: "user-manager",
     icon: "Users",
     child: [
-      { name: "Nhóm người dùng", url: "1", component: "UserGroups" },
-      { name: "Người dùng", url: "2", component: "UserAccounts" },
-      { name: "Phân quyền", url: "3", component: "ErrorPage" }
+      { name: "Nhóm người dùng", url: "role", component: "Role" },
+      { name: "Người dùng", url: "user", component: "User" },
+      { name: "Phân quyền", url: "permission", component: "Permission" }
     ]
   },
   {
