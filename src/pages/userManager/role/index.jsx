@@ -5,13 +5,25 @@ import { BtnDeleteRow } from "@/components/aggridreact/BtnDeleteRow";
 import { BtnSave } from "@/components/aggridreact/BtnSave";
 import { useToast } from "@/components/ui/use-toast";
 import { fnAddRows } from "@/lib/fnTable";
+import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 
 const colDefs = [
   { field: "ROLE_CODE", headerName: "Mã nhóm người dùng" },
   { field: "ROLE_NAME", headerName: "Tên nhóm người dùng" },
-  { field: "CREATE_BY", headerName: "Người tạo", editable: false },
-  { field: "CREATE_DATE", headerName: "Ngày tạo", editable: false },
+  {
+    field: "CREATE_BY",
+    headerName: "Người tạo",
+    editable: false
+  },
+  {
+    field: "CREATE_DATE",
+    headerName: "Ngày tạo",
+    editable: true,
+    cellRenderer: params => {
+      return moment(params.value).utc().format("DD/MM/YYYY HH:mm");
+    }
+  },
   { field: "UPDATE_BY", headerName: "Người cập nhật", editable: false },
   { field: "UPDATE_DATE", headerName: "Ngày cập nhật", editable: false }
 ];

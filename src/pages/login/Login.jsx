@@ -1,25 +1,36 @@
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
+
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
+import background from "@/assets/image/background-login.png";
+import logo from "@/assets/image/Logo_128x128.svg";
+import { Eye, EyeOff, Info, Search } from "lucide-react";
+
 const formSchema = z.object({
-  USER_NAME: z.string().min(1, "Vui lòng nhập tài khoản đăng nhập!"),
-  PASSWORD: z.string().min(1, "Vui lòng nhập mật khẩu!")
+  USER_NAME: z.string().min(5, "Vui lòng nhập tài khoản đăng nhập!"),
+  PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!")
 });
+
+const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
+
 export default function Login() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
   const form = useForm({
@@ -28,10 +39,14 @@ export default function Login() {
   });
 
   function onSubmit(values) {
-    if (values.PASSWORD !== "123") {
+    if (values.PASSWORD !== fakeLoginData.PASSWORD) {
       form.setError("PASSWORD", {
         message: "Mật khẩu không chính xác!"
       });
+      return;
+    }
+    if (values.PASSWORD === fakeLoginData.PASSWORD) {
+      navigate("/change-default-password", { state: { USER_NAME: values.USER_NAME } });
       return;
     }
     localStorage.setItem("token", "token");
@@ -41,27 +56,41 @@ export default function Login() {
       title: "Đăng nhập thành công!"
     });
   }
+
   return (
-    <div className="flex h-screen items-center justify-center bg-[url('@/assets/image/background-login.png')] bg-cover bg-center">
-      <div className="w-2/3 rounded-md bg-[#dbdada75] p-5 lg:w-1/4">
+    <div className="grid h-screen grid-cols-8">
+      <div className="col-span-3 px-[48px]">
+        <img className="m-auto mb-[42px] mt-[72px]" src={logo} />
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <h1 className="text-center">Đăng nhập</h1>
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <h1 className="mb-8 text-5xl font-bold text-blue-800">Đăng nhập</h1>
             <FormField
               control={form.control}
               name="USER_NAME"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên tài khoản:</FormLabel>
+                  <FormLabel className="text-base font-bold">Tài khoản</FormLabel>
                   <FormControl>
                     <Input
-                      className="focus-visible:ring-offset-0"
+                      className="shadow-md focus-visible:ring-offset-0"
                       type="text"
-                      placeholder="Tên tài khoản"
+                      placeholder="Nhập tài khoản"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage style={{ fontSize: "10px" }} />
+                  <FormDescription className="flex text-xs font-light">
+                    Nhập tài khoản của bạn
+                    <TooltipProvider delayDuration={500}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="ml-1 h-4 w-4 text-blue-500" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Tài khoản phải tối thiểu 5 ký tự</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -70,25 +99,59 @@ export default function Login() {
               name="PASSWORD"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mật khẩu:</FormLabel>
+                  <FormLabel className="text-base font-bold">Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input
-                      className="focus-visible:ring-offset-0"
-                      type="password"
-                      placeholder="Mật khẩu"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        className="shadow-md focus-visible:ring-offset-0"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Nhập mật khẩu"
+                        {...field}
+                      />
+                      <span
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}
+                        className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
+                      >
+                        {showPassword ? (
+                          <Eye className="size-6 bg-white" />
+                        ) : (
+                          <EyeOff className="size-6 bg-white" />
+                        )}
+                      </span>
+                    </div>
                   </FormControl>
-                  <FormMessage style={{ fontSize: "10px" }} />
+                  <FormDescription className="flex text-xs font-light">
+                    Nhập mật khẩu của bạn
+                    <TooltipProvider delayDuration={500}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="ml-1 h-4 w-4 text-blue-500" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Mật khẩu phải tối thiểu 5 ký tự</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </FormDescription>
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
+            <div className="cursor-pointer text-right text-sm font-light text-red-500 underline">
+              Quên mật khẩu?
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 text-base font-bold hover:bg-blue-600/80"
+            >
               Đăng nhập
             </Button>
           </form>
         </Form>
       </div>
+
+      <img className="col-span-5 h-screen w-full object-fill" src={background} />
     </div>
   );
 }

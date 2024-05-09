@@ -103,6 +103,7 @@
 body {
   margin: 0;
   overflow: hidden;
+  font-family: "Inter";
 }
 
 ::-webkit-scrollbar {
@@ -128,5 +129,11 @@ body {
     padding: 0 !important;
     border-bottom: none !important;
     border-right: none !important;
+  }
+}
+
+.center-header {
+  .ag-header-cell-label {
+    justify-content: center;
   }
 }

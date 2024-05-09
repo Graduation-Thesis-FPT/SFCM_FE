@@ -1,6 +1,6 @@
-import axios from "@/config/axios";
+import axios, { axiosPrivate } from "@/config/axios";
 
-const getAllUserGroup = async () => await axios.get(`user-group`);
-const deleteUserGroup = async listId => await axios.delete(`user-group`, { data: listId });
+const getAllUserGroup = async () => await axiosPrivate.get(`user-group`);
+const deleteUserGroup = async listId => await axiosPrivate.delete(`user-group`, { data: listId });
 
 export { getAllUserGroup, deleteUserGroup };

@@ -9,6 +9,7 @@ import PrivateRoute from "./PrivateRoute";
 import User from "@/pages/userManager/user";
 import Role from "@/pages/userManager/role";
 import Permission from "@/pages/userManager/permission";
+import FirstLogin from "@/pages/login/FirstLogin";
 
 const components = { Detail, ErrorPage, User, Role, Permission };
 
@@ -34,6 +35,7 @@ export default function Router() {
           </Route>
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path="/change-default-password" element={<FirstLogin />} />
       </Routes>
     </>
   );
