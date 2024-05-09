@@ -19,7 +19,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useToast } from "@/components/ui/use-toast";
 import background from "@/assets/image/background-login.png";
 import logo from "@/assets/image/Logo_128x128.svg";
-import { Eye, EyeOff, Info, Search } from "lucide-react";
+import { CircleCheckBig, Eye, EyeOff, Info, Search } from "lucide-react";
 const formSchema = z.object({
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
   CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
@@ -51,8 +51,12 @@ export default function FirstLogin() {
     localStorage.setItem("token", "token");
     navigate("/");
     toast({
-      variant: "green",
-      title: "Đăng nhập thành công!"
+      variant: "success",
+      title: (
+        <span className="flex items-center">
+          <CircleCheckBig className="mr-2" /> Đăng nhập thành công!!
+        </span>
+      )
     });
   }
   useEffect(() => {

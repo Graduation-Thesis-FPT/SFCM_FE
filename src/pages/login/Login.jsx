@@ -40,14 +40,6 @@ export default function Login() {
   });
 
   function onSubmit(values) {
-    toast({
-      variant: "success",
-      title: (
-        <span className="flex items-center">
-          <CircleCheckBig className="mr-2" /> Đăng nhập thành công!!
-        </span>
-      )
-    });
     if (values.PASSWORD !== fakeLoginData.PASSWORD) {
       form.setError("PASSWORD", {
         message: "Mật khẩu không chính xác!"
@@ -60,6 +52,14 @@ export default function Login() {
     }
     localStorage.setItem("token", "token");
     navigate("/");
+    toast({
+      variant: "success",
+      title: (
+        <span className="flex items-center">
+          <CircleCheckBig className="mr-2" /> Đăng nhập thành công!!
+        </span>
+      )
+    });
   }
 
   return (
@@ -154,7 +154,7 @@ export default function Login() {
         </Form>
       </div>
 
-      <img className="col-span-5 h-screen w-full object-fill" src={background} />
+      <img className="col-span-5 h-screen w-full object-cover" src={background} />
     </div>
   );
 }
