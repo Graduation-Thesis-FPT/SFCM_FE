@@ -14,7 +14,7 @@ const data = [
     ]
   },
   {
-    name: "Danh mục dùng chung",
+    name: "Danh mục chung",
     url: "danhmucdungchung",
     icon: "List",
     child: [

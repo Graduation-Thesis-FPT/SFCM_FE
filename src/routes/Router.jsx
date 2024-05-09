@@ -15,7 +15,6 @@ const components = { Detail, ErrorPage, User, Role, Permission };
 
 export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
-
   return (
     <>
       <Routes>

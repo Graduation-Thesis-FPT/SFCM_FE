@@ -100,7 +100,7 @@ export default function MenuWeb({ handleScale, isCollapse }) {
                     className={`px-3  ${isParentSelected === item.url ? "font-bold" : "text-gray-500 "}`}
                   >
                     {!isCollapse ? (
-                      <div className="flex text-14">
+                      <div className="flex items-center text-14">
                         <Icon className="mr-2 h-5 w-5" />
                         {item.name}
                       </div>

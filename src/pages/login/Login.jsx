@@ -19,7 +19,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useToast } from "@/components/ui/use-toast";
 import background from "@/assets/image/background-login.png";
 import logo from "@/assets/image/Logo_128x128.svg";
-import { Eye, EyeOff, Info, Search } from "lucide-react";
+import { CheckCheck, CircleCheckBig, Eye, EyeOff, Info, Search } from "lucide-react";
+import ForgotPassword from "./ForgotPassword";
 
 const formSchema = z.object({
   USER_NAME: z.string().min(5, "Vui lòng nhập tài khoản đăng nhập!"),
@@ -39,6 +40,14 @@ export default function Login() {
   });
 
   function onSubmit(values) {
+    toast({
+      variant: "success",
+      title: (
+        <span className="flex items-center">
+          <CircleCheckBig className="mr-2" /> Đăng nhập thành công!!
+        </span>
+      )
+    });
     if (values.PASSWORD !== fakeLoginData.PASSWORD) {
       form.setError("PASSWORD", {
         message: "Mật khẩu không chính xác!"
@@ -51,14 +60,10 @@ export default function Login() {
     }
     localStorage.setItem("token", "token");
     navigate("/");
-    toast({
-      variant: "green",
-      title: "Đăng nhập thành công!"
-    });
   }
 
   return (
-    <div className="grid h-screen grid-cols-8">
+    <div className="grid h-screen grid-cols-8 ">
       <div className="col-span-3 px-[48px]">
         <img className="m-auto mb-[42px] mt-[72px]" src={logo} />
         <Form {...form}>
@@ -138,9 +143,7 @@ export default function Login() {
                 </FormItem>
               )}
             />
-            <div className="cursor-pointer text-right text-sm font-light text-red-500 underline">
-              Quên mật khẩu?
-            </div>
+            <ForgotPassword />
             <Button
               type="submit"
               className="w-full bg-blue-600 text-base font-bold hover:bg-blue-600/80"
