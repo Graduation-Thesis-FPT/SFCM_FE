@@ -1,21 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Bell,
-  Home,
-  LineChart,
-  Package,
-  Package2,
-  ShoppingCart,
-  Users,
-  IndentDecrease,
-  IndentIncrease,
-  ChevronDown,
-  Dock,
-  List,
-  FolderInput,
-  Ellipsis
-} from "lucide-react";
+import * as icon from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -26,24 +11,11 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-const icon = {
-  Bell,
-  Home,
-  LineChart,
-  Package,
-  Package2,
-  ShoppingCart,
-  Users,
-  IndentDecrease,
-  IndentIncrease,
-  ChevronDown,
-  Dock,
-  List,
-  FolderInput,
-  Ellipsis
-};
-export default function MenuWeb({ handleScale, isCollapse }) {
-  const menu = useSelector(state => state.menuSlice.menu);
+
+import logo from "@/assets/image/logo-menu.svg";
+import logoNoText from "@/assets/image/logo-menu-notext.svg";
+
+export default function MenuWeb({ handleScale, isCollapse, menu }) {
   let { pathname } = useLocation();
   let mainPath = pathname.split("/")[1];
   const [accordionValue, setAccordionValue] = useState(mainPath);
@@ -51,29 +23,20 @@ export default function MenuWeb({ handleScale, isCollapse }) {
   return (
     <>
       <div className="flex h-full max-h-screen flex-col gap-x-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px]">
-          {!isCollapse && (
-            <Link to="/" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6" />
-              <span className="">CFS</span>
-            </Link>
-          )}
-          <Button
-            variant="outline"
-            size="icon"
-            className={`${!isCollapse && "ml-auto"} h-8 w-8`}
-            onClick={handleScale}
-          >
-            {isCollapse ? (
-              <IndentIncrease className="h-4 w-4" />
-            ) : (
-              <IndentDecrease className="h-4 w-4" />
-            )}
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
+        <div className="relative flex h-24 items-center justify-center border-b px-4">
+          <img src={isCollapse ? logoNoText : logo} alt="logo" />
+          <span className="absolute bottom-2 right-[-14px]">
+            <Button
+              size="icon"
+              className="rounded-2 size-7 bg-white text-gray-600 shadow-md hover:bg-white/80"
+              onClick={handleScale}
+            >
+              <icon.ChevronsLeftRight className="size-4" />
+            </Button>
+          </span>
         </div>
 
-        <ScrollArea className="w-full md:h-minusHeader_md lg:h-minusHeader_lg">
+        <ScrollArea className="w-full">
           <Accordion
             className="w-full"
             type="single"

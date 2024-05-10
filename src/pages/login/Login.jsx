@@ -29,7 +29,7 @@ const formSchema = z.object({
 
 const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
 
-export default function Login() {
+export function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();

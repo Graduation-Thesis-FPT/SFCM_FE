@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ErrorPage() {
+export function ErrorPage() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!localStorage.getItem("token")) {

@@ -26,7 +26,7 @@ const formSchema = z.object({
 });
 
 const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
-export default function FirstLogin() {
+export function FirstLogin() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);

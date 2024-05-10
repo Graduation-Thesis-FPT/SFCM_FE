@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function Permission() {
+export function Permission() {
   return <div>Permission</div>;
 }

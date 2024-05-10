@@ -8,8 +8,8 @@ const data = [
     url: "user-manager",
     icon: "Users",
     child: [
-      { name: "Nhóm người dùng", url: "role", component: "Role" },
       { name: "Người dùng", url: "user", component: "User" },
+      { name: "Nhóm người dùng", url: "role", component: "Role" },
       { name: "Phân quyền", url: "permission", component: "Permission" }
     ]
   },
@@ -42,7 +42,7 @@ const data = [
     ]
   }
 ];
-export default function PrivateRoute() {
+export function PrivateRoute() {
   const dispatch = useDispatch();
   let token = localStorage.getItem("token");
   useEffect(() => {

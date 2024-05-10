@@ -28,7 +28,7 @@ const colDefs = [
   { field: "UPDATE_DATE", headerName: "Ngày cập nhật", editable: false }
 ];
 
-export default function Role() {
+export function Role() {
   const ref = useRef(null);
   const refBtnDelete = useRef(null);
   const [rowData, setRowData] = useState([]);
