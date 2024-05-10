@@ -3,7 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import MenuMobile from "@/layout/menu/MenuMobile";
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { Bell, ChevronDown, MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,33 +51,44 @@ export function MainLayout() {
               )}
             </h1>
             {/* <MenuMobile /> */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <span className="flex items-center">
-                  <Button variant="blue" size="icon" className="rounded-full">
-                    P
-                  </Button>
-                  <ChevronDown className="ml-3 size-6" />
-                </span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => {
-                    handleLogout();
-                  }}
-                >
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center">
+              <div className="flex gap-4 rounded-md bg-gray-50 p-3 shadow-md">
+                <Bell />
+                <MessageCircle />
+              </div>
+              <div className="mx-3 text-center">
+                <div className="text-sm font-bold text-gray-900">Nguyễn Văn A</div>
+                <div className="text-sm font-normal text-gray-600">Admin</div>
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <span className="flex items-center">
+                    <Button variant="blue" size="icon" className="rounded-full">
+                      P
+                    </Button>
+                    <ChevronDown className="ml-3 size-6" />
+                  </span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Support</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      handleLogout();
+                    }}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </header>
           <main>
-            <div className="h-minusHeader w-screen overflow-y-auto rounded-md bg-white p-4 md:w-full">
+            <div className="h-minusHeader w-screen overflow-y-auto rounded-md bg-white md:w-full">
               <Outlet />
             </div>
           </main>

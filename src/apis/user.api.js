@@ -1,6 +1,5 @@
-import axios from "@/config/axios";
+import axios, { axiosPrivate } from "@/config/axios";
 
-const getTest = async () => await axios.get(`account/test`);
-const getAllAccounts = async () => await axios.get(`account/getAllAccounts`);
-const createAccount = async data => await axios.post(`account/createAccount`, data);
-export { getTest, getAllAccounts, createAccount };
+const getAllUser = async () => await axios.get(`user`);
+const createAccount = async data => await axiosPrivate.post(`user`, data);
+export { getAllUser, createAccount };
