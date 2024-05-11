@@ -5,11 +5,11 @@ import { Rss, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
-import { Section } from "@/layout/section";
 import { activateUser, deactivateUser, deleteUserById, getAllUser } from "@/apis/user.api";
 import { FormCreateAccount } from "./FormCreateAccount";
 import { DetailUser } from "./DetailUser";
 import { useCustomToast } from "@/components/custom-toast";
+import { Section } from "@/components/section";
 
 export function User() {
   const ref = useRef(null);
