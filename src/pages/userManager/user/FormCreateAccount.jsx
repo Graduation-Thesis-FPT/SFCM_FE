@@ -17,6 +17,7 @@ import {
 import { PlusCircle } from "lucide-react";
 import { createAccount } from "@/apis/user.api";
 import { Separator } from "@/components/ui/separator";
+import { useCustomToast } from "@/components/custom-toast";
 
 const formSchema = z.object({
   ROLE_CODE: z.string({
@@ -37,8 +38,8 @@ const formSchema = z.object({
   REMARK: z.string().optional()
 });
 
-export function FormCreateAccount() {
-  const { toast } = useToast();
+export function FormCreateAccount({ updateRowData }) {
+  const toast = useCustomToast();
   const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -60,18 +61,16 @@ export function FormCreateAccount() {
 
   function onSubmit(values) {
     const dataReq = removeEmptyValues(values);
-    dataReq.BIRTHDAY = new Date().toISOString();
     createAccount(dataReq)
-      .then(data => {
-        console.log("🚀 ~ onSubmit ~ err:", data);
+      .then(res => {
+        let newAccount = res.data.metadata;
+        updateRowData(newAccount);
+        toast.success(res.data.message);
         form.reset();
         setOpen(false);
       })
       .catch(err => {
-        toast({
-          variant: "red",
-          title: err.message
-        });
+        toast.error(err?.response?.data?.message || err.message);
       });
   }
 

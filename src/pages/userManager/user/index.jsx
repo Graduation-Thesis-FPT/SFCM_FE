@@ -1,18 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { fnAddKey, fnAddRows, fnDeleteRows } from "@/lib/fnTable";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { Rss, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
 import { Section } from "@/layout/section";
-import { getAllUser } from "@/apis/user.api";
+import { activateUser, deactivateUser, deleteUserById, getAllUser } from "@/apis/user.api";
 import { FormCreateAccount } from "./FormCreateAccount";
+import { DetailUser } from "./DetailUser";
+import { useCustomToast } from "@/components/custom-toast";
 
 export function User() {
   const ref = useRef(null);
+  const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
+  const [detailData, setDetailData] = useState({});
+  const [openDetail, setOpenDetail] = useState(false);
 
   const colDefs = [
     { field: "USER_NAME", headerName: "Tài khoản", flex: 1 },
@@ -25,7 +29,7 @@ export function User() {
       maxWidth: 120,
       headerName: "Trạng thái",
       cellRenderer: params => {
-        if (params.value === 1) {
+        if (params.value) {
           return (
             <Button className="h-[70%] w-full cursor-default rounded-[6px] bg-green-100 font-medium text-green-800 hover:bg-green-100">
               Hoạt động
@@ -44,7 +48,7 @@ export function User() {
       headerName: "Ngày chỉnh sửa",
       flex: 1,
       cellRenderer: params => {
-        return params.value ? moment(params.value).utc().format("DD/MM/YYYY") : "";
+        return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
       }
     },
     {
@@ -53,27 +57,91 @@ export function User() {
       flex: 0.5,
       cellStyle: { alignContent: "space-evenly" },
       // headerClass: "center-header",
-      cellRenderer: () => {
-        return <Rss className="size-4 cursor-pointer" />;
+      cellRenderer: params => {
+        return (
+          <Rss
+            onClick={() => {
+              setDetailData(params.data);
+              setTimeout(() => {
+                setOpenDetail(true);
+              }, 100);
+            }}
+            className="size-4 cursor-pointer"
+          />
+        );
       }
     }
   ];
 
-  const handleAddRows = numOfNewRow => {
-    let temp = fnAddRows(numOfNewRow, rowData);
+  const handleUpdateUser = row => {
+    let temp = [...rowData];
+    for (let i = 0; i < temp.length; i++) {
+      if (temp[i].ROWGUID === row.ROWGUID) {
+        temp[i] = row;
+        break;
+      }
+    }
     setRowData(temp);
   };
 
-  const handleDeleteRows = () => {
-    let selectedRows = ref.current.api.getSelectedRows();
-    setRowData(fnDeleteRows(selectedRows, rowData));
+  const handleDeleteUserById = id => {
+    deleteUserById(id)
+      .then(res => {
+        let temp = rowData.filter(item => item.ROWGUID !== id);
+        setRowData(temp);
+        setOpenDetail(false);
+        toast.success(res.data.message);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  };
+
+  const handleDeactivateUser = id => {
+    deactivateUser(id)
+      .then(res => {
+        let temp = [...rowData];
+        for (let i = 0; i < temp.length; i++) {
+          if (temp[i].ROWGUID === id) {
+            rowData[i].IS_ACTIVE = false;
+            break;
+          }
+        }
+        setRowData(temp);
+        toast.success(res.data.message);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  };
+  const handleActivateUser = id => {
+    activateUser(id)
+      .then(res => {
+        let temp = [...rowData];
+        for (let i = 0; i < temp.length; i++) {
+          if (temp[i].ROWGUID === id) {
+            rowData[i].IS_ACTIVE = true;
+            break;
+          }
+        }
+        setRowData(temp);
+        toast.success(res.data.message);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  };
+
+  const handleUpdateRowData = newAccount => {
+    let temp = [...rowData];
+    temp.unshift(newAccount);
+    setRowData(temp);
   };
 
   useEffect(() => {
     getAllUser()
       .then(res => {
-        console.log("🚀 ~ useEffect ~ res.data.metadata:", res.data.metadata);
-        setRowData(fnAddKey(res.data.metadata));
+        setRowData(res.data.metadata);
       })
       .catch(err => {});
   }, []);
@@ -81,7 +149,11 @@ export function User() {
     <>
       <Section className="flex items-center justify-between py-3">
         <div className="text-2xl font-bold text-gray-900">Danh sách người dùng</div>
-        <FormCreateAccount />
+        <FormCreateAccount
+          updateRowData={newAccount => {
+            handleUpdateRowData(newAccount);
+          }}
+        />
       </Section>
       <Separator />
       <Section className="pt-3">
@@ -108,6 +180,19 @@ export function User() {
           }}
         />
       </Section>
+      <DetailUser
+        detail={detailData}
+        open={openDetail}
+        onOpenChange={() => {
+          setOpenDetail(false);
+        }}
+        deleteUserById={id => handleDeleteUserById(id)}
+        deactivateUser={id => handleDeactivateUser(id)}
+        activateUser={id => handleActivateUser(id)}
+        handleUpdateUser={row => {
+          handleUpdateUser(row);
+        }}
+      />
     </>
   );
 }
