@@ -12,14 +12,13 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage
+  FormLabel
 } from "@/components/ui/form";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
 import background from "@/assets/image/background-login.png";
 import logo from "@/assets/image/Logo_128x128.svg";
-import { CircleCheckBig, Eye, EyeOff, Info, Search } from "lucide-react";
+import { Eye, EyeOff, Info } from "lucide-react";
+import { useCustomToast } from "@/components/custom-toast";
 const formSchema = z.object({
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
   CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
@@ -31,7 +30,7 @@ export function FirstLogin() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { toast } = useToast();
+  const toast = useCustomToast();
 
   const USER_NAME = location?.state?.USER_NAME;
   const form = useForm({
@@ -42,22 +41,13 @@ export function FirstLogin() {
   function onSubmit(values) {
     if (values.PASSWORD !== values.CONFIRM_PASSWORD) {
       form.setError("CONFIRM_PASSWORD", { message: "Mật khẩu nhập lại chưa trùng khớp!" });
-      toast({
-        variant: "red",
-        title: "Mật khẩu nhập lại chưa trùng khớp!"
-      });
+      toast.error("Mật khẩu nhập lại chưa trùng khớp!");
+
       return;
     }
     localStorage.setItem("token", "token");
     navigate("/");
-    toast({
-      variant: "success",
-      title: (
-        <span className="flex items-center">
-          <CircleCheckBig className="mr-2" /> Đăng nhập thành công!!
-        </span>
-      )
-    });
+    toast.success("Đăng nhập thành công!!");
   }
   useEffect(() => {
     if (!USER_NAME) {

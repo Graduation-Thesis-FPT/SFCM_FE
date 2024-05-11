@@ -12,15 +12,14 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage
+  FormLabel
 } from "@/components/ui/form";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
 import background from "@/assets/image/background-login.png";
 import logo from "@/assets/image/Logo_128x128.svg";
-import { CheckCheck, CircleCheckBig, Eye, EyeOff, Info, Search } from "lucide-react";
+import { Eye, EyeOff, Info } from "lucide-react";
 import ForgotPassword from "./ForgotPassword";
+import { useCustomToast } from "@/components/custom-toast";
 
 const formSchema = z.object({
   USER_NAME: z.string().min(5, "Vui lòng nhập tài khoản đăng nhập!"),
@@ -32,7 +31,7 @@ const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
 export function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const { toast } = useToast();
+  const toast = useCustomToast();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -52,14 +51,7 @@ export function Login() {
     }
     localStorage.setItem("token", "token");
     navigate("/");
-    toast({
-      variant: "success",
-      title: (
-        <span className="flex items-center">
-          <CircleCheckBig className="mr-2" /> Đăng nhập thành công!!
-        </span>
-      )
-    });
+    toast.success("Đăng nhập thành công!!");
   }
 
   return (

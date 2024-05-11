@@ -7,22 +7,12 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import { CircleCheckBig, Loader2, Plus } from "lucide-react";
 
 const formSchema = z.object({
   USER_NAME: z.string().min(1, "Vui lòng nhập tài khoản đăng nhập!")
@@ -30,7 +20,6 @@ const formSchema = z.object({
 
 export default function ForgotPassword() {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
