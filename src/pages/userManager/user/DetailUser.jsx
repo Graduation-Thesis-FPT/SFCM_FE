@@ -240,7 +240,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
                   <FormControl>
                     <span className="flex items-center space-x-2">
                       <Switch
-                        className="data-[state=checked]:bg-green-600"
+                        className="data-[state=checked]:bg-green-800 data-[state=unchecked]:bg-red-800"
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />

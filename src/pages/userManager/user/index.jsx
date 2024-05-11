@@ -84,55 +84,7 @@ export function User() {
     setRowData(temp);
   };
 
-  const handleDeleteUserById = id => {
-    deleteUserById(id)
-      .then(res => {
-        let temp = rowData.filter(item => item.ROWGUID !== id);
-        setRowData(temp);
-        setOpenDetail(false);
-        toast.success(res.data.message);
-      })
-      .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
-      });
-  };
-
-  const handleDeactivateUser = id => {
-    deactivateUser(id)
-      .then(res => {
-        let temp = [...rowData];
-        for (let i = 0; i < temp.length; i++) {
-          if (temp[i].ROWGUID === id) {
-            rowData[i].IS_ACTIVE = false;
-            break;
-          }
-        }
-        setRowData(temp);
-        toast.success(res.data.message);
-      })
-      .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
-      });
-  };
-  const handleActivateUser = id => {
-    activateUser(id)
-      .then(res => {
-        let temp = [...rowData];
-        for (let i = 0; i < temp.length; i++) {
-          if (temp[i].ROWGUID === id) {
-            rowData[i].IS_ACTIVE = true;
-            break;
-          }
-        }
-        setRowData(temp);
-        toast.success(res.data.message);
-      })
-      .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
-      });
-  };
-
-  const handleUpdateRowData = newAccount => {
+  const handleCreateUser = newAccount => {
     let temp = [...rowData];
     temp.unshift(newAccount);
     setRowData(temp);
@@ -143,15 +95,17 @@ export function User() {
       .then(res => {
         setRowData(res.data.metadata);
       })
-      .catch(err => {});
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
   }, []);
   return (
     <>
       <Section className="flex items-center justify-between py-3">
         <div className="text-2xl font-bold text-gray-900">Danh sách người dùng</div>
         <FormCreateAccount
-          updateRowData={newAccount => {
-            handleUpdateRowData(newAccount);
+          handleCreateUser={newAccount => {
+            handleCreateUser(newAccount);
           }}
         />
       </Section>
@@ -186,9 +140,6 @@ export function User() {
         onOpenChange={() => {
           setOpenDetail(false);
         }}
-        deleteUserById={id => handleDeleteUserById(id)}
-        deactivateUser={id => handleDeactivateUser(id)}
-        activateUser={id => handleActivateUser(id)}
         handleUpdateUser={row => {
           handleUpdateUser(row);
         }}

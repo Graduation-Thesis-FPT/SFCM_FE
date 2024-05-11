@@ -9,7 +9,6 @@ const data = [
     icon: "Users",
     child: [
       { name: "Người dùng", url: "user", component: "User" },
-      { name: "Nhóm người dùng", url: "role", component: "Role" },
       { name: "Phân quyền", url: "permission", component: "Permission" }
     ]
   },

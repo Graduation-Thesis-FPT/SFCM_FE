@@ -38,7 +38,7 @@ const formSchema = z.object({
   REMARK: z.string().optional()
 });
 
-export function FormCreateAccount({ updateRowData }) {
+export function FormCreateAccount({ handleCreateUser }) {
   const toast = useCustomToast();
   const [open, setOpen] = useState(false);
   const form = useForm({
@@ -64,7 +64,7 @@ export function FormCreateAccount({ updateRowData }) {
     createAccount(dataReq)
       .then(res => {
         let newAccount = res.data.metadata;
-        updateRowData(newAccount);
+        handleCreateUser(newAccount);
         toast.success(res.data.message);
         form.reset();
         setOpen(false);
