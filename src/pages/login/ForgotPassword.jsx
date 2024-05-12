@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import React, { useState } from "react";
@@ -39,56 +41,31 @@ export default function ForgotPassword() {
   }
   return (
     <>
-      <div
-        onClick={() => {
-          setOpen(true);
-        }}
-        className="cursor-pointer text-right text-sm font-light text-red-500 underline"
-      >
-        Quên mật khẩu?
-      </div>
-      <Dialog
-        open={open}
-        onOpenChange={() => {
-          setOpen(false);
-        }}
-      >
-        <DialogContent>
+      <Dialog>
+        <DialogTrigger asChild>
+          <div
+            onClick={() => {
+              setOpen(true);
+            }}
+            className="cursor-pointer text-right text-sm font-light text-red-500 underline"
+          >
+            Quên mật khẩu?
+          </div>
+        </DialogTrigger>
+        <DialogContent
+          onOpenAutoFocus={e => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Khôi phục mật khẩu</DialogTitle>
-            <DialogDescription>Yêu cầu của bạn sẽ được gửi đến Admin</DialogDescription>
+            <DialogDescription>Vui lòng liên hệ đến Admin để lấy lại mật khẩu!!</DialogDescription>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              <FormField
-                control={form.control}
-                name="USER_NAME"
-                render={({ field }) => (
-                  <FormItem>
-                    {/* <FormLabel className="text-base font-bold">Tài khoản</FormLabel> */}
-                    <FormControl>
-                      <Input
-                        className="focus-visible:ring-offset-0"
-                        type="text"
-                        placeholder="Nhập tài khoản đăng nhập"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage style={{ fontSize: "12px" }} />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                {message ? (
-                  <p className="text-sm text-green-500">{message}</p>
-                ) : (
-                  <Button type="submit" variant="blue" disabled={isLoading}>
-                    Gửi yêu cầu
-                  </Button>
-                )}
-              </DialogFooter>
-            </form>
-          </Form>
+          <DialogFooter>
+            <DialogClose>
+              <Button variant="outline">Đóng</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

@@ -5,7 +5,7 @@ import { Rss, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
-import { activateUser, deactivateUser, deleteUserById, getAllUser } from "@/apis/user.api";
+import { getAllUser } from "@/apis/user.api";
 import { FormCreateAccount } from "./FormCreateAccount";
 import { DetailUser } from "./DetailUser";
 import { useCustomToast } from "@/components/custom-toast";
@@ -19,7 +19,11 @@ export function User() {
   const [openDetail, setOpenDetail] = useState(false);
 
   const colDefs = [
-    { field: "USER_NAME", headerName: "Tài khoản", flex: 1 },
+    {
+      field: "USER_NAME",
+      headerName: "Tài khoản",
+      flex: 1
+    },
     { field: "FULLNAME", headerName: "Họ và tên", flex: 1 },
     { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1 },
     { field: "ROLE_CODE", headerName: "Chức vụ", flex: 1 },
@@ -90,6 +94,8 @@ export function User() {
     setRowData(temp);
   };
 
+  const handleSearch = () => {};
+
   useEffect(() => {
     getAllUser()
       .then(res => {
@@ -119,7 +125,11 @@ export function User() {
             placeholder="Nhập từ khóa..."
             className="mr-4 w-[416px] pl-8 text-black"
           />
-          <Button>
+          <Button
+            onClick={() => {
+              handleSearch();
+            }}
+          >
             Tìm kiếm
             <Search className="ml-2 size-5" />
           </Button>

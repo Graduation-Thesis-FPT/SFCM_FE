@@ -68,6 +68,11 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
       }
     });
     delete temp.ROWGUID;
+    delete temp.CREATE_DATE;
+    delete temp.UPDATE_DATE;
+    delete temp.PASSWORD;
+    delete temp.CREATE_BY;
+    delete temp.UPDATE_BY;
     if (temp.USER_NAME === detailUser.USER_NAME) {
       delete temp.USER_NAME;
     }
@@ -75,6 +80,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
       .then(res => {
         temp.ROWGUID = detail.ROWGUID;
         temp.USER_NAME ??= detailUser.USER_NAME;
+        temp.UPDATE_DATE = new Date().toISOString();
         setDetailUser(temp);
         handleUpdateUser(temp);
         toast.success(res.data.message);
@@ -102,7 +108,9 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
         form.setValue("REMARK", res.data.metadata.REMARK || "");
         form.setValue("IS_ACTIVE", res.data.metadata.IS_ACTIVE);
       })
-      .catch(err => {});
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
   }, [detail]);
 
   return (

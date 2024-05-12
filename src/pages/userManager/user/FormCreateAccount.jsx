@@ -5,7 +5,14 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -24,7 +31,7 @@ const formSchema = z.object({
   }),
   USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!"),
   BIRTHDAY: z.string().optional(),
-  FULLNAME: z.string().refine(data => data === "" || data.length === 6, {
+  FULLNAME: z.string().refine(data => data === "" || data.length >= 6, {
     message: "Tối thiểu 6 ký tự!"
   }),
   TELEPHONE: z.string().refine(data => data === "" || data.length === 10, {
@@ -133,6 +140,7 @@ export function FormCreateAccount({ handleCreateUser }) {
                       <FormControl>
                         <Input type="text" placeholder="Nhập tài khoản" {...field} />
                       </FormControl>
+                      <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
