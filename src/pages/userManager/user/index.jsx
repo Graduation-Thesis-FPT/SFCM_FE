@@ -107,7 +107,7 @@ export function User() {
   }, []);
   return (
     <>
-      <Section className="flex items-center justify-between py-3">
+      <Section className="flex items-center justify-between">
         <div className="text-2xl font-bold text-gray-900">Danh sách người dùng</div>
         <FormCreateAccount
           handleCreateUser={newAccount => {
