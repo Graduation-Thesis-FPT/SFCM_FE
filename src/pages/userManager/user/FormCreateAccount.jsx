@@ -1,10 +1,10 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -20,202 +20,228 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import React, { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PlusCircle } from "lucide-react";
+import { createAccount } from "@/apis/user.api";
+import { Separator } from "@/components/ui/separator";
+import { useCustomToast } from "@/components/custom-toast";
 
 const formSchema = z.object({
-  USER_GROUP_CODE: z.string({
+  ROLE_CODE: z.string({
     required_error: "Không được để trống!"
   }),
   USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!"),
-  PASSWORD: z.string().trim().min(6, "Tối thiểu 6 ký tự và hông chứa khoảng trắng!"),
   BIRTHDAY: z.string().optional(),
-  TELPHONE: z.string().refine(data => data === "" || data.length === 11, {
+  FULLNAME: z.string().refine(data => data === "" || data.length >= 6, {
+    message: "Tối thiểu 6 ký tự!"
+  }),
+  TELEPHONE: z.string().refine(data => data === "" || data.length === 10, {
     message: "Số điện thoại bao gồm 11 số!"
   }),
   EMAIL: z.string().refine(data => data === "" || z.string().email().safeParse(data).success, {
     message: "Email không hợp lệ. Vd:abc@gmail.com"
   }),
-  ADDRESS: z.string().optional()
+  ADDRESS: z.string().optional(),
+  REMARK: z.string().optional()
 });
 
-export function FormCreateAccount({ open, setOpen, ...props }) {
+export function FormCreateAccount({ handleCreateUser }) {
+  const toast = useCustomToast();
+  const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      USER_GROUP_CODE: "user",
+      ROLE_CODE: "admin",
+      FULLNAME: "",
       USER_NAME: "",
-      PASSWORD: "",
       BIRTHDAY: "",
-      TELPHONE: "",
+      TELEPHONE: "",
       EMAIL: "",
-      ADDRESS: ""
+      ADDRESS: "",
+      REMARK: ""
     }
   });
 
+  const removeEmptyValues = obj => {
+    return Object.fromEntries(Object.entries(obj).filter(([key, value]) => value !== ""));
+  };
+
   function onSubmit(values) {
-    console.log("🚀 ~ onSubmit ~ values:", values);
-    form.reset();
-    setOpen(false);
-  }
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={() => {
+    const dataReq = removeEmptyValues(values);
+    createAccount(dataReq)
+      .then(res => {
+        let newAccount = res.data.metadata;
+        handleCreateUser(newAccount);
+        toast.success(res.data.message);
         form.reset();
         setOpen(false);
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Thông tin tài khoản:</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="USER_GROUP_CODE"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nhóm người dùng:</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="focus:ring-offset-0">
-                        <SelectValue placeholder="Nhóm người dùng" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="manage">Manage</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage style={{ fontSize: "10px" }} />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-2 gap-x-4">
-              <FormField
-                control={form.control}
-                name="USER_NAME"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên tài khoản:</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="focus-visible:ring-offset-0"
-                        type="text"
-                        placeholder="Vd: abc123"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage style={{ fontSize: "10px" }} />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="PASSWORD"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mật khẩu:</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="focus-visible:ring-offset-0"
-                        type="password"
-                        placeholder="********"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage style={{ fontSize: "10px" }} />
-                  </FormItem>
-                )}
-              />
-            </div>
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  }
 
-            <div className="grid grid-cols-3 gap-x-4">
-              <FormField
-                control={form.control}
-                name="BIRTHDAY"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ngày sinh:</FormLabel>
-                    <FormControl>
-                      <Input className="focus-visible:ring-offset-0" type="date" {...field} />
-                    </FormControl>
-                    <FormMessage style={{ fontSize: "10px" }} />
-                  </FormItem>
-                )}
-              />
-              <div className="col-span-2">
+  return (
+    <div>
+      <Button
+        onClick={() => {
+          setOpen(true);
+        }}
+        variant="blue"
+      >
+        <PlusCircle className="mr-2 size-5" />
+        Tạo người dùng mới
+      </Button>
+      <Sheet
+        open={open}
+        onOpenChange={() => {
+          setOpen(false);
+        }}
+      >
+        <SheetContent className="sm:max-w-1/2 m-0 w-1/2">
+          <SheetHeader className="align-middle">
+            <SheetTitle className="pb-4 text-3xl font-bold text-gray-900">
+              Tạo mới người dùng
+            </SheetTitle>
+            <Separator />
+            <div className="pb-4 pt-6 text-lg font-medium text-gray-900">Thông tin người dùng</div>
+          </SheetHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <span className="grid grid-cols-2 gap-x-4">
                 <FormField
                   control={form.control}
-                  name="TELPHONE"
+                  name="ROLE_CODE"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Nhóm người dùng <span className="text-red">*</span>
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-offset-0">
+                            <SelectValue placeholder="Nhóm người dùng" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="USER_NAME"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Tên tài khoản <span className="text-red">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="Nhập tài khoản" {...field} />
+                      </FormControl>
+                      <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+              </span>
+              <span className="grid grid-cols-2 gap-x-4">
+                <FormField
+                  control={form.control}
+                  name="FULLNAME"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Họ và tên</FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="Nhập họ và tên" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="BIRTHDAY"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ngày sinh</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </span>
+              <span className="grid grid-cols-2 gap-x-4">
+                <FormField
+                  control={form.control}
+                  name="EMAIL"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="Nhập email" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="TELEPHONE"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Số điện thoại</FormLabel>
                       <FormControl>
-                        <Input
-                          className="focus-visible:ring-offset-0"
-                          type="number"
-                          placeholder="Vd: 0919123456"
-                          {...field}
-                        />
+                        <Input type="number" placeholder="Nhập số điện thoại" {...field} />
                       </FormControl>
-                      <FormMessage style={{ fontSize: "10px" }} />
                     </FormItem>
                   )}
                 />
-              </div>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="EMAIL"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email:</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="focus-visible:ring-offset-0"
-                      type="text"
-                      placeholder="Vd: abc@gmail.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage style={{ fontSize: "10px" }} />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="ADDRESS"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Địa chỉ:</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="focus-visible:ring-offset-0"
-                      type="text"
-                      placeholder="Vd: 123 Đường ABC, Quận XYZ, TP HCM"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage style={{ fontSize: "10px" }} />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="submit" variant="blue">
-                Tạo
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              </span>
+              <FormField
+                control={form.control}
+                name="ADDRESS"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Địa chỉ</FormLabel>
+                    <FormControl>
+                      <Input type="text" placeholder="Nhập địa chỉ" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="REMARK"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ghi chú</FormLabel>
+                    <FormControl>
+                      <Input type="text" placeholder="Nhập ghi chú" {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <span className="absolute bottom-6 right-0 flex w-full flex-col">
+                <Separator />
+                <div className="gap-2 px-6 pt-6 text-right">
+                  <Button
+                    onClick={() => {
+                      setOpen(false);
+                      form.reset();
+                    }}
+                    className="mr-2"
+                    variant="outline"
+                    type="button"
+                  >
+                    Hủy
+                  </Button>
+                  <Button type="submit">Tạo</Button>
+                </div>
+              </span>
+            </form>
+          </Form>
+        </SheetContent>
+      </Sheet>
+    </div>
   );
 }

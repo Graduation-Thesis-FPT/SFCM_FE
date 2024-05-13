@@ -18,12 +18,7 @@ module.exports = {
     },
     extend: {
       height: {
-        minusHeader_lg: "calc(100vh - 60px)",
-        minusHeader_md: "calc(100vh - 56px)"
-      },
-      width: {
-        minusMenu_notCollapse: "calc(100vw - 220px)",
-        minusMenu_isCollapse: "calc(100vw - 70px)"
+        minusHeader: "calc(100vh - 96px - 12px)"
       },
       fontSize: {
         4: "4px",

@@ -1,20 +1,15 @@
-import ErrorPage from "@/layout/ErrorPage";
-import MainLayout from "@/layout/MainLayout";
-import Detail from "@/pages/detail/Detail";
-import Login from "@/pages/login/Login";
 import React from "react";
 import { useSelector } from "react-redux";
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import User from "@/pages/userManager/user";
-import Role from "@/pages/userManager/role";
-import Permission from "@/pages/userManager/permission";
-
-const components = { Detail, ErrorPage, User, Role, Permission };
+import { Route, Routes } from "react-router-dom";
+import { ErrorPage } from "@/layout/ErrorPage";
+import { Login } from "@/pages/login/Login";
+import { FirstLogin } from "@/pages/login/FirstLogin";
+import { MainLayout } from "@/layout/MainLayout";
+import { PrivateRoute } from "./PrivateRoute";
+import * as Comp from "@/pages/index";
 
 export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
-
   return (
     <>
       <Routes>
@@ -24,7 +19,10 @@ export default function Router() {
               return (
                 <Route key={item.url} path={item.url}>
                   {item?.child?.map(child => {
-                    const Component = components[child.component];
+                    const Component = Comp[child.component];
+                    if (!Component) {
+                      return <Route key={child.url} path={child.url} element={<ErrorPage />} />;
+                    }
                     return <Route key={child.url} path={child.url} element={<Component />} />;
                   })}
                 </Route>
@@ -34,6 +32,7 @@ export default function Router() {
           </Route>
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path="/change-default-password" element={<FirstLogin />} />
       </Routes>
     </>
   );
