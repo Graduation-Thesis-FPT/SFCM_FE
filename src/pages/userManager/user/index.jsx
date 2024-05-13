@@ -26,7 +26,7 @@ export function User() {
     },
     { field: "FULLNAME", headerName: "Họ và tên", flex: 1 },
     { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1 },
-    { field: "ROLE_CODE", headerName: "Chức vụ", flex: 1 },
+    { field: "role.ROLE_NAME", headerName: "Chức vụ", flex: 1 },
     {
       field: "IS_ACTIVE",
       minWidth: 120,
@@ -60,7 +60,6 @@ export function User() {
       headerName: "Xem",
       flex: 0.5,
       cellStyle: { alignContent: "space-evenly" },
-      // headerClass: "center-header",
       cellRenderer: params => {
         return (
           <Rss

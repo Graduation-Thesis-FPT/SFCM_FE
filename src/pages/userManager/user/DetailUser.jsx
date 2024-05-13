@@ -18,6 +18,7 @@ import {
 import { findUserById, updateUser } from "@/apis/user.api";
 import moment from "moment";
 import { useCustomToast } from "@/components/custom-toast";
+import { getAllRole } from "@/apis/role.api";
 
 const formSchema = z.object({
   ROLE_CODE: z.string({
@@ -41,6 +42,7 @@ const formSchema = z.object({
 
 export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
   const toast = useCustomToast();
+  const [role, setRole] = useState([]);
   const [detailUser, setDetailUser] = useState({});
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -73,17 +75,17 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
     delete temp.PASSWORD;
     delete temp.CREATE_BY;
     delete temp.UPDATE_BY;
+    delete temp.role;
     if (temp.USER_NAME === detailUser.USER_NAME) {
       delete temp.USER_NAME;
     }
     updateUser(detail.ROWGUID, temp)
       .then(res => {
-        temp.ROWGUID = detail.ROWGUID;
-        temp.USER_NAME ??= detailUser.USER_NAME;
-        temp.UPDATE_DATE = new Date().toISOString();
-        setDetailUser(temp);
-        handleUpdateUser(temp);
-        toast.success(res.data.message);
+        findUserById(detail.ROWGUID).then(res => {
+          setDetailUser(res.data.metadata);
+          handleUpdateUser(res.data.metadata);
+          toast.success(res.data.message);
+        });
       })
       .catch(err => {
         toast.error(err?.response?.data?.message || err.message);
@@ -113,6 +115,16 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
       });
   }, [detail]);
 
+  useEffect(() => {
+    getAllRole()
+      .then(res => {
+        setRole(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  }, []);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-1/2 m-0 w-1/2">
@@ -132,17 +144,18 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Nhóm người dùng <span className="text-red">*</span>
+                      Nhóm người dùng <span className="text-red">*{field.value}</span>
                     </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="focus:ring-offset-0">
+                        <SelectTrigger>
                           <SelectValue placeholder="Nhóm người dùng" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="manage">Manage</SelectItem>
+                        {role?.map(item => (
+                          <SelectItem value={item.ROLE_CODE}>{item.ROLE_NAME}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormItem>
