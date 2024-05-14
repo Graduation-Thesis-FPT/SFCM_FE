@@ -56,8 +56,8 @@ export function FirstLogin() {
   }, []);
   return (
     <div className="grid h-screen grid-cols-8">
-      <div className="col-span-3 px-[48px]">
-        <img className="m-auto mb-[42px] mt-[72px]" src={logo} />
+      <div className="col-span-3 place-content-center px-[48px]">
+        <img className="m-auto mb-[42px]" src={logo} />
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <h1 className="mb-8 text-center text-3xl font-bold text-blue-800">
@@ -171,7 +171,7 @@ export function FirstLogin() {
         </Form>
       </div>
 
-      <img className="col-span-5 h-screen w-full object-fill" src={background} />
+      <img className="col-span-5 h-screen w-full object-cover" src={background} />
     </div>
   );
 }

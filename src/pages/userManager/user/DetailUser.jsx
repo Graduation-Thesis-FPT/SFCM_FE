@@ -18,7 +18,6 @@ import {
 import { findUserById, updateUser } from "@/apis/user.api";
 import moment from "moment";
 import { useCustomToast } from "@/components/custom-toast";
-import { getAllRole } from "@/apis/role.api";
 
 const formSchema = z.object({
   ROLE_CODE: z.string({
@@ -40,9 +39,8 @@ const formSchema = z.object({
   IS_ACTIVE: z.boolean()
 });
 
-export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
+export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles }) {
   const toast = useCustomToast();
-  const [role, setRole] = useState([]);
   const [detailUser, setDetailUser] = useState({});
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -75,7 +73,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
     delete temp.PASSWORD;
     delete temp.CREATE_BY;
     delete temp.UPDATE_BY;
-    delete temp.role;
+    delete temp.ROLE_NAME;
     if (temp.USER_NAME === detailUser.USER_NAME) {
       delete temp.USER_NAME;
     }
@@ -115,28 +113,20 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
       });
   }, [detail]);
 
-  useEffect(() => {
-    getAllRole()
-      .then(res => {
-        setRole(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
-      });
-  }, []);
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-1/2 m-0 w-1/2">
-        <SheetHeader className="align-middle">
-          <SheetTitle className="pb-4 text-3xl font-bold text-gray-900">
-            Chi tiết người dùng
-          </SheetTitle>
-          <Separator />
-          <div className="pb-4 pt-6 text-lg font-medium text-gray-900">Thông tin người dùng</div>
-        </SheetHeader>
+      <SheetContent className="sm:max-w-1/2 m-0 h-screen w-1/2 overflow-auto">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <SheetHeader className="align-middle">
+              <SheetTitle className="pb-4 text-3xl font-bold text-gray-900">
+                Chi tiết người dùng
+              </SheetTitle>
+              <Separator />
+              <div className="pb-4 pt-6 text-lg font-medium text-gray-900">
+                Thông tin người dùng
+              </div>
+            </SheetHeader>
             <span className="grid grid-cols-2 gap-x-4">
               <FormField
                 control={form.control}
@@ -144,7 +134,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Nhóm người dùng <span className="text-red">*{field.value}</span>
+                      Nhóm người dùng <span className="text-red">*</span>
                     </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
@@ -153,8 +143,10 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {role?.map(item => (
-                          <SelectItem value={item.ROLE_CODE}>{item.ROLE_NAME}</SelectItem>
+                        {roles?.map(role => (
+                          <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
+                            {role.ROLE_NAME}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -271,22 +263,20 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
                 </FormItem>
               )}
             />
-            <span className="absolute bottom-6 right-0 flex w-full flex-col">
-              <Separator />
-              <div className="gap-2 px-6 pt-6 text-right">
-                <Button
-                  onClick={() => {
-                    onOpenChange(false);
-                  }}
-                  className="mr-2"
-                  variant="outline"
-                  type="button"
-                >
-                  Hủy
-                </Button>
-                <Button type="submit">Cập nhật</Button>
-              </div>
-            </span>
+            <Separator />
+            <div className="text-right">
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                }}
+                className="mr-2"
+                variant="outline"
+                type="button"
+              >
+                Hủy
+              </Button>
+              <Button type="submit">Cập nhật</Button>
+            </div>
           </form>
         </Form>
       </SheetContent>

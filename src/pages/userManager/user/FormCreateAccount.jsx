@@ -44,13 +44,13 @@ const formSchema = z.object({
   REMARK: z.string().optional()
 });
 
-export function FormCreateAccount({ handleCreateUser }) {
+export function FormCreateAccount({ roles, handleCreateUser }) {
   const toast = useCustomToast();
   const [open, setOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ROLE_CODE: "admin",
+      ROLE_CODE: "manage",
       FULLNAME: "",
       USER_NAME: "",
       BIRTHDAY: "",
@@ -103,125 +103,133 @@ export function FormCreateAccount({ handleCreateUser }) {
               Tạo mới người dùng
             </SheetTitle>
             <Separator />
-            <div className="pb-4 pt-6 text-lg font-medium text-gray-900">Thông tin người dùng</div>
           </SheetHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <span className="grid grid-cols-2 gap-x-4">
-                <FormField
-                  control={form.control}
-                  name="ROLE_CODE"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Nhóm người dùng <span className="text-red">*</span>
-                      </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col ">
+              <span className="">
+                <div className="pb-4 pt-6 text-lg font-medium text-gray-900">
+                  Thông tin người dùng
+                </div>
+                <span className="grid grid-cols-2 gap-x-4">
+                  <FormField
+                    control={form.control}
+                    name="ROLE_CODE"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Nhóm người dùng <span className="text-red">*</span>
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="focus:ring-offset-0">
+                              <SelectValue placeholder="Nhóm người dùng" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {roles?.map(role => (
+                              <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
+                                {role.ROLE_NAME}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="USER_NAME"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Tên tài khoản <span className="text-red">*</span>
+                        </FormLabel>
                         <FormControl>
-                          <SelectTrigger className="focus:ring-offset-0">
-                            <SelectValue placeholder="Nhóm người dùng" />
-                          </SelectTrigger>
+                          <Input type="text" placeholder="Nhập tài khoản" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </span>
+                <span className="grid grid-cols-2 gap-x-4">
+                  <FormField
+                    control={form.control}
+                    name="FULLNAME"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Họ và tên</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Nhập họ và tên" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="BIRTHDAY"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ngày sinh</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </span>
+                <span className="grid grid-cols-2 gap-x-4">
+                  <FormField
+                    control={form.control}
+                    name="EMAIL"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Nhập email" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="TELEPHONE"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Số điện thoại</FormLabel>
+                        <FormControl>
+                          <Input type="number" placeholder="Nhập số điện thoại" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </span>
+                <FormField
+                  control={form.control}
+                  name="ADDRESS"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Địa chỉ</FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="Nhập địa chỉ" {...field} />
+                      </FormControl>
                     </FormItem>
                   )}
                 />
                 <FormField
                   control={form.control}
-                  name="USER_NAME"
+                  name="REMARK"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        Tên tài khoản <span className="text-red">*</span>
-                      </FormLabel>
+                      <FormLabel>Ghi chú</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder="Nhập tài khoản" {...field} />
+                        <Input type="text" placeholder="Nhập ghi chú" {...field} />
                       </FormControl>
-                      <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
               </span>
-              <span className="grid grid-cols-2 gap-x-4">
-                <FormField
-                  control={form.control}
-                  name="FULLNAME"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Họ và tên</FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="Nhập họ và tên" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="BIRTHDAY"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ngày sinh</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </span>
-              <span className="grid grid-cols-2 gap-x-4">
-                <FormField
-                  control={form.control}
-                  name="EMAIL"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="Nhập email" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="TELEPHONE"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Số điện thoại</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Nhập số điện thoại" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </span>
-              <FormField
-                control={form.control}
-                name="ADDRESS"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Địa chỉ</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập địa chỉ" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="REMARK"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ghi chú</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập ghi chú" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <span className="absolute bottom-6 right-0 flex w-full flex-col">
+              <span className="items-end justify-end align-bottom">
                 <Separator />
                 <div className="gap-2 px-6 pt-6 text-right">
                   <Button

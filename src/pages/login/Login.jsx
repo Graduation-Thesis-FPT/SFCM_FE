@@ -55,9 +55,9 @@ export function Login() {
   }
 
   return (
-    <div className="grid h-screen grid-cols-8 ">
-      <div className="col-span-3 px-[48px]">
-        <img className="m-auto mb-[42px] mt-[72px]" src={logo} />
+    <div className=" grid h-screen grid-cols-8 align-middle">
+      <div className="col-span-3 place-content-center px-[48px]">
+        <img className="m-auto mb-[42px]" src={logo} />
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <h1 className="mb-8 text-5xl font-bold text-blue-800">Đăng nhập</h1>

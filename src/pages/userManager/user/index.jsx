@@ -10,10 +10,12 @@ import { FormCreateAccount } from "./FormCreateAccount";
 import { DetailUser } from "./DetailUser";
 import { useCustomToast } from "@/components/custom-toast";
 import { Section } from "@/components/section";
+import { getAllRole } from "@/apis/role.api";
 
 export function User() {
   const ref = useRef(null);
   const toast = useCustomToast();
+  const [roles, setRoles] = useState([]);
   const [rowData, setRowData] = useState([]);
   const [detailData, setDetailData] = useState({});
   const [openDetail, setOpenDetail] = useState(false);
@@ -26,7 +28,7 @@ export function User() {
     },
     { field: "FULLNAME", headerName: "Họ và tên", flex: 1 },
     { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1 },
-    { field: "role.ROLE_NAME", headerName: "Chức vụ", flex: 1 },
+    { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1 },
     {
       field: "IS_ACTIVE",
       minWidth: 120,
@@ -104,11 +106,22 @@ export function User() {
         toast.error(err?.response?.data?.message || err.message);
       });
   }, []);
+
+  useEffect(() => {
+    getAllRole()
+      .then(res => {
+        setRoles(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  }, []);
   return (
     <>
       <Section className="flex items-center justify-between">
         <div className="text-2xl font-bold text-gray-900">Danh sách người dùng</div>
         <FormCreateAccount
+          roles={roles}
           handleCreateUser={newAccount => {
             handleCreateUser(newAccount);
           }}
@@ -135,7 +148,7 @@ export function User() {
         </div>
         <AgGrid
           ref={ref}
-          className="h-[60vh]"
+          className="h-[50vh]"
           rowData={rowData}
           colDefs={colDefs}
           setRowData={data => {
@@ -144,6 +157,7 @@ export function User() {
         />
       </Section>
       <DetailUser
+        roles={roles}
         detail={detailData}
         open={openDetail}
         onOpenChange={() => {
