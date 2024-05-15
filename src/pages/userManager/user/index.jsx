@@ -24,10 +24,11 @@ export function User() {
     {
       field: "USER_NAME",
       headerName: "Tài khoản",
-      flex: 1
+      flex: 1,
+      filter: true
     },
-    { field: "FULLNAME", headerName: "Họ và tên", flex: 1 },
-    { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1 },
+    { field: "FULLNAME", headerName: "Họ và tên", flex: 1, filter: true },
+    { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1, filter: true },
     { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1 },
     {
       field: "IS_ACTIVE",
@@ -131,13 +132,14 @@ export function User() {
       <Section className="pt-3">
         <div className="my-2 text-xs  font-medium ">Tìm kiếm</div>
         <div className="relative mb-6 flex">
-          <Search className="absolute left-2.5 top-2.5 size-5 text-gray-400" />
+          <Search className="absolute left-2.5 top-3.5 size-5 text-gray-400" />
           <Input
             type="search"
             placeholder="Nhập từ khóa..."
-            className="mr-4 w-[416px] pl-8 text-black"
+            className="mr-4 h-12 w-[416px] pl-8 text-black"
           />
           <Button
+            className="h-12"
             onClick={() => {
               handleSearch();
             }}

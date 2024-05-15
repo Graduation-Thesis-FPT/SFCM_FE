@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormControl,
@@ -23,14 +22,12 @@ import { useCustomToast } from "@/components/custom-toast";
 import { login } from "@/apis/access.api";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slice/userSlice";
-import { storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
 
 const formSchema = z.object({
   USER_NAME: z.string().min(5, "Vui lòng nhập tài khoản đăng nhập!"),
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!")
 });
-
-const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
 
 export function Login() {
   const navigate = useNavigate();
@@ -53,17 +50,22 @@ export function Login() {
           toast.success("Đăng nhập thành công! Vui lòng đổi mật khẩu mặc định!");
           return;
         }
-        navigate("/");
         dispatch(setUser(res.data.metadata));
         storeAccessToken(res.data.metadata.accessToken);
         storeRefreshToken(res.data.metadata.refreshToken);
         toast.success(res.data.message);
+        navigate("/");
       })
       .catch(err => {
         toast.error(err.response.data.message || err.message);
       });
     return;
   }
+
+  useEffect(() => {
+    let temp = getRefreshToken();
+    if (temp) navigate("/");
+  }, []);
 
   return (
     <div className=" grid h-screen grid-cols-8 align-middle">

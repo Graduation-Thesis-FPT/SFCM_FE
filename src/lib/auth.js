@@ -18,4 +18,15 @@ const getRefreshToken = () => {
   return JSON.parse(temp);
 };
 
-export { storeAccessToken, getAccessToken, storeRefreshToken, getRefreshToken };
+const removeRefreshAndAccessToken = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+};
+
+export {
+  storeAccessToken,
+  getAccessToken,
+  storeRefreshToken,
+  getRefreshToken,
+  removeRefreshAndAccessToken
+};

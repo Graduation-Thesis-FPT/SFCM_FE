@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormControl,
@@ -20,15 +19,18 @@ import logo from "@/assets/image/Logo_128x128.svg";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useCustomToast } from "@/components/custom-toast";
 import { changeDefaultPassword } from "@/apis/access.api";
+import { getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slice/userSlice";
 const formSchema = z.object({
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
   CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
 });
 
-const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
 export function FirstLogin() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const toast = useCustomToast();
@@ -52,21 +54,28 @@ export function FirstLogin() {
 
     changeDefaultPassword(ROWGUID, userInfo)
       .then(res => {
-        console.log("🚀 ~ onSubmit ~ res:", res);
-        return;
-        localStorage.setItem("token", "token");
+        storeAccessToken(res.data.metadata.accessToken);
+        storeRefreshToken(res.data.metadata.refreshToken);
+        dispatch(setUser(res.data.metadata));
         navigate("/");
-        toast.success("Đăng nhập thành công!!");
+        toast.success(res.data.message);
       })
       .catch(err => {
         toast.error(err.response.data.message || err.message);
       });
   }
+
   useEffect(() => {
     if (!ROWGUID) {
       navigate("/login");
     }
   }, []);
+
+  useEffect(() => {
+    let temp = getRefreshToken();
+    if (temp) navigate("/");
+  }, []);
+
   return (
     <div className="grid h-screen grid-cols-8">
       <div className="col-span-3 place-content-center px-[48px]">

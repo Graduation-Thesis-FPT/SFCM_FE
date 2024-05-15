@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -20,8 +20,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { PlusCircle } from "lucide-react";
-import { createAccount } from "@/apis/user.api";
+import { PlusCircle, X } from "lucide-react";
+import { createAccount, findUserById } from "@/apis/user.api";
 import { Separator } from "@/components/ui/separator";
 import { useCustomToast } from "@/components/custom-toast";
 
@@ -69,11 +69,17 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
     const dataReq = removeEmptyValues(values);
     createAccount(dataReq)
       .then(res => {
-        let newAccount = res.data.metadata;
-        handleCreateUser(newAccount);
-        toast.success(res.data.message);
-        form.reset();
-        setOpen(false);
+        findUserById(res.data.metadata.ROWGUID)
+          .then(res => {
+            const newAccount = res.data.metadata;
+            handleCreateUser(newAccount);
+            toast.success(res.data.message);
+            form.reset();
+            setOpen(false);
+          })
+          .catch(err => {
+            toast.error(err?.response?.data?.message || err.message);
+          });
       })
       .catch(err => {
         toast.error(err?.response?.data?.message || err.message);
@@ -87,6 +93,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
           setOpen(true);
         }}
         variant="blue"
+        className="h-12"
       >
         <PlusCircle className="mr-2 size-5" />
         Tạo người dùng mới
@@ -97,153 +104,164 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
           setOpen(false);
         }}
       >
-        <SheetContent className="sm:max-w-1/2 m-0 w-1/2">
-          <SheetHeader className="align-middle">
-            <SheetTitle className="pb-4 text-3xl font-bold text-gray-900">
-              Tạo mới người dùng
-            </SheetTitle>
-            <Separator />
-          </SheetHeader>
+        <SheetContent hiddenIconClose={true} className="sm:max-w-1/2 w-1/2 p-0">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col ">
-              <span className="">
-                <div className="pb-4 pt-6 text-lg font-medium text-gray-900">
-                  Thông tin người dùng
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex h-screen flex-col justify-between overflow-x-auto"
+            >
+              <span>
+                <div className="flex items-center justify-between p-6">
+                  <div className="text-xl font-bold text-gray-900">Tạo người dùng mới</div>
+                  <X
+                    className="size-4 cursor-pointer hover:opacity-80"
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  />
                 </div>
-                <span className="grid grid-cols-2 gap-x-4">
-                  <FormField
-                    control={form.control}
-                    name="ROLE_CODE"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Nhóm người dùng <span className="text-red">*</span>
-                        </FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Separator className="bg-gray-400" />
+
+                <div className="space-y-4 p-6">
+                  <div className="text-lg font-medium text-gray-900">Thông tin người dùng</div>
+                  <span className="grid grid-cols-2 gap-x-4">
+                    <FormField
+                      control={form.control}
+                      name="USER_NAME"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Tên tài khoản <span className="text-red">*</span>
+                          </FormLabel>
                           <FormControl>
-                            <SelectTrigger className="focus:ring-offset-0">
-                              <SelectValue placeholder="Nhóm người dùng" />
-                            </SelectTrigger>
+                            <Input type="text" placeholder="Nhập tài khoản" {...field} />
                           </FormControl>
-                          <SelectContent>
-                            {roles?.map(role => (
-                              <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
-                                {role.ROLE_NAME}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ROLE_CODE"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Chức vụ <span className="text-red">*</span>
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="focus:ring-offset-0">
+                                <SelectValue placeholder=" Chức vụ" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {roles?.map(role => (
+                                <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
+                                  {role.ROLE_NAME}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </span>
+                  <span className="grid grid-cols-2 gap-x-4">
+                    <FormField
+                      control={form.control}
+                      name="FULLNAME"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Họ và tên</FormLabel>
+                          <FormControl>
+                            <Input type="text" placeholder="Nhập họ và tên" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="BIRTHDAY"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ngày sinh</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </span>
+                  <span className="grid grid-cols-2 gap-x-4">
+                    <FormField
+                      control={form.control}
+                      name="EMAIL"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="text" placeholder="Nhập email" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="TELEPHONE"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Số điện thoại</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="Nhập số điện thoại" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </span>
+                  <FormField
+                    control={form.control}
+                    name="ADDRESS"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Địa chỉ</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Nhập địa chỉ" {...field} />
+                        </FormControl>
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="USER_NAME"
+                    name="REMARK"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Tên tài khoản <span className="text-red">*</span>
-                        </FormLabel>
+                        <FormLabel>Ghi chú</FormLabel>
                         <FormControl>
-                          <Input type="text" placeholder="Nhập tài khoản" {...field} />
-                        </FormControl>
-                        <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                </span>
-                <span className="grid grid-cols-2 gap-x-4">
-                  <FormField
-                    control={form.control}
-                    name="FULLNAME"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Họ và tên</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Nhập họ và tên" {...field} />
+                          <Input type="text" placeholder="Nhập ghi chú" {...field} />
                         </FormControl>
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="BIRTHDAY"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ngày sinh</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </span>
-                <span className="grid grid-cols-2 gap-x-4">
-                  <FormField
-                    control={form.control}
-                    name="EMAIL"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="Nhập email" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="TELEPHONE"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Số điện thoại</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Nhập số điện thoại" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </span>
-                <FormField
-                  control={form.control}
-                  name="ADDRESS"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Địa chỉ</FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="Nhập địa chỉ" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="REMARK"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ghi chú</FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="Nhập ghi chú" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                </div>
               </span>
-              <span className="items-end justify-end align-bottom">
-                <Separator />
-                <div className="gap-2 px-6 pt-6 text-right">
+
+              <span>
+                <Separator className="bg-gray-200" />
+                <div className="p-6 text-right">
                   <Button
                     onClick={() => {
                       setOpen(false);
                       form.reset();
                     }}
-                    className="mr-2"
+                    className="mr-3 h-[48px] w-[126px] text-blue-600 hover:text-blue-600"
                     variant="outline"
                     type="button"
                   >
                     Hủy
                   </Button>
-                  <Button type="submit">Tạo</Button>
+                  <Button type="submit" className="h-12 w-[126px]" variant="blue">
+                    Tạo mới
+                  </Button>
                 </div>
               </span>
             </form>
