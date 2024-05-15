@@ -9,7 +9,6 @@ import {
   AccordionTrigger
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 import logo from "@/assets/image/logo-menu.svg";

@@ -1,3 +1,7 @@
+import { refreshToken } from "@/apis/access.api";
+import { getAccessToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { setUser } from "@/redux/slice/userSlice";
+import { store } from "@/redux/store";
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3050";
 
@@ -15,10 +19,36 @@ export const axiosPrivate = axios.create({
 
 axiosPrivate.interceptors.request.use(
   async config => {
-    config.headers["token"] = `token`;
+    const token = getAccessToken();
+    config.headers["token"] = token;
     return config;
   },
   error => {
+    return Promise.reject(error);
+  }
+);
+
+axiosPrivate.interceptors.response.use(
+  response => response,
+  async error => {
+    const prevRequest = error?.config;
+    if (
+      (error?.response?.status === 500 ||
+        error?.response?.status === 401 ||
+        error?.response?.status === 403) &&
+      !prevRequest?.sent
+    ) {
+      prevRequest.sent = true;
+
+      const result = await refreshToken();
+
+      storeAccessToken(result.data.metadata.accessToken);
+      storeRefreshToken(result.data.metadata.refreshToken);
+      store.dispatch(setUser(result.data.metadata));
+      prevRequest.headers["token"] = result.data.metadata.accessToken;
+
+      return axiosPrivate(prevRequest);
+    }
     return Promise.reject(error);
   }
 );

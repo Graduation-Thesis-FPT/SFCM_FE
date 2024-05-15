@@ -20,6 +20,10 @@ import logo from "@/assets/image/Logo_128x128.svg";
 import { Eye, EyeOff, Info } from "lucide-react";
 import ForgotPassword from "./ForgotPassword";
 import { useCustomToast } from "@/components/custom-toast";
+import { login } from "@/apis/access.api";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slice/userSlice";
+import { storeAccessToken, storeRefreshToken } from "@/lib/auth";
 
 const formSchema = z.object({
   USER_NAME: z.string().min(5, "Vui lòng nhập tài khoản đăng nhập!"),
@@ -32,6 +36,7 @@ export function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const toast = useCustomToast();
+  const dispatch = useDispatch();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -39,19 +44,25 @@ export function Login() {
   });
 
   function onSubmit(values) {
-    if (values.PASSWORD !== fakeLoginData.PASSWORD) {
-      form.setError("PASSWORD", {
-        message: "Mật khẩu không chính xác!"
+    login(values)
+      .then(res => {
+        if (res.data.metadata.changeDefaultPassword) {
+          navigate("/change-default-password", {
+            state: { ROWGUID: res.data.metadata.ROWGUID, USER_NAME: values.USER_NAME }
+          });
+          toast.success("Đăng nhập thành công! Vui lòng đổi mật khẩu mặc định!");
+          return;
+        }
+        navigate("/");
+        dispatch(setUser(res.data.metadata));
+        storeAccessToken(res.data.metadata.accessToken);
+        storeRefreshToken(res.data.metadata.refreshToken);
+        toast.success(res.data.message);
+      })
+      .catch(err => {
+        toast.error(err.response.data.message || err.message);
       });
-      return;
-    }
-    if (values.PASSWORD === fakeLoginData.PASSWORD) {
-      navigate("/change-default-password", { state: { USER_NAME: values.USER_NAME } });
-      return;
-    }
-    localStorage.setItem("token", "token");
-    navigate("/");
-    toast.success("Đăng nhập thành công!!");
+    return;
   }
 
   return (

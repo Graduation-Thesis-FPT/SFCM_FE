@@ -1,4 +1,4 @@
-import axios, { axiosPrivate } from "@/config/axios";
+import { axiosPrivate } from "@/config/axios";
 
 const getAllUser = async () => await axiosPrivate.get(`user`);
 const findUserById = async id => await axiosPrivate.get(`user/${id}`);

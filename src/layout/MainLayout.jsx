@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 
 export function MainLayout() {
   const menu = useSelector(state => state.menuSlice.menu);
+  const user = useSelector(state => state.userSlice.user);
   let { pathname } = useLocation();
   const [isCollapse, setIsCollapse] = useState(false);
 
@@ -23,6 +24,13 @@ export function MainLayout() {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
+
+  function getFirstLetterOfLastWord(text) {
+    if (!text) return "";
+    const words = text.split(" ");
+    const lastWord = words.pop();
+    return lastWord ? lastWord[0].toUpperCase() : "";
+  }
 
   return (
     <>
@@ -57,15 +65,15 @@ export function MainLayout() {
                 <MessageCircle />
               </div>
               <div className="mx-3 text-center">
-                <div className="text-sm font-bold text-gray-900">Nguyễn Văn A</div>
-                <div className="text-sm font-normal text-gray-600">Admin</div>
+                <div className="text-sm font-bold text-gray-900">{user?.userInfo?.FULLNAME}</div>
+                <div className="text-sm font-normal text-gray-600">{user?.userInfo?.ROLE_NAME}</div>
               </div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <span className="flex items-center">
                     <Button variant="blue" size="icon" className="rounded-full">
-                      P
+                      {getFirstLetterOfLastWord(user?.userInfo?.FULLNAME)}
                     </Button>
                     <ChevronDown className="ml-3 size-6" />
                   </span>

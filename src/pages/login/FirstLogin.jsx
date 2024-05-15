@@ -19,6 +19,7 @@ import background from "@/assets/image/background-login.png";
 import logo from "@/assets/image/Logo_128x128.svg";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useCustomToast } from "@/components/custom-toast";
+import { changeDefaultPassword } from "@/apis/access.api";
 const formSchema = z.object({
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
   CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
@@ -32,7 +33,9 @@ export function FirstLogin() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const toast = useCustomToast();
 
+  const ROWGUID = location?.state?.ROWGUID;
   const USER_NAME = location?.state?.USER_NAME;
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { PASSWORD: "", CONFIRM_PASSWORD: "" }
@@ -42,15 +45,25 @@ export function FirstLogin() {
     if (values.PASSWORD !== values.CONFIRM_PASSWORD) {
       form.setError("CONFIRM_PASSWORD", { message: "Mật khẩu nhập lại chưa trùng khớp!" });
       toast.error("Mật khẩu nhập lại chưa trùng khớp!");
-
       return;
     }
-    localStorage.setItem("token", "token");
-    navigate("/");
-    toast.success("Đăng nhập thành công!!");
+
+    const userInfo = { USER_NAME: USER_NAME, PASSWORD: values.PASSWORD };
+
+    changeDefaultPassword(ROWGUID, userInfo)
+      .then(res => {
+        console.log("🚀 ~ onSubmit ~ res:", res);
+        return;
+        localStorage.setItem("token", "token");
+        navigate("/");
+        toast.success("Đăng nhập thành công!!");
+      })
+      .catch(err => {
+        toast.error(err.response.data.message || err.message);
+      });
   }
   useEffect(() => {
-    if (!USER_NAME) {
+    if (!ROWGUID) {
       navigate("/login");
     }
   }, []);
