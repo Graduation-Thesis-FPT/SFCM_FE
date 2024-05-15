@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { findUserById, updateUser } from "@/apis/user.api";
+import { findUserById, resetPasswordById, updateUser } from "@/apis/user.api";
 import moment from "moment";
 import { useCustomToast } from "@/components/custom-toast";
 import { Info, X } from "lucide-react";
@@ -24,9 +24,9 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from "@/components/ui/dialog";
 
 const formSchema = z.object({
@@ -52,6 +52,7 @@ const formSchema = z.object({
 export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles }) {
   const toast = useCustomToast();
   const [detailUser, setDetailUser] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,16 +72,32 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
     setDetailUser(values);
     delete values.USER_NAME;
     updateUser(detail.ROWGUID, values)
-      .then(res => {
+      .then(updateRes => {
         findUserById(detail.ROWGUID).then(res => {
           handleUpdateUser(res.data.metadata);
-          toast.success(res.data.message);
+          toast.success(updateRes.data.message);
         });
       })
       .catch(err => {
         toast.error(err?.response?.data?.message || err.message);
       });
   }
+
+  const handleResetPassword = () => {
+    const DEFAULT_PASSWORD = import.meta.env.VITE_DEFAULT_PASSWORD;
+    if (!DEFAULT_PASSWORD || !detail.ROWGUID) {
+      toast.error("Lỗi hệ thống, vui lòng thử lại sau!");
+      return;
+    }
+    resetPasswordById(detail.ROWGUID, { DEFAULT_PASSWORD })
+      .then(res => {
+        toast.success(res.data.message);
+        setOpenDialog(false);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  };
 
   useEffect(() => {
     if (!detail.ROWGUID) return;
@@ -122,7 +139,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
                   <X
                     className="size-4 cursor-pointer hover:opacity-80"
                     onClick={() => {
-                      setOpen(false);
+                      onOpenChange();
                     }}
                   />
                 </div>
@@ -258,7 +275,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
                       <span className="flex cursor-pointer items-center">
                         <div
                           onClick={() => {
-                            alert("123");
+                            setOpenDialog(true);
                           }}
                           className="mr-2 text-sm font-medium text-blue-600 hover:text-blue-600/80 "
                         >
@@ -310,16 +327,43 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
           </Form>
         </SheetContent>
       </Sheet>
-      <Dialog>
-        <DialogTrigger>Open</DialogTrigger>
-        <DialogContent>
+      <Dialog
+        open={openDialog}
+        onOpenChange={() => {
+          setOpenDialog(false);
+        }}
+      >
+        <DialogContent
+          onOpenAutoFocus={e => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>Khôi phục lại mật khẩu</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your account and remove
-              your data from our servers.
+              Mật khẩu mặc định sẽ được cấp lại cho người dùng. Bạn có chắc chắn muốn thực hiện
             </DialogDescription>
           </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setOpenDialog(false);
+              }}
+              type="button"
+              variant="outline"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={() => {
+                handleResetPassword();
+              }}
+              type="button"
+              variant="blue"
+            >
+              Khôi phục
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
