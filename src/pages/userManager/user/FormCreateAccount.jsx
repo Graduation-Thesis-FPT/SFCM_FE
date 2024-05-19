@@ -87,7 +87,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
   }
 
   return (
-    <div>
+    <>
       <Button
         onClick={() => {
           setOpen(true);
@@ -268,6 +268,6 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
           </Form>
         </SheetContent>
       </Sheet>
-    </div>
+    </>
   );
 }

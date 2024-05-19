@@ -1,31 +1,85 @@
+import { getAllRole } from "@/apis/role.api";
+import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { useCustomToast } from "@/components/custom-toast";
+import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Search } from "lucide-react";
-import React from "react";
+import moment from "moment";
+import React, { useRef, useState } from "react";
 
 export function Permission() {
+  const gridRef = useRef(null);
+  const toast = useCustomToast();
+  const [rowData, setRowData] = useState([]);
+  const [detailData, setDetailData] = useState({});
+  const [openDetail, setOpenDetail] = useState(false);
+
+  const colDefs = [
+    {
+      field: "ROWGUID",
+      headerName: "Mã",
+      flex: 1,
+      filter: true
+    },
+    { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1, filter: true },
+    {
+      field: "UPDATE_DATE",
+      headerName: "Ngày chỉnh sửa",
+      flex: 1,
+      cellRenderer: params => {
+        return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
+      }
+    },
+    {
+      field: "#",
+      headerName: "",
+      flex: 0.5,
+      cellStyle: { alignContent: "center", textAlign: "center" },
+      cellRenderer: params => {
+        return (
+          <span
+            onClick={() => {
+              setDetailData(params.data);
+              setTimeout(() => {
+                setOpenDetail(true);
+              }, 100);
+            }}
+            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
+          >
+            Phân quyền
+          </span>
+        );
+      }
+    }
+  ];
+
   return (
     <>
       <Section>
-        <div className="text-2xl font-bold text-gray-900">Phân quyền người dùng</div>
-      </Section>
-      <Separator />
-      <Section>
-        <div className="my-2 text-xs  font-medium ">Tìm kiếm</div>
-        <div className="relative mb-6 flex">
-          <Search className="absolute left-2.5 top-2.5 size-5 text-gray-400" />
-          <Input
-            type="search"
-            placeholder="Nhập từ khóa..."
-            className="mr-4 w-[416px] pl-8 text-black"
+        <Section.Header title="Quản lý quyền"></Section.Header>
+        <Section.Content>
+          <SearchInput />
+          <AgGrid
+            ref={gridRef}
+            className="h-[50vh]"
+            rowData={rowData}
+            colDefs={colDefs}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getAllRole()
+                .then(res => {
+                  setRowData(res.data.metadata);
+                })
+                .catch(err => {
+                  toast.error(err?.response?.data?.message || err.message);
+                });
+            }}
           />
-          <Button>
-            Tìm kiếm
-            <Search className="ml-2 size-5" />
-          </Button>
-        </div>
+        </Section.Content>
       </Section>
     </>
   );

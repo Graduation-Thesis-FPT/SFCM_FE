@@ -43,6 +43,10 @@ const AgGrid = forwardRef(
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 30, 50, 100]}
             suppressRowClickSelection={true}
+            overlayLoadingTemplate={
+              '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
+            }
+            overlayNoRowsTemplate={"Không có dữ liệu"}
             defaultColDef={defaultColDef ? style : null}
             onCellValueChanged={e => {
               e.data.status ? null : (e.data.status = "update");

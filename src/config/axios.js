@@ -1,5 +1,5 @@
 import { refreshToken } from "@/apis/access.api";
-import { getAccessToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { getAccessToken, getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
 import { setUser } from "@/redux/slice/userSlice";
 import { store } from "@/redux/store";
 import axios from "axios";
@@ -20,7 +20,9 @@ export const axiosPrivate = axios.create({
 axiosPrivate.interceptors.request.use(
   async config => {
     const token = getAccessToken();
+    const rtoken = getRefreshToken();
     config.headers["token"] = token;
+    config.headers["rtoken"] = rtoken;
     return config;
   },
   error => {

@@ -7,7 +7,7 @@ const changeDefaultPassword = async (userId, userInfo) =>
 const refreshToken = async () => {
   let refreshToken = JSON.parse(localStorage.getItem("refreshToken"));
   if (!refreshToken) throw new Error("No refresh token found!");
-  return await axios.post(`auth/refresh-token`, { refreshToken });
+  return await axiosPrivate.post(`auth/refresh-token`);
 };
 
 export { login, changeDefaultPassword, refreshToken };
