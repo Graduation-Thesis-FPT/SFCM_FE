@@ -6,8 +6,9 @@ import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DetailPermission } from "./DetailPermission";
+import { getAllPermission } from "@/apis/permission";
 
 export function Permission() {
   const gridRef = useRef(null);
@@ -55,6 +56,7 @@ export function Permission() {
     }
   ];
 
+  useEffect(() => {}, []);
   return (
     <>
       <Section>

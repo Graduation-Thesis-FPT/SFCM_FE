@@ -1,5 +1,11 @@
 import { refreshToken } from "@/apis/access.api";
-import { getAccessToken, getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import {
+  getAccessToken,
+  getRefreshToken,
+  removeRefreshAndAccessToken,
+  storeAccessToken,
+  storeRefreshToken
+} from "@/lib/auth";
 import { setUser } from "@/redux/slice/userSlice";
 import { store } from "@/redux/store";
 import axios from "axios";
@@ -34,10 +40,11 @@ axiosPrivate.interceptors.response.use(
   response => response,
   async error => {
     const prevRequest = error?.config;
+
     if (
       (error?.response?.status === 500 ||
-        error?.response?.status === 401 ||
-        error?.response?.status === 403) &&
+        error?.response?.status === 403 ||
+        error?.response?.status === 401) &&
       !prevRequest?.sent
     ) {
       prevRequest.sent = true;

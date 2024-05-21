@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -14,13 +14,24 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion";
+import { getAllPermission } from "@/apis/permission";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function DetailPermission({ open, onOpenChange, detailData }) {
   const toast = useCustomToast();
   const accordionRef = useRef(null);
+  const [permissionData, setPermissionData] = useState([]);
 
   useEffect(() => {
-    console.log(detailData);
+    getAllPermission()
+      .then(res => {
+        console.log("🚀 ~ useEffect ~ res.data.metadata:", res.data.metadata);
+
+        setPermissionData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err.message);
+      });
   }, [detailData]);
 
   return (
@@ -47,28 +58,76 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
               </div>
             </span>
             <span className="flex-1 overflow-y-auto px-6">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1" className="border-none">
-                  <AccordionTrigger className="justify-normal">
-                    <li className="mr-2 text-sm font-bold">Quản lý người dùng</li>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <span className="grid grid-cols-6 border-b bg-blue-50 px-2 py-3 text-sm font-medium text-blue-700">
-                      <div className="col-span-2">Loại quyền</div>
-                      <div className="text-center">Xem</div>
-                      <div className="text-center">Thêm</div>
-                      <div className="text-center">Sửa</div>
-                      <div className="text-center">Xóa</div>
-                    </span>
-                    <span className="grid grid-cols-6  border-b px-2 py-3 text-sm font-medium text-gray-900">
-                      <div className="col-span-2">Loại người dùng</div>
-                      <div className="text-center">1</div>
-                      <div className="text-center">1</div>
-                      <div className="text-center">1</div>
-                      <div className="text-center"> 1</div>
-                    </span>
-                  </AccordionContent>
-                </AccordionItem>
+              <Accordion type="multiple" collapsible className="w-full">
+                {permissionData.map((parent, parentIndex) => {
+                  if (parent.child.length === 0) return null;
+                  return (
+                    <AccordionItem
+                      value={parent.MENU_CODE}
+                      className="border-none"
+                      key={parent.MENU_CODE}
+                    >
+                      <AccordionTrigger className="justify-normal">
+                        <li className="mr-2 text-sm font-bold">{parent.MENU_NAME}</li>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <span className="grid grid-cols-6 border-b bg-blue-50 px-2 py-3 text-sm font-medium text-blue-700">
+                          <div className="col-span-2">Loại quyền</div>
+                          <div className="text-center">Xem</div>
+                          <div className="text-center">Thêm</div>
+                          <div className="text-center">Sửa</div>
+                          <div className="text-center">Xóa</div>
+                        </span>
+                        {parent.child?.map((child, childIndex) => {
+                          return (
+                            <span
+                              key={child.MENU_CODE + childIndex}
+                              className="grid grid-cols-6 border-b px-2 py-3"
+                            >
+                              <div className="col-span-2">{child.MENU_NAME}</div>
+                              <Checkbox
+                                className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
+                                checked={child.IS_VIEW}
+                                onCheckedChange={checked => {
+                                  let temp = [...permissionData];
+                                  temp[parentIndex].child[childIndex].IS_VIEW = checked;
+                                  setPermissionData(temp);
+                                }}
+                              />
+                              <Checkbox
+                                className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
+                                checked={child.IS_ADD_NEW}
+                                onCheckedChange={checked => {
+                                  let temp = [...permissionData];
+                                  temp[parentIndex].child[childIndex].IS_ADD_NEW = checked;
+                                  setPermissionData(temp);
+                                }}
+                              />
+                              <Checkbox
+                                className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
+                                checked={child.IS_MODIFY}
+                                onCheckedChange={checked => {
+                                  let temp = [...permissionData];
+                                  temp[parentIndex].child[childIndex].IS_MODIFY = checked;
+                                  setPermissionData(temp);
+                                }}
+                              />
+                              <Checkbox
+                                className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
+                                checked={child.IS_DELETE}
+                                onCheckedChange={checked => {
+                                  let temp = [...permissionData];
+                                  temp[parentIndex].child[childIndex].IS_DELETE = checked;
+                                  setPermissionData(temp);
+                                }}
+                              />
+                            </span>
+                          );
+                        })}
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
               </Accordion>
             </span>
 
@@ -78,7 +137,13 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
                 <Button className="h-12 w-[126px]" variant="outline">
                   Hủy
                 </Button>
-                <Button onClick={() => {}} className="h-12 w-[126px]" variant="blue">
+                <Button
+                  onClick={() => {
+                    console.log(permissionData);
+                  }}
+                  className="h-12 w-[126px]"
+                  variant="blue"
+                >
                   Lưu thông tin
                 </Button>
               </span>
