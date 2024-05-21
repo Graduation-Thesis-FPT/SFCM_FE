@@ -1,4 +1,4 @@
-import axios, { axiosPrivate } from "@/config/axios";
+import { axiosPrivate } from "@/config/axios";
 
 const getAllUser = async () => await axiosPrivate.get(`user`);
 const findUserById = async id => await axiosPrivate.get(`user/${id}`);
@@ -7,6 +7,8 @@ const deleteUserById = async id => await axiosPrivate.delete(`user/${id}`);
 const activateUser = async id => await axiosPrivate.patch(`user/active/${id}`);
 const deactivateUser = async id => await axiosPrivate.patch(`user/deactive/${id}`);
 const updateUser = async (id, data) => await axiosPrivate.patch(`user/${id}`, data);
+const resetPasswordById = async (id, data) =>
+  await axiosPrivate.patch(`user/reset-password/${id}`, data);
 export {
   getAllUser,
   createAccount,
@@ -14,5 +16,6 @@ export {
   activateUser,
   deactivateUser,
   updateUser,
-  findUserById
+  findUserById,
+  resetPasswordById
 };

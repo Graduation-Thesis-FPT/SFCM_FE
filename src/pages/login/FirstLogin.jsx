@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormControl,
@@ -19,20 +18,26 @@ import background from "@/assets/image/background-login.png";
 import logo from "@/assets/image/Logo_128x128.svg";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useCustomToast } from "@/components/custom-toast";
+import { changeDefaultPassword } from "@/apis/access.api";
+import { getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slice/userSlice";
 const formSchema = z.object({
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
   CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
 });
 
-const fakeLoginData = { USER_NAME: "admin", PASSWORD: "12345" };
 export function FirstLogin() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const toast = useCustomToast();
 
+  const ROWGUID = location?.state?.ROWGUID;
   const USER_NAME = location?.state?.USER_NAME;
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { PASSWORD: "", CONFIRM_PASSWORD: "" }
@@ -42,22 +47,39 @@ export function FirstLogin() {
     if (values.PASSWORD !== values.CONFIRM_PASSWORD) {
       form.setError("CONFIRM_PASSWORD", { message: "Mật khẩu nhập lại chưa trùng khớp!" });
       toast.error("Mật khẩu nhập lại chưa trùng khớp!");
-
       return;
     }
-    localStorage.setItem("token", "token");
-    navigate("/");
-    toast.success("Đăng nhập thành công!!");
+
+    const userInfo = { USER_NAME: USER_NAME, PASSWORD: values.PASSWORD };
+
+    changeDefaultPassword(ROWGUID, userInfo)
+      .then(res => {
+        storeAccessToken(res.data.metadata.accessToken);
+        storeRefreshToken(res.data.metadata.refreshToken);
+        dispatch(setUser(res.data.metadata));
+        navigate("/");
+        toast.success(res.data.message);
+      })
+      .catch(err => {
+        toast.error(err.response.data.message || err.message);
+      });
   }
+
   useEffect(() => {
-    if (!USER_NAME) {
+    if (!ROWGUID) {
       navigate("/login");
     }
   }, []);
+
+  useEffect(() => {
+    let temp = getRefreshToken();
+    if (temp) navigate("/");
+  }, []);
+
   return (
     <div className="grid h-screen grid-cols-8">
-      <div className="col-span-3 px-[48px]">
-        <img className="m-auto mb-[42px] mt-[72px]" src={logo} />
+      <div className="col-span-3 place-content-center px-[48px]">
+        <img className="m-auto mb-[42px]" src={logo} />
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <h1 className="mb-8 text-center text-3xl font-bold text-blue-800">
@@ -171,7 +193,7 @@ export function FirstLogin() {
         </Form>
       </div>
 
-      <img className="col-span-5 h-screen w-full object-fill" src={background} />
+      <img className="col-span-5 h-screen w-full object-cover" src={background} />
     </div>
   );
 }

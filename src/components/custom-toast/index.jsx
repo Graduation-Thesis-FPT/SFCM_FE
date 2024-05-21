@@ -4,7 +4,7 @@ import { useToast } from "../ui/use-toast";
 const Succsess = ({ message }) => {
   return (
     <span className="flex items-center">
-      <CircleCheckBig className="mr-2" /> {message}
+      <CircleCheckBig size={16} className="mr-2" /> {message}
     </span>
   );
 };
@@ -12,7 +12,7 @@ const Succsess = ({ message }) => {
 const Error = ({ message }) => {
   return (
     <span className="flex items-center">
-      <CircleX className="mr-2" /> {message}
+      <CircleX size={16} className="mr-2" /> {message}
     </span>
   );
 };
@@ -20,7 +20,7 @@ const Error = ({ message }) => {
 const Warning = ({ message }) => {
   return (
     <span className="flex items-center">
-      <CircleAlert className="mr-2" /> {message}
+      <CircleAlert size={16} className="mr-2" /> {message}
     </span>
   );
 };

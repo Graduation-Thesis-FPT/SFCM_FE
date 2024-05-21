@@ -15,9 +15,19 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { findUserById, updateUser } from "@/apis/user.api";
+import { findUserById, resetPasswordById, updateUser } from "@/apis/user.api";
 import moment from "moment";
 import { useCustomToast } from "@/components/custom-toast";
+import { Info, X } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
   ROLE_CODE: z.string({
@@ -39,9 +49,10 @@ const formSchema = z.object({
   IS_ACTIVE: z.boolean()
 });
 
-export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
+export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles }) {
   const toast = useCustomToast();
   const [detailUser, setDetailUser] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,43 +69,40 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
   });
 
   function onSubmit(values) {
-    let dataReq = Object.fromEntries(
-      Object.entries(values).filter(([key, value]) => value !== detailUser[key])
-    );
-    let temp = { ...detailUser };
-    Object.keys(dataReq).forEach(item => {
-      if (temp.hasOwnProperty(item)) {
-        temp[item] = dataReq[item];
-      }
-    });
-    delete temp.ROWGUID;
-    delete temp.CREATE_DATE;
-    delete temp.UPDATE_DATE;
-    delete temp.PASSWORD;
-    delete temp.CREATE_BY;
-    delete temp.UPDATE_BY;
-    if (temp.USER_NAME === detailUser.USER_NAME) {
-      delete temp.USER_NAME;
-    }
-    updateUser(detail.ROWGUID, temp)
-      .then(res => {
-        temp.ROWGUID = detail.ROWGUID;
-        temp.USER_NAME ??= detailUser.USER_NAME;
-        temp.UPDATE_DATE = new Date().toISOString();
-        setDetailUser(temp);
-        handleUpdateUser(temp);
-        toast.success(res.data.message);
+    setDetailUser(values);
+    delete values.USER_NAME;
+    updateUser(detail.ROWGUID, values)
+      .then(updateRes => {
+        findUserById(detail.ROWGUID).then(res => {
+          handleUpdateUser(res.data.metadata);
+          toast.success(updateRes.data.message);
+        });
       })
       .catch(err => {
         toast.error(err?.response?.data?.message || err.message);
       });
   }
 
+  const handleResetPassword = () => {
+    const DEFAULT_PASSWORD = import.meta.env.VITE_DEFAULT_PASSWORD;
+    if (!DEFAULT_PASSWORD || !detail.ROWGUID) {
+      toast.error("Lỗi hệ thống, vui lòng thử lại sau!");
+      return;
+    }
+    resetPasswordById(detail.ROWGUID, { DEFAULT_PASSWORD })
+      .then(res => {
+        toast.success(res.data.message);
+        setOpenDialog(false);
+      })
+      .catch(err => {
+        toast.error(err?.response?.data?.message || err.message);
+      });
+  };
+
   useEffect(() => {
     if (!detail.ROWGUID) return;
     findUserById(detail.ROWGUID)
       .then(res => {
-        setDetailUser(res.data.metadata);
         form.setValue("ROLE_CODE", res.data.metadata.ROLE_CODE || "");
         form.setValue("FULLNAME", res.data.metadata.FULLNAME || "");
         form.setValue("USER_NAME", res.data.metadata.USER_NAME || "");
@@ -107,6 +115,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
         form.setValue("ADDRESS", res.data.metadata.ADDRESS || "");
         form.setValue("REMARK", res.data.metadata.REMARK || "");
         form.setValue("IS_ACTIVE", res.data.metadata.IS_ACTIVE);
+        setDetailUser(form.getValues());
       })
       .catch(err => {
         toast.error(err?.response?.data?.message || err.message);
@@ -114,169 +123,249 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser }) {
   }, [detail]);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-1/2 m-0 w-1/2">
-        <SheetHeader className="align-middle">
-          <SheetTitle className="pb-4 text-3xl font-bold text-gray-900">
-            Chi tiết người dùng
-          </SheetTitle>
-          <Separator />
-          <div className="pb-4 pt-6 text-lg font-medium text-gray-900">Thông tin người dùng</div>
-        </SheetHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <span className="grid grid-cols-2 gap-x-4">
-              <FormField
-                control={form.control}
-                name="ROLE_CODE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Nhóm người dùng <span className="text-red">*</span>
-                    </FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-offset-0">
-                          <SelectValue placeholder="Nhóm người dùng" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="manage">Manage</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="USER_NAME"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Tên tài khoản <span className="text-red">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </span>
-            <span className="grid grid-cols-2 gap-x-4">
-              <FormField
-                control={form.control}
-                name="FULLNAME"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Họ và tên</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập họ và tên" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="BIRTHDAY"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ngày sinh</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </span>
-            <span className="grid grid-cols-2 gap-x-4">
-              <FormField
-                control={form.control}
-                name="EMAIL"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập email" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="TELEPHONE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Số điện thoại</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Nhập số điện thoại" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </span>
-            <FormField
-              control={form.control}
-              name="ADDRESS"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Địa chỉ</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Nhập địa chỉ" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="REMARK"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Nhập ghi chú" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="IS_ACTIVE"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Trạng thái</FormLabel>
-                  <FormControl>
-                    <span className="flex items-center space-x-2">
-                      <Switch
-                        className="data-[state=checked]:bg-green-800 data-[state=unchecked]:bg-red-800"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                      <div>{field.value ? "Hoạt động" : "Dừng"}</div>
-                    </span>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <span className="absolute bottom-6 right-0 flex w-full flex-col">
-              <Separator />
-              <div className="gap-2 px-6 pt-6 text-right">
-                <Button
-                  onClick={() => {
-                    onOpenChange(false);
-                  }}
-                  className="mr-2"
-                  variant="outline"
-                  type="button"
-                >
-                  Hủy
-                </Button>
-                <Button type="submit">Cập nhật</Button>
-              </div>
-            </span>
-          </form>
-        </Form>
-      </SheetContent>
-    </Sheet>
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent hiddenIconClose={true} className="sm:max-w-1/2 w-1/2 p-0  ">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex h-screen flex-col justify-between overflow-x-auto"
+            >
+              <span>
+                <div className="flex items-center justify-between p-6">
+                  <div className="text-xl font-bold text-gray-900">
+                    Cập nhật thông tin người dùng
+                  </div>
+                  <X
+                    className="size-4 cursor-pointer hover:opacity-80"
+                    onClick={() => {
+                      onOpenChange();
+                    }}
+                  />
+                </div>
+                <Separator className="bg-gray-400" />
+
+                <div className="space-y-4 p-6">
+                  <div className="text-lg font-medium text-gray-900">Thông tin người dùng</div>
+                  <span className="grid grid-cols-2 gap-x-4">
+                    <FormField
+                      control={form.control}
+                      name="USER_NAME"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Tên tài khoản <span className="text-red">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="text" placeholder="Nhập tài khoản" disabled {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ROLE_CODE"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Chức vụ <span className="text-red">*</span>
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Chức vụ" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {roles?.map(role => (
+                                <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
+                                  {role.ROLE_NAME}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
+                  </span>
+                  <span className="grid grid-cols-2 gap-x-4">
+                    <FormField
+                      control={form.control}
+                      name="FULLNAME"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Họ và tên</FormLabel>
+                          <FormControl>
+                            <Input type="text" placeholder="Nhập họ và tên" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="BIRTHDAY"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Ngày sinh</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </span>
+                  <span className="grid grid-cols-2 gap-x-4">
+                    <FormField
+                      control={form.control}
+                      name="EMAIL"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="text" placeholder="Nhập email" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="TELEPHONE"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Số điện thoại</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="Nhập số điện thoại" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </span>
+                  <FormField
+                    control={form.control}
+                    name="ADDRESS"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Địa chỉ</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Nhập địa chỉ" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="REMARK"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ghi chú</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Nhập ghi chú" {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </span>
+
+              <span>
+                <Separator className="bg-gray-200" />
+                <span className="flex items-center justify-between p-6">
+                  <TooltipProvider delayDuration={500}>
+                    <Tooltip>
+                      <span className="flex cursor-pointer items-center">
+                        <div
+                          onClick={() => {
+                            setOpenDialog(true);
+                          }}
+                          className="mr-2 text-sm font-medium text-blue-600 hover:text-blue-600/80 "
+                        >
+                          Đặt lại mật khẩu
+                        </div>
+                        <TooltipTrigger asChild>
+                          <Info className="size-4 text-gray-400" />
+                        </TooltipTrigger>
+                      </span>
+                      <TooltipContent>
+                        <p className="max-w-[237px]">
+                          Nếu người dùng quên mật khẩu, admin sẽ đặt lại mật khẩu cho họ. Sau đó,
+                          người dùng sẽ sử dụng mật khẩu mặc định để đăng nhập.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <FormField
+                      control={form.control}
+                      name="IS_ACTIVE"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <span className="flex items-center">
+                              <Switch
+                                className="mr-1 h-6 data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600"
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                              <div
+                                className={`text-sm font-medium  ${field.value ? "text-blue-600" : "text-gray-600"}`}
+                              >
+                                {field.value ? "Hoạt động" : "Dừng"}
+                              </div>
+                            </span>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="h-12 w-[126px]" variant="blue">
+                      Lưu thông tin
+                    </Button>
+                  </div>
+                </span>
+              </span>
+            </form>
+          </Form>
+        </SheetContent>
+      </Sheet>
+      <Dialog
+        open={openDialog}
+        onOpenChange={() => {
+          setOpenDialog(false);
+        }}
+      >
+        <DialogContent
+          onOpenAutoFocus={e => {
+            e.preventDefault();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Khôi phục lại mật khẩu</DialogTitle>
+            <DialogDescription>
+              Mật khẩu mặc định sẽ được cấp lại cho người dùng. Bạn có chắc chắn muốn thực hiện
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setOpenDialog(false);
+              }}
+              type="button"
+              variant="outline"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={() => {
+                handleResetPassword();
+              }}
+              type="button"
+              variant="blue"
+            >
+              Khôi phục
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
