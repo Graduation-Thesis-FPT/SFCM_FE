@@ -82,7 +82,7 @@ export function Login() {
     <div className="grid h-screen grid-cols-8 align-middle">
       <div className="col-span-8 h-full overflow-auto flex flex-col items-center justify-center gap-y-12 p-10 md:col-span-3 lg:p-16">
         <img alt="logo" className="h-32 w-32" src={logo} />
-        <div className="flex w-ful max-w-96 flex-col gap-y-4">
+        <div className="flex w-full max-w-96 flex-col gap-y-4">
           <Form {...form}>
             <form
               id="loginForm"
