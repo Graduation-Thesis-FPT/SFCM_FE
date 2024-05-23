@@ -19,9 +19,8 @@ import logo from "@/assets/image/Logo_128x128.svg";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useCustomToast } from "@/components/custom-toast";
 import { changeDefaultPassword } from "@/apis/access.api";
-import { getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { getRefreshToken, useCustomStore } from "@/lib/auth";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slice/userSlice";
 const formSchema = z.object({
   PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
   CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
@@ -34,6 +33,7 @@ export function FirstLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const toast = useCustomToast();
+  const userGlobal = useCustomStore();
 
   const ROWGUID = location?.state?.ROWGUID;
   const USER_NAME = location?.state?.USER_NAME;
@@ -54,9 +54,7 @@ export function FirstLogin() {
 
     changeDefaultPassword(ROWGUID, userInfo)
       .then(res => {
-        storeAccessToken(res.data.metadata.accessToken);
-        storeRefreshToken(res.data.metadata.refreshToken);
-        dispatch(setUser(res.data.metadata));
+        userGlobal.store(res.data.metadata);
         navigate("/");
         toast.success(res.data.message);
       })

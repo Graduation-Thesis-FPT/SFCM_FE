@@ -21,9 +21,7 @@ import { Eye, EyeOff, Info } from "lucide-react";
 import ForgotPassword from "./ForgotPassword";
 import { useCustomToast } from "@/components/custom-toast";
 import { login } from "@/apis/access.api";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slice/userSlice";
-import { getRefreshToken, storeAccessToken, storeRefreshToken } from "@/lib/auth";
+import { getRefreshToken, useCustomStore } from "@/lib/auth";
 
 const formSchema = z.object({
   USER_NAME: z
@@ -41,7 +39,7 @@ export function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const toast = useCustomToast();
-  const dispatch = useDispatch();
+  const userGlobal = useCustomStore();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -61,9 +59,7 @@ export function Login() {
           toast.success("Đăng nhập thành công! Vui lòng đổi mật khẩu mặc định!");
           return;
         }
-        dispatch(setUser(res.data.metadata));
-        storeAccessToken(res.data.metadata.accessToken);
-        storeRefreshToken(res.data.metadata.refreshToken);
+        userGlobal.store(res.data.metadata);
         toast.success(res.data.message);
         navigate("/");
       })
@@ -80,7 +76,7 @@ export function Login() {
 
   return (
     <div className="grid h-screen grid-cols-8 align-middle">
-      <div className="col-span-8 h-full overflow-auto flex flex-col items-center justify-center gap-y-12 p-10 md:col-span-3 lg:p-16">
+      <div className="col-span-8 flex h-full flex-col items-center justify-center gap-y-12 overflow-auto p-10 md:col-span-3 lg:p-16">
         <img alt="logo" className="h-32 w-32" src={logo} />
         <div className="flex w-full max-w-96 flex-col gap-y-4">
           <Form {...form}>

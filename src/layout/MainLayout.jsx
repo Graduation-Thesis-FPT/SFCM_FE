@@ -12,21 +12,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { useDispatch, useSelector } from "react-redux";
-import { removeRefreshAndAccessToken } from "@/lib/auth";
-import { setUser } from "@/redux/slice/userSlice";
+import { useSelector } from "react-redux";
 import { getFirstLetterOfLastWord } from "@/lib/utils";
+import { useCustomStore } from "@/lib/auth";
 
 export function MainLayout() {
   const menu = useSelector(state => state.menuSlice.menu);
   const user = useSelector(state => state.userSlice.user);
-  const dispatch = useDispatch();
   let { pathname } = useLocation();
   const [isCollapse, setIsCollapse] = useState(false);
+  const userGlobal = useCustomStore();
 
   const handleLogout = () => {
-    removeRefreshAndAccessToken();
-    dispatch(setUser({}));
+    userGlobal.remove();
     window.location.href = "/login";
   };
 
