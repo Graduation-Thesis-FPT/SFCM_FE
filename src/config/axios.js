@@ -40,7 +40,7 @@ axiosPrivate.interceptors.request.use(
 
     config.headers["token"] = token;
     config.headers["rtoken"] = rtoken;
-    config.headers["menuCode"] = menuCode;
+    config.headers["menu-code"] = menuCode;
 
     return config;
   },
