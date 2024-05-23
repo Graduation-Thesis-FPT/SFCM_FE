@@ -10,20 +10,23 @@ import * as Comp from "@/pages/index";
 
 export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
-  const user = useSelector(state => state.userSlice.user);
   return (
     <Routes>
       <Route element={<PrivateRoute />}>
         <Route path="/" element={<MainLayout />}>
-          {dataRoutes?.map(item => {
+          {dataRoutes?.map(parent => {
             return (
-              <Route key={item.url} path={item.url}>
-                {item?.child?.map(child => {
-                  const Component = Comp[child.component];
+              <Route key={parent.ROWGUID} path={parent.MENU_CODE}>
+                {parent?.child?.map(child => {
+                  const Component = Comp[child.VIEW_PAGE];
                   if (!Component) {
-                    return <Route key={child.url} path={child.url} element={<ErrorPage />} />;
+                    return (
+                      <Route key={child.ROWGUID} path={child.MENU_CODE} element={<ErrorPage />} />
+                    );
                   }
-                  return <Route key={child.url} path={child.url} element={<Component />} />;
+                  return (
+                    <Route key={child.ROWGUID} path={child.MENU_CODE} element={<Component />} />
+                  );
                 })}
               </Route>
             );

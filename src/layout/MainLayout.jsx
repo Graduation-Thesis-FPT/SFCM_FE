@@ -49,9 +49,9 @@ export function MainLayout() {
             <h1 className="text-3xl font-bold text-blue-800">
               {menu?.map(item =>
                 item?.child?.map(child => {
-                  let isMenuSelected = pathname === `/${item.url}/${child.url}`;
+                  let isMenuSelected = pathname === `/${item.MENU_CODE}/${child.MENU_CODE}`;
                   if (isMenuSelected) {
-                    return child.name;
+                    return child.MENU_NAME;
                   }
                 })
               )}

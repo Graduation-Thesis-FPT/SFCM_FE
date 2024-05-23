@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { z } from "zod";
-import { set, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-
 import { useCustomToast } from "@/components/custom-toast";
 import { X } from "lucide-react";
 import {
@@ -14,25 +10,50 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion";
-import { getAllPermission } from "@/apis/permission";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getAllPermissionByRoleCode, updatePermission } from "@/apis/permission";
+import { useSelector } from "react-redux";
 
 export function DetailPermission({ open, onOpenChange, detailData }) {
   const toast = useCustomToast();
-  const accordionRef = useRef(null);
   const [permissionData, setPermissionData] = useState([]);
+  const user = useSelector(state => state.userSlice.user);
 
-  useEffect(() => {
-    getAllPermission()
+  const handlerUpdatePermission = () => {
+    let data = [];
+    permissionData.forEach(parent => {
+      parent.child.forEach(child => {
+        data.push({
+          ROWGUID: child.ROWGUID,
+          ROLE_CODE: detailData.ROLE_CODE,
+          MENU_CODE: child.MENU_CODE,
+          IS_VIEW: child.IS_VIEW,
+          IS_ADD_NEW: child.IS_ADD_NEW,
+          IS_MODIFY: child.IS_MODIFY,
+          IS_DELETE: child.IS_DELETE
+        });
+      });
+    });
+    updatePermission(data)
       .then(res => {
-        console.log("🚀 ~ useEffect ~ res.data.metadata:", res.data.metadata);
-
-        setPermissionData(res.data.metadata);
+        toast.success(res.data.message);
       })
       .catch(err => {
         toast.error(err.message);
       });
-  }, [detailData]);
+  };
+
+  useEffect(() => {
+    if (detailData?.ROLE_CODE) {
+      getAllPermissionByRoleCode(detailData.ROLE_CODE)
+        .then(res => {
+          setPermissionData(res.data.metadata);
+        })
+        .catch(err => {
+          toast.error(err.message);
+        });
+    }
+  }, [detailData.ROLE_CODE]);
 
   return (
     <div>
@@ -58,9 +79,13 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
               </div>
             </span>
             <span className="flex-1 overflow-y-auto px-6">
-              <Accordion type="multiple" collapsible className="w-full">
-                {permissionData.map((parent, parentIndex) => {
-                  if (parent.child.length === 0) return null;
+              <Accordion
+                type="multiple"
+                defaultValue={permissionData?.map(parent => parent.MENU_CODE)}
+                className="w-full"
+              >
+                {permissionData?.map((parent, parentIndex) => {
+                  if (parent.child?.length === 0) return null;
                   return (
                     <AccordionItem
                       value={parent.MENU_CODE}
@@ -79,13 +104,19 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
                           <div className="text-center">Xóa</div>
                         </span>
                         {parent.child?.map((child, childIndex) => {
+                          console.log("🚀 ~ {parent.child?.map ~ child:", parent);
+                          let disabled = false;
+                          if (child.PARENT_CODE === "user-manager" && child.ROLE_CODE === "admin") {
+                            disabled = true;
+                          }
                           return (
                             <span
-                              key={child.MENU_CODE + childIndex}
+                              key={child.ROWGUID}
                               className="grid grid-cols-6 border-b px-2 py-3"
                             >
                               <div className="col-span-2">{child.MENU_NAME}</div>
                               <Checkbox
+                                disabled={disabled}
                                 className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
                                 checked={child.IS_VIEW}
                                 onCheckedChange={checked => {
@@ -95,6 +126,7 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
                                 }}
                               />
                               <Checkbox
+                                disabled={disabled}
                                 className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
                                 checked={child.IS_ADD_NEW}
                                 onCheckedChange={checked => {
@@ -104,6 +136,7 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
                                 }}
                               />
                               <Checkbox
+                                disabled={disabled}
                                 className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
                                 checked={child.IS_MODIFY}
                                 onCheckedChange={checked => {
@@ -113,6 +146,7 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
                                 }}
                               />
                               <Checkbox
+                                disabled={disabled}
                                 className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
                                 checked={child.IS_DELETE}
                                 onCheckedChange={checked => {
@@ -134,12 +168,12 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
             <span>
               <Separator className="bg-gray-200" />
               <span className="flex items-center justify-end gap-4 p-6">
-                <Button className="h-12 w-[126px]" variant="outline">
+                <Button onClick={onOpenChange} className="h-12 w-[126px]" variant="outline">
                   Hủy
                 </Button>
                 <Button
                   onClick={() => {
-                    console.log(permissionData);
+                    handlerUpdatePermission();
                   }}
                   className="h-12 w-[126px]"
                   variant="blue"

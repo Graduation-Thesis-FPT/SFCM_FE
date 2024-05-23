@@ -47,11 +47,12 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
           >
             {menu?.map((item, index) => {
               let isParentSelected = accordionValue || mainPath;
-              const Icon = icon[item.icon] ?? icon.Ellipsis;
+              const Icon = icon[item.MENU_ICON] ?? icon.Ellipsis;
+              if (item.child?.length === 0) return null;
               return (
                 <AccordionItem
-                  value={item.url}
-                  key={item.url + index}
+                  value={item.MENU_CODE}
+                  key={item.MENU_CODE + index}
                   onClick={() => {
                     if (isCollapse) {
                       handleScale();
@@ -59,12 +60,12 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
                   }}
                 >
                   <AccordionTrigger
-                    className={`px-3  ${isParentSelected === item.url ? "font-bold" : "text-gray-500 "}`}
+                    className={`px-3  ${isParentSelected === item.MENU_CODE ? "font-bold" : "text-gray-500 "}`}
                   >
                     {!isCollapse ? (
                       <div className="flex items-center text-14">
                         <Icon className="mr-2 h-5 w-5" />
-                        {item.name}
+                        {item.MENU_NAME}
                       </div>
                     ) : (
                       <Icon className="h-5 w-5" />
@@ -74,14 +75,14 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
                   <AccordionContent>
                     <nav className="grid items-start px-2 text-12 font-medium ">
                       {item?.child?.map((child, index) => {
-                        let isMenuSelected = pathname === `/${item.url}/${child.url}`;
+                        let isMenuSelected = pathname === `/${item.MENU_CODE}/${child.MENU_CODE}`;
                         return (
                           <Link
-                            key={child.url + index}
-                            to={`/${item.url}/${child.url}`}
+                            key={child.MENU_CODE + index}
+                            to={`/${item.MENU_CODE}/${child.MENU_CODE}`}
                             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isMenuSelected ? "bg-muted font-bold text-primary" : "text-muted-foreground"}  hover:text-primary`}
                           >
-                            {child.name}
+                            {child.MENU_NAME}
                           </Link>
                         );
                       })}
