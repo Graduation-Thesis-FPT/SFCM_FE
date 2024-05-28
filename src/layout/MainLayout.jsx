@@ -12,21 +12,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { useDispatch, useSelector } from "react-redux";
-import { removeRefreshAndAccessToken } from "@/lib/auth";
-import { setUser } from "@/redux/slice/userSlice";
+import { useSelector } from "react-redux";
 import { getFirstLetterOfLastWord } from "@/lib/utils";
+import { useCustomStore } from "@/lib/auth";
 
 export function MainLayout() {
   const menu = useSelector(state => state.menuSlice.menu);
   const user = useSelector(state => state.userSlice.user);
-  const dispatch = useDispatch();
   let { pathname } = useLocation();
   const [isCollapse, setIsCollapse] = useState(false);
+  const userGlobal = useCustomStore();
 
   const handleLogout = () => {
-    removeRefreshAndAccessToken();
-    dispatch(setUser({}));
+    userGlobal.remove();
     window.location.href = "/login";
   };
 
@@ -49,9 +47,9 @@ export function MainLayout() {
             <h1 className="text-3xl font-bold text-blue-800">
               {menu?.map(item =>
                 item?.child?.map(child => {
-                  let isMenuSelected = pathname === `/${item.url}/${child.url}`;
+                  let isMenuSelected = pathname === `/${item.MENU_CODE}/${child.MENU_CODE}`;
                   if (isMenuSelected) {
-                    return child.name;
+                    return child.MENU_NAME;
                   }
                 })
               )}

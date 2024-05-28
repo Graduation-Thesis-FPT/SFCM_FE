@@ -50,7 +50,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ROLE_CODE: "manage",
+      ROLE_CODE: "manager",
       FULLNAME: "",
       USER_NAME: "",
       BIRTHDAY: "",
@@ -82,6 +82,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
           });
       })
       .catch(err => {
+        console.log("🚀 ~ onSubmit ~ err:", err);
         toast.error(err?.response?.data?.message || err.message);
       });
   }

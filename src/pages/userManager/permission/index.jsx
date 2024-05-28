@@ -3,12 +3,9 @@ import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { DetailPermission } from "./DetailPermission";
-import { getAllPermission } from "@/apis/permission";
 
 export function Permission() {
   const gridRef = useRef(null);
@@ -88,6 +85,7 @@ export function Permission() {
         detailData={detailData}
         open={openDetail}
         onOpenChange={() => {
+          setDetailData({});
           setOpenDetail(false);
         }}
       />

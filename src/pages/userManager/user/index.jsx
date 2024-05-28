@@ -10,6 +10,8 @@ import { useCustomToast } from "@/components/custom-toast";
 import { Section } from "@/components/section";
 import { getAllRole } from "@/apis/role.api";
 import { SearchInput } from "@/components/search";
+import { GrantPermission } from "@/components/common";
+import { actionGrantPermission } from "@/constants";
 
 export function User() {
   const gridRef = useRef(null);
@@ -121,12 +123,14 @@ export function User() {
   return (
     <Section>
       <Section.Header title="Danh sách người dùng">
-        <FormCreateAccount
-          roles={roles}
-          handleCreateUser={newAccount => {
-            handleCreateUser(newAccount);
-          }}
-        />
+        <GrantPermission action={actionGrantPermission.CREATE}>
+          <FormCreateAccount
+            roles={roles}
+            handleCreateUser={newAccount => {
+              handleCreateUser(newAccount);
+            }}
+          />
+        </GrantPermission>
       </Section.Header>
       <Section.Content>
         <SearchInput handleSearch={value => handleSearch(value)} />

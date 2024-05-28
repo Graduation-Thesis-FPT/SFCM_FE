@@ -28,6 +28,8 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
+import { GrantPermission } from "@/components/common";
+import { actionGrantPermission } from "@/constants";
 
 const formSchema = z.object({
   ROLE_CODE: z.string({
@@ -317,9 +319,11 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="h-12 w-[126px]" variant="blue">
-                      Lưu thông tin
-                    </Button>
+                    <GrantPermission action={actionGrantPermission.UPDATE}>
+                      <Button type="submit" className="h-12 w-[126px]" variant="blue">
+                        Lưu thông tin
+                      </Button>
+                    </GrantPermission>
                   </div>
                 </span>
               </span>
