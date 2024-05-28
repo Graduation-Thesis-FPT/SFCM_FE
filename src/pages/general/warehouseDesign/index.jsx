@@ -1,4 +1,7 @@
 import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
+import { BtnExcel } from "@/components/aggridreact/tableTools/BtnExcel";
+import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
@@ -10,76 +13,123 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { fnAddRows } from "@/lib/fnTable";
+import { DetailPermission } from "@/pages/userManager/permission/DetailPermission";
 import { PlusCircle } from "lucide-react";
-import moment from "moment";
 import { useRef, useState } from "react";
+import { DetailWareHouseDesign } from "./DetailWareHouseDesign";
+
+let data = [
+  {
+    ROWGUID: "1",
+    WAREHOSE_CODE: "CFS",
+    BLOCK: "A",
+    TIER_COUNT: "1",
+    SLOT_COUNT: "10",
+    d: "1",
+    r: "1"
+  },
+  {
+    ROWGUID: "12",
+
+    WAREHOSE_CODE: "CFS",
+    BLOCK: "B",
+    TIER_COUNT: "1",
+    SLOT_COUNT: "20",
+    d: "1",
+    r: "1"
+  },
+  {
+    ROWGUID: "13",
+    WAREHOSE_CODE: "CFS",
+    BLOCK: "C",
+    TIER_COUNT: "1",
+    SLOT_COUNT: "30",
+    d: "1",
+    r: "1"
+  }
+];
 
 export function ThietKeKho() {
   const gridRef = useRef(null);
   const [rowData, setRowData] = useState([]);
-
+  const [detailData, setDetailData] = useState({});
+  const [openOpenDetailWareHouseDesign, setOpenDetailWareHouseDesign] = useState(false);
   const colDefs = [
     {
-      field: "USER_NAME",
-      headerName: "Tài khoản",
-      flex: 1,
-      filter: true
-    },
-    { field: "FULLNAME", headerName: "Họ và tên", flex: 1, filter: true },
-    { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1, filter: true },
-    { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1 },
-    {
-      field: "UPDATE_DATE",
-      headerName: "Ngày chỉnh sửa",
-      flex: 1,
-      cellRenderer: params => {
-        return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
+      cellStyle: { textAlign: "center", background: "rgb(249 250 251)" },
+      width: 60,
+      comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
+        return nodeA.rowIndex - nodeB.rowIndex;
+      },
+      valueFormatter: params => {
+        return Number(params.node.id) + 1;
       }
     },
+    {
+      field: "WAREHOSE_CODE",
+      headerName: "Kho",
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    { field: "BLOCK", headerName: "Mã dãy", flex: 1, filter: true, editable: true },
+    { field: "TIER_COUNT", headerName: "Số tầng", flex: 1, editable: true },
+    { field: "SLOT_COUNT", headerName: "Số ô từng tầng", editable: true },
     {
       headerName: "Diện tích",
       headerClass: "center-header",
       children: [
         {
           field: "d",
-          headerName: "Dài",
-          headerClass: "center-header",
-          flex: 1
+          headerName: "Dài (m)",
+          headerClass: "hidden-border center-header",
+          cellStyle: { textAlign: "center" },
+          flex: 0.5,
+          editable: true
         },
         {
           field: "r",
-          headerName: "Rộng",
-          headerClass: "center-header",
-          flex: 1
+          headerName: "Rộng (m)",
+          headerClass: "hidden-border center-header",
+          cellStyle: { textAlign: "center" },
+          flex: 0.5,
+          editable: true
         }
       ]
     },
     {
-      field: "#",
-      headerName: "Xem",
       flex: 0.5,
-      cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
         return (
-          <Rss
+          <span
             onClick={() => {
               setDetailData(params.data);
+              console.log("🚀 ~ ThietKeKho ~ params.data:", params.data);
               setTimeout(() => {
-                setOpenDetail(true);
+                setOpenDetailWareHouseDesign(true);
               }, 100);
             }}
-            className="size-4 cursor-pointer"
-          />
+            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
+          >
+            Xem
+          </span>
         );
       }
     }
   ];
+
   const handleSearch = value => {};
+
+  const handleAddRow = () => {
+    let newRowData = fnAddRows(rowData);
+    setRowData(newRowData);
+  };
 
   return (
     <Section>
       <Section.Header title="Danh sách các dãy (block)">
-        <Button variant="blue" className="h-12">
+        <Button variant="blue" className="h-12" onClick={handleAddRow}>
           <PlusCircle className="mr-2 size-5" />
           Tạo dãy mới
         </Button>
@@ -88,31 +138,52 @@ export function ThietKeKho() {
       <Section.Content>
         <div className="flex justify-between">
           <SearchInput handleSearch={value => handleSearch(value)} />
-          <span>
-            <div className="mb-2 text-xs font-medium">Hiển thị</div>
-            <Select defaultValue="table">
-              <SelectTrigger className="h-12 w-[122px]">
-                <SelectValue placeholder="Hiển thị" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="table">Dạng bảng</SelectItem>
-                  <SelectItem value="...">Dạng háng</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <span className="flex gap-x-4">
+            <span>
+              <div className="mb-2 text-xs font-medium">Công cụ</div>
+              <div className="flex h-12 items-center gap-x-3 rounded-md bg-gray-100 px-6">
+                <BtnAddRow onAddRow={handleAddRow} />
+                <BtnSave />
+                <BtnExcel />
+              </div>
+            </span>
+
+            <span>
+              <div className="mb-2 text-xs font-medium">Hiển thị</div>
+              <Select defaultValue="table">
+                <SelectTrigger className="h-12 w-[122px]">
+                  <SelectValue placeholder="Hiển thị" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="table">Dạng bảng</SelectItem>
+                    <SelectItem value="...">Dạng háng</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </span>
           </span>
         </div>
         <AgGrid
+          contextMenu={true}
+          setRowData={data => {
+            setRowData(data);
+          }}
           ref={gridRef}
           className="h-[50vh]"
           rowData={rowData}
           colDefs={colDefs}
-          setRowData={data => {
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
             setRowData(data);
           }}
         />
       </Section.Content>
+      <DetailWareHouseDesign
+        detailData={detailData}
+        onOpenChange={() => setOpenDetailWareHouseDesign(false)}
+        open={openOpenDetailWareHouseDesign}
+      />
     </Section>
   );
 }

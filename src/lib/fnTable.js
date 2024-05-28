@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
-const fnAddRows = (numOfNewRow, rowData) => {
+const fnAddRows = rowData => {
   let temp = [...rowData];
-  for (let i = 0; i < numOfNewRow; i++) {
-    temp.unshift({ key: uuidv4(), status: "insert" });
-  }
+  temp.unshift({
+    key: uuidv4(),
+    status: "insert"
+  });
   return temp;
 };
 

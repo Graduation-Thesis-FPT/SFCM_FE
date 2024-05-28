@@ -16,21 +16,24 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         //custom
-        blue: "text-white bg-blue-600 hover:bg-blue-600/80 h-12",
+        blue: "text-white bg-blue-600 hover:bg-blue-600/80",
         green: "bg-green text-green-foreground hover:bg-green/80",
-        red: "bg-red text-red-foreground hover:bg-red/80",
+        red: "bg-red-500 text-white hover:bg-red-500/80",
         "blue-outline":
           "border border-blue bg-background hover:bg-blue text-blue hover:text-blue-foreground",
         "green-outline":
           "border border-green bg-background hover:bg-green text-green hover:text-green-foreground",
         "red-outline":
-          "border border-red bg-background hover:bg-red text-red hover:text-red-foreground"
+          "border border-red bg-background hover:bg-red text-red hover:text-red-foreground",
+        "none-border": "hover:bg-white text-black"
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10"
+        icon: "h-10 w-10",
+        //custom
+        tool: "w-[36px] h-[32px]"
       }
     },
     defaultVariants: {

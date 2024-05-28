@@ -1,60 +1,97 @@
-import React, { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuTrigger
+} from "@/components/ui/context-menu";
 
 const AgGrid = forwardRef(
-  ({ rowData, colDefs, className, defaultColDef, setRowData, ...props }, ref) => {
+  ({ rowData, colDefs, className, defaultColDef, setRowData, contextMenu, ...props }, ref) => {
+    const [selectedRows, setSelectedRows] = useState([]);
     const style = useMemo(() => {
       return {
         flex: 1,
         editable: true
       };
     }, []);
+
+    const onSelectionChanged = useCallback(() => {
+      setSelectedRows(ref.current.api.getSelectedRows());
+    }, []);
+
     return (
-      <>
-        <div className={cn("ag-theme-quartz h-[500px]", className)}>
-          <AgGridReact
-            ref={ref}
-            rowData={rowData}
-            columnDefs={colDefs}
-            // columnDefs={[
-            //   {
-            //     headerName: "#",
-            //     flex: 0,
-            //     width: 100,
-            //     checkboxSelection: true,
-            //     headerCheckboxSelection: true,
-            //     editable: false,
-            //     comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
-            //       return nodeA.rowIndex - nodeB.rowIndex;
-            //     },
-            //     valueFormatter: params => {
-            //       return Number(params.node.id) + 1;
-            //     }
-            //   },
-            //   ...colDefs
-            // ]}
-            rowSelection={"multiple"}
-            // onSelectionChanged={onSelectionChanged}
-            pagination={true}
-            paginationPageSize={10}
-            paginationPageSizeSelector={[10, 30, 50, 100]}
-            suppressRowClickSelection={true}
-            overlayLoadingTemplate={
-              '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
-            }
-            overlayNoRowsTemplate={"Không có dữ liệu"}
-            defaultColDef={defaultColDef ? style : null}
-            onCellValueChanged={e => {
-              e.data.status ? null : (e.data.status = "update");
+      <ContextMenu>
+        <ContextMenuTrigger disabled={contextMenu === true ? false : true}>
+          <div className={cn("ag-theme-quartz custom-header h-[500px] ", className)}>
+            <AgGridReact
+              defaultColDef={defaultColDef ? style : null}
+              ref={ref}
+              rowData={rowData}
+              columnDefs={colDefs}
+              rowSelection={"multiple"}
+              onSelectionChanged={onSelectionChanged}
+              onCellValueChanged={e => {
+                e.data.status ? null : (e.data.status = "update");
+              }}
+              pagination={true}
+              paginationPageSize={10}
+              paginationPageSizeSelector={[10, 30, 50, 100]}
+              overlayLoadingTemplate={
+                '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
+              }
+              overlayNoRowsTemplate={"Không có dữ liệu"}
+              {...props}
+            />
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
+          <ContextMenuItem
+            inset
+            disabled={selectedRows.length === 0 ? true : false}
+            onClick={() => {
+              console.log(selectedRows);
             }}
-            {...props}
-          />
-        </div>
-      </>
+          >
+            Xóa dòng
+          </ContextMenuItem>
+
+          <ContextMenuItem inset disabled>
+            Reload
+            <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+          </ContextMenuItem>
+
+          <ContextMenuSeparator />
+
+          <ContextMenuCheckboxItem checked disabled>
+            Show Bookmarks Bar
+            <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
+          </ContextMenuCheckboxItem>
+
+          <ContextMenuCheckboxItem disabled>Show Full URLs</ContextMenuCheckboxItem>
+
+          <ContextMenuSeparator />
+
+          <ContextMenuRadioGroup value="pedro">
+            <ContextMenuRadioItem value="pedro" disabled>
+              Pedro Duarte
+            </ContextMenuRadioItem>
+            <ContextMenuRadioItem value="colm" disabled>
+              Colm Tuite
+            </ContextMenuRadioItem>
+          </ContextMenuRadioGroup>
+        </ContextMenuContent>
+      </ContextMenu>
     );
   }
 );
