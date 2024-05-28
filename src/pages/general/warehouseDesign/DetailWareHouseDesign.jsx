@@ -32,19 +32,29 @@ import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
 import { CustomSheet } from "@/components/custom-sheet";
 
-const formSchema = z.object({});
+const formSchema = z.object({
+  BLOCK: z.string({
+    required_error: "Không được để trống!"
+  })
+});
 
-export function DetailWareHouseDesign({ open, onOpenChange, detailData }) {
+export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
   const toast = useCustomToast();
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {}
+    resolver: zodResolver(formSchema)
   });
 
   function onSubmit(values) {
-    console.log(123);
+    console.log(values);
   }
+
+  useEffect(() => {
+    if (!detailData.ROWGUID) return;
+    Object.keys(detailData).map(key => {
+      form.setValue(key, detailData[key] || "");
+    });
+  }, [detailData]);
 
   return (
     <CustomSheet open={open} onOpenChange={onOpenChange} title="Cập nhật thông tin dãy">

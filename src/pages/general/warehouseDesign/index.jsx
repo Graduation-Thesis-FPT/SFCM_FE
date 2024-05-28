@@ -14,10 +14,9 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { fnAddRows } from "@/lib/fnTable";
-import { DetailPermission } from "@/pages/userManager/permission/DetailPermission";
 import { PlusCircle } from "lucide-react";
 import { useRef, useState } from "react";
-import { DetailWareHouseDesign } from "./DetailWareHouseDesign";
+import { DetailWarehouseDesign } from "./DetailWarehouseDesign";
 
 let data = [
   {
@@ -105,10 +104,7 @@ export function ThietKeKho() {
           <span
             onClick={() => {
               setDetailData(params.data);
-              console.log("🚀 ~ ThietKeKho ~ params.data:", params.data);
-              setTimeout(() => {
-                setOpenDetailWareHouseDesign(true);
-              }, 100);
+              setOpenDetailWareHouseDesign(true);
             }}
             className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
           >
@@ -179,7 +175,7 @@ export function ThietKeKho() {
           }}
         />
       </Section.Content>
-      <DetailWareHouseDesign
+      <DetailWarehouseDesign
         detailData={detailData}
         onOpenChange={() => setOpenDetailWareHouseDesign(false)}
         open={openOpenDetailWareHouseDesign}
