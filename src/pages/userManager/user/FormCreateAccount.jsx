@@ -94,7 +94,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
           setOpen(true);
         }}
         variant="blue"
-        className="h-12"
+        className="h-[42px]"
       >
         <PlusCircle className="mr-2 size-5" />
         Tạo người dùng mới
@@ -254,13 +254,13 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                       setOpen(false);
                       form.reset();
                     }}
-                    className="mr-3 h-[48px] w-[126px] text-blue-600 hover:text-blue-600"
+                    className="mr-3 h-[42px] w-[126px] text-blue-600 hover:text-blue-600"
                     variant="outline"
                     type="button"
                   >
                     Hủy
                   </Button>
-                  <Button type="submit" className="h-12 w-[126px]" variant="blue">
+                  <Button type="submit" className="h-[42px] w-[126px]" variant="blue">
                     Tạo mới
                   </Button>
                 </div>

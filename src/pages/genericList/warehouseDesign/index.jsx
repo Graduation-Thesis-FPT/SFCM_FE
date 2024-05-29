@@ -17,6 +17,9 @@ import { fnAddRows } from "@/lib/fnTable";
 import { PlusCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import { DetailWarehouseDesign } from "./DetailWarehouseDesign";
+import { Create } from "./Create";
+import { GrantPermission } from "@/components/common";
+import { actionGrantPermission } from "@/constants";
 
 let data = [
   {
@@ -49,11 +52,12 @@ let data = [
   }
 ];
 
-export function ThietKeKho() {
+export function WarehouseDesign() {
   const gridRef = useRef(null);
   const [rowData, setRowData] = useState([]);
   const [detailData, setDetailData] = useState({});
   const [openOpenDetailWareHouseDesign, setOpenDetailWareHouseDesign] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
   const colDefs = [
     {
       cellStyle: { textAlign: "center", background: "rgb(249 250 251)" },
@@ -100,10 +104,13 @@ export function ThietKeKho() {
     {
       flex: 0.5,
       cellRenderer: params => {
+        let { key, status, ...col } = params.data;
+        if (Object.keys(col).length === 0) return null;
         return (
           <span
             onClick={() => {
               setDetailData(params.data);
+              console.log("🚀 ~ ThietKeKho ~ params.data:", params.data);
               setOpenDetailWareHouseDesign(true);
             }}
             className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
@@ -125,10 +132,18 @@ export function ThietKeKho() {
   return (
     <Section>
       <Section.Header title="Danh sách các dãy (block)">
-        <Button variant="blue" className="h-12" onClick={handleAddRow}>
-          <PlusCircle className="mr-2 size-5" />
-          Tạo dãy mới
-        </Button>
+        <GrantPermission action={actionGrantPermission.CREATE}>
+          <Button
+            variant="blue"
+            className="h-[42px]"
+            onClick={() => {
+              setOpenCreate(true);
+            }}
+          >
+            <PlusCircle className="mr-2 size-5" />
+            Tạo dãy mới
+          </Button>
+        </GrantPermission>
       </Section.Header>
 
       <Section.Content>
@@ -137,9 +152,14 @@ export function ThietKeKho() {
           <span className="flex gap-x-4">
             <span>
               <div className="mb-2 text-xs font-medium">Công cụ</div>
-              <div className="flex h-12 items-center gap-x-3 rounded-md bg-gray-100 px-6">
-                <BtnAddRow onAddRow={handleAddRow} />
-                <BtnSave />
+              <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
+                <GrantPermission action={actionGrantPermission.CREATE}>
+                  <BtnAddRow onAddRow={handleAddRow} />
+                </GrantPermission>
+                <GrantPermission action={actionGrantPermission.UPDATE}>
+                  <BtnSave />
+                </GrantPermission>
+
                 <BtnExcel />
               </div>
             </span>
@@ -147,7 +167,7 @@ export function ThietKeKho() {
             <span>
               <div className="mb-2 text-xs font-medium">Hiển thị</div>
               <Select defaultValue="table">
-                <SelectTrigger className="h-12 w-[122px]">
+                <SelectTrigger className="h-[42px] w-[122px]">
                   <SelectValue placeholder="Hiển thị" />
                 </SelectTrigger>
                 <SelectContent>
@@ -180,6 +200,7 @@ export function ThietKeKho() {
         onOpenChange={() => setOpenDetailWareHouseDesign(false)}
         open={openOpenDetailWareHouseDesign}
       />
+      <Create onOpenChange={() => setOpenCreate(false)} open={openCreate} />
     </Section>
   );
 }

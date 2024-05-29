@@ -15,10 +15,10 @@ export const SearchInput = forwardRef(({ className, handleSearch, ...props }, re
           ref={inputRef}
           type="search"
           placeholder="Nhập từ khóa..."
-          className="mr-4 h-12 w-[416px] pl-8 text-black"
+          className="mr-4 h-[42px] w-[416px] pl-8 text-black"
         />
         <Button
-          className="h-12"
+          className="h-[42px]"
           onClick={() => {
             handleSearch(inputRef.current.value);
           }}

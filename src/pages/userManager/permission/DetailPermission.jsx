@@ -12,12 +12,10 @@ import {
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getAllPermissionByRoleCode, updatePermission } from "@/apis/permission";
-import { useSelector } from "react-redux";
 
 export function DetailPermission({ open, onOpenChange, detailData }) {
   const toast = useCustomToast();
   const [permissionData, setPermissionData] = useState([]);
-  const user = useSelector(state => state.userSlice.user);
 
   const handlerUpdatePermission = () => {
     let data = [];
@@ -104,7 +102,6 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
                           <div className="text-center">Xóa</div>
                         </span>
                         {parent.child?.map((child, childIndex) => {
-                          console.log("🚀 ~ {parent.child?.map ~ child:", parent);
                           let disabled = false;
                           if (child.PARENT_CODE === "user-manager" && child.ROLE_CODE === "admin") {
                             disabled = true;
@@ -168,14 +165,14 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
             <span>
               <Separator className="bg-gray-200" />
               <span className="flex items-center justify-end gap-4 p-6">
-                <Button onClick={onOpenChange} className="h-12 w-[126px]" variant="outline">
+                <Button onClick={onOpenChange} className="h-[42px] w-[126px]" variant="outline">
                   Hủy
                 </Button>
                 <Button
                   onClick={() => {
                     handlerUpdatePermission();
                   }}
-                  className="h-12 w-[126px]"
+                  className="h-[42px] w-[126px]"
                   variant="blue"
                 >
                   Lưu thông tin

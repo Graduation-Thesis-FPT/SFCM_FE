@@ -320,7 +320,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
                       )}
                     />
                     <GrantPermission action={actionGrantPermission.UPDATE}>
-                      <Button type="submit" className="h-12 w-[126px]" variant="blue">
+                      <Button type="submit" className="h-[42px] w-[126px]" variant="blue">
                         Lưu thông tin
                       </Button>
                     </GrantPermission>

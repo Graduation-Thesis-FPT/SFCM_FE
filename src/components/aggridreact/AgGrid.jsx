@@ -15,6 +15,8 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger
 } from "@/components/ui/context-menu";
+import { GrantPermission } from "../common";
+import { actionGrantPermission } from "@/constants";
 
 const AgGrid = forwardRef(
   ({ rowData, colDefs, className, defaultColDef, setRowData, contextMenu, ...props }, ref) => {
@@ -56,15 +58,17 @@ const AgGrid = forwardRef(
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          <ContextMenuItem
-            inset
-            disabled={selectedRows.length === 0 ? true : false}
-            onClick={() => {
-              console.log(selectedRows);
-            }}
-          >
-            Xóa dòng
-          </ContextMenuItem>
+          <GrantPermission action={actionGrantPermission.DELETE}>
+            <ContextMenuItem
+              inset
+              disabled={selectedRows.length === 0 ? true : false}
+              onClick={() => {
+                console.log(selectedRows);
+              }}
+            >
+              Xóa dòng
+            </ContextMenuItem>
+          </GrantPermission>
 
           <ContextMenuItem inset disabled>
             Reload

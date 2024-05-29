@@ -45,12 +45,13 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
     resolver: zodResolver(formSchema)
   });
 
-  function onSubmit(values) {
+  const onSubmit = values => {
     console.log(values);
-  }
+  };
 
   useEffect(() => {
-    if (!detailData.ROWGUID) return;
+    // if (!detailData.ROWGUID) return;
+    form.reset();
     Object.keys(detailData).map(key => {
       form.setValue(key, detailData[key] || "");
     });
@@ -157,7 +158,7 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
           <Button
             type="submit"
             form="detail-warehouse-design"
-            className="h-12 w-[126px]"
+            className="h-[42px] w-[126px]"
             variant="red"
           >
             Xóa dòng
