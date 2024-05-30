@@ -15,8 +15,8 @@ const fnAddKey = rowData => {
   });
 };
 
-const fnDeleteRows = (selectedRows, rowData) => {
-  return rowData.filter(row => !selectedRows.includes(row));
+const fnDeleteRows = (listIdDeleted, rowData) => {
+  return rowData.filter(row => !listIdDeleted.includes(row.ROWGUID));
 };
 
 export { fnAddRows, fnAddKey, fnDeleteRows };

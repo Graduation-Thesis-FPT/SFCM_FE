@@ -20,20 +20,25 @@ import {
 } from "@/components/ui/select";
 import { useCustomToast } from "@/components/custom-toast";
 import { GrantPermission } from "@/components/common";
-import { actionGrantPermission } from "@/constants";
+import { ERROR_MESSAGE, SUCCESS_MESSAGE, actionGrantPermission } from "@/constants";
 import { CustomSheet } from "@/components/custom-sheet";
+import { createBlock } from "@/apis/block.api";
 
 const formSchema = z.object({
-  BLOCK: z.string().trim().min(1, "Không được để trống!"),
-  WAREHOSE_CODE: z.string().trim().min(1, "Không được để trống!"),
+  BLOCK_NAME: z.string().trim().min(1, "Không được để trống!"),
+  WAREHOUSE_CODE: z.string().trim().min(1, "Không được để trống!"),
   TIER_COUNT: z
     .string()
     .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
   SLOT_COUNT: z
     .string()
     .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
-  d: z.string().refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
-  r: z.string().refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương")
+  BLOCK_WIDTH: z
+    .string()
+    .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
+  BLOCK_HEIGHT: z
+    .string()
+    .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương")
 });
 
 export function Create({ open, onOpenChange }) {
@@ -42,17 +47,23 @@ export function Create({ open, onOpenChange }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      BLOCK: "",
-      WAREHOSE_CODE: "",
+      BLOCK_NAME: "",
+      WAREHOUSE_CODE: "",
       TIER_COUNT: "",
       SLOT_COUNT: "",
-      d: "",
-      r: ""
+      BLOCK_HEIGHT: "",
+      BLOCK_WIDTH: ""
     }
   });
 
   const onSubmit = values => {
-    console.log(values);
+    createBlock(values)
+      .then(res => {
+        toast.success(res);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
   };
 
   return (
@@ -68,7 +79,7 @@ export function Create({ open, onOpenChange }) {
               <span className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="BLOCK"
+                  name="BLOCK_NAME"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-600">
@@ -83,7 +94,7 @@ export function Create({ open, onOpenChange }) {
                 />
                 <FormField
                   control={form.control}
-                  name="WAREHOSE_CODE"
+                  name="WAREHOUSE_CODE"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-600">
@@ -129,7 +140,7 @@ export function Create({ open, onOpenChange }) {
                 />
                 <FormField
                   control={form.control}
-                  name="d"
+                  name="BLOCK_HEIGHT"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-600">Chiều dài</FormLabel>
@@ -142,7 +153,7 @@ export function Create({ open, onOpenChange }) {
                 />
                 <FormField
                   control={form.control}
-                  name="r"
+                  name="BLOCK_WIDTH"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-600">Chiều rộng</FormLabel>

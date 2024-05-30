@@ -77,11 +77,13 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
       .then(updateRes => {
         findUserById(detail.ROWGUID).then(res => {
           handleUpdateUser(res.data.metadata);
-          toast.success(updateRes.data.message);
+          form.reset();
+          onOpenChange();
+          toast.success(updateRes);
         });
       })
       .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   }
 
@@ -93,11 +95,11 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
     }
     resetPasswordById(detail.ROWGUID, { DEFAULT_PASSWORD })
       .then(res => {
-        toast.success(res.data.message);
+        toast.success(res);
         setOpenDialog(false);
       })
       .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   };
 
@@ -120,7 +122,7 @@ export function DetailUser({ detail, open, onOpenChange, handleUpdateUser, roles
         setDetailUser(form.getValues());
       })
       .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   }, [detail]);
 

@@ -56,10 +56,10 @@ export function FirstLogin() {
       .then(res => {
         userGlobal.store(res.data.metadata);
         navigate("/");
-        toast.success(res.data.message);
+        toast.success(res);
       })
       .catch(err => {
-        toast.error(err.response.data.message || err.message);
+        toast.error(err);
       });
   }
 

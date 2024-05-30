@@ -34,7 +34,7 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
     });
     updatePermission(data)
       .then(res => {
-        toast.success(res.data.message);
+        toast.success(res);
       })
       .catch(err => {
         toast.error(err.message);

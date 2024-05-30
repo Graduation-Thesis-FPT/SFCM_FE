@@ -31,9 +31,10 @@ import {
 import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
 import { CustomSheet } from "@/components/custom-sheet";
+import { deleteBlock } from "@/apis/block.api";
 
 const formSchema = z.object({
-  BLOCK: z.string({
+  BLOCK_NAME: z.string({
     required_error: "Không được để trống!"
   })
 });
@@ -49,8 +50,18 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
     console.log(values);
   };
 
+  const handleDelete = () => {
+    let deteleData = [detailData.ROWGUID];
+    deleteBlock(deteleData)
+      .then(res => {
+        toast.success(res);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
   useEffect(() => {
-    // if (!detailData.ROWGUID) return;
     form.reset();
     Object.keys(detailData).map(key => {
       form.setValue(key, detailData[key] || "");
@@ -69,7 +80,7 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
             <span className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="BLOCK"
+                name="BLOCK_NAME"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-600">
@@ -83,7 +94,7 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
               />
               <FormField
                 control={form.control}
-                name="WAREHOSE_CODE"
+                name="WAREHOUSE_CODE"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-600">
@@ -156,7 +167,8 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
       <CustomSheet.Footer>
         <GrantPermission action={actionGrantPermission.DELETE}>
           <Button
-            type="submit"
+            onClick={handleDelete}
+            type="button"
             form="detail-warehouse-design"
             className="h-[42px] w-[126px]"
             variant="red"

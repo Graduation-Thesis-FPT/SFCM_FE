@@ -68,22 +68,21 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
   function onSubmit(values) {
     const dataReq = removeEmptyValues(values);
     createAccount(dataReq)
-      .then(res => {
-        findUserById(res.data.metadata.ROWGUID)
+      .then(resCreate => {
+        findUserById(resCreate.data.metadata.ROWGUID)
           .then(res => {
             const newAccount = res.data.metadata;
             handleCreateUser(newAccount);
-            toast.success(res.data.message);
+            toast.success(resCreate);
             form.reset();
             setOpen(false);
           })
           .catch(err => {
-            toast.error(err?.response?.data?.message || err.message);
+            toast.error(err);
           });
       })
       .catch(err => {
-        console.log("🚀 ~ onSubmit ~ err:", err);
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   }
 

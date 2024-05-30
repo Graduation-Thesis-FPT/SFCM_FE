@@ -13,47 +13,19 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { fnAddRows } from "@/lib/fnTable";
+import { fnAddRows, fnDeleteRows } from "@/lib/fnTable";
 import { PlusCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import { DetailWarehouseDesign } from "./DetailWarehouseDesign";
 import { Create } from "./Create";
 import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
-
-let data = [
-  {
-    ROWGUID: "1",
-    WAREHOSE_CODE: "CFS",
-    BLOCK: "A",
-    TIER_COUNT: "1",
-    SLOT_COUNT: "10",
-    d: "1",
-    r: "1"
-  },
-  {
-    ROWGUID: "12",
-
-    WAREHOSE_CODE: "CFS",
-    BLOCK: "B",
-    TIER_COUNT: "1",
-    SLOT_COUNT: "20",
-    d: "1",
-    r: "1"
-  },
-  {
-    ROWGUID: "13",
-    WAREHOSE_CODE: "CFS",
-    BLOCK: "C",
-    TIER_COUNT: "1",
-    SLOT_COUNT: "30",
-    d: "1",
-    r: "1"
-  }
-];
+import { deleteBlock, getBlock } from "@/apis/block.api";
+import { useCustomToast } from "@/components/custom-toast";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
+  const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
   const [detailData, setDetailData] = useState({});
   const [openOpenDetailWareHouseDesign, setOpenDetailWareHouseDesign] = useState(false);
@@ -70,13 +42,13 @@ export function WarehouseDesign() {
       }
     },
     {
-      field: "WAREHOSE_CODE",
+      field: "WAREHOUSE_CODE",
       headerName: "Kho",
       flex: 1,
       filter: true,
       editable: true
     },
-    { field: "BLOCK", headerName: "Mã dãy", flex: 1, filter: true, editable: true },
+    { field: "BLOCK_NAME", headerName: "Mã dãy", flex: 1, filter: true, editable: true },
     { field: "TIER_COUNT", headerName: "Số tầng", flex: 1, editable: true },
     { field: "SLOT_COUNT", headerName: "Số ô từng tầng", editable: true },
     {
@@ -84,7 +56,7 @@ export function WarehouseDesign() {
       headerClass: "center-header",
       children: [
         {
-          field: "d",
+          field: "BLOCK_HEIGHT",
           headerName: "Dài (m)",
           headerClass: "hidden-border center-header",
           cellStyle: { textAlign: "center" },
@@ -92,7 +64,7 @@ export function WarehouseDesign() {
           editable: true
         },
         {
-          field: "r",
+          field: "BLOCK_WIDTH",
           headerName: "Rộng (m)",
           headerClass: "hidden-border center-header",
           cellStyle: { textAlign: "center" },
@@ -123,6 +95,18 @@ export function WarehouseDesign() {
   ];
 
   const handleSearch = value => {};
+
+  const handleDeleteRow = listId => {
+    deleteBlock(listId)
+      .then(res => {
+        let newRowData = fnDeleteRows(listId, rowData);
+        setRowData(newRowData);
+        toast.success(res);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
 
   const handleAddRow = () => {
     let newRowData = fnAddRows(rowData);
@@ -189,9 +173,14 @@ export function WarehouseDesign() {
           className="h-[50vh]"
           rowData={rowData}
           colDefs={colDefs}
+          onDeleteRow={listId => {
+            handleDeleteRow(listId);
+          }}
           onGridReady={() => {
             gridRef.current.api.showLoadingOverlay();
-            setRowData(data);
+            getBlock().then(res => {
+              setRowData(res.data.metadata);
+            });
           }}
         />
       </Section.Content>
