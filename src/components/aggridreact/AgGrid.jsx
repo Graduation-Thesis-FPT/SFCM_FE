@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/context-menu";
 import { GrantPermission } from "../common";
 import { actionGrantPermission } from "@/constants";
+import { Trash2 } from "lucide-react";
 
 const AgGrid = forwardRef(
   (
@@ -34,8 +35,7 @@ const AgGrid = forwardRef(
     }, []);
 
     const handleDeleteRow = () => {
-      let listId = selectedRows.map(item => item.ROWGUID);
-      onDeleteRow(listId);
+      onDeleteRow(selectedRows);
     };
 
     const onSelectionChanged = useCallback(() => {
@@ -71,33 +71,16 @@ const AgGrid = forwardRef(
           <ContextMenuContent ref={contextRef} className="w-64">
             <GrantPermission action={actionGrantPermission.DELETE}>
               <ContextMenuItem
-                inset
+                className={`font-medium  focus:text-red-500 ${selectedRows.length === 0 ? "text-red-500/50" : "text-red-500"}`}
                 disabled={selectedRows.length === 0 ? true : false}
                 onClick={() => {
                   handleDeleteRow(selectedRows);
                 }}
               >
+                <Trash2 className="mr-2 size-4" />
                 Xóa dòng
               </ContextMenuItem>
             </GrantPermission>
-
-            <ContextMenuCheckboxItem checked disabled>
-              Show Bookmarks Bar
-              <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
-            </ContextMenuCheckboxItem>
-
-            <ContextMenuCheckboxItem disabled>Show Full URLs</ContextMenuCheckboxItem>
-
-            <ContextMenuSeparator />
-
-            <ContextMenuRadioGroup value="pedro">
-              <ContextMenuRadioItem value="pedro" disabled>
-                Pedro Duarte
-              </ContextMenuRadioItem>
-              <ContextMenuRadioItem value="colm" disabled>
-                Colm Tuite
-              </ContextMenuRadioItem>
-            </ContextMenuRadioGroup>
           </ContextMenuContent>
         </ContextMenu>
       </>

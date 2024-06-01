@@ -4,7 +4,7 @@ const fnAddRows = rowData => {
   let temp = [...rowData];
   temp.unshift({
     key: uuidv4(),
-    status: "insert"
+    status: "create"
   });
   return temp;
 };

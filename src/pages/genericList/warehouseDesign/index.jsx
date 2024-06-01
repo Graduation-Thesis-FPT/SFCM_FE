@@ -20,8 +20,13 @@ import { DetailWarehouseDesign } from "./DetailWarehouseDesign";
 import { Create } from "./Create";
 import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
-import { deleteBlock, getBlock } from "@/apis/block.api";
+import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
 import { useCustomToast } from "@/components/custom-toast";
+
+let wareHouses = [
+  { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM" },
+  { WAREHOUSE_CODE: "CFS", WAREHOUSE_NAME: "CFS" }
+];
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
@@ -30,6 +35,7 @@ export function WarehouseDesign() {
   const [detailData, setDetailData] = useState({});
   const [openOpenDetailWareHouseDesign, setOpenDetailWareHouseDesign] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
+
   const colDefs = [
     {
       cellStyle: { textAlign: "center", background: "rgb(249 250 251)" },
@@ -42,47 +48,85 @@ export function WarehouseDesign() {
       }
     },
     {
+      headerName: "Mã kho *",
       field: "WAREHOUSE_CODE",
-      headerName: "Kho",
       flex: 1,
       filter: true,
-      editable: true
+      editable: params => (params.data.ROWGUID ? false : true),
+      cellEditor: "agSelectCellEditor",
+      cellEditorParams: {
+        values: wareHouses.map(item => item.WAREHOUSE_CODE)
+      }
     },
-    { field: "BLOCK_NAME", headerName: "Mã dãy", flex: 1, filter: true, editable: true },
-    { field: "TIER_COUNT", headerName: "Số tầng", flex: 1, editable: true },
-    { field: "SLOT_COUNT", headerName: "Số ô từng tầng", editable: true },
+    {
+      headerName: "Mã dãy *",
+      field: "BLOCK_NAME",
+      flex: 1,
+      filter: true,
+      editable: params => (params.data.ROWGUID ? false : true)
+    },
+    {
+      headerName: "Số tầng",
+      field: "TIER_COUNT",
+      cellDataType: "number",
+      cellEditorParams: {
+        min: 0,
+        max: 1000
+      },
+      flex: 1,
+      editable: params => (params.data.ROWGUID ? false : true)
+    },
+    {
+      headerName: "Số ô từng tầng",
+      field: "SLOT_COUNT",
+      cellDataType: "number",
+      cellEditorParams: {
+        min: 0,
+        max: 1000
+      },
+      flex: 1,
+      editable: params => (params.data.ROWGUID ? false : true)
+    },
     {
       headerName: "Diện tích",
       headerClass: "center-header",
       children: [
         {
-          field: "BLOCK_HEIGHT",
           headerName: "Dài (m)",
+          field: "BLOCK_HEIGHT",
+          cellDataType: "number",
+          cellEditorParams: {
+            min: 0,
+            max: 1000
+          },
           headerClass: "hidden-border center-header",
           cellStyle: { textAlign: "center" },
           flex: 0.5,
-          editable: true
+          editable: params => (params.data.ROWGUID ? false : true)
         },
         {
-          field: "BLOCK_WIDTH",
           headerName: "Rộng (m)",
+          field: "BLOCK_WIDTH",
+          cellDataType: "number",
+          cellEditorParams: {
+            min: 0,
+            max: 1000
+          },
           headerClass: "hidden-border center-header",
           cellStyle: { textAlign: "center" },
           flex: 0.5,
-          editable: true
+          editable: params => (params.data.ROWGUID ? false : true)
         }
       ]
     },
     {
       flex: 0.5,
       cellRenderer: params => {
-        let { key, status, ...col } = params.data;
-        if (Object.keys(col).length === 0) return null;
+        if (!params.data.ROWGUID) return null;
         return (
           <span
             onClick={() => {
               setDetailData(params.data);
-              console.log("🚀 ~ ThietKeKho ~ params.data:", params.data);
               setOpenDetailWareHouseDesign(true);
             }}
             className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
@@ -94,23 +138,108 @@ export function WarehouseDesign() {
     }
   ];
 
+  const columnsRequired = ["WAREHOUSE_CODE", "BLOCK_NAME"];
+
+  const validatePrice = params => {
+    console.log(params);
+  };
   const handleSearch = value => {};
 
-  const handleDeleteRow = listId => {
-    deleteBlock(listId)
-      .then(res => {
-        let newRowData = fnDeleteRows(listId, rowData);
-        setRowData(newRowData);
-        toast.success(res);
+  //delete data in table
+  const handleDeleteRow = selectedRows => {
+    let rowTemps = [];
+    let liseIdDetele = [];
+    selectedRows.forEach(item => {
+      if (item.key) {
+        rowTemps.push(item.key);
+      } else {
+        liseIdDetele.push(item.ROWGUID);
+      }
+    });
+
+    if (rowTemps.length > 0 && liseIdDetele.length === 0) {
+      let newRowData = [...rowData].filter(row => !rowTemps.includes(row.key));
+      setRowData(newRowData);
+      return;
+    }
+
+    deleteBlock(liseIdDetele)
+      .then(resDelete => {
+        getBlock()
+          .then(res => {
+            toast.success(resDelete);
+            setRowData(res.data.metadata);
+          })
+          .catch(err => {
+            toast.error("Lỗi không xác định");
+          });
       })
       .catch(err => {
         toast.error(err);
       });
   };
 
+  //delete data in detail
+  const handleDeleteData = deteleData => {
+    let newRowData = fnDeleteRows(deteleData, rowData);
+    setRowData(newRowData);
+  };
+
   const handleAddRow = () => {
     let newRowData = fnAddRows(rowData);
     setRowData(newRowData);
+  };
+
+  const handleCreateData = newRows => {
+    setRowData(prevRowData => [...newRows, ...prevRowData]);
+  };
+
+  const validationData = data => {
+    const gridApi = gridRef.current.api;
+    data.map(item => {
+      gridApi.forEachNode(node => {
+        const rowNode = gridApi.getDisplayedRowAtIndex(node.id);
+        if (item.key === node.data.key) {
+          columnsRequired.map(column => {
+            if (!item[column]) {
+              gridApi.flashCells({
+                rowNodes: [rowNode],
+                columns: [column],
+                flashDuration: 3000
+              });
+            }
+          });
+        }
+      });
+    });
+  };
+
+  const handleSave = () => {
+    let data = [...rowData];
+    let dataSave = data.filter(item => item.status === "update" || item.status === "create");
+
+    if (dataSave.length === 0) {
+      toast.error("Không có dữ liệu cần cập nhật");
+      return;
+    }
+
+    validationData(dataSave);
+
+    let finalDataSave = dataSave.map(item => {
+      let { key, status, ...data } = item;
+      return data;
+    });
+
+    createBlock(finalDataSave)
+      .then(res => {
+        getBlock().then(res => {
+          setRowData(res.data.metadata);
+        });
+        toast.success(res);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
   };
 
   return (
@@ -141,9 +270,8 @@ export function WarehouseDesign() {
                   <BtnAddRow onAddRow={handleAddRow} />
                 </GrantPermission>
                 <GrantPermission action={actionGrantPermission.UPDATE}>
-                  <BtnSave />
+                  <BtnSave onClick={handleSave} />
                 </GrantPermission>
-
                 <BtnExcel />
               </div>
             </span>
@@ -173,8 +301,8 @@ export function WarehouseDesign() {
           className="h-[50vh]"
           rowData={rowData}
           colDefs={colDefs}
-          onDeleteRow={listId => {
-            handleDeleteRow(listId);
+          onDeleteRow={selectedRows => {
+            handleDeleteRow(selectedRows);
           }}
           onGridReady={() => {
             gridRef.current.api.showLoadingOverlay();
@@ -188,8 +316,17 @@ export function WarehouseDesign() {
         detailData={detailData}
         onOpenChange={() => setOpenDetailWareHouseDesign(false)}
         open={openOpenDetailWareHouseDesign}
+        onDeleteData={deteleData => {
+          handleDeleteData(deteleData);
+        }}
       />
-      <Create onOpenChange={() => setOpenCreate(false)} open={openCreate} />
+      <Create
+        onOpenChange={() => setOpenCreate(false)}
+        open={openCreate}
+        onCreateData={newRows => {
+          handleCreateData(newRows);
+        }}
+      />
     </Section>
   );
 }

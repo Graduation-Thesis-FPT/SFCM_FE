@@ -39,21 +39,22 @@ const formSchema = z.object({
   })
 });
 
-export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
+export function DetailWarehouseDesign({ open, onOpenChange, detailData, onDeleteData }) {
   const toast = useCustomToast();
 
   const form = useForm({
     resolver: zodResolver(formSchema)
   });
 
-  const onSubmit = values => {
-    console.log(values);
-  };
+  const onSubmit = values => {};
 
   const handleDelete = () => {
     let deteleData = [detailData.ROWGUID];
     deleteBlock(deteleData)
       .then(res => {
+        onDeleteData(deteleData);
+        form.reset();
+        onOpenChange();
         toast.success(res);
       })
       .catch(err => {
@@ -64,7 +65,7 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
   useEffect(() => {
     form.reset();
     Object.keys(detailData).map(key => {
-      form.setValue(key, detailData[key] || "");
+      form.setValue(key, detailData[key] ?? "");
     });
   }, [detailData]);
 
@@ -137,10 +138,10 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
               />
               <FormField
                 control={form.control}
-                name="d"
+                name="BLOCK_HEIGHT"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-600">Chiều dài</FormLabel>
+                    <FormLabel className="text-gray-600">Chiều cao</FormLabel>
                     <FormControl>
                       <Input type="text" placeholder="" disabled {...field} />
                     </FormControl>
@@ -149,7 +150,7 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData }) {
               />
               <FormField
                 control={form.control}
-                name="r"
+                name="BLOCK_WIDTH"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-600">Chiều rộng</FormLabel>

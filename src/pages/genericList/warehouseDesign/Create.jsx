@@ -20,45 +20,47 @@ import {
 } from "@/components/ui/select";
 import { useCustomToast } from "@/components/custom-toast";
 import { GrantPermission } from "@/components/common";
-import { ERROR_MESSAGE, SUCCESS_MESSAGE, actionGrantPermission } from "@/constants";
+import { actionGrantPermission } from "@/constants";
 import { CustomSheet } from "@/components/custom-sheet";
 import { createBlock } from "@/apis/block.api";
+
+let wareHouses = [
+  { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM" },
+  { WAREHOUSE_CODE: "CFS", WAREHOUSE_NAME: "CFS" }
+];
 
 const formSchema = z.object({
   BLOCK_NAME: z.string().trim().min(1, "Không được để trống!"),
   WAREHOUSE_CODE: z.string().trim().min(1, "Không được để trống!"),
-  TIER_COUNT: z
-    .string()
-    .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
-  SLOT_COUNT: z
-    .string()
-    .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
-  BLOCK_WIDTH: z
-    .string()
-    .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương"),
-  BLOCK_HEIGHT: z
-    .string()
-    .refine(value => value === "" || /^\d*$/.test(value), "Chỉ nhập số nguyên dương")
+  TIER_COUNT: z.number(),
+  SLOT_COUNT: z.number(),
+  BLOCK_WIDTH: z.number(),
+  BLOCK_HEIGHT: z.number()
 });
 
-export function Create({ open, onOpenChange }) {
+export function Create({ open, onOpenChange, onCreateData }) {
   const toast = useCustomToast();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       BLOCK_NAME: "",
-      WAREHOUSE_CODE: "",
-      TIER_COUNT: "",
-      SLOT_COUNT: "",
-      BLOCK_HEIGHT: "",
-      BLOCK_WIDTH: ""
+      WAREHOUSE_CODE: wareHouses[0].WAREHOUSE_CODE ?? "",
+      TIER_COUNT: 0,
+      SLOT_COUNT: 0,
+      BLOCK_HEIGHT: 0,
+      BLOCK_WIDTH: 0
     }
   });
 
   const onSubmit = values => {
-    createBlock(values)
+    let createData = [values];
+    createBlock(createData)
       .then(res => {
+        let newRow = res.data.metadata;
+        onCreateData(newRow);
+        form.reset();
+        onOpenChange();
         toast.success(res);
       })
       .catch(err => {
@@ -100,9 +102,20 @@ export function Create({ open, onOpenChange }) {
                       <FormLabel className="text-gray-600">
                         Mã kho <span className="text-red">*</span>
                       </FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="" {...field} />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Mã kho" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {wareHouses?.map(item => (
+                            <SelectItem key={item.WAREHOUSE_CODE} value={item.WAREHOUSE_CODE}>
+                              {item.WAREHOUSE_NAME}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -119,7 +132,14 @@ export function Create({ open, onOpenChange }) {
                     <FormItem>
                       <FormLabel className="text-gray-600">Số tầng</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder="" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Số tầng"
+                          {...field}
+                          onChange={e => {
+                            field.onChange(Number(e.target.value));
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -132,7 +152,14 @@ export function Create({ open, onOpenChange }) {
                     <FormItem>
                       <FormLabel className="text-gray-600">Số dãy</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder="" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Số dãy"
+                          {...field}
+                          onChange={e => {
+                            field.onChange(Number(e.target.value));
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -143,9 +170,16 @@ export function Create({ open, onOpenChange }) {
                   name="BLOCK_HEIGHT"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-600">Chiều dài</FormLabel>
+                      <FormLabel className="text-gray-600">Chiều cao</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder="" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Chiều cao"
+                          {...field}
+                          onChange={e => {
+                            field.onChange(Number(e.target.value));
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,7 +192,14 @@ export function Create({ open, onOpenChange }) {
                     <FormItem>
                       <FormLabel className="text-gray-600">Chiều rộng</FormLabel>
                       <FormControl>
-                        <Input type="text" placeholder="" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Chiều rộng"
+                          {...field}
+                          onChange={e => {
+                            field.onChange(Number(e.target.value));
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
