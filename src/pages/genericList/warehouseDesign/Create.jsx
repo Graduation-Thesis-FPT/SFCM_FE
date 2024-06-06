@@ -23,41 +23,41 @@ import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
 import { CustomSheet } from "@/components/custom-sheet";
 import { createBlock } from "@/apis/block.api";
-
-let wareHouses = [
-  { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM" },
-  { WAREHOUSE_CODE: "CFS", WAREHOUSE_NAME: "CFS" }
-];
+import { useDispatch, useSelector } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 const formSchema = z.object({
-  BLOCK_NAME: z.string().trim().min(1, "Không được để trống!"),
-  WAREHOUSE_CODE: z.string().trim().min(1, "Không được để trống!"),
-  TIER_COUNT: z.number(),
-  SLOT_COUNT: z.number(),
-  BLOCK_WIDTH: z.number(),
-  BLOCK_HEIGHT: z.number()
+  BLOCK_NAME: z.string().trim().min(1, "Vui lòng nhập mã dãy!"),
+  WAREHOUSE_CODE: z.string().min(1, "Vui lòng chọn mã kho!"),
+  TIER_COUNT: z.number().positive({ message: "Phải lớn hơn 0!" }),
+  SLOT_COUNT: z.number().positive({ message: "Phải lớn hơn 0!" }),
+  BLOCK_WIDTH: z.number().positive({ message: "Phải lớn hơn 0!" }),
+  BLOCK_HEIGHT: z.number().positive({ message: "Phải lớn hơn 0!" })
 });
 
-export function Create({ open, onOpenChange, onCreateData }) {
-  const toast = useCustomToast();
+export function Create({ open, onOpenChange, onCreateData, warehouses }) {
+  const dispatch = useDispatch();
+  const globalLoading = useSelector(state => state.globalLoadingSlice.globalLoading);
 
+  const toast = useCustomToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       BLOCK_NAME: "",
-      WAREHOUSE_CODE: wareHouses[0].WAREHOUSE_CODE ?? "",
-      TIER_COUNT: 0,
-      SLOT_COUNT: 0,
-      BLOCK_HEIGHT: 0,
-      BLOCK_WIDTH: 0
+      WAREHOUSE_CODE: "",
+      TIER_COUNT: 1,
+      SLOT_COUNT: 1,
+      BLOCK_HEIGHT: 10,
+      BLOCK_WIDTH: 10
     }
   });
 
   const onSubmit = values => {
-    let createData = [values];
+    dispatch(setGlobalLoading(true));
+    let createData = { insert: [values] };
     createBlock(createData)
       .then(res => {
-        let newRow = res.data.metadata;
+        let newRow = res.data.metadata.newCreatedBlock;
         onCreateData(newRow);
         form.reset();
         onOpenChange();
@@ -65,7 +65,8 @@ export function Create({ open, onOpenChange, onCreateData }) {
       })
       .catch(err => {
         toast.error(err);
-      });
+      })
+      .finally(dispatch(setGlobalLoading(false)));
   };
 
   return (
@@ -109,9 +110,9 @@ export function Create({ open, onOpenChange, onCreateData }) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {wareHouses?.map(item => (
+                          {warehouses?.map(item => (
                             <SelectItem key={item.WAREHOUSE_CODE} value={item.WAREHOUSE_CODE}>
-                              {item.WAREHOUSE_NAME}
+                              {item.WAREHOUSE_CODE}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -150,11 +151,11 @@ export function Create({ open, onOpenChange, onCreateData }) {
                   name="SLOT_COUNT"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-600">Số dãy</FormLabel>
+                      <FormLabel className="text-gray-600">Số ô</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="Số dãy"
+                          placeholder="Số ô"
                           {...field}
                           onChange={e => {
                             field.onChange(Number(e.target.value));

@@ -3,7 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import MenuMobile from "@/layout/menu/MenuMobile";
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { Button } from "@/components/ui/button";
-import { Bell, ChevronDown, MessageCircle } from "lucide-react";
+import { Bell, ChevronDown, Loader2, MessageCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +19,7 @@ import { useCustomStore } from "@/lib/auth";
 export function MainLayout() {
   const menu = useSelector(state => state.menuSlice.menu);
   const user = useSelector(state => state.userSlice.user);
+  const globalLoading = useSelector(state => state.globalLoadingSlice.globalLoading);
   let { pathname } = useLocation();
   const [isCollapse, setIsCollapse] = useState(false);
   const userGlobal = useCustomStore();
@@ -92,7 +93,14 @@ export function MainLayout() {
             </div>
           </header>
           <main>
-            <div className="h-minusHeader w-screen overflow-y-auto rounded-md bg-white md:w-full">
+            {globalLoading && (
+              <div className="absolute left-1/2 top-1/2 z-50">
+                <Loader2 className="size-28 animate-spin text-gray-500" />
+              </div>
+            )}
+            <div
+              className={`${globalLoading && "pointer-events-none opacity-50"} ${isCollapse ? "md:max-w-minusMenuIsCollapse" : "md:max-w-minusMenuNotCollapse"} h-minusHeader overflow-auto rounded-md bg-white md:w-full`}
+            >
               <Outlet />
             </div>
           </main>

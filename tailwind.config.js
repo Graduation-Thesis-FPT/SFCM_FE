@@ -20,6 +20,14 @@ module.exports = {
       height: {
         minusHeader: "calc(100vh - 96px - 12px)"
       },
+      width: {
+        minusMenuIsCollapse: "calc(100vw - 92px - 20px)",
+        minusMenuNotCollapse: "calc(100vw - 256px - 20px)"
+      },
+      maxWidth: {
+        minusMenuIsCollapse: "calc(100vw - 92px - 20px)",
+        minusMenuNotCollapse: "calc(100vw - 256px - 20px)"
+      },
       fontSize: {
         4: "4px",
         7: "7px",

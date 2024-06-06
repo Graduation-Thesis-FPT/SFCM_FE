@@ -13,15 +13,19 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { fnAddRows, fnDeleteRows } from "@/lib/fnTable";
+import { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { PlusCircle } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DetailWarehouseDesign } from "./DetailWarehouseDesign";
 import { Create } from "./Create";
 import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
 import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
 import { useCustomToast } from "@/components/custom-toast";
+import { getAllWarehouse } from "@/apis/warehouse.api";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { DisplayTypeBlock } from "./DisplayTypeBlock";
 
 let wareHouses = [
   { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM" },
@@ -35,6 +39,9 @@ export function WarehouseDesign() {
   const [detailData, setDetailData] = useState({});
   const [openOpenDetailWareHouseDesign, setOpenDetailWareHouseDesign] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
+  const [warehouses, setWarehouses] = useState([]);
+  const [displayType, setDisplayType] = useState("table");
+  const dispatch = useDispatch();
 
   const colDefs = [
     {
@@ -55,7 +62,7 @@ export function WarehouseDesign() {
       editable: params => (params.data.ROWGUID ? false : true),
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
-        values: wareHouses.map(item => item.WAREHOUSE_CODE)
+        values: warehouses.map(item => item.WAREHOUSE_CODE)
       }
     },
     {
@@ -138,11 +145,6 @@ export function WarehouseDesign() {
     }
   ];
 
-  const columnsRequired = ["WAREHOUSE_CODE", "BLOCK_NAME"];
-
-  const validatePrice = params => {
-    console.log(params);
-  };
   const handleSearch = value => {};
 
   //delete data in table
@@ -162,6 +164,7 @@ export function WarehouseDesign() {
       setRowData(newRowData);
       return;
     }
+    dispatch(setGlobalLoading(true));
 
     deleteBlock(liseIdDetele)
       .then(resDelete => {
@@ -176,7 +179,8 @@ export function WarehouseDesign() {
       })
       .catch(err => {
         toast.error(err);
-      });
+      })
+      .finally(dispatch(setGlobalLoading(false)));
   };
 
   //delete data in detail
@@ -194,53 +198,62 @@ export function WarehouseDesign() {
     setRowData(prevRowData => [...newRows, ...prevRowData]);
   };
 
-  const validationData = data => {
-    const gridApi = gridRef.current.api;
-    data.map(item => {
-      gridApi.forEachNode(node => {
-        const rowNode = gridApi.getDisplayedRowAtIndex(node.id);
-        if (item.key === node.data.key) {
-          columnsRequired.map(column => {
-            if (!item[column]) {
-              gridApi.flashCells({
-                rowNodes: [rowNode],
-                columns: [column],
-                flashDuration: 3000
-              });
-            }
-          });
-        }
-      });
-    });
-  };
+  // const validationData = data => {
+  //   const gridApi = gridRef.current.api;
+  //   data.map(item => {
+  //     gridApi.forEachNode(node => {
+  //       const rowNode = gridApi.getDisplayedRowAtIndex(node.id);
+  //       if (item.key === node.data.key) {
+  //         columnsRequired.map(column => {
+  //           if (!item[column]) {
+  //             gridApi.flashCells({
+  //               rowNodes: [rowNode],
+  //               columns: [column],
+  //               flashDuration: 3000
+  //             });
+  //           }
+  //         });
+  //       }
+  //     });
+  //   });
+  // };
 
   const handleSave = () => {
-    let data = [...rowData];
-    let dataSave = data.filter(item => item.status === "update" || item.status === "create");
+    dispatch(setGlobalLoading(true));
+    let { insertData } = fnFilterInsertAndUpdateData(rowData);
+    // if (dataSave.length === 0) {
+    //   toast.error("Không có dữ liệu cần cập nhật");
+    //   return;
+    // }
 
-    if (dataSave.length === 0) {
-      toast.error("Không có dữ liệu cần cập nhật");
-      return;
-    }
+    // validationData(dataSave);
 
-    validationData(dataSave);
-
-    let finalDataSave = dataSave.map(item => {
-      let { key, status, ...data } = item;
-      return data;
-    });
-
-    createBlock(finalDataSave)
-      .then(res => {
+    // let finalDataSave = dataSave.map(item => {
+    //   let { key, status, ...data } = item;
+    //   return data;
+    // });
+    createBlock(insertData)
+      .then(resCreate => {
         getBlock().then(res => {
+          toast.success(resCreate);
           setRowData(res.data.metadata);
         });
-        toast.success(res);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(dispatch(setGlobalLoading(false)));
+  };
+
+  useEffect(() => {
+    getAllWarehouse()
+      .then(res => {
+        setWarehouses(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
       });
-  };
+  }, []);
 
   return (
     <Section>
@@ -263,54 +276,64 @@ export function WarehouseDesign() {
         <div className="flex justify-between">
           <SearchInput handleSearch={value => handleSearch(value)} />
           <span className="flex gap-x-4">
-            <span>
-              <div className="mb-2 text-xs font-medium">Công cụ</div>
-              <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
-                <GrantPermission action={actionGrantPermission.CREATE}>
-                  <BtnAddRow onAddRow={handleAddRow} />
-                </GrantPermission>
-                <GrantPermission action={actionGrantPermission.UPDATE}>
-                  <BtnSave onClick={handleSave} />
-                </GrantPermission>
-                <BtnExcel />
-              </div>
-            </span>
+            {displayType === "table" ? (
+              <span>
+                <div className="mb-2 text-xs font-medium">Công cụ</div>
+                <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
+                  <GrantPermission action={actionGrantPermission.CREATE}>
+                    <BtnAddRow onAddRow={handleAddRow} />
+                  </GrantPermission>
+                  <GrantPermission action={actionGrantPermission.UPDATE}>
+                    <BtnSave onClick={handleSave} />
+                  </GrantPermission>
+                </div>
+              </span>
+            ) : null}
 
             <span>
               <div className="mb-2 text-xs font-medium">Hiển thị</div>
-              <Select defaultValue="table">
+              <Select
+                onValueChange={value => {
+                  setDisplayType(value);
+                }}
+                defaultValue={displayType}
+              >
                 <SelectTrigger className="h-[42px] w-[122px]">
                   <SelectValue placeholder="Hiển thị" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="table">Dạng bảng</SelectItem>
-                    <SelectItem value="...">Dạng háng</SelectItem>
+                    <SelectItem value="block">Dạng khối</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </span>
           </span>
         </div>
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRow(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getBlock().then(res => {
-              setRowData(res.data.metadata);
-            });
-          }}
-        />
+        {displayType === "table" ? (
+          <AgGrid
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            className="h-[50vh]"
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRow(selectedRows);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getBlock().then(res => {
+                setRowData(res.data.metadata);
+              });
+            }}
+          />
+        ) : (
+          <DisplayTypeBlock blockList={rowData} warehouses={warehouses} />
+        )}
       </Section.Content>
       <DetailWarehouseDesign
         detailData={detailData}
@@ -321,6 +344,7 @@ export function WarehouseDesign() {
         }}
       />
       <Create
+        warehouses={warehouses}
         onOpenChange={() => setOpenCreate(false)}
         open={openCreate}
         onCreateData={newRows => {

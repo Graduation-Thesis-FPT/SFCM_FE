@@ -119,7 +119,7 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData, onDelete
                   <FormItem>
                     <FormLabel className="text-gray-600">Số tầng</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="" disabled {...field} />
+                      <Input type="text" placeholder="Số tầng" disabled {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -129,9 +129,9 @@ export function DetailWarehouseDesign({ open, onOpenChange, detailData, onDelete
                 name="SLOT_COUNT"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-600">Số dãy</FormLabel>
+                    <FormLabel className="text-gray-600">Số ô</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="" disabled {...field} />
+                      <Input type="text" placeholder="Số ô" disabled {...field} />
                     </FormControl>
                   </FormItem>
                 )}

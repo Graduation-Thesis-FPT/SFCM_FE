@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 export const SearchInput = forwardRef(({ className, handleSearch, ...props }, ref) => {
   const inputRef = useRef(null);
   return (
-    <div className={cn("mb-[34px]", className)}>
+    <div className={cn("mb-[25px]", className)}>
       <div className="mb-2 text-xs font-medium">Tìm kiếm</div>
       <div className="relative flex">
         <Search className="absolute left-2.5 top-3.5 size-5 text-gray-400" />
