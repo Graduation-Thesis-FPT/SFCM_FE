@@ -119,7 +119,7 @@ export function DisplayTypeBlock({ warehouses, blockList }) {
                 <div className="mb-2 text-center text-xl font-bold text-blue-600">
                   {block.BLOCK_NAME}
                 </div>
-                <span className="flex h-[50vh] flex-row gap-x-3 overflow-y-auto overflow-x-hidden rounded-lg border p-[14px] text-sm font-medium">
+                <span className="flex h-[40vh] flex-row gap-x-3 overflow-y-auto overflow-x-hidden rounded-lg border p-[14px] text-sm font-medium">
                   {block.child.map(child => {
                     return (
                       <span>

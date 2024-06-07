@@ -180,7 +180,9 @@ export function WarehouseDesign() {
       .catch(err => {
         toast.error(err);
       })
-      .finally(dispatch(setGlobalLoading(false)));
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
   };
 
   //delete data in detail
@@ -242,7 +244,9 @@ export function WarehouseDesign() {
       .catch(err => {
         toast.error(err);
       })
-      .finally(dispatch(setGlobalLoading(false)));
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
   };
 
   useEffect(() => {

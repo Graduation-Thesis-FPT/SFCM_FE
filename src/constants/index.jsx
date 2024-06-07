@@ -22,7 +22,14 @@ export const ERROR_MESSAGE = {
   WAREHOUSE_NOT_EXIST: "Kho hàng không tồn tại",
   INVALID_WAREHOUSE_CODE: "Mã kho hàng không hợp lệ",
   // Warehouse - block
-  BLOCK_DUPLICATED: "Dãy bị trùng"
+  BLOCK_DUPLICATED: "Dãy bị trùng",
+  BLOCK_NOT_EXIST: "Dãy không tồn tại",
+
+  // gate
+  GATE_NOT_EXIST: "Cổng không tồn tại", // check cổng này tồn tại hay không
+
+  // equip type
+  EQUIPTYPE_NOT_EXIST: "Loại thiết bị không tồn tại"
 };
 
 export const SUCCESS_MESSAGE = {
@@ -45,8 +52,20 @@ export const SUCCESS_MESSAGE = {
   // Warehouse success
   CREATE_BLOCK_SUCCESS: "Tạo khối thành công",
   DELETE_BLOCK_SUCCESS: "Xóa khối thành công",
-  // Warehouse - block
-  GET_BLOCK_SUCCESS: "Lấy khối thành công"
+  GET_BLOCK_SUCCESS: "Lấy khối thành công",
+  // warehouse - block
+  DELETE_WAREHOUSE_SUCCESS: "Xóa kho hàng thành công",
+  GET_WAREHOUSE_SUCCESS: "Lấy kho hàng thành công",
+
+  // gate
+  CREATE_GATE_SUCCESS: "Tạo cổng thành công",
+  DELETE_GATE_SUCCESS: "Xóa cổng thành công",
+  GET_GATE_SUCCESS: "Lấy cổng thành công",
+
+  // equipment
+  CREATE_EQUIPTYPE_SUCCESS: "Tạo loại thiết bị thành công",
+  DELETE_EQUIPTYPE_SUCCESS: "Xóa loại thiết bị thành công",
+  GET_EQUIPTYPE_SUCCESS: "Lấy loại thiết bị thành công"
 };
 
 export const REASON_PHRASES = {

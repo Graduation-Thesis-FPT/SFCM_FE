@@ -66,7 +66,9 @@ export function Create({ open, onOpenChange, onCreateData, warehouses }) {
       .catch(err => {
         toast.error(err);
       })
-      .finally(dispatch(setGlobalLoading(false)));
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
   };
 
   return (
