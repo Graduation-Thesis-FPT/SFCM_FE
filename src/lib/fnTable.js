@@ -15,8 +15,10 @@ const fnAddKey = rowData => {
   });
 };
 
-const fnDeleteRows = (listIdDeleted, rowData) => {
-  return rowData.filter(row => !listIdDeleted.includes(row.ROWGUID));
+const fnDeleteRows = (listIdDeleted, rowData, PRIMARY_KEY) => {
+  return rowData.filter(
+    row => !listIdDeleted.includes(PRIMARY_KEY ? row[PRIMARY_KEY] : row.ROWGUID)
+  );
 };
 
 function fnFilterInsertAndUpdateData(listData) {

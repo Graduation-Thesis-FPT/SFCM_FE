@@ -34,10 +34,10 @@ export function FormCreateWarehouse({ open, onOpenChange, onCreateData }) {
     }
   });
   const onSubmit = values => {
-    let createData = [values];
+    let createData = { insert: [values], update: [] };
     createWarehouse(createData)
       .then(res => {
-        onCreateData(res.data.metadata);
+        onCreateData(res.data.metadata.createdWarehouse);
         onOpenChange();
         toast.success(res);
       })

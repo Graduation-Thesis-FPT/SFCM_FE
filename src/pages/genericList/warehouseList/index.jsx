@@ -92,7 +92,7 @@ export function WarehouseList() {
   const handleSave = () => {};
 
   const handleDeleteData = deteleData => {
-    let newRowData = fnDeleteRows(deteleData, rowData);
+    let newRowData = fnDeleteRows(deteleData, rowData, "WAREHOUSE_CODE");
     setRowData(newRowData);
   };
 

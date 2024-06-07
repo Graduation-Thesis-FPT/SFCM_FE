@@ -34,11 +34,13 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
       ACREAGE: 0
     }
   });
+
   const onSubmit = values => {
     console.log("🚀 ~ DetailWarehouse ~ values:", values);
   };
+
   const handleDelete = () => {
-    let deteleData = [detailData.ROWGUID];
+    let deteleData = [detailData.WAREHOUSE_CODE];
     deleteWarehouse(deteleData)
       .then(res => {
         onDeleteData(deteleData);
@@ -49,12 +51,14 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
         toast.error(err);
       });
   };
+
   useEffect(() => {
     form.reset();
     Object.keys(detailData).map(key => {
       form.setValue(key, detailData[key] ?? "");
     });
   }, [detailData]);
+
   return (
     <CustomSheet open={open} onOpenChange={onOpenChange} title="Tạo kho mới">
       <CustomSheet.Content title="Thông tin kho">
