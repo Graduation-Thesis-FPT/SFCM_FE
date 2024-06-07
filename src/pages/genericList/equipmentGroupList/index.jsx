@@ -1,4 +1,4 @@
-import { getAllEquipType } from "@/apis/equip-type";
+import { createAndUpdateEquipType, deleteEquipType, getAllEquipType } from "@/apis/equip-type.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { DateTimeRenderByText } from "@/components/aggridreact/cellRender";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
@@ -8,6 +8,7 @@ import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
+import { fnAddRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import React, { useRef, useState } from "react";
 
 export function EquipmentGroupList() {
@@ -47,6 +48,74 @@ export function EquipmentGroupList() {
       cellRenderer: DateTimeRenderByText
     }
   ];
+
+  const handleAddRow = () => {
+    let newRowData = fnAddRows(rowData);
+    setRowData(newRowData);
+  };
+
+  const handleSaveRows = () => {
+    let { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
+
+    if (insertAndUpdateData.update.length > 0) {
+      const columnUpdate = ["EQU_TYPE", "EQU_TYPE_NAME"];
+      insertAndUpdateData.update = insertAndUpdateData.update.map(obj =>
+        Object.fromEntries(columnUpdate.map(key => [key, obj[key]]))
+      );
+    }
+
+    createAndUpdateEquipType(insertAndUpdateData)
+      .then(resCreateAndUpdate => {
+        toast.success(resCreateAndUpdate);
+        getRowData();
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const getRowData = () => {
+    getAllEquipType()
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const handleDeleteRows = selectedRows => {
+    let rowTemps = [];
+    let liseIdDetele = [];
+    selectedRows.forEach(item => {
+      if (item.key) {
+        rowTemps.push(item.key);
+      } else {
+        liseIdDetele.push(item.EQU_TYPE);
+      }
+    });
+
+    if (rowTemps.length > 0 && liseIdDetele.length === 0) {
+      let newRowData = [...rowData].filter(row => !rowTemps.includes(row.key));
+      setRowData(newRowData);
+      return;
+    }
+
+    deleteEquipType(liseIdDetele)
+      .then(resDelete => {
+        getAllEquipType()
+          .then(res => {
+            toast.success(resDelete);
+            setRowData(res.data.metadata);
+          })
+          .catch(err => {
+            toast.error(err);
+          });
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
   return (
     <>
       <Section>
@@ -62,10 +131,10 @@ export function EquipmentGroupList() {
               <div className="mb-2 text-xs font-medium">Công cụ</div>
               <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
                 <GrantPermission action={actionGrantPermission.CREATE}>
-                  <BtnAddRow onAddRow={() => {}} />
+                  <BtnAddRow onAddRow={handleAddRow} />
                 </GrantPermission>
                 <GrantPermission action={actionGrantPermission.UPDATE}>
-                  <BtnSave onClick={() => {}} />
+                  <BtnSave onClick={handleSaveRows} />
                 </GrantPermission>
               </div>
             </span>
@@ -86,7 +155,7 @@ export function EquipmentGroupList() {
             })}
             colDefs={colDefs}
             onDeleteRow={selectedRows => {
-              handleDeleteRow(selectedRows);
+              handleDeleteRows(selectedRows);
             }}
             onGridReady={() => {
               gridRef.current.api.showLoadingOverlay();
