@@ -123,7 +123,6 @@ export function WarehouseList() {
           }}
         />
         <AgGrid
-          contextMenu={true}
           setRowData={data => {
             setRowData(data);
           }}

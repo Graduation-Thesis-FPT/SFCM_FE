@@ -1,5 +1,5 @@
+import { getAllEquipment } from "@/apis/equipment.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { DateTimeRenderByText } from "@/components/aggridreact/cellRender";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { GrantPermission } from "@/components/common";
@@ -14,6 +14,7 @@ export function EquipmentList() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
+  const [searchData, setSearchData] = useState("");
 
   const colDefs = [
     {
@@ -57,7 +58,15 @@ export function EquipmentList() {
     }
   ];
 
-  const [searchData, setSearchData] = useState("");
+  const getRowData = () => {
+    getAllEquipment()
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
 
   const handleAddRow = () => {
     let newRowData = fnAddRows(rowData);
@@ -113,7 +122,7 @@ export function EquipmentList() {
           }}
           onGridReady={() => {
             gridRef.current.api.showLoadingOverlay();
-            setRowData([]);
+            getRowData();
           }}
         />
       </Section.Content>

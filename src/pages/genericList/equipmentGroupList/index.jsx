@@ -1,4 +1,4 @@
-import { createAndUpdateEquipType, deleteEquipType, getAllEquipType } from "@/apis/equip-type.api";
+import { createAndUpdateEquipType, deleteEquipType, getAllEquipType } from "@/apis/equipment-type.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { DateTimeRenderByText } from "@/components/aggridreact/cellRender";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
