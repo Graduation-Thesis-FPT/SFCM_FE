@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { Loader2, Trash } from "lucide-react";
+import { Loader2, Minus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 
 export const BtnDeleteRow = forwardRef(({ isLoading, deleteRow, ...props }, ref) => {
   const [open, setOpen] = useState(false);
@@ -29,15 +29,15 @@ export const BtnDeleteRow = forwardRef(({ isLoading, deleteRow, ...props }, ref)
           <TooltipTrigger asChild>
             <Button
               disabled={isLoading}
-              size="icon"
-              variant="red-outline"
+              size="tool"
+              variant="none-border"
               onClick={() => setOpen(true)}
               {...props}
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Trash className="h-4 w-4" />
+                <Minus className="h-5 w-5" />
               )}
             </Button>
           </TooltipTrigger>

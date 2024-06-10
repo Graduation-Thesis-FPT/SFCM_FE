@@ -68,22 +68,21 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
   function onSubmit(values) {
     const dataReq = removeEmptyValues(values);
     createAccount(dataReq)
-      .then(res => {
-        findUserById(res.data.metadata.ROWGUID)
+      .then(resCreate => {
+        findUserById(resCreate.data.metadata.ROWGUID)
           .then(res => {
             const newAccount = res.data.metadata;
             handleCreateUser(newAccount);
-            toast.success(res.data.message);
+            toast.success(resCreate);
             form.reset();
             setOpen(false);
           })
           .catch(err => {
-            toast.error(err?.response?.data?.message || err.message);
+            toast.error(err);
           });
       })
       .catch(err => {
-        console.log("🚀 ~ onSubmit ~ err:", err);
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   }
 
@@ -94,7 +93,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
           setOpen(true);
         }}
         variant="blue"
-        className="h-12"
+        className="h-[42px]"
       >
         <PlusCircle className="mr-2 size-5" />
         Tạo người dùng mới
@@ -254,13 +253,13 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                       setOpen(false);
                       form.reset();
                     }}
-                    className="mr-3 h-[48px] w-[126px] text-blue-600 hover:text-blue-600"
+                    className="mr-3 h-[42px] w-[126px] text-blue-600 hover:text-blue-600"
                     variant="outline"
                     type="button"
                   >
                     Hủy
                   </Button>
-                  <Button type="submit" className="h-12 w-[126px]" variant="blue">
+                  <Button type="submit" className="h-[42px] w-[126px]" variant="blue">
                     Tạo mới
                   </Button>
                 </div>

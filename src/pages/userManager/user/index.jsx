@@ -107,7 +107,7 @@ export function User() {
         setRowData(res.data.metadata);
       })
       .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   }, []);
 
@@ -117,7 +117,7 @@ export function User() {
         setRoles(res.data.metadata);
       })
       .catch(err => {
-        toast.error(err?.response?.data?.message || err.message);
+        toast.error(err);
       });
   }, []);
   return (

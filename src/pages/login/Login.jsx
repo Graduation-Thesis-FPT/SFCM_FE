@@ -60,11 +60,11 @@ export function Login() {
           return;
         }
         userGlobal.store(res.data.metadata);
-        toast.success(res.data.message);
+        toast.success(res);
         navigate("/");
       })
       .catch(err => {
-        toast.error(err.response.data.message || err.message);
+        toast.error(err);
       });
     return;
   }

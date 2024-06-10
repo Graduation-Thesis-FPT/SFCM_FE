@@ -19,5 +19,5 @@ Section.Header = ({ title, children, className }) => {
 };
 
 Section.Content = ({ children, className }) => {
-  return <div className={cn("px-6 pt-[10px]", className)}>{children}</div>;
+  return <div className={cn("px-6 pt-[25px]", className)}>{children}</div>;
 };

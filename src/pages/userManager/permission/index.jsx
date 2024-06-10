@@ -75,7 +75,7 @@ export function Permission() {
                   setRowData(res.data.metadata);
                 })
                 .catch(err => {
-                  toast.error(err?.response?.data?.message || err.message);
+                  toast.error(err);
                 });
             }}
           />
