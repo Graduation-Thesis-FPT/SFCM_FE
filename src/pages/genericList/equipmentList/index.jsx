@@ -1,5 +1,6 @@
 import { getAllEquipment } from "@/apis/equipment.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { bs_equipment } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { GrantPermission } from "@/components/common";
@@ -15,10 +16,11 @@ export function EquipmentList() {
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
   const [searchData, setSearchData] = useState("");
+  const BS_EQUIPMENT = new bs_equipment();
 
   const colDefs = [
     {
-      cellStyle: { textAlign: "center", background: "rgb(249 250 251)" },
+      cellClass: "text-gray-600 bg-gray-50 text-center",
       width: 60,
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
         return nodeA.rowIndex - nodeB.rowIndex;
@@ -28,30 +30,30 @@ export function EquipmentList() {
       }
     },
     {
-      headerName: "EQU_CODE",
-      field: "EQU_CODE",
+      headerName: BS_EQUIPMENT.EQU_CODE.headerName,
+      field: BS_EQUIPMENT.EQU_CODE.field,
       flex: 1,
       filter: true,
       editable: true
     },
 
     {
-      headerName: "EQU_TYPE",
-      field: "EQU_TYPE",
+      headerName: BS_EQUIPMENT.EQU_TYPE.headerName,
+      field: BS_EQUIPMENT.EQU_TYPE.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: "EQU_CODE_NAME",
-      field: "EQU_CODE_NAME",
+      headerName: BS_EQUIPMENT.EQU_CODE_NAME.headerName,
+      field: BS_EQUIPMENT.EQU_CODE_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: "BLOCK",
-      field: "BLOCK",
+      headerName: BS_EQUIPMENT.BLOCK.headerName,
+      field: BS_EQUIPMENT.BLOCK.field,
       flex: 1,
       filter: true,
       editable: true

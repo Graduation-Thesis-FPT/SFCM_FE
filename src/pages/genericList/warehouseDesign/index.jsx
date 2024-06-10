@@ -45,7 +45,7 @@ export function WarehouseDesign() {
 
   const colDefs = [
     {
-      cellStyle: { textAlign: "center", background: "rgb(249 250 251)" },
+      cellClass: "text-gray-600 bg-gray-50 text-center",
       width: 60,
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
         return nodeA.rowIndex - nodeB.rowIndex;

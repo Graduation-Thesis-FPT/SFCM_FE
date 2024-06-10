@@ -15,10 +15,15 @@ const fnAddKey = rowData => {
   });
 };
 
-const fnDeleteRows = (listIdDeleted, rowData, PRIMARY_KEY) => {
-  return rowData.filter(
-    row => !listIdDeleted.includes(PRIMARY_KEY ? row[PRIMARY_KEY] : row.ROWGUID)
+const fnDeleteRows = (selectedRows, rowData, deleteBy) => {
+  const deleteIdList = selectedRows.filter(item => item[deleteBy]).map(item => item[deleteBy]);
+
+  const deleteKeys = selectedRows.map(item => item.key || item[deleteBy] || item.ROWGUID);
+  const newRowDataAfterDeleted = rowData.filter(
+    item => !deleteKeys.includes(item.key || item[deleteBy] || item.ROWGUID)
   );
+
+  return { deleteIdList, newRowDataAfterDeleted };
 };
 
 function fnFilterInsertAndUpdateData(listData) {
@@ -27,7 +32,7 @@ function fnFilterInsertAndUpdateData(listData) {
     .map(({ status, key, ...rest }) => rest);
   const updateData = listData
     .filter(item => item.status === "update")
-    .map(({ status, ...rest }) => rest);
+    .map(({ status, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, ...rest }) => rest);
   return {
     insertData: { insert: insertData },
     updateData: { update: updateData },

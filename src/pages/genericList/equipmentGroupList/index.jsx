@@ -1,6 +1,11 @@
-import { createAndUpdateEquipType, deleteEquipType, getAllEquipType } from "@/apis/equipment-type.api";
+import {
+  createAndUpdateEquipType,
+  deleteEquipType,
+  getAllEquipType
+} from "@/apis/equipment-type.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { DateTimeRenderByText } from "@/components/aggridreact/cellRender";
+import { bs_equipment_type } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { GrantPermission } from "@/components/common";
@@ -8,7 +13,7 @@ import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
-import { fnAddRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import React, { useRef, useState } from "react";
 
 export function EquipmentGroupList() {
@@ -16,9 +21,10 @@ export function EquipmentGroupList() {
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
   const [searchData, setSearchData] = useState("");
+  const BS_EQUIPMENT_TYPE = new bs_equipment_type();
   const colDefs = [
     {
-      cellStyle: { textAlign: "center", background: "rgb(249 250 251)" },
+      cellClass: "text-gray-600 bg-gray-50 text-center",
       width: 60,
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
         return nodeA.rowIndex - nodeB.rowIndex;
@@ -28,22 +34,22 @@ export function EquipmentGroupList() {
       }
     },
     {
-      headerName: "Mã thiết bị *",
-      field: "EQU_TYPE",
+      headerName: BS_EQUIPMENT_TYPE.EQU_TYPE.headerName,
+      field: BS_EQUIPMENT_TYPE.EQU_TYPE.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: "Tên thiết bị *",
-      field: "EQU_TYPE_NAME",
+      headerName: BS_EQUIPMENT_TYPE.EQU_TYPE_NAME.headerName,
+      field: BS_EQUIPMENT_TYPE.EQU_TYPE_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: "Ngày cập nhật",
-      field: "UPDATE_DATE",
+      headerName: BS_EQUIPMENT_TYPE.UPDATE_DATE.headerName,
+      field: BS_EQUIPMENT_TYPE.UPDATE_DATE.field,
       flex: 1,
       cellRenderer: DateTimeRenderByText
     }
@@ -56,14 +62,6 @@ export function EquipmentGroupList() {
 
   const handleSaveRows = () => {
     let { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-
-    if (insertAndUpdateData.update.length > 0) {
-      const columnUpdate = ["EQU_TYPE", "EQU_TYPE_NAME"];
-      insertAndUpdateData.update = insertAndUpdateData.update.map(obj =>
-        Object.fromEntries(columnUpdate.map(key => [key, obj[key]]))
-      );
-    }
-
     createAndUpdateEquipType(insertAndUpdateData)
       .then(resCreateAndUpdate => {
         toast.success(resCreateAndUpdate);
@@ -85,37 +83,18 @@ export function EquipmentGroupList() {
   };
 
   const handleDeleteRows = selectedRows => {
-    let rowTemps = [];
-    let liseIdDetele = [];
-    selectedRows.forEach(item => {
-      if (item.key) {
-        rowTemps.push(item.key);
-      } else {
-        liseIdDetele.push(item.EQU_TYPE);
-      }
-    });
+    let { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "EQU_TYPE");
 
-    if (rowTemps.length > 0 && liseIdDetele.length === 0) {
-      let newRowData = [...rowData].filter(row => !rowTemps.includes(row.key));
-      setRowData(newRowData);
-      return;
-    }
-
-    deleteEquipType(liseIdDetele)
+    deleteEquipType(deleteIdList)
       .then(resDelete => {
-        getAllEquipType()
-          .then(res => {
-            toast.success(resDelete);
-            setRowData(res.data.metadata);
-          })
-          .catch(err => {
-            toast.error(err);
-          });
+        toast.success(resDelete);
+        setRowData(newRowDataAfterDeleted);
       })
       .catch(err => {
         toast.error(err);
       });
   };
+
   return (
     <>
       <Section>
