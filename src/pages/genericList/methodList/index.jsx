@@ -1,4 +1,6 @@
+import { createAndUpdateMethod, deleteMethod, getAllMethod } from "@/apis/method.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { DateTimeRenderByText, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
 import { bs_method } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
@@ -7,8 +9,9 @@ import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
-import { fnAddRows } from "@/lib/fnTable";
+import { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
+import { render } from "react-dom";
 
 export function MethodList() {
   const gridRef = useRef(null);
@@ -55,6 +58,12 @@ export function MethodList() {
       flex: 1,
       filter: true,
       editable: true
+    },
+    {
+      headerName: BS_METHOD.UPDATE_DATE.headerName,
+      field: BS_METHOD.UPDATE_DATE.field,
+      flex: 1,
+      cellRenderer: DateTimeRenderByText
     }
   ];
 
@@ -65,9 +74,48 @@ export function MethodList() {
     setRowData(newRowData);
   };
 
-  const handleSaveRows = () => {};
+  const handleSaveRows = () => {
+    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
+    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
+      toast.error("Không có dữ liệu thay đổi để lưu");
+      return;
+    }
+    createAndUpdateMethod(insertAndUpdateData)
+      .then(res => {
+        toast.success(res);
+        getRowData();
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
 
-  const handleDeleteRows = () => {};
+  const handleDeleteRows = selectedRows => {
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
+      selectedRows,
+      rowData,
+      "METHOD_CODE"
+    );
+
+    deleteMethod(deleteIdList)
+      .then(res => {
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const getRowData = () => {
+    getAllMethod()
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
 
   return (
     <Section>
@@ -101,12 +149,7 @@ export function MethodList() {
           className="h-[50vh]"
           rowData={rowData?.filter(item => {
             if (searchData === "") return item;
-            return (
-              item.EQU_CODE?.toLowerCase().includes(searchData.toLowerCase()) ||
-              item.EQU_TYPE?.toLowerCase().includes(searchData.toLowerCase()) ||
-              item.EQU_CODE_NAME?.toLowerCase().includes(searchData.toLowerCase()) ||
-              item.EQU_BLOCK?.toLowerCase().includes(searchData.toLowerCase())
-            );
+            return item.METHOD_CODE?.toLowerCase().includes(searchData.toLowerCase());
           })}
           colDefs={colDefs}
           onDeleteRow={selectedRows => {
@@ -114,7 +157,7 @@ export function MethodList() {
           }}
           onGridReady={() => {
             gridRef.current.api.showLoadingOverlay();
-            setRowData([]);
+            getRowData();
           }}
         />
       </Section.Content>
