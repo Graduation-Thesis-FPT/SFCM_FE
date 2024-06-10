@@ -1,10 +1,8 @@
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnExcel } from "@/components/aggridreact/tableTools/BtnExcel";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -14,10 +12,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { PlusCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { DetailWarehouseDesign } from "./DetailWarehouseDesign";
-import { Create } from "./Create";
 import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
 import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
@@ -25,23 +20,22 @@ import { useCustomToast } from "@/components/custom-toast";
 import { getAllWarehouse } from "@/apis/warehouse.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { DisplayTypeBlock } from "./DisplayTypeBlock";
-
-let wareHouses = [
-  { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM" },
-  { WAREHOUSE_CODE: "CFS", WAREHOUSE_NAME: "CFS" }
-];
+import { bs_block } from "@/components/aggridreact/dbColumns";
+import { OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
+import { DisplayCell } from "./displayCell";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const [detailData, setDetailData] = useState({});
-  const [openOpenDetailWareHouseDesign, setOpenDetailWareHouseDesign] = useState(false);
-  const [openCreate, setOpenCreate] = useState(false);
   const [warehouses, setWarehouses] = useState([]);
   const [displayType, setDisplayType] = useState("table");
+  const [filterData, setFilterData] = useState({
+    warehouseCode: "",
+    blockName: "all"
+  });
   const dispatch = useDispatch();
+  const BS_BLOCK = new bs_block();
 
   const colDefs = [
     {
@@ -55,52 +49,59 @@ export function WarehouseDesign() {
       }
     },
     {
-      headerName: "Mã kho *",
-      field: "WAREHOUSE_CODE",
+      headerName: BS_BLOCK.WAREHOUSE_CODE.headerName,
+      field: BS_BLOCK.WAREHOUSE_CODE.field,
       flex: 1,
       filter: true,
-      editable: params => (params.data.ROWGUID ? false : true),
+      editable: OnlyEditWithInsertCell,
       cellEditor: "agSelectCellEditor",
       cellEditorParams: {
         values: warehouses.map(item => item.WAREHOUSE_CODE)
       }
     },
     {
-      headerName: "Mã dãy *",
-      field: "BLOCK_NAME",
+      headerName: BS_BLOCK.BLOCK_CODE.headerName,
+      field: BS_BLOCK.BLOCK_CODE.field,
       flex: 1,
       filter: true,
-      editable: params => (params.data.ROWGUID ? false : true)
+      editable: OnlyEditWithInsertCell
     },
     {
-      headerName: "Số tầng",
-      field: "TIER_COUNT",
+      headerName: BS_BLOCK.BLOCK_NAME.headerName,
+      field: BS_BLOCK.BLOCK_NAME.field,
+      flex: 1,
+      filter: true,
+      editable: OnlyEditWithInsertCell
+    },
+    {
+      headerName: BS_BLOCK.TIER_COUNT.headerName,
+      field: BS_BLOCK.TIER_COUNT.field,
+      cellDataType: "number",
+      flex: 1,
+      cellEditorParams: {
+        min: 0,
+        max: 1000
+      },
+      editable: OnlyEditWithInsertCell
+    },
+    {
+      headerName: BS_BLOCK.SLOT_COUNT.headerName,
+      field: BS_BLOCK.SLOT_COUNT.field,
       cellDataType: "number",
       cellEditorParams: {
         min: 0,
         max: 1000
       },
       flex: 1,
-      editable: params => (params.data.ROWGUID ? false : true)
-    },
-    {
-      headerName: "Số ô từng tầng",
-      field: "SLOT_COUNT",
-      cellDataType: "number",
-      cellEditorParams: {
-        min: 0,
-        max: 1000
-      },
-      flex: 1,
-      editable: params => (params.data.ROWGUID ? false : true)
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: "Diện tích",
       headerClass: "center-header",
       children: [
         {
-          headerName: "Dài (m)",
-          field: "BLOCK_HEIGHT",
+          headerName: BS_BLOCK.BLOCK_LENGTH.headerName,
+          field: BS_BLOCK.BLOCK_LENGTH.field,
           cellDataType: "number",
           cellEditorParams: {
             min: 0,
@@ -108,12 +109,12 @@ export function WarehouseDesign() {
           },
           headerClass: "hidden-border center-header",
           cellStyle: { textAlign: "center" },
-          flex: 0.5,
-          editable: params => (params.data.ROWGUID ? false : true)
+          flex: 1,
+          editable: OnlyEditWithInsertCell
         },
         {
-          headerName: "Rộng (m)",
-          field: "BLOCK_WIDTH",
+          headerName: BS_BLOCK.BLOCK_WIDTH.headerName,
+          field: BS_BLOCK.BLOCK_WIDTH.field,
           cellDataType: "number",
           cellEditorParams: {
             min: 0,
@@ -121,61 +122,40 @@ export function WarehouseDesign() {
           },
           headerClass: "hidden-border center-header",
           cellStyle: { textAlign: "center" },
-          flex: 0.5,
-          editable: params => (params.data.ROWGUID ? false : true)
+          flex: 1,
+          editable: OnlyEditWithInsertCell
+        },
+        {
+          headerName: BS_BLOCK.BLOCK_HEIGHT.headerName,
+          field: BS_BLOCK.BLOCK_HEIGHT.field,
+          cellDataType: "number",
+          cellEditorParams: {
+            min: 0,
+            max: 1000
+          },
+          headerClass: "hidden-border center-header",
+          cellStyle: { textAlign: "center" },
+          flex: 1,
+          editable: OnlyEditWithInsertCell
         }
       ]
-    },
-    {
-      flex: 0.5,
-      cellRenderer: params => {
-        if (!params.data.ROWGUID) return null;
-        return (
-          <span
-            onClick={() => {
-              setDetailData(params.data);
-              setOpenDetailWareHouseDesign(true);
-            }}
-            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
-          >
-            Xem
-          </span>
-        );
-      }
     }
   ];
 
   const handleSearch = value => {};
 
-  //delete data in table
-  const handleDeleteRow = selectedRows => {
-    let rowTemps = [];
-    let liseIdDetele = [];
-    selectedRows.forEach(item => {
-      if (item.key) {
-        rowTemps.push(item.key);
-      } else {
-        liseIdDetele.push(item.ROWGUID);
-      }
-    });
+  const handleAddRow = () => {
+    let newRowData = fnAddRows(rowData);
+    setRowData(newRowData);
+  };
 
-    if (rowTemps.length > 0 && liseIdDetele.length === 0) {
-      let newRowData = [...rowData].filter(row => !rowTemps.includes(row.key));
-      setRowData(newRowData);
-      return;
-    }
+  const handleSaveRows = () => {
     dispatch(setGlobalLoading(true));
-
-    deleteBlock(liseIdDetele)
-      .then(resDelete => {
-        getBlock()
-          .then(res => {
-            toast.success(resDelete);
-            setRowData(res.data.metadata);
-          })
-          .catch(err => {
-            toast.error("Lỗi không xác định");
-          });
+    let { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
+    createBlock(insertAndUpdateData)
+      .then(res => {
+        toast.success(res);
+        getRowData();
       })
       .catch(err => {
         toast.error(err);
@@ -185,67 +165,33 @@ export function WarehouseDesign() {
       });
   };
 
-  //delete data in detail
-  const handleDeleteData = deteleData => {
-    let newRowData = fnDeleteRows(deteleData, rowData);
-    setRowData(newRowData);
-  };
-
-  const handleAddRow = () => {
-    let newRowData = fnAddRows(rowData);
-    setRowData(newRowData);
-  };
-
-  const handleCreateData = newRows => {
-    setRowData(prevRowData => [...newRows, ...prevRowData]);
-  };
-
-  // const validationData = data => {
-  //   const gridApi = gridRef.current.api;
-  //   data.map(item => {
-  //     gridApi.forEachNode(node => {
-  //       const rowNode = gridApi.getDisplayedRowAtIndex(node.id);
-  //       if (item.key === node.data.key) {
-  //         columnsRequired.map(column => {
-  //           if (!item[column]) {
-  //             gridApi.flashCells({
-  //               rowNodes: [rowNode],
-  //               columns: [column],
-  //               flashDuration: 3000
-  //             });
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-  // };
-
-  const handleSave = () => {
+  const handleDeleteRows = selectedRows => {
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
+      selectedRows,
+      rowData,
+      "BLOCK_CODE"
+    );
     dispatch(setGlobalLoading(true));
-    let { insertData } = fnFilterInsertAndUpdateData(rowData);
-    // if (dataSave.length === 0) {
-    //   toast.error("Không có dữ liệu cần cập nhật");
-    //   return;
-    // }
-
-    // validationData(dataSave);
-
-    // let finalDataSave = dataSave.map(item => {
-    //   let { key, status, ...data } = item;
-    //   return data;
-    // });
-    createBlock(insertData)
-      .then(resCreate => {
-        getBlock().then(res => {
-          toast.success(resCreate);
-          setRowData(res.data.metadata);
-        });
+    deleteBlock(deleteIdList)
+      .then(res => {
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
       })
       .catch(err => {
         toast.error(err);
       })
       .finally(() => {
         dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const getRowData = () => {
+    getBlock()
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
       });
   };
 
@@ -253,6 +199,10 @@ export function WarehouseDesign() {
     getAllWarehouse()
       .then(res => {
         setWarehouses(res.data.metadata);
+        setFilterData(prevState => ({
+          ...prevState,
+          warehouseCode: res.data.metadata[0].WAREHOUSE_CODE
+        }));
       })
       .catch(err => {
         toast.error(err);
@@ -261,24 +211,70 @@ export function WarehouseDesign() {
 
   return (
     <Section>
-      <Section.Header title="Danh sách các dãy (block)">
-        <GrantPermission action={actionGrantPermission.CREATE}>
-          <Button
-            variant="blue"
-            className="h-[42px]"
-            onClick={() => {
-              setOpenCreate(true);
-            }}
-          >
-            <PlusCircle className="mr-2 size-5" />
-            Tạo dãy mới
-          </Button>
-        </GrantPermission>
-      </Section.Header>
-
+      <Section.Header title="Danh sách các dãy (block)" />
       <Section.Content>
         <div className="flex justify-between">
-          <SearchInput handleSearch={value => handleSearch(value)} />
+          {displayType === "table" ? (
+            <SearchInput handleSearch={value => handleSearch(value)} />
+          ) : (
+            <span className="flex gap-x-3">
+              <span>
+                <div className="mb-2 text-xs font-medium">Mã kho</div>
+                <Select
+                  onValueChange={value => {
+                    setFilterData({
+                      blockName: "all",
+                      warehouseCode: value
+                    });
+                  }}
+                  value={filterData.warehouseCode}
+                >
+                  <SelectTrigger className="h-[42px] w-[122px]">
+                    <SelectValue placeholder="Mã kho" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {warehouses.map(warehouse => (
+                        <SelectItem key={warehouse.WAREHOUSE_CODE} value={warehouse.WAREHOUSE_CODE}>
+                          {warehouse.WAREHOUSE_CODE}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </span>
+
+              <span>
+                <div className="mb-2 text-xs font-medium">Mã dãy</div>
+                <Select
+                  onValueChange={value => {
+                    setFilterData(prevState => ({
+                      ...prevState,
+                      blockName: value
+                    }));
+                  }}
+                  value={filterData.blockName}
+                >
+                  <SelectTrigger className="h-[42px] w-[122px]">
+                    <SelectValue placeholder="Mã dãy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="all">Tất cả</SelectItem>
+                      {rowData
+                        .filter(block => block.WAREHOUSE_CODE === filterData.warehouseCode)
+                        .sort((a, b) => a.BLOCK_CODE.localeCompare(b.BLOCK_CODE))
+                        .map(block => (
+                          <SelectItem key={block.BLOCK_CODE} value={block.BLOCK_CODE}>
+                            {block.BLOCK_NAME}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </span>
+            </span>
+          )}
           <span className="flex gap-x-4">
             {displayType === "table" ? (
               <span>
@@ -288,7 +284,7 @@ export function WarehouseDesign() {
                     <BtnAddRow onAddRow={handleAddRow} />
                   </GrantPermission>
                   <GrantPermission action={actionGrantPermission.UPDATE}>
-                    <BtnSave onClick={handleSave} />
+                    <BtnSave onClick={handleSaveRows} />
                   </GrantPermission>
                 </div>
               </span>
@@ -326,35 +322,17 @@ export function WarehouseDesign() {
             rowData={rowData}
             colDefs={colDefs}
             onDeleteRow={selectedRows => {
-              handleDeleteRow(selectedRows);
+              handleDeleteRows(selectedRows);
             }}
             onGridReady={() => {
               gridRef.current.api.showLoadingOverlay();
-              getBlock().then(res => {
-                setRowData(res.data.metadata);
-              });
+              getRowData();
             }}
           />
         ) : (
-          <DisplayTypeBlock blockList={rowData} warehouses={warehouses} />
+          <DisplayCell blockList={rowData} warehouses={warehouses} filterData={filterData} />
         )}
       </Section.Content>
-      <DetailWarehouseDesign
-        detailData={detailData}
-        onOpenChange={() => setOpenDetailWareHouseDesign(false)}
-        open={openOpenDetailWareHouseDesign}
-        onDeleteData={deteleData => {
-          handleDeleteData(deteleData);
-        }}
-      />
-      <Create
-        warehouses={warehouses}
-        onOpenChange={() => setOpenCreate(false)}
-        open={openCreate}
-        onCreateData={newRows => {
-          handleCreateData(newRows);
-        }}
-      />
     </Section>
   );
 }
