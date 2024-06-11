@@ -129,7 +129,7 @@ export function MethodList() {
 
   return (
     <Section>
-      <Section.Header title="Danh mục thiết bị"></Section.Header>
+      <Section.Header title="Danh sách phương án"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
           <SearchInput
