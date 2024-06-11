@@ -5,3 +5,4 @@ export * from "./genericList/warehouseList";
 export * from "./genericList/equipmentGroupList";
 export * from "./genericList/equipmentList";
 export * from "./genericList/methodList";
+export * from "./genericList/gateList";
