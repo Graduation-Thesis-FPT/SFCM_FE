@@ -23,12 +23,6 @@ export class bs_block extends CommonColumns {
   BLOCK_LENGTH = { field: "BLOCK_LENGTH", headerName: "Chiều dài (m)*" };
 }
 
-export class bs_gate extends CommonColumns {
-  GATE_CODE = { field: "GATE_CODE", headerName: "Mã cổng *" };
-  GATE_NAME = { field: "GATE_NAME", headerName: "Tên cổng *" };
-  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái *" };
-}
-
 export class bs_equipment_type extends CommonColumns {
   EQU_TYPE = { field: "EQU_TYPE", headerName: "Mã thiết bị *" };
   EQU_TYPE_NAME = { field: "EQU_TYPE_NAME", headerName: "Tên thiết bị *" };
