@@ -10,7 +10,6 @@ const fnAddRows = rowData => {
 };
 
 const fnAddRowsVer2 = (rowData, colDefs) => {
-  console.log("🚀 ~ fnAddRowsVer2 ~ colDefs:", colDefs);
   let temp = [...rowData];
   let newRow = { key: uuidv4(), status: "insert" };
 

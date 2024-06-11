@@ -1,4 +1,3 @@
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -65,6 +64,35 @@ export function WarehouseCodeRender(params, warehouses) {
           {warehouses.map(item => (
             <SelectItem key={item.WAREHOUSE_CODE} value={item.WAREHOUSE_CODE}>
               {item.WAREHOUSE_NAME}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function EquTypeRender(params, equTypes) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(equTypes[0].EQU_TYPE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {equTypes.map(item => (
+            <SelectItem key={item.EQU_TYPE} value={item.EQU_TYPE}>
+              {item.EQU_TYPE}
             </SelectItem>
           ))}
         </SelectGroup>

@@ -1,5 +1,11 @@
-import { getAllEquipment } from "@/apis/equipment.api";
+import { getAllEquipType } from "@/apis/equipment-type.api";
+import { createAndUpdateEquipment, deleteEquipment, getAllEquipment } from "@/apis/equipment.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
+import {
+  DateTimeByTextRender,
+  EquTypeRender,
+  OnlyEditWithInsertCell
+} from "@/components/aggridreact/cellRender";
 import { bs_equipment } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
@@ -8,8 +14,8 @@ import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
-import { fnAddRows } from "@/lib/fnTable";
-import { useRef, useState } from "react";
+import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { useEffect, useRef, useState } from "react";
 
 export function EquipmentList() {
   const gridRef = useRef(null);
@@ -17,6 +23,7 @@ export function EquipmentList() {
   const [rowData, setRowData] = useState([]);
   const [searchData, setSearchData] = useState("");
   const BS_EQUIPMENT = new bs_equipment();
+  const [equipType, setEquipType] = useState([]);
 
   const colDefs = [
     {
@@ -30,19 +37,19 @@ export function EquipmentList() {
       }
     },
     {
-      headerName: BS_EQUIPMENT.EQU_CODE.headerName,
-      field: BS_EQUIPMENT.EQU_CODE.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-
-    {
       headerName: BS_EQUIPMENT.EQU_TYPE.headerName,
       field: BS_EQUIPMENT.EQU_TYPE.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellRenderer: param => EquTypeRender(param, equipType)
+    },
+    {
+      headerName: BS_EQUIPMENT.EQU_CODE.headerName,
+      field: BS_EQUIPMENT.EQU_CODE.field,
+      flex: 1,
+      filter: true,
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: BS_EQUIPMENT.EQU_CODE_NAME.headerName,
@@ -52,13 +59,55 @@ export function EquipmentList() {
       editable: true
     },
     {
-      headerName: BS_EQUIPMENT.BLOCK.headerName,
-      field: BS_EQUIPMENT.BLOCK.field,
+      headerName: BS_EQUIPMENT.UPDATE_DATE.headerName,
+      field: BS_EQUIPMENT.UPDATE_DATE.field,
       flex: 1,
       filter: true,
-      editable: true
+      cellRenderer: DateTimeByTextRender
     }
   ];
+
+  const handleAddRow = () => {
+    let newRowData = fnAddRowsVer2(rowData, colDefs);
+    setRowData(newRowData);
+  };
+
+  const handleSaveRows = () => {
+    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
+    insertAndUpdateData.update.forEach(obj => {
+      Object.keys(obj).forEach(key => {
+        if (obj[key] === null) {
+          delete obj[key];
+        }
+      });
+      return obj;
+    });
+
+    createAndUpdateEquipment(insertAndUpdateData)
+      .then(res => {
+        toast.success(res);
+        getRowData();
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const handleDeleteRows = selectedRows => {
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
+      selectedRows,
+      rowData,
+      "EQU_CODE"
+    );
+    deleteEquipment(deleteIdList)
+      .then(res => {
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
 
   const getRowData = () => {
     getAllEquipment()
@@ -70,14 +119,15 @@ export function EquipmentList() {
       });
   };
 
-  const handleAddRow = () => {
-    let newRowData = fnAddRows(rowData);
-    setRowData(newRowData);
-  };
-
-  const handleSaveRows = () => {};
-
-  const handleDeleteRows = () => {};
+  useEffect(() => {
+    getAllEquipType()
+      .then(res => {
+        setEquipType(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  }, []);
 
   return (
     <Section>
