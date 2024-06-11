@@ -74,3 +74,10 @@ export class bs_customer extends CommonColumns {
   EMAIL = { field: "EMAIL", headerName: "Email *" };
   IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Trạng thái *" };
 }
+
+export class bs_gate extends CommonColumns {
+  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
+  GATE_CODE = { field: "GATE_CODE", headerName: "Mã cổng *" };
+  GATE_NAME = { field: "GATE_NAME", headerName: "Tên cổng *" };
+  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Loại cổng" };
+}

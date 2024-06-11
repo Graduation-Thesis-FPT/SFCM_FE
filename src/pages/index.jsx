@@ -7,3 +7,4 @@ export * from "./genericList/equipmentList";
 export * from "./genericList/methodList";
 export * from "./genericList/itemType";
 export * from "./genericList/unitList";
+export * from "./genericList/gateList";
