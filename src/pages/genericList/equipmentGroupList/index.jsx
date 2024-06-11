@@ -4,7 +4,7 @@ import {
   getAllEquipType
 } from "@/apis/equipment-type.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { DateTimeRenderByText } from "@/components/aggridreact/cellRender";
+import { DateTimeByTextRender } from "@/components/aggridreact/cellRender";
 import { bs_equipment_type } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
@@ -13,7 +13,7 @@ import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
-import { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import React, { useRef, useState } from "react";
 
 export function EquipmentGroupList() {
@@ -51,12 +51,12 @@ export function EquipmentGroupList() {
       headerName: BS_EQUIPMENT_TYPE.UPDATE_DATE.headerName,
       field: BS_EQUIPMENT_TYPE.UPDATE_DATE.field,
       flex: 1,
-      cellRenderer: DateTimeRenderByText
+      cellRenderer: DateTimeByTextRender
     }
   ];
 
   const handleAddRow = () => {
-    let newRowData = fnAddRows(rowData);
+    let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
 

@@ -22,7 +22,7 @@ import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
 import { useCustomToast } from "@/components/custom-toast";
 import { FormCreateWarehouse } from "./FormCreateWarehouse";
 import { DetailWarehouse } from "./DetailWarehouse";
-import { getAllWarehouse } from "@/apis/warehouse.api";
+import { deleteWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
 
 let data = [
   { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM", ACREAGE: 10000 },
@@ -92,8 +92,20 @@ export function WarehouseList() {
   const handleSave = () => {};
 
   const handleDeleteData = deteleData => {
-    let newRowData = fnDeleteRows(deteleData, rowData, "WAREHOUSE_CODE");
-    setRowData(newRowData);
+    let { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
+      [deteleData],
+      rowData,
+      "WAREHOUSE_CODE"
+    );
+    deleteWarehouse(deleteIdList)
+      .then(res => {
+        setIsOpenDetailWarehouse(false);
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
   };
 
   const handleCreateWarehouse = newRows => {

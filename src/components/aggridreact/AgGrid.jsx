@@ -6,13 +6,8 @@ import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
   ContextMenuTrigger
 } from "@/components/ui/context-menu";
 import { GrantPermission } from "../common";
@@ -26,15 +21,25 @@ const AgGrid = forwardRef(
   ) => {
     const [selectedRows, setSelectedRows] = useState([]);
     const contextRef = useRef(null);
-    const [open, setOpen] = useState(false);
-    const style = useMemo(() => {
-      return {
-        flex: 1,
-        editable: true
-      };
-    }, []);
 
     const handleDeleteRow = () => {
+      let keyInsert = [];
+      let dataInDb = [];
+
+      selectedRows.forEach(item => {
+        if (item.status === "insert") {
+          keyInsert.push(item.key);
+        } else {
+          dataInDb.push(item);
+        }
+      });
+
+      //Chỉ xóa dòng chưa lưu vào database
+      if (keyInsert.length > 0 && dataInDb.length === 0) {
+        setRowData(rowData.filter(item => !keyInsert.includes(item.key)));
+        return;
+      }
+
       onDeleteRow(selectedRows);
     };
 
@@ -48,7 +53,6 @@ const AgGrid = forwardRef(
           <ContextMenuTrigger disabled={contextMenu === true ? false : true}>
             <div className={cn("ag-theme-quartz custom-header h-[500px] ", className)}>
               <AgGridReact
-                defaultColDef={defaultColDef ? style : null}
                 ref={ref}
                 rowData={rowData}
                 columnDefs={colDefs}

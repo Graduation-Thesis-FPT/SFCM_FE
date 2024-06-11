@@ -9,10 +9,33 @@ const fnAddRows = rowData => {
   return temp;
 };
 
-const fnAddKey = rowData => {
-  return rowData.map(item => {
-    return { key: uuidv4(), ...item };
-  });
+const fnAddRowsVer2 = (rowData, colDefs) => {
+  console.log("🚀 ~ fnAddRowsVer2 ~ colDefs:", colDefs);
+  let temp = [...rowData];
+  let newRow = { key: uuidv4(), status: "insert" };
+
+  colDefs
+    .filter(
+      col =>
+        col.field && !["CREATE_BY", "UPDATE_BY", "UPDATE_DATE", "CREATE_DATE"].includes(col.field)
+    )
+    .forEach(col => {
+      if (col.cellEditor === "agCheckboxCellEditor") {
+        newRow[col.field] = false;
+        return;
+      }
+      if (col.cellRenderer) {
+        return;
+      }
+      if (col.cellDataType === "number") {
+        //do something
+        return;
+      }
+      newRow[col.field] = "";
+    });
+
+  temp.unshift(newRow);
+  return temp;
 };
 
 const fnDeleteRows = (selectedRows, rowData, deleteBy) => {
@@ -40,4 +63,4 @@ function fnFilterInsertAndUpdateData(listData) {
   };
 }
 
-export { fnAddRows, fnAddKey, fnDeleteRows, fnFilterInsertAndUpdateData };
+export { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData, fnAddRowsVer2 };

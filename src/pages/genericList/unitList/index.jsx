@@ -1,11 +1,7 @@
-import { createAndUpdateMethod, deleteMethod, getAllMethod } from "@/apis/method.api";
+import { createAndUpdateUnit, deleteUnit, getUnit } from "@/apis/unit.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import {
-  DateTimeByTextRender,
-  IsInOutRender,
-  OnlyEditWithInsertCell
-} from "@/components/aggridreact/cellRender";
-import { bs_method } from "@/components/aggridreact/dbColumns";
+import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
+import { bs_unit } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { GrantPermission } from "@/components/common";
@@ -16,11 +12,11 @@ import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
 
-export function MethodList() {
+export function UnitList() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const BS_METHOD = new bs_method();
+  const BS_UNIT = new bs_unit();
 
   const colDefs = [
     {
@@ -34,44 +30,22 @@ export function MethodList() {
       }
     },
     {
-      headerName: BS_METHOD.METHOD_CODE.headerName,
-      field: BS_METHOD.METHOD_CODE.field,
+      headerName: BS_UNIT.UNIT_CODE.headerName,
+      field: BS_UNIT.UNIT_CODE.field,
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell
     },
-
     {
-      headerName: BS_METHOD.METHOD_NAME.headerName,
-      field: BS_METHOD.METHOD_NAME.field,
+      headerName: BS_UNIT.UNIT_NAME.headerName,
+      field: BS_UNIT.UNIT_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: BS_METHOD.IS_IN_OUT.headerName,
-      field: BS_METHOD.IS_IN_OUT.field,
-      flex: 1,
-      filter: true,
-      editable: true,
-      cellRenderer: IsInOutRender
-    },
-    {
-      headerName: BS_METHOD.IS_SERVICE.headerName,
-      field: BS_METHOD.IS_SERVICE.field,
-      headerClass: "center-header",
-      cellStyle: {
-        justifyContent: "center",
-        display: "flex"
-      },
-      flex: 1,
-      editable: true,
-      cellEditor: "agCheckboxCellEditor",
-      cellRenderer: "agCheckboxCellRenderer"
-    },
-    {
-      headerName: BS_METHOD.UPDATE_DATE.headerName,
-      field: BS_METHOD.UPDATE_DATE.field,
+      headerName: BS_UNIT.UPDATE_DATE.headerName,
+      field: BS_UNIT.UPDATE_DATE.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }
@@ -90,7 +64,7 @@ export function MethodList() {
       toast.error("Không có dữ liệu thay đổi để lưu");
       return;
     }
-    createAndUpdateMethod(insertAndUpdateData)
+    createAndUpdateUnit(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -104,10 +78,10 @@ export function MethodList() {
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
       selectedRows,
       rowData,
-      "METHOD_CODE"
+      "UNIT_CODE"
     );
 
-    deleteMethod(deleteIdList)
+    deleteUnit(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -118,7 +92,7 @@ export function MethodList() {
   };
 
   const getRowData = () => {
-    getAllMethod()
+    getUnit()
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -129,7 +103,7 @@ export function MethodList() {
 
   return (
     <Section>
-      <Section.Header title="Danh mục thiết bị"></Section.Header>
+      <Section.Header title="Danh mục đơn vị tính"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
           <SearchInput

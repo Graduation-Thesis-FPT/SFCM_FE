@@ -31,6 +31,16 @@ export class bs_equipment extends CommonColumns {
 export class bs_method extends CommonColumns {
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   METHOD_NAME = { field: "METHOD_NAME", headerName: "Tên phương án *" };
-  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái" };
-  IS_SERVICE = { field: "IS_SERVICE", headerName: "Dịch vụ" };
+  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái *" };
+  IS_SERVICE = { field: "IS_SERVICE", headerName: "Dịch vụ *" };
+}
+
+export class bs_item_type extends CommonColumns {
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
+  ITEM_TYPE_NAME = { field: "ITEM_TYPE_NAME", headerName: "Tên loại hàng *" };
+}
+
+export class bs_unit extends CommonColumns {
+  UNIT_CODE = { field: "UNIT_CODE", headerName: "Mã đơn vị *" };
+  UNIT_NAME = { field: "UNIT_NAME", headerName: "Tên đơn vị *" };
 }
