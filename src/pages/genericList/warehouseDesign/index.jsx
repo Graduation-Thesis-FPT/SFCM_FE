@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { fnAddRows, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { fnAddRows, fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useEffect, useRef, useState } from "react";
 import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
@@ -21,7 +21,7 @@ import { getAllWarehouse } from "@/apis/warehouse.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { bs_block } from "@/components/aggridreact/dbColumns";
-import { OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
+import { OnlyEditWithInsertCell, WarehouseCodeRender } from "@/components/aggridreact/cellRender";
 import { DisplayCell } from "./displayCell";
 
 export function WarehouseDesign() {
@@ -54,10 +54,12 @@ export function WarehouseDesign() {
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: warehouses.map(item => item.WAREHOUSE_CODE)
-      }
+      cellRenderer: params => WarehouseCodeRender(params, warehouses)
+
+      // cellEditor: "agSelectCellEditor",
+      // cellEditorParams: {
+      //   values: warehouses.map(item => item.WAREHOUSE_CODE)
+      // }
     },
     {
       headerName: BS_BLOCK.BLOCK_CODE.headerName,
@@ -145,7 +147,7 @@ export function WarehouseDesign() {
   const handleSearch = value => {};
 
   const handleAddRow = () => {
-    let newRowData = fnAddRows(rowData);
+    let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
 

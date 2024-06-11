@@ -5,6 +5,13 @@ class CommonColumns {
   UPDATE_DATE = { field: "UPDATE_DATE", headerName: "Ngày cập nhật" };
 }
 
+export class bs_warehouse extends CommonColumns {
+  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
+  WAREHOUSE_NAME = { field: "WAREHOUSE_NAME", headerName: "Tên kho *" };
+  ACREAGE = { field: "ACREAGE", headerName: "Diện tích *" };
+  STATUS = { field: "STATUS", headerName: "Trạng thái *" };
+}
+
 export class bs_block extends CommonColumns {
   WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
   BLOCK_CODE = { field: "BLOCK_CODE", headerName: "Mã dãy *" };
@@ -15,6 +22,13 @@ export class bs_block extends CommonColumns {
   BLOCK_HEIGHT = { field: "BLOCK_HEIGHT", headerName: "Chiều cao (m)*" };
   BLOCK_LENGTH = { field: "BLOCK_LENGTH", headerName: "Chiều dài (m)*" };
 }
+
+export class bs_gate extends CommonColumns {
+  GATE_CODE = { field: "GATE_CODE", headerName: "Mã cổng *" };
+  GATE_NAME = { field: "GATE_NAME", headerName: "Tên cổng *" };
+  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái *" };
+}
+
 export class bs_equipment_type extends CommonColumns {
   EQU_TYPE = { field: "EQU_TYPE", headerName: "Mã thiết bị *" };
   EQU_TYPE_NAME = { field: "EQU_TYPE_NAME", headerName: "Tên thiết bị *" };
@@ -31,8 +45,34 @@ export class bs_equipment extends CommonColumns {
 export class bs_method extends CommonColumns {
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   METHOD_NAME = { field: "METHOD_NAME", headerName: "Tên phương án *" };
-  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái" };
-  IS_SERVICE = { field: "IS_SERVICE", headerName: "Dịch vụ" };
+  IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái *" };
+  IS_SERVICE = { field: "IS_SERVICE", headerName: "Dịch vụ *" };
+}
+
+export class bs_item_type extends CommonColumns {
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
+  ITEM_TYPE_NAME = { field: "ITEM_TYPE_NAME", headerName: "Tên loại hàng *" };
+}
+
+export class bs_unit extends CommonColumns {
+  UNIT_CODE = { field: "UNIT_CODE", headerName: "Mã đơn vị *" };
+  UNIT_NAME = { field: "UNIT_NAME", headerName: "Tên đơn vị *" };
+}
+
+export class bs_customer_type extends CommonColumns {
+  CUSTOMER_TYPE_CODE = { field: "CUSTOMER_TYPE_CODE", headerName: "Mã loại khách hàng *" };
+  CUSTOMER_TYPE_NAME = { field: "CUSTOMER_TYPE_NAME", headerName: "Tên loại khách hàng *" };
+}
+
+export class bs_customer extends CommonColumns {
+  CUSTOMER_TYPE_CODE = { field: "CUSTOMER_TYPE_CODE", headerName: "Mã loại khách hàng *" };
+  CUSTOMER_CODE = { field: "CUSTOMER_CODE", headerName: "Mã khách hàng *" };
+  CUSTOMER_NAME = { field: "CUSTOMER_NAME", headerName: "Tên khách hàng *" };
+  ACC_TYPE = { field: "ACC_TYPE", headerName: "Loại tài khoản *" };
+  ADDRESS = { field: "ADDRESS", headerName: "Địa chỉ *" };
+  TAX_CODE = { field: "TAX_CODE", headerName: "Mã số thuế *" };
+  EMAIL = { field: "EMAIL", headerName: "Email *" };
+  IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Trạng thái *" };
 }
 
 export class bs_gate extends CommonColumns {

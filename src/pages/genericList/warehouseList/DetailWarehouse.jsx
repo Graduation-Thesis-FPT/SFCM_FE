@@ -40,16 +40,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
   };
 
   const handleDelete = () => {
-    let deteleData = [detailData.WAREHOUSE_CODE];
-    deleteWarehouse(deteleData)
-      .then(res => {
-        onDeleteData(deteleData);
-        onOpenChange();
-        toast.success(res);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
+    onDeleteData(detailData);
   };
 
   useEffect(() => {
