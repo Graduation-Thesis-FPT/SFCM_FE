@@ -113,7 +113,7 @@ export function FormCreateWarehouse({ open, onOpenChange, onCreateData }) {
           <Button
             type="submit"
             form="create-warehouse"
-            className="h-[42px] w-[126px]"
+            className="h-[36px] w-[126px]"
             variant="blue"
           >
             Tạo mới

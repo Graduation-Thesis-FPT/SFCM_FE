@@ -10,9 +10,9 @@ export function BtnSave({ isLoading, ...props }) {
         <TooltipTrigger asChild>
           <Button disabled={isLoading} size="tool" variant="none-border" {...props}>
             {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Save className="h-5 w-5" />
+              <Save className="h-4 w-4" />
             )}
           </Button>
         </TooltipTrigger>

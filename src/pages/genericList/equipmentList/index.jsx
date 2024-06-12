@@ -133,15 +133,15 @@ export function EquipmentList() {
     <Section>
       <Section.Header title="Danh mục thiết bị"></Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
+        <div className="flex justify-between">
           <SearchInput
             handleSearch={value => {
               setSearchData(value);
             }}
           />
-          <span>
+          <div>
             <div className="mb-2 text-xs font-medium">Công cụ</div>
-            <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
+            <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
               <GrantPermission action={actionGrantPermission.CREATE}>
                 <BtnAddRow onAddRow={handleAddRow} />
               </GrantPermission>
@@ -149,8 +149,8 @@ export function EquipmentList() {
                 <BtnSave onClick={handleSaveRows} />
               </GrantPermission>
             </div>
-          </span>
-        </span>
+          </div>
+        </div>
 
         <AgGrid
           contextMenu={true}

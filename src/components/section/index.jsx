@@ -10,7 +10,7 @@ Section.Header = ({ title, children, className }) => {
   return (
     <>
       <div className={cn("flex items-center justify-between px-6", className)}>
-        <div className="py-[14px] text-2xl font-bold text-gray-900">{title}</div>
+        <div className="py-[14px] text-lg font-bold text-gray-900">{title}</div>
         {children}
       </div>
       <Separator />

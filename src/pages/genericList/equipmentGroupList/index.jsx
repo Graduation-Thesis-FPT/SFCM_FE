@@ -96,60 +96,58 @@ export function EquipmentGroupList() {
   };
 
   return (
-    <>
-      <Section>
-        <Section.Header title="Danh mục loại thiết bị"></Section.Header>
-        <Section.Content>
-          <span className="flex justify-between">
-            <SearchInput
-              handleSearch={value => {
-                setSearchData(value);
-              }}
-            />
-            <span>
-              <div className="mb-2 text-xs font-medium">Công cụ</div>
-              <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
-                <GrantPermission action={actionGrantPermission.CREATE}>
-                  <BtnAddRow onAddRow={handleAddRow} />
-                </GrantPermission>
-                <GrantPermission action={actionGrantPermission.UPDATE}>
-                  <BtnSave onClick={handleSaveRows} />
-                </GrantPermission>
-              </div>
-            </span>
-          </span>
-          <AgGrid
-            contextMenu={true}
-            setRowData={data => {
-              setRowData(data);
-            }}
-            ref={gridRef}
-            className="h-[50vh]"
-            rowData={rowData?.filter(item => {
-              if (searchData === "") return item;
-              return (
-                item.EQU_TYPE.toLowerCase().includes(searchData.toLowerCase()) ||
-                item.EQU_TYPE_NAME.toLowerCase().includes(searchData.toLowerCase())
-              );
-            })}
-            colDefs={colDefs}
-            onDeleteRow={selectedRows => {
-              handleDeleteRows(selectedRows);
-            }}
-            onGridReady={() => {
-              gridRef.current.api.showLoadingOverlay();
-              getAllEquipType()
-                .then(res => {
-                  setRowData(res.data.metadata);
-                })
-                .catch(err => {
-                  gridRef.current.api.overlayNoRows();
-                  toast.error(err);
-                });
+    <Section>
+      <Section.Header title="Danh mục loại thiết bị"></Section.Header>
+      <Section.Content>
+        <span className="flex justify-between">
+          <SearchInput
+            handleSearch={value => {
+              setSearchData(value);
             }}
           />
-        </Section.Content>
-      </Section>
-    </>
+          <span>
+            <div className="mb-2 text-xs font-medium">Công cụ</div>
+            <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
+              <GrantPermission action={actionGrantPermission.CREATE}>
+                <BtnAddRow onAddRow={handleAddRow} />
+              </GrantPermission>
+              <GrantPermission action={actionGrantPermission.UPDATE}>
+                <BtnSave onClick={handleSaveRows} />
+              </GrantPermission>
+            </div>
+          </span>
+        </span>
+        <AgGrid
+          contextMenu={true}
+          setRowData={data => {
+            setRowData(data);
+          }}
+          ref={gridRef}
+          className="h-[50vh]"
+          rowData={rowData?.filter(item => {
+            if (searchData === "") return item;
+            return (
+              item.EQU_TYPE.toLowerCase().includes(searchData.toLowerCase()) ||
+              item.EQU_TYPE_NAME.toLowerCase().includes(searchData.toLowerCase())
+            );
+          })}
+          colDefs={colDefs}
+          onDeleteRow={selectedRows => {
+            handleDeleteRows(selectedRows);
+          }}
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
+            getAllEquipType()
+              .then(res => {
+                setRowData(res.data.metadata);
+              })
+              .catch(err => {
+                gridRef.current.api.overlayNoRows();
+                toast.error(err);
+              });
+          }}
+        />
+      </Section.Content>
+    </Section>
   );
 }

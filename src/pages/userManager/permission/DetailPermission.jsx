@@ -165,14 +165,14 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
             <span>
               <Separator className="bg-gray-200" />
               <span className="flex items-center justify-end gap-4 p-6">
-                <Button onClick={onOpenChange} className="h-[42px] w-[126px]" variant="outline">
+                <Button onClick={onOpenChange} className="h-[36px] w-[126px]" variant="outline">
                   Hủy
                 </Button>
                 <Button
                   onClick={() => {
                     handlerUpdatePermission();
                   }}
-                  className="h-[42px] w-[126px]"
+                  className="h-[36px] w-[126px]"
                   variant="blue"
                 >
                   Lưu thông tin

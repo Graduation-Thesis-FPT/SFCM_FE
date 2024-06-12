@@ -113,7 +113,7 @@ export function ItemType() {
           />
           <span>
             <div className="mb-2 text-xs font-medium">Công cụ</div>
-            <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
+            <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
               <GrantPermission action={actionGrantPermission.CREATE}>
                 <BtnAddRow onAddRow={handleAddRow} />
               </GrantPermission>
