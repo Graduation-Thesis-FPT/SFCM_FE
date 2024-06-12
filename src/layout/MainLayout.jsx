@@ -10,7 +10,15 @@ import {
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
 import { getFirstLetterOfLastWord } from "@/lib/utils";
-import { Bell, ChevronDown, CircleHelpIcon, Loader2, LogOutIcon, MessageCircle, Settings } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  CircleHelpIcon,
+  Loader2,
+  LogOutIcon,
+  MessageCircle,
+  Settings
+} from "lucide-react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
