@@ -105,9 +105,9 @@ export function FirstLogin() {
                         className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
                       >
                         {showPassword ? (
-                          <Eye className="size-6 bg-white" />
+                          <Eye size={16} className="bg-white" />
                         ) : (
-                          <EyeOff className="size-6 bg-white" />
+                          <EyeOff size={16} className="bg-white" />
                         )}
                       </span>
                     </div>
@@ -151,9 +151,9 @@ export function FirstLogin() {
                           className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
                         >
                           {showConfirmPassword ? (
-                            <Eye className="size-6 bg-white" />
+                            <Eye size={16} className="bg-white" />
                           ) : (
-                            <EyeOff className="size-6 bg-white" />
+                            <EyeOff size={16} className="bg-white" />
                           )}
                         </span>
                       </div>

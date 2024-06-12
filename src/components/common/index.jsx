@@ -15,7 +15,7 @@ export function GrantPermission({ action, children, ...props }) {
       .catch(err => {
         console.log(err);
       });
-  }, []);
+  }, [pathname]);
 
   if (!isShow) {
     return null;

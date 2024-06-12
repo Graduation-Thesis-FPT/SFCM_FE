@@ -1,5 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avartar";
-import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avartar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +10,15 @@ import {
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
 import { getFirstLetterOfLastWord } from "@/lib/utils";
-import { Bell, ChevronDown, Loader2, MessageCircle } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  CircleHelpIcon,
+  Loader2,
+  LogOutIcon,
+  MessageCircle,
+  Settings
+} from "lucide-react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
@@ -56,15 +63,15 @@ export function MainLayout() {
           </h1>
           {/* <MenuMobile /> */}
           <div className="flex items-center">
+            {/* TODO: Notification and Message  */}
             <div className="flex min-h-9 items-center gap-4 rounded-md bg-gray-50 px-3 shadow-md">
               <Bell size={20} />
               <MessageCircle size={20} />
             </div>
-            <div className="mx-3 text-center">
+            <div className="mx-3 space-y-1 text-center">
               <div className="text-sm font-bold text-gray-900">{user?.userInfo?.FULLNAME}</div>
               <div className="text-xs font-normal text-gray-600">{user?.userInfo?.ROLE_NAME}</div>
             </div>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className="flex h-fit items-center gap-4">
@@ -81,17 +88,26 @@ export function MainLayout() {
                   <ChevronDown className="size-5" />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="min-w-40">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
+                {/* {TODO: Setting and Support} */}
+                <DropdownMenuItem>
+                  <Settings size={16} className="mr-2" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <CircleHelpIcon size={16} className="mr-2" />
+                  Support
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  className="text-red-500 focus:bg-red-50 focus:text-red-600"
                   onClick={() => {
                     handleLogout();
                   }}
                 >
+                  <LogOutIcon size={16} className="mr-2" />
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
