@@ -117,12 +117,12 @@ export function WarehouseList() {
         <GrantPermission action={actionGrantPermission.CREATE}>
           <Button
             variant="blue"
-            className="h-[42px]"
+            className="h-[36px] px-[16px] py-[8px] text-xs"
             onClick={() => {
               setIsOpenCreateWarehouse(true);
             }}
           >
-            <PlusCircle className="mr-2 size-5" />
+            <PlusCircle className="mr-2 size-4" />
             Tạo kho mới
           </Button>
         </GrantPermission>

@@ -120,7 +120,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
               handleDelete();
             }}
             type="button"
-            className="h-[42px] w-[126px]"
+            className="h-[36px] w-[126px]"
             variant="red"
           >
             Xóa kho
@@ -130,7 +130,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
           <Button
             type="submit"
             form="update-warehouse"
-            className="h-[42px] w-[126px]"
+            className="h-[36px] w-[126px]"
             variant="blue"
           >
             Cập nhật

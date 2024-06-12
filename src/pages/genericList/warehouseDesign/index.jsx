@@ -231,7 +231,7 @@ export function WarehouseDesign() {
                   }}
                   value={filterData.warehouseCode}
                 >
-                  <SelectTrigger className="h-[42px] w-[122px]">
+                  <SelectTrigger className="h-[36px] w-[122px]">
                     <SelectValue placeholder="Mã kho" />
                   </SelectTrigger>
                   <SelectContent>
@@ -257,7 +257,7 @@ export function WarehouseDesign() {
                   }}
                   value={filterData.blockName}
                 >
-                  <SelectTrigger className="h-[42px] w-[122px]">
+                  <SelectTrigger className="h-[36px] w-[122px]">
                     <SelectValue placeholder="Mã dãy" />
                   </SelectTrigger>
                   <SelectContent>
@@ -281,7 +281,7 @@ export function WarehouseDesign() {
             {displayType === "table" ? (
               <span>
                 <div className="mb-2 text-xs font-medium">Công cụ</div>
-                <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
+                <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
                   <GrantPermission action={actionGrantPermission.CREATE}>
                     <BtnAddRow onAddRow={handleAddRow} />
                   </GrantPermission>
@@ -300,7 +300,7 @@ export function WarehouseDesign() {
                 }}
                 defaultValue={displayType}
               >
-                <SelectTrigger className="h-[42px] w-[122px]">
+                <SelectTrigger className="h-[36px] min-w-[122px]">
                   <SelectValue placeholder="Hiển thị" />
                 </SelectTrigger>
                 <SelectContent>
