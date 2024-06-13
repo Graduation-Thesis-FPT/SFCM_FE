@@ -1,28 +1,27 @@
 import {
-  createAndUpdateEquipType,
-  deleteEquipType,
-  getAllEquipType
-} from "@/apis/equipment-type.api";
+  createAndUpdateCustomerType,
+  deleteCustomerType,
+  getAllCustomerType
+} from "@/apis/customer-type.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/aggridreact/cellRender";
-import { bs_equipment_type } from "@/components/aggridreact/dbColumns";
+import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
+import { bs_customer_type } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common";
 import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-export function EquipmentGroupList() {
+export function CustomerType() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const [searchData, setSearchData] = useState("");
-  const BS_EQUIPMENT_TYPE = new bs_equipment_type();
+  const BS_CUSTOMER_TYPE = new bs_customer_type();
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -35,26 +34,28 @@ export function EquipmentGroupList() {
       }
     },
     {
-      headerName: BS_EQUIPMENT_TYPE.EQU_TYPE.headerName,
-      field: BS_EQUIPMENT_TYPE.EQU_TYPE.field,
+      headerName: BS_CUSTOMER_TYPE.CUSTOMER_TYPE_CODE.headerName,
+      field: BS_CUSTOMER_TYPE.CUSTOMER_TYPE_CODE.field,
+      flex: 1,
+      filter: true,
+      editable: OnlyEditWithInsertCell
+    },
+    {
+      headerName: BS_CUSTOMER_TYPE.CUSTOMER_TYPE_NAME.headerName,
+      field: BS_CUSTOMER_TYPE.CUSTOMER_TYPE_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: BS_EQUIPMENT_TYPE.EQU_TYPE_NAME.headerName,
-      field: BS_EQUIPMENT_TYPE.EQU_TYPE_NAME.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
-      headerName: BS_EQUIPMENT_TYPE.UPDATE_DATE.headerName,
-      field: BS_EQUIPMENT_TYPE.UPDATE_DATE.field,
+      headerName: BS_CUSTOMER_TYPE.UPDATE_DATE.headerName,
+      field: BS_CUSTOMER_TYPE.UPDATE_DATE.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }
   ];
+
+  const [searchData, setSearchData] = useState("");
 
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
@@ -62,10 +63,14 @@ export function EquipmentGroupList() {
   };
 
   const handleSaveRows = () => {
-    let { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    createAndUpdateEquipType(insertAndUpdateData)
-      .then(resCreateAndUpdate => {
-        toast.success(resCreateAndUpdate);
+    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
+    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
+      toast.error("Không có dữ liệu thay đổi để lưu");
+      return;
+    }
+    createAndUpdateCustomerType(insertAndUpdateData)
+      .then(res => {
+        toast.success(res);
         getRowData();
       })
       .catch(err => {
@@ -73,8 +78,25 @@ export function EquipmentGroupList() {
       });
   };
 
+  const handleDeleteRows = selectedRows => {
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
+      selectedRows,
+      rowData,
+      "CUSTOMER_TYPE_CODE"
+    );
+
+    deleteCustomerType(deleteIdList)
+      .then(res => {
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
   const getRowData = () => {
-    getAllEquipType()
+    getAllCustomerType()
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -83,22 +105,9 @@ export function EquipmentGroupList() {
       });
   };
 
-  const handleDeleteRows = selectedRows => {
-    let { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "EQU_TYPE");
-
-    deleteEquipType(deleteIdList)
-      .then(resDelete => {
-        toast.success(resDelete);
-        setRowData(newRowDataAfterDeleted);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
   return (
     <Section>
-      <Section.Header title="Danh mục loại thiết bị"></Section.Header>
+      <Section.Header title="Danh sách loại khách hàng"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
           <SearchInput
@@ -106,15 +115,19 @@ export function EquipmentGroupList() {
               setSearchData(value);
             }}
           />
-          <LayoutTool>
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
+          <span>
+            <div className="mb-2 text-xs font-medium">Công cụ</div>
+            <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
+              <GrantPermission action={actionGrantPermission.CREATE}>
+                <BtnAddRow onAddRow={handleAddRow} />
+              </GrantPermission>
+              <GrantPermission action={actionGrantPermission.UPDATE}>
+                <BtnSave onClick={handleSaveRows} />
+              </GrantPermission>
+            </div>
+          </span>
         </span>
+
         <AgGrid
           contextMenu={true}
           setRowData={data => {
@@ -124,10 +137,7 @@ export function EquipmentGroupList() {
           className="h-[50vh]"
           rowData={rowData?.filter(item => {
             if (searchData === "") return item;
-            return (
-              item.EQU_TYPE.toLowerCase().includes(searchData.toLowerCase()) ||
-              item.EQU_TYPE_NAME.toLowerCase().includes(searchData.toLowerCase())
-            );
+            return item.CUSTOMER_TYPE_CODE?.toLowerCase().includes(searchData.toLowerCase());
           })}
           colDefs={colDefs}
           onDeleteRow={selectedRows => {
@@ -135,14 +145,7 @@ export function EquipmentGroupList() {
           }}
           onGridReady={() => {
             gridRef.current.api.showLoadingOverlay();
-            getAllEquipType()
-              .then(res => {
-                setRowData(res.data.metadata);
-              })
-              .catch(err => {
-                gridRef.current.api.overlayNoRows();
-                toast.error(err);
-              });
+            getRowData();
           }}
         />
       </Section.Content>

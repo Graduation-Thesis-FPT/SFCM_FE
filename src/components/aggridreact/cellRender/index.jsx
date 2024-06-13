@@ -7,8 +7,13 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import moment from "moment";
-import React, { useEffect } from "react";
-
+import React, { useEffect, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 export function DateTimeByTextRender(params) {
   return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
 }
@@ -93,6 +98,69 @@ export function EquTypeRender(params, equTypes) {
           {equTypes.map(item => (
             <SelectItem key={item.EQU_TYPE} value={item.EQU_TYPE}>
               {item.EQU_TYPE}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function BlockCodeRender(params, blockCodes) {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    setData(blockCodes);
+    if (params.value === undefined) {
+      params.setValue([]);
+    }
+  }, []);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div>{params.value?.length > 0 ? "" : "Chọn"}</div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        {data.map((item, index) => (
+          <DropdownMenuCheckboxItem
+            key={index}
+            className="w-56"
+            onSelect={event => event.preventDefault()}
+            checked={item.checked}
+            onCheckedChange={value => {
+              let temp = [...data];
+              temp[index]["checked"] = value;
+              params.setValue(temp.filter(item => item.checked).map(item => item.name));
+            }}
+          >
+            {item.name}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function CustomerTypeRender(params, customerType) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(customerType[0].CUSTOMER_TYPE_CODE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {customerType.map(item => (
+            <SelectItem key={item.CUSTOMER_TYPE_CODE} value={item.CUSTOMER_TYPE_CODE}>
+              {item.CUSTOMER_TYPE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>

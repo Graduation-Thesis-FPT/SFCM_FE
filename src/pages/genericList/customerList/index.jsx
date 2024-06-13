@@ -1,7 +1,12 @@
-import { createAndUpdateUnit, deleteUnit, getUnit } from "@/apis/unit.api";
+import { getAllCustomerType } from "@/apis/customer-type.api";
+import { createAndUpdateCustomer, deleteCustomer, getAllCustomer } from "@/apis/customer.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
-import { bs_unit } from "@/components/aggridreact/dbColumns";
+import {
+  CustomerTypeRender,
+  DateTimeByTextRender,
+  OnlyEditWithInsertCell
+} from "@/components/aggridreact/cellRender";
+import { bs_customer } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
@@ -11,13 +16,14 @@ import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-export function UnitList() {
+export function CustomerList() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const BS_UNIT = new bs_unit();
+  const BS_CUSTOMER = new bs_customer();
+  const [allCustomerType, setAllCustomerType] = useState([]);
 
   const colDefs = [
     {
@@ -31,24 +37,62 @@ export function UnitList() {
       }
     },
     {
-      headerName: BS_UNIT.UNIT_CODE.headerName,
-      field: BS_UNIT.UNIT_CODE.field,
+      headerName: BS_CUSTOMER.CUSTOMER_CODE.headerName,
+      field: BS_CUSTOMER.CUSTOMER_CODE.field,
       flex: 1,
       filter: true,
+      editable: true,
       editable: OnlyEditWithInsertCell
     },
     {
-      headerName: BS_UNIT.UNIT_NAME.headerName,
-      field: BS_UNIT.UNIT_NAME.field,
+      headerName: BS_CUSTOMER.CUSTOMER_TYPE_CODE.headerName,
+      field: BS_CUSTOMER.CUSTOMER_TYPE_CODE.field,
+      flex: 1,
+      filter: true,
+      editable: true,
+      cellRenderer: params => CustomerTypeRender(params, allCustomerType)
+    },
+    {
+      headerName: BS_CUSTOMER.CUSTOMER_NAME.headerName,
+      field: BS_CUSTOMER.CUSTOMER_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: BS_UNIT.UPDATE_DATE.headerName,
-      field: BS_UNIT.UPDATE_DATE.field,
+      headerName: BS_CUSTOMER.TAX_CODE.headerName,
+      field: BS_CUSTOMER.TAX_CODE.field,
       flex: 1,
-      cellRenderer: DateTimeByTextRender
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: BS_CUSTOMER.EMAIL.headerName,
+      field: BS_CUSTOMER.EMAIL.field,
+      cellDataType: "email",
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: BS_CUSTOMER.IS_ACTIVE.headerName,
+      field: BS_CUSTOMER.IS_ACTIVE.field,
+      headerClass: "center-header",
+      cellStyle: {
+        justifyContent: "center",
+        display: "flex"
+      },
+      flex: 1,
+      editable: true,
+      cellEditor: "agCheckboxCellEditor",
+      cellRenderer: "agCheckboxCellRenderer"
+    },
+    {
+      headerName: BS_CUSTOMER.ADDRESS.headerName,
+      field: BS_CUSTOMER.ADDRESS.field,
+      flex: 1,
+      filter: true,
+      editable: true
     }
   ];
 
@@ -65,7 +109,7 @@ export function UnitList() {
       toast.error("Không có dữ liệu thay đổi để lưu");
       return;
     }
-    createAndUpdateUnit(insertAndUpdateData)
+    createAndUpdateCustomer(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -79,10 +123,10 @@ export function UnitList() {
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
       selectedRows,
       rowData,
-      "UNIT_CODE"
+      "CUSTOMER_CODE"
     );
 
-    deleteUnit(deleteIdList)
+    deleteCustomer(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -93,7 +137,7 @@ export function UnitList() {
   };
 
   const getRowData = () => {
-    getUnit()
+    getAllCustomer()
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -102,9 +146,19 @@ export function UnitList() {
       });
   };
 
+  useEffect(() => {
+    getAllCustomerType()
+      .then(res => {
+        setAllCustomerType(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  }, []);
+
   return (
     <Section>
-      <Section.Header title="Danh mục đơn vị tính"></Section.Header>
+      <Section.Header title="Danh sách loại khách hàng"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
           <SearchInput
@@ -131,7 +185,7 @@ export function UnitList() {
           className="h-[50vh]"
           rowData={rowData?.filter(item => {
             if (searchData === "") return item;
-            return item.METHOD_CODE?.toLowerCase().includes(searchData.toLowerCase());
+            return item.CUSTOMER_TYPE_CODE?.toLowerCase().includes(searchData.toLowerCase());
           })}
           colDefs={colDefs}
           onDeleteRow={selectedRows => {

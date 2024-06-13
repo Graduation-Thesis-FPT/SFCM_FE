@@ -23,6 +23,7 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { bs_block } from "@/components/aggridreact/dbColumns";
 import { OnlyEditWithInsertCell, WarehouseCodeRender } from "@/components/aggridreact/cellRender";
 import { DisplayCell } from "./displayCell";
+import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
@@ -268,7 +269,7 @@ export function WarehouseDesign() {
                         .sort((a, b) => a.BLOCK_CODE.localeCompare(b.BLOCK_CODE))
                         .map(block => (
                           <SelectItem key={block.BLOCK_CODE} value={block.BLOCK_CODE}>
-                            {block.BLOCK_NAME}
+                            {block.BLOCK_CODE}
                           </SelectItem>
                         ))}
                     </SelectGroup>
@@ -279,17 +280,14 @@ export function WarehouseDesign() {
           )}
           <span className="flex gap-x-4">
             {displayType === "table" ? (
-              <span>
-                <div className="mb-2 text-xs font-medium">Công cụ</div>
-                <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
-                  <GrantPermission action={actionGrantPermission.CREATE}>
-                    <BtnAddRow onAddRow={handleAddRow} />
-                  </GrantPermission>
-                  <GrantPermission action={actionGrantPermission.UPDATE}>
-                    <BtnSave onClick={handleSaveRows} />
-                  </GrantPermission>
-                </div>
-              </span>
+              <LayoutTool>
+                <GrantPermission action={actionGrantPermission.CREATE}>
+                  <BtnAddRow onAddRow={handleAddRow} />
+                </GrantPermission>
+                <GrantPermission action={actionGrantPermission.UPDATE}>
+                  <BtnSave onClick={handleSaveRows} />
+                </GrantPermission>
+              </LayoutTool>
             ) : null}
 
             <span>

@@ -2,6 +2,7 @@ import { getAllEquipType } from "@/apis/equipment-type.api";
 import { createAndUpdateEquipment, deleteEquipment, getAllEquipment } from "@/apis/equipment.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import {
+  BlockCodeRender,
   DateTimeByTextRender,
   EquTypeRender,
   OnlyEditWithInsertCell
@@ -9,6 +10,7 @@ import {
 import { bs_equipment } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common";
 import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
@@ -57,6 +59,20 @@ export function EquipmentList() {
       flex: 1,
       filter: true,
       editable: true
+    },
+    {
+      headerName: BS_EQUIPMENT.BLOCK_CODE.headerName,
+      field: BS_EQUIPMENT.BLOCK_CODE.field,
+      flex: 1,
+      filter: true,
+      editable: true,
+      cellRenderer: params =>
+        BlockCodeRender(params, [
+          { id: 1, name: "Item 1" },
+          { id: 2, name: "Item 2" },
+          { id: 3, name: "Item 3" },
+          { id: 4, name: "Item 4" }
+        ])
     },
     {
       headerName: BS_EQUIPMENT.UPDATE_DATE.headerName,
@@ -139,17 +155,14 @@ export function EquipmentList() {
               setSearchData(value);
             }}
           />
-          <div>
-            <div className="mb-2 text-xs font-medium">Công cụ</div>
-            <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
-              <GrantPermission action={actionGrantPermission.CREATE}>
-                <BtnAddRow onAddRow={handleAddRow} />
-              </GrantPermission>
-              <GrantPermission action={actionGrantPermission.UPDATE}>
-                <BtnSave onClick={handleSaveRows} />
-              </GrantPermission>
-            </div>
-          </div>
+          <LayoutTool>
+            <GrantPermission action={actionGrantPermission.CREATE}>
+              <BtnAddRow onAddRow={handleAddRow} />
+            </GrantPermission>
+            <GrantPermission action={actionGrantPermission.UPDATE}>
+              <BtnSave onClick={handleSaveRows} />
+            </GrantPermission>
+          </LayoutTool>
         </div>
 
         <AgGrid

@@ -10,13 +10,13 @@ export const SearchInput = forwardRef(({ className, handleSearch, ...props }, re
     <div className={cn("mb-[25px]", className)}>
       <div className="mb-2 text-xs font-medium">Tìm kiếm</div>
       <div className="relative flex">
-        <Search className="absolute left-2 top-1.5 size-4 text-gray-400" />
+        <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
         <Input
           ref={inputRef}
           type="search"
           placeholder="Nhập từ khóa..."
           className="mr-4 h-[36px] min-w-80 max-w-80 pl-8 text-sm font-normal text-black"
-        ></Input>
+        />
         <Button
           className="h-[36px] text-xs"
           onClick={() => {

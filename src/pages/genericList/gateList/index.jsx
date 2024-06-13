@@ -1,16 +1,21 @@
-import { createAndUpdateGate, getAllGate } from "@/apis/gate.api";
+import { createAndUpdateGate, deleteGate, getAllGate } from "@/apis/gate.api";
 import { getAllWarehouse } from "@/apis/warehouse.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
+import {
+  DateTimeByTextRender,
+  IsInOutRender,
+  OnlyEditWithInsertCell
+} from "@/components/aggridreact/cellRender";
 import { bs_gate } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common";
 import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
 import { actionGrantPermission } from "@/constants";
-import { fnAddRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { fnAddRows, fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -35,22 +40,11 @@ export function GateList() {
       }
     },
     {
-      headerName: BS_GATE.WAREHOUSE_CODE.headerName,
-      field: BS_GATE.WAREHOUSE_CODE.field,
-      flex: 1,
-      filter: true,
-      editable: OnlyEditWithInsertCell,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: {
-        values: warehouses.map(item => item.WAREHOUSE_CODE)
-      }
-    },
-    {
       headerName: BS_GATE.GATE_CODE.headerName,
       field: BS_GATE.GATE_CODE.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: BS_GATE.GATE_NAME.headerName,
@@ -64,23 +58,14 @@ export function GateList() {
       field: BS_GATE.IS_IN_OUT.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellRenderer: IsInOutRender
     },
     {
-      flex: 0.5,
-      cellRenderer: params => {
-        return (
-          <span
-            onClick={() => {
-              //   setDetailData(params.data);
-              //   setIsOpenDetailWarehouse(true);
-            }}
-            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
-          >
-            Xem
-          </span>
-        );
-      }
+      headerName: BS_GATE.UPDATE_DATE.headerName,
+      field: BS_GATE.UPDATE_DATE.field,
+      flex: 1,
+      cellRenderer: DateTimeByTextRender
     }
   ];
   const getRowData = () => {
@@ -93,7 +78,7 @@ export function GateList() {
       });
   };
   const handleAddRow = () => {
-    let newRowData = fnAddRows(rowData);
+    let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
 
@@ -113,7 +98,25 @@ export function GateList() {
       });
   };
 
-  const handleDeleteRows = () => {};
+  const handleDeleteRows = selectedRows => {
+    dispatch(setGlobalLoading(true));
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
+      selectedRows,
+      rowData,
+      "GATE_CODE"
+    );
+    deleteGate(deleteIdList)
+      .then(res => {
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
 
   useEffect(() => {
     getAllWarehouse()
@@ -126,7 +129,7 @@ export function GateList() {
   }, []);
   return (
     <Section>
-      <Section.Header title="Danh mục thiết bị"></Section.Header>
+      <Section.Header title="Danh mục cổng"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
           <SearchInput
@@ -134,17 +137,14 @@ export function GateList() {
               setSearchData(value);
             }}
           />
-          <span>
-            <div className="mb-2 text-xs font-medium">Công cụ</div>
-            <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
-              <GrantPermission action={actionGrantPermission.CREATE}>
-                <BtnAddRow onAddRow={handleAddRow} />
-              </GrantPermission>
-              <GrantPermission action={actionGrantPermission.UPDATE}>
-                <BtnSave onClick={handleSaveRows} />
-              </GrantPermission>
-            </div>
-          </span>
+          <LayoutTool>
+            <GrantPermission action={actionGrantPermission.CREATE}>
+              <BtnAddRow onAddRow={handleAddRow} />
+            </GrantPermission>
+            <GrantPermission action={actionGrantPermission.UPDATE}>
+              <BtnSave onClick={handleSaveRows} />
+            </GrantPermission>
+          </LayoutTool>
         </span>
 
         <AgGrid
@@ -157,7 +157,6 @@ export function GateList() {
           rowData={rowData?.filter(item => {
             if (searchData === "") return item;
             return (
-              item.WAREHOUSE_CODE?.toLowerCase().includes(searchData.toLowerCase()) ||
               item.GATE_CODE?.toLowerCase().includes(searchData.toLowerCase()) ||
               item.GATE_NAME?.toLowerCase().includes(searchData.toLowerCase()) ||
               item.IS_IN_OUT?.toLowerCase().includes(searchData.toLowerCase())

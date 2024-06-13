@@ -21,6 +21,22 @@ const AgGrid = forwardRef(
   ) => {
     const [selectedRows, setSelectedRows] = useState([]);
     const contextRef = useRef(null);
+    const dataTypeDefinitions = useMemo(() => {
+      return {
+        email: {
+          baseDataType: "text",
+          extendsDataType: "text",
+          // valueParser: params =>
+          //   params.newValue != null && params.newValue.match("\\d{2}/\\d{2}/\\d{4}")
+          //     ? params.newValue
+          //     : null,
+          // valueFormatter: params => (params.value == null ? "" : params.value),
+          dataTypeMatcher: value =>
+            typeof value === "string" &&
+            value.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)
+        }
+      };
+    }, []);
 
     const handleDeleteRow = () => {
       let keyInsert = [];
@@ -53,6 +69,7 @@ const AgGrid = forwardRef(
           <ContextMenuTrigger disabled={contextMenu === true ? false : true}>
             <div className={cn("ag-theme-quartz custom-header h-[500px] ", className)}>
               <AgGridReact
+                dataTypeDefinitions={dataTypeDefinitions}
                 ref={ref}
                 rowData={rowData}
                 columnDefs={colDefs}

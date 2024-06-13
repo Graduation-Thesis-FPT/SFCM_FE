@@ -9,10 +9,13 @@ export function Section({ children, className }) {
 Section.Header = ({ title, children, className }) => {
   return (
     <>
-      <div className={cn("flex items-center justify-between px-6", className)}>
-        <div className="py-[14px] text-lg font-bold text-gray-900">{title}</div>
-        {children}
-      </div>
+      {title && (
+        <div className={cn("flex items-center justify-between px-6", className)}>
+          <div className="py-[14px] text-lg font-bold text-gray-900">{title}</div>
+          {children}
+        </div>
+      )}
+      {!title && <div className={cn("px-6 py-[14px]", className)}>{children}</div>}
       <Separator />
     </>
   );

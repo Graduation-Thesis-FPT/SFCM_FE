@@ -4,6 +4,7 @@ import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggri
 import { bs_item_type } from "@/components/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common";
 import { useCustomToast } from "@/components/custom-toast";
 import { SearchInput } from "@/components/search";
@@ -111,17 +112,14 @@ export function ItemType() {
               setSearchData(value);
             }}
           />
-          <span>
-            <div className="mb-2 text-xs font-medium">Công cụ</div>
-            <div className="flex h-[36px] items-center gap-x-3 rounded-md bg-gray-100 px-3">
-              <GrantPermission action={actionGrantPermission.CREATE}>
-                <BtnAddRow onAddRow={handleAddRow} />
-              </GrantPermission>
-              <GrantPermission action={actionGrantPermission.UPDATE}>
-                <BtnSave onClick={handleSaveRows} />
-              </GrantPermission>
-            </div>
-          </span>
+          <LayoutTool>
+            <GrantPermission action={actionGrantPermission.CREATE}>
+              <BtnAddRow onAddRow={handleAddRow} />
+            </GrantPermission>
+            <GrantPermission action={actionGrantPermission.UPDATE}>
+              <BtnSave onClick={handleSaveRows} />
+            </GrantPermission>
+          </LayoutTool>
         </span>
 
         <AgGrid
