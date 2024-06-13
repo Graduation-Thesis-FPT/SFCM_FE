@@ -1,6 +1,6 @@
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnExcel } from "@/components/aggridreact/tableTools/BtnExcel";
+import { BtnExportExcel } from "@/components/aggridreact/tableTools/BtnExportExcel";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
 import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";

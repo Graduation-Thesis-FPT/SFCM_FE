@@ -58,7 +58,8 @@ function fnFilterInsertAndUpdateData(listData) {
   return {
     insertData: { insert: insertData },
     updateData: { update: updateData },
-    insertAndUpdateData: { insert: insertData, update: updateData }
+    insertAndUpdateData: { insert: insertData, update: updateData },
+    isContinue: insertData.length > 0 || updateData.length > 0
   };
 }
 
