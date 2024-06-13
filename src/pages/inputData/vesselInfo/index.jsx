@@ -212,8 +212,7 @@ export function VesselInfo() {
         <span className="mb-[25px] flex justify-between">
           <div></div>
           <LayoutTool>
-            <BtnImportExcel />
-            <BtnExportExcel />
+            <BtnExportExcel gridRef={gridRef} />
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />
             </GrantPermission>
