@@ -210,7 +210,7 @@ export function VesselInfo() {
               name="from_date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ngày tàu đến - tàu rời</FormLabel>
+                  <FormLabel>Ngày tàu đến</FormLabel>
                   <FormControl>
                     <DatePickerWithRangeInForm
                       date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
