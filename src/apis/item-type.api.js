@@ -1,6 +1,6 @@
 import { axiosPrivate } from "@/config/axios";
 
-export const getItemType = async () => {
+export const getAllItemType = async () => {
   return await axiosPrivate.get(`item-type`);
 };
 

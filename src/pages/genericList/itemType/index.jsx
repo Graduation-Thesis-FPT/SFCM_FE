@@ -1,4 +1,4 @@
-import { createAndUpdateItemType, deleteItemType, getItemType } from "@/apis/item-type.api";
+import { createAndUpdateItemType, deleteItemType, getAllItemType } from "@/apis/item-type.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
 import { bs_item_type } from "@/components/aggridreact/dbColumns";
@@ -93,7 +93,7 @@ export function ItemType() {
   };
 
   const getRowData = () => {
-    getItemType()
+    getAllItemType()
       .then(res => {
         setRowData(res.data.metadata);
       })

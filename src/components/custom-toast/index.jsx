@@ -31,7 +31,7 @@ export const useCustomToast = () => {
 
   const success = (mess, duration) => {
     if (typeof mess !== "string") {
-      mess = SUCCESS_MESSAGE[mess?.data?.message] || "Thành công";
+      mess = SUCCESS_MESSAGE[mess?.data?.message] || "Thao tác thành công";
     }
     toast({
       variant: "success",

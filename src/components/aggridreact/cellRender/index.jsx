@@ -168,3 +168,87 @@ export function CustomerTypeRender(params, customerType) {
     </Select>
   );
 }
+
+export function StatusOfGoodsRender(params) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(false);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value={false}>Rỗng</SelectItem>
+          <SelectItem value={true}>Có hàng</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function ItemTypeCodeRender(params, itemType) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(itemType[0].ITEM_TYPE_CODE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {itemType.map(item => (
+            <SelectItem key={item.ITEM_TYPE_CODE} value={item.ITEM_TYPE_CODE}>
+              {item.ITEM_TYPE_CODE}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function ConsigneeRender(params, customerList) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(customerList[0].CUSTOMER_CODE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {customerList.map(item => (
+            <SelectItem key={item.CUSTOMER_CODE} value={item.CUSTOMER_CODE}>
+              {item.CUSTOMER_NAME} - {item.CUSTOMER_CODE}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}

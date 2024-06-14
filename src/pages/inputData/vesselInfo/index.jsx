@@ -27,6 +27,7 @@ import { BtnExportExcel } from "@/components/aggridreact/tableTools/BtnExportExc
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import moment from "moment";
 
 const formSchema = z.object({
   from_date: z.date({
@@ -45,8 +46,8 @@ export function VesselInfo() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      from_date: addDays(new Date(), -30),
-      to_date: addDays(new Date(), 30)
+      from_date: moment(addDays(new Date(), -30)).startOf("day")._d,
+      to_date: moment(addDays(new Date(), 30)).endOf("day")._d
     }
   });
   const DT_VESSEL_VISIT = new dt_vessel_visit();
@@ -141,7 +142,7 @@ export function VesselInfo() {
   const handleSaveRows = () => {
     const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
     if (!isContinue) {
-      toast.error("Không có dữ liệu để lưu");
+      toast.warning("Không có dữ liệu thay đổi");
       return;
     }
     dispatch(setGlobalLoading(true));
@@ -215,8 +216,8 @@ export function VesselInfo() {
                     <DatePickerWithRangeInForm
                       date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
                       onSelected={value => {
-                        form.setValue("from_date", value.from);
-                        form.setValue("to_date", value.to);
+                        form.setValue("from_date", moment(value.from).startOf("day")._d);
+                        form.setValue("to_date", moment(value.to).endOf("day")._d);
                       }}
                     />
                   </FormControl>

@@ -112,7 +112,12 @@ export const SUCCESS_MESSAGE = {
   // VESSEL
   SAVE_VESSEL_SUCCESS: "Lưu thông tin tàu thành công",
   DELETE_VESSEL_SUCCESS: "Xóa thông tin tàu thành công",
-  GET_VESSEL_SUCCESS: "Lấy thông tin tàu thành công"
+  GET_VESSEL_SUCCESS: "Lấy thông tin tàu thành công",
+
+  // CONTAINER
+  SAVE_CONTAINER_SUCCESS: "Lưu thông tin container thành công",
+  DELETE_CONTAINER_SUCCESS: "Xóa thông tin container thành công",
+  GET_CONTAINER_SUCCESS: "Lấy thông tin container thành công"
 };
 
 export const REASON_PHRASES = {

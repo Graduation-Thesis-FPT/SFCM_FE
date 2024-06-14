@@ -76,11 +76,24 @@ export class bs_customer extends CommonColumns {
 
 export class dt_vessel_visit extends CommonColumns {
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
-  VESSEL_NAME = { field: "VESSEL_NAME", headerName: "Tên tàu *" };
-  INBOUND_VOYAGE = { field: "INBOUND_VOYAGE", headerName: "Chuyến nhập *" };
-  OUTBOUND_VOYAGE = { field: "OUTBOUND_VOYAGE", headerName: "Chuyến xuất *" };
-  ETA = { field: "ETA", headerName: "Ngày đến *" };
-  ETD = { field: "ETD", headerName: "Ngày rời *" };
+  VESSEL_NAME = { field: "VESSEL_NAME", headerName: "Tên tàu" };
+  INBOUND_VOYAGE = { field: "INBOUND_VOYAGE", headerName: "Chuyến nhập" };
+  OUTBOUND_VOYAGE = { field: "OUTBOUND_VOYAGE", headerName: "Chuyến xuất" };
+  ETA = { field: "ETA", headerName: "Ngày đến" };
+  ETD = { field: "ETD", headerName: "Ngày rời" };
   CallSign = { field: "CallSign", headerName: "CallSign" };
   IMO = { field: "IMO", headerName: "IMO" };
+}
+
+export class dt_cntr_mnf_ld extends CommonColumns {
+  ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
+  VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
+  BILLOFLADING = { field: "BILLOFLADING", headerName: "Số vận đơn" };
+  SEALNO = { field: "SEALNO", headerName: "Số seal" };
+  CNTRNO = { field: "CNTRNO", headerName: "Số container *" };
+  CNTRSZTP = { field: "CNTRSZTP", headerName: "Loại container *" };
+  STATUSOFGOOD = { field: "STATUSOFGOOD", headerName: "Trạng thái container *" };
+  CONSIGNEE = { field: "CONSIGNEE", headerName: "Mã đại lý *" };
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
+  COMMODITYDESCRIPTION = { field: "COMMODITYDESCRIPTION", headerName: "Ghi chú" };
 }
