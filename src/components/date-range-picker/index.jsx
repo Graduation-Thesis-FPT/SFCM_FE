@@ -1,24 +1,14 @@
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { vi } from "date-fns/locale";
-import { useState } from "react";
 
-export function DatePickerWithRange({ className, onSelected }) {
-  const [date, setDate] = useState({
-    from: addDays(new Date(), -30),
-    to: new Date()
-  });
-
-  const handleOnSelect = value => {
-    onSelected(value);
-    setDate(value);
-  };
+export function DatePickerWithRangeInForm({ className, onSelected, date }) {
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -26,7 +16,8 @@ export function DatePickerWithRange({ className, onSelected }) {
             variant={"outline"}
             className={cn(
               "w-[290px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
+              className
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -50,9 +41,7 @@ export function DatePickerWithRange({ className, onSelected }) {
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={value => {
-              handleOnSelect(value);
-            }}
+            onSelect={onSelected}
             numberOfMonths={2}
           />
         </PopoverContent>

@@ -13,6 +13,7 @@ import {
 import { GrantPermission } from "../common";
 import { actionGrantPermission } from "@/constants";
 import { Trash2 } from "lucide-react";
+import moment from "moment";
 
 const AgGrid = forwardRef(
   (
@@ -34,6 +35,19 @@ const AgGrid = forwardRef(
           dataTypeMatcher: value =>
             typeof value === "string" &&
             value.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)
+        },
+        date: {
+          baseDataType: "date",
+          extendsDataType: "date",
+          valueParser: params => {
+            if (params.newValue == null) {
+              return null;
+            }
+            return moment(params.newValue).format("DD/MM/YYYY");
+          },
+          valueFormatter: params => {
+            return params.value == null ? "" : moment(params.value).format("DD/MM/YYYY");
+          }
         }
       };
     }, []);

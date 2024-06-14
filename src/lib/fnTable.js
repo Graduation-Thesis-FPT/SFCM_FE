@@ -30,6 +30,10 @@ const fnAddRowsVer2 = (rowData, colDefs) => {
         //do something
         return;
       }
+      if (col.cellDataType === "date") {
+        newRow[col.field] = new Date();
+        return;
+      }
       newRow[col.field] = "";
     });
 

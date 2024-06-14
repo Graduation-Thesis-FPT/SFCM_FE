@@ -12,10 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRef, useState } from "react";
-import { DatePickerWithRange } from "@/components/date-range-picker";
+import { DatePickerWithRangeInForm } from "@/components/date-range-picker";
 import { addDays } from "date-fns";
 import { dt_vessel_visit } from "@/components/aggridreact/dbColumns";
-import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { createAndUpdateVessel, deleteVessel, getVesselByFilter } from "@/apis/vessel.api";
 import { useCustomToast } from "@/components/custom-toast";
@@ -24,7 +23,6 @@ import { GrantPermission } from "@/components/common";
 import { actionGrantPermission } from "@/constants";
 import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { BtnImportExcel } from "@/components/aggridreact/tableTools/BtnImportExcel";
 import { BtnExportExcel } from "@/components/aggridreact/tableTools/BtnExportExcel";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useDispatch } from "react-redux";
@@ -48,7 +46,7 @@ export function VesselInfo() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       from_date: addDays(new Date(), -30),
-      to_date: new Date()
+      to_date: addDays(new Date(), 30)
     }
   });
   const DT_VESSEL_VISIT = new dt_vessel_visit();
@@ -63,13 +61,6 @@ export function VesselInfo() {
       valueFormatter: params => {
         return Number(params.node.id) + 1;
       }
-    },
-    {
-      headerName: DT_VESSEL_VISIT.VOYAGEKEY.headerName,
-      field: DT_VESSEL_VISIT.VOYAGEKEY.field,
-      flex: 1,
-      filter: true,
-      editable: OnlyEditWithInsertCell
     },
     {
       headerName: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
@@ -98,7 +89,7 @@ export function VesselInfo() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: DateTimeByTextRender
+      cellDataType: "date"
     },
     {
       headerName: DT_VESSEL_VISIT.ETD.headerName,
@@ -106,7 +97,7 @@ export function VesselInfo() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: DateTimeByTextRender
+      cellDataType: "date"
     },
     {
       headerName: DT_VESSEL_VISIT.CallSign.headerName,
@@ -127,7 +118,15 @@ export function VesselInfo() {
   const getRowData = () => {
     getVesselByFilter(form.getValues("from_date"), form.getValues("to_date"))
       .then(res => {
-        setRowData(res.data.metadata);
+        setRowData(
+          res.data.metadata?.map(rowData => {
+            return {
+              ...rowData,
+              ETA: rowData.ETA ? new Date(rowData.ETA) : null,
+              ETD: rowData.ETD ? new Date(rowData.ETD) : null
+            };
+          })
+        );
       })
       .catch(err => {
         toast.error(err);
@@ -179,11 +178,33 @@ export function VesselInfo() {
       });
   };
 
+  const onSubmit = () => {
+    dispatch(setGlobalLoading(true));
+    getVesselByFilter(form.getValues("from_date"), form.getValues("to_date"))
+      .then(res => {
+        setRowData(
+          res.data.metadata?.map(rowData => {
+            return {
+              ...rowData,
+              ETA: rowData.ETA ? new Date(rowData.ETA) : null,
+              ETD: rowData.ETD ? new Date(rowData.ETD) : null
+            };
+          })
+        );
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
   return (
     <Section>
       <Section.Header>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(getRowData)} className="flex items-end justify-between">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-end justify-between">
             <FormField
               control={form.control}
               name="from_date"
@@ -191,7 +212,8 @@ export function VesselInfo() {
                 <FormItem>
                   <FormLabel>Ngày tàu đến - tàu rời</FormLabel>
                   <FormControl>
-                    <DatePickerWithRange
+                    <DatePickerWithRangeInForm
+                      date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
                       onSelected={value => {
                         form.setValue("from_date", value.from);
                         form.setValue("to_date", value.to);
