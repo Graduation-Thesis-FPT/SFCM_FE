@@ -12,10 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
-import { addDays } from "date-fns";
 import { dt_cntr_mnf_ld } from "@/components/aggridreact/dbColumns";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { getVesselByFilter } from "@/apis/vessel.api";
+import { getAllVessel } from "@/apis/vessel.api";
 import { useCustomToast } from "@/components/custom-toast";
 import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common";
@@ -222,7 +221,7 @@ export function ManifestLoadingList() {
   };
 
   const getVesselList = () => {
-    getVesselByFilter(addDays(new Date(), -100), addDays(new Date(), 100))
+    getAllVessel()
       .then(res => {
         setVesselList(res.data.metadata);
       })

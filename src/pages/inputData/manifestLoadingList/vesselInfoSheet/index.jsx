@@ -1,4 +1,5 @@
 import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { DateTimeByTextRender } from "@/components/aggridreact/cellRender";
 import { dt_vessel_visit } from "@/components/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/custom-toast";
 import { Button } from "@/components/ui/button";
@@ -42,13 +43,15 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
       headerName: DT_VESSEL_VISIT.ETA.headerName,
       field: DT_VESSEL_VISIT.ETA.field,
       flex: 1,
-      filter: true
+      filter: true,
+      cellRenderer: DateTimeByTextRender
     },
     {
       headerName: DT_VESSEL_VISIT.ETD.headerName,
       field: DT_VESSEL_VISIT.ETD.field,
       flex: 1,
-      filter: true
+      filter: true,
+      cellRenderer: DateTimeByTextRender
     },
     {
       headerName: DT_VESSEL_VISIT.CallSign.headerName,

@@ -1,5 +1,9 @@
 import { axiosPrivate } from "@/config/axios";
 
+export const getAllVessel = async () => {
+  return await axiosPrivate.get(`vessel`);
+};
+
 export const getVesselByFilter = async (fromDate, toDate) => {
   return await axiosPrivate.get(`vessel?from=${fromDate}&to=${toDate}`);
 };
