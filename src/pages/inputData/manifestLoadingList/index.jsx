@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
-import { dt_cntr_mnf_ld } from "@/components/aggridreact/dbColumns";
+import { dt_cntr_mnf_ld, dt_vessel_visit } from "@/components/aggridreact/dbColumns";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { getAllVessel } from "@/apis/vessel.api";
 import { useCustomToast } from "@/components/custom-toast";
@@ -46,6 +46,20 @@ const formSchema = z.object({
   INBOUND_VOYAGE: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
   OUTBOUND_VOYAGE: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" })
 });
+
+const DT_VESSEL_VISIT = new dt_vessel_visit();
+
+const formField = [
+  { name: DT_VESSEL_VISIT.VESSEL_NAME.field, label: DT_VESSEL_VISIT.VESSEL_NAME.headerName },
+  {
+    name: DT_VESSEL_VISIT.INBOUND_VOYAGE.field,
+    label: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName
+  },
+  {
+    name: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.field,
+    label: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.headerName
+  }
+];
 
 export function ManifestLoadingList() {
   const [openVesselInfoSheet, setOpenVesselInfoSheet] = useState(false);
@@ -262,69 +276,30 @@ export function ManifestLoadingList() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-end justify-between">
             <span className="grid grid-cols-3 gap-3">
-              <FormField
-                control={form.control}
-                name="VESSEL_NAME"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên tàu</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={field.value}
-                        onClick={() => {
-                          setOpenVesselInfoSheet(true);
-                        }}
-                        readOnly
-                        className="hover:cursor-pointer"
-                        placeholder="Chọn tàu chuyến"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="INBOUND_VOYAGE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Chuyến nhập</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={field.value}
-                        onClick={() => {
-                          setOpenVesselInfoSheet(true);
-                        }}
-                        readOnly
-                        className="hover:cursor-pointer"
-                        placeholder="Chọn tàu chuyến"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="OUTBOUND_VOYAGE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Chuyến xuất</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={field.value}
-                        onClick={() => {
-                          setOpenVesselInfoSheet(true);
-                        }}
-                        readOnly
-                        className="hover:cursor-pointer"
-                        placeholder="Chọn tàu chuyến"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {formField.map((item, index) => (
+                <FormField
+                  key={index}
+                  control={form.control}
+                  name={item.name}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{item.label}</FormLabel>
+                      <FormControl>
+                        <Input
+                          value={field.value}
+                          onClick={() => {
+                            setOpenVesselInfoSheet(true);
+                          }}
+                          readOnly
+                          className="hover:cursor-pointer"
+                          placeholder="Chọn tàu chuyến"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
             </span>
             <Button
               variant="blue"
