@@ -20,6 +20,7 @@ export const ERROR_MESSAGE = {
 
   // Warehouse error
   WAREHOUSE_NOT_EXIST: "Kho hàng không tồn tại",
+  WAREHOUSE_EXIST: "Kho hàng đã tồn tại",
   INVALID_WAREHOUSE_CODE: "Mã kho hàng không hợp lệ",
   // Warehouse - block
   BLOCK_DUPLICATED: "Dãy bị trùng",
@@ -29,7 +30,18 @@ export const ERROR_MESSAGE = {
   GATE_NOT_EXIST: "Cổng không tồn tại", // check cổng này tồn tại hay không
 
   // equip type
-  EQUIPTYPE_NOT_EXIST: "Loại thiết bị không tồn tại"
+  EQUIPTYPE_NOT_EXIST: "Loại thiết bị không tồn tại",
+  EQUIPTYPE_NOT_EXIST_UPDATE: "Loại thiết bị không tồn tại để cập nhật",
+  EQUIPTYPE_IS_EXISTED: "Loại thiết bị đã tồn tại",
+
+  // method
+  METHOD_CODE_NOT_EXIST: "Mã phương thức không tồn tại",
+
+  //Itemtype
+  ITEM_TYPE_EXIST: "Loại hàng đã tồn tại",
+
+  //Unit Code
+  UNIT_CODE_EXIST: "Mã đơn vị đã tồn tại"
 };
 
 export const SUCCESS_MESSAGE = {
@@ -49,13 +61,20 @@ export const SUCCESS_MESSAGE = {
   UPDATE_USER_SUCCESS: "Cập nhật người dùng thành công",
   RESET_PASSWORD_SUCCESS: "Đặt lại mật khẩu thành công",
 
-  // Warehouse success
-  CREATE_BLOCK_SUCCESS: "Tạo khối thành công",
+  // BLOCK
+  SAVE_BLOCK_SUCCESS: "Lưu khối thành công",
   DELETE_BLOCK_SUCCESS: "Xóa khối thành công",
   GET_BLOCK_SUCCESS: "Lấy khối thành công",
+
+  // Cell
+  SAVE_CELL_SUCCESS: "SAVE_CELL_SUCCESS",
+  DELETE_CELL_SUCCESS: "DELETE_CELL_SUCCESS",
+  GET_CELL_SUCCESS: "GET_CELL_SUCCESS",
+
   // warehouse - block
   DELETE_WAREHOUSE_SUCCESS: "Xóa kho hàng thành công",
   GET_WAREHOUSE_SUCCESS: "Lấy kho hàng thành công",
+  SAVE_WAREHOUSE_SUCCESS: "Lưu kho hàng thành công",
 
   // gate
   CREATE_GATE_SUCCESS: "Tạo cổng thành công",
@@ -65,7 +84,35 @@ export const SUCCESS_MESSAGE = {
   // equipment
   CREATE_EQUIPTYPE_SUCCESS: "Tạo loại thiết bị thành công",
   DELETE_EQUIPTYPE_SUCCESS: "Xóa loại thiết bị thành công",
-  GET_EQUIPTYPE_SUCCESS: "Lấy loại thiết bị thành công"
+  GET_EQUIPTYPE_SUCCESS: "Lấy loại thiết bị thành công",
+  SAVE_EQUIPMENT_SUCCESS: "Lưu thiết bị thành công",
+  DELETE_EQUIPMENT_SUCCESS: "Xóa thiết bị thành công",
+  GET_EQUIPMENT_SUCCESS: "Lấy thiết bị thành công",
+
+  // method
+  SAVE_METHOD_SUCCESS: "Lưu phương thức thành công",
+  DELETE_METHOD_SUCCESS: "Xóa phương thức thành công",
+  GET_METHOD_SUCCESS: "Lấy phương thức thành công",
+
+  //item-type
+  DELETE_ITEMTYPE_SUCCESS: "Xóa loại hàng thành công",
+  GET_ITEMTYPE_SUCCESS: "Lấy loại hàng thành công",
+  SAVE_ITEMTYPE_SUCCESS: "Lưu loại hàng thành công",
+
+  //Unit
+  DELETE_UNIT_SUCCESS: "Xóa đơn vị thành công",
+  GET_UNIT_SUCCESS: "Lấy đơn vị thành công",
+  SAVE_UNIT_SUCCESS: "Lưu đơn vị thành công",
+
+  // BLOCK
+  SAVE_CUSTOMERTYPE_SUCCESS: "Lưu loại khách hàng thành công",
+  DELETE_CUSTOMERTYPE_SUCCESS: "Xóa loại khách hàng thành công",
+  GET_CUSTOMERTYPE_SUCCESS: "Lấy loại khách hàng thành công",
+
+  // VESSEL
+  SAVE_VESSEL_SUCCESS: "Lưu thông tin tàu thành công",
+  DELETE_VESSEL_SUCCESS: "Xóa thông tin tàu thành công",
+  GET_VESSEL_SUCCESS: "Lấy thông tin tàu thành công"
 };
 
 export const REASON_PHRASES = {
