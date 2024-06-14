@@ -186,8 +186,8 @@ export function ManifestLoadingList() {
       });
   };
 
-  const getRowDataByFilter = VOYAGEKEY => {
-    getManifestLoadingListContByFilter(VOYAGEKEY)
+  const getRowDataByFilter = async VOYAGEKEY => {
+    await getManifestLoadingListContByFilter(VOYAGEKEY)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -196,9 +196,18 @@ export function ManifestLoadingList() {
       });
   };
 
-  const onSubmit = async data => {
+  const onSubmit = data => {};
+
+  const handleChangeVesselInfo = async rowSelected => {
+    setOpenVesselInfoSheet(false);
+
+    form.setValue("VOYAGEKEY", rowSelected[0].VOYAGEKEY);
+    form.setValue("VESSEL_NAME", rowSelected[0].VESSEL_NAME);
+    form.setValue("INBOUND_VOYAGE", rowSelected[0].INBOUND_VOYAGE);
+    form.setValue("OUTBOUND_VOYAGE", rowSelected[0].OUTBOUND_VOYAGE);
+
     dispatch(setGlobalLoading(true));
-    getManifestLoadingListContByFilter(data.VOYAGEKEY)
+    getManifestLoadingListContByFilter(rowSelected[0].VOYAGEKEY)
       .then(res => {
         toast.success(res);
         setRowData(res.data.metadata);
@@ -209,15 +218,6 @@ export function ManifestLoadingList() {
       .finally(() => {
         dispatch(setGlobalLoading(false));
       });
-  };
-
-  const handleChangeVesselInfo = rowSelected => {
-    setRowData([]);
-    form.setValue("VOYAGEKEY", rowSelected[0].VOYAGEKEY);
-    form.setValue("VESSEL_NAME", rowSelected[0].VESSEL_NAME);
-    form.setValue("INBOUND_VOYAGE", rowSelected[0].INBOUND_VOYAGE);
-    form.setValue("OUTBOUND_VOYAGE", rowSelected[0].OUTBOUND_VOYAGE);
-    setOpenVesselInfoSheet(false);
   };
 
   const getVesselList = () => {
@@ -249,6 +249,7 @@ export function ManifestLoadingList() {
         toast.error(err);
       });
   };
+
   useEffect(() => {
     getItemType();
     getVesselList();
@@ -325,20 +326,15 @@ export function ManifestLoadingList() {
                 )}
               />
             </span>
-            <span className="flex gap-3">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => {
-                  setOpenVesselInfoSheet(true);
-                }}
-              >
-                Chọn tàu chuyến
-              </Button>
-              <Button variant="blue" type="submit">
-                Nạp dữ liệu
-              </Button>
-            </span>
+            <Button
+              variant="blue"
+              type="button"
+              onClick={() => {
+                setOpenVesselInfoSheet(true);
+              }}
+            >
+              Chọn tàu chuyến
+            </Button>
           </form>
         </Form>
       </Section.Header>
