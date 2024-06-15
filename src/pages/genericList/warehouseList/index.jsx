@@ -1,28 +1,16 @@
-import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnExportExcel } from "@/components/aggridreact/tableTools/BtnExportExcel";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { SearchInput } from "@/components/search";
-import { Section } from "@/components/section";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { fnAddRows, fnDeleteRows } from "@/lib/fnTable";
+import { deleteWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { GrantPermission } from "@/components/common/grant-permission";
+import { SearchInput } from "@/components/common/search";
+import { Section } from "@/components/common/section";
+import { Button } from "@/components/common/ui/button";
+import { actionGrantPermission } from "@/constants";
+import { fnDeleteRows } from "@/lib/fnTable";
 import { PlusCircle } from "lucide-react";
 import { useRef, useState } from "react";
-import { GrantPermission } from "@/components/common";
-import { actionGrantPermission } from "@/constants";
-import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
-import { useCustomToast } from "@/components/custom-toast";
-import { FormCreateWarehouse } from "./FormCreateWarehouse";
 import { DetailWarehouse } from "./DetailWarehouse";
-import { deleteWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
+import { FormCreateWarehouse } from "./FormCreateWarehouse";
 
 let data = [
   { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM", ACREAGE: 10000 },

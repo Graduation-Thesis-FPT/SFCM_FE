@@ -1,6 +1,6 @@
 import { refreshToken } from "@/apis/access.api";
 import { getMenuByRoleCode } from "@/apis/menu.api";
-import { useCustomToast } from "@/components/custom-toast";
+import { useCustomToast } from "@/components/common/custom-toast";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
 import { setMenu } from "@/redux/slice/menuSlice";
 import React, { useEffect } from "react";

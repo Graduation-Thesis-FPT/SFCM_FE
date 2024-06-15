@@ -1,5 +1,5 @@
 import { getAllCellByWarehouseAndBlockCode } from "@/apis/block.api";
-import { useCustomToast } from "@/components/custom-toast";
+import { useCustomToast } from "@/components/common/custom-toast";
 import React, { useEffect, useState } from "react";
 import { RenderCell } from "./RenderCell";
 

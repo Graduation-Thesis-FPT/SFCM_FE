@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/common/ui/button";
+import { Input } from "@/components/common/ui/input";
 import {
   Form,
   FormControl,
@@ -10,11 +10,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form";
-import { useCustomToast } from "@/components/custom-toast";
-import { GrantPermission } from "@/components/common";
+} from "@/components/common/ui/form";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { actionGrantPermission } from "@/constants";
-import { CustomSheet } from "@/components/custom-sheet";
+import { CustomSheet } from "@/components/common/custom-sheet";
 import { useEffect } from "react";
 import { deleteWarehouse } from "@/apis/warehouse.api";
 

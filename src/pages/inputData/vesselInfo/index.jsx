@@ -1,5 +1,5 @@
-import { Section } from "@/components/section";
-import { Button } from "@/components/ui/button";
+import { Section } from "@/components/common/section";
+import { Button } from "@/components/common/ui/button";
 import {
   Form,
   FormControl,
@@ -7,23 +7,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form";
+} from "@/components/common/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRef, useState } from "react";
-import { DatePickerWithRangeInForm } from "@/components/date-range-picker";
+import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { addDays } from "date-fns";
-import { dt_vessel_visit } from "@/components/aggridreact/dbColumns";
-import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { createAndUpdateVessel, deleteVessel, getVesselByFilter } from "@/apis/vessel.api";
-import { useCustomToast } from "@/components/custom-toast";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
-import { GrantPermission } from "@/components/common";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { actionGrantPermission } from "@/constants";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { BtnExportExcel } from "@/components/aggridreact/tableTools/BtnExportExcel";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";

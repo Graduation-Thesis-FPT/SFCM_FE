@@ -1,4 +1,4 @@
-import { Avatar } from "@/components/ui/avartar";
+import { Avatar } from "@/components/common/ui/avartar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,7 +6,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
+} from "@/components/common/ui/dropdown-menu";
 import { useToggle } from "@/hooks/useToggle";
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
@@ -117,7 +117,7 @@ export function MainLayout() {
         </header>
         <main
           className={cn(
-            "flex-1 w-full rounded-md bg-white",
+            "w-full flex-1 rounded-md bg-white",
             globalLoading && "pointer-events-none opacity-50"
           )}
         >

@@ -1,4 +1,4 @@
-import { useCustomToast } from "@/components/custom-toast";
+import { useCustomToast } from "@/components/common/custom-toast";
 import { useEffect, useState } from "react";
 
 const useFetchData = ({ service, params = {}, dependencies = [], shouldFetch = true }) => {

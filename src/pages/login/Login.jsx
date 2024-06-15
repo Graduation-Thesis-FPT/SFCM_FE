@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/common/ui/button";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/common/ui/input";
 import {
   Form,
   FormControl,
@@ -13,13 +13,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+} from "@/components/common/ui/form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/common/ui/tooltip";
 import background from "@/assets/image/background-login.svg";
 import logo from "@/assets/image/Logo_128x128.svg";
 import { Eye, EyeOff, Info } from "lucide-react";
 import ForgotPassword from "./ForgotPassword";
-import { useCustomToast } from "@/components/custom-toast";
+import { useCustomToast } from "@/components/common/custom-toast";
 import { login } from "@/apis/access.api";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
 import { regexPattern } from "@/constants/regexPattern";
@@ -172,11 +177,7 @@ export function Login() {
           <div className="flex w-full items-center justify-end">
             <ForgotPassword />
           </div>
-          <Button
-            type="submit"
-            form="loginForm"
-            className="w-full bg-blue-600 text-base font-bold hover:bg-blue-600/80"
-          >
+          <Button variant="blue" type="submit" form="loginForm" className="w-full">
             Đăng nhập
           </Button>
         </div>

@@ -1,8 +1,8 @@
-import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { SearchInput } from "@/components/search";
-import { Section } from "@/components/section";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { SearchInput } from "@/components/common/search";
+import { Section } from "@/components/common/section";
 import {
   Select,
   SelectContent,
@@ -10,20 +10,23 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select";
+} from "@/components/common/ui/select";
 import { fnAddRows, fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useEffect, useRef, useState } from "react";
-import { GrantPermission } from "@/components/common";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { actionGrantPermission } from "@/constants";
 import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
-import { useCustomToast } from "@/components/custom-toast";
+import { useCustomToast } from "@/components/common/custom-toast";
 import { getAllWarehouse } from "@/apis/warehouse.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { bs_block } from "@/components/aggridreact/dbColumns";
-import { OnlyEditWithInsertCell, WarehouseCodeRender } from "@/components/aggridreact/cellRender";
+import { bs_block } from "@/components/common/aggridreact/dbColumns";
+import {
+  OnlyEditWithInsertCell,
+  WarehouseCodeRender
+} from "@/components/common/aggridreact/cellRender";
 import { DisplayCell } from "./displayCell";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);

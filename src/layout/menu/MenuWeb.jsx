@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import * as icon from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/common/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from "@/components/ui/accordion";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/common/ui/accordion";
+import { ScrollArea } from "@/components/common/ui/scroll-area";
 import logo from "@/assets/image/logo-menu.svg";
 import logoNoText from "@/assets/image/logo-menu-notext.svg";
 

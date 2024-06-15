@@ -1,9 +1,9 @@
-import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/aggridreact/cellRender";
-import { dt_vessel_visit } from "@/components/aggridreact/dbColumns";
-import { useCustomToast } from "@/components/custom-toast";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
+import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { Button } from "@/components/common/ui/button";
+import { Sheet, SheetContent } from "@/components/common/ui/sheet";
 import { useRef } from "react";
 
 export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVesselInfo }) {
