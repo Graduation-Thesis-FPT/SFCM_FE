@@ -7,9 +7,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { useToggle } from "@/hooks/useToggle";
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
-import { getFirstLetterOfLastWord } from "@/lib/utils";
+import { cn, getFirstLetterOfLastWord } from "@/lib/utils";
 import {
   Bell,
   ChevronDown,
@@ -19,7 +20,6 @@ import {
   MessageCircle,
   Settings
 } from "lucide-react";
-import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 
@@ -28,7 +28,7 @@ export function MainLayout() {
   const user = useSelector(state => state.userSlice.user);
   const globalLoading = useSelector(state => state.globalLoadingSlice.globalLoading);
   let { pathname } = useLocation();
-  const [isCollapse, setIsCollapse] = useState(false);
+  const [isCollapse, setIsCollapse] = useToggle();
   const userGlobal = useCustomStore();
 
   const handleLogout = () => {
@@ -37,20 +37,21 @@ export function MainLayout() {
   };
 
   return (
-    <div
-      className={`${
-        !isCollapse ? "md:grid-cols-[256px_1fr]" : "md:grid-cols-[92px_1fr]"
-      } grid min-h-screen bg-gray-50 duration-200`}
-    >
-      <div className="hidden h-screen rounded-r-md bg-white md:block">
+    <div className="flex h-screen w-screen flex-row gap-2 bg-gray-50 duration-200">
+      <div
+        className={cn(
+          "h-full rounded-r-md bg-white transition-all ease-linear",
+          isCollapse ? "w-[92px]" : "w-64"
+        )}
+      >
         <MenuWeb
           menu={menu}
           handleScale={() => setIsCollapse(!isCollapse)}
           isCollapse={isCollapse}
         />
       </div>
-      <div className="md:pl-5">
-        <header className="mb-1.5 flex h-16 items-center justify-between rounded-md bg-white px-6 shadow-sm">
+      <div className="flex h-full flex-1 flex-col gap-1.5">
+        <header className="flex max-h-16 min-h-16 flex-row items-center justify-between rounded-md bg-white px-6 shadow-sm">
           <h1 className="text-xl font-bold text-blue-800">
             {menu?.map(item =>
               item?.child?.map(child => {
@@ -114,17 +115,19 @@ export function MainLayout() {
             </DropdownMenu>
           </div>
         </header>
-        <main>
+        <main
+          className={cn(
+            "flex-1 w-full rounded-md bg-white",
+            globalLoading && "pointer-events-none opacity-50"
+          )}
+        >
           {globalLoading && (
             <div className="absolute left-1/2 top-1/2 z-50">
               <Loader2 className="size-28 animate-spin text-gray-500" />
             </div>
           )}
-          <div
-            className={`${globalLoading && "pointer-events-none opacity-50"} ${isCollapse ? "md:max-w-minusMenuIsCollapse" : "md:max-w-minusMenuNotCollapse"} h-minusHeader overflow-auto rounded-md bg-white md:w-full`}
-          >
-            <Outlet />
-          </div>
+
+          <Outlet />
         </main>
       </div>
     </div>

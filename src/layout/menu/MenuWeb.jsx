@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import * as icon from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +9,6 @@ import {
   AccordionTrigger
 } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useLocation } from "react-router-dom";
-
 import logo from "@/assets/image/logo-menu.svg";
 import logoNoText from "@/assets/image/logo-menu-notext.svg";
 
@@ -21,7 +19,7 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
 
   return (
     <div className="flex h-full max-h-screen flex-col gap-x-2 shadow-md">
-      <div className="relative flex h-16 items-center justify-center border-b px-4">
+      <div className="relative flex max-h-16 min-h-16 items-center justify-center border-b px-4">
         <img src={isCollapse ? logoNoText : logo} alt="logo" className="aspect-auto h-8" />
         <div className="absolute bottom-2 right-[-14px]">
           <Button

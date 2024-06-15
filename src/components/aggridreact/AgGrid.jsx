@@ -78,47 +78,45 @@ const AgGrid = forwardRef(
     }, []);
 
     return (
-      <>
-        <ContextMenu>
-          <ContextMenuTrigger disabled={contextMenu === true ? false : true}>
-            <div className={cn("ag-theme-quartz custom-header h-[500px] ", className)}>
-              <AgGridReact
-                dataTypeDefinitions={dataTypeDefinitions}
-                ref={ref}
-                rowData={rowData}
-                columnDefs={colDefs}
-                rowSelection={"multiple"}
-                onSelectionChanged={onSelectionChanged}
-                onCellValueChanged={e => {
-                  e.data.status ? null : (e.data.status = "update");
-                }}
-                pagination={true}
-                paginationPageSize={10}
-                paginationPageSizeSelector={[10, 30, 50, 100]}
-                overlayLoadingTemplate={
-                  '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
-                }
-                overlayNoRowsTemplate={"Không có dữ liệu"}
-                {...props}
-              />
-            </div>
-          </ContextMenuTrigger>
-          <ContextMenuContent ref={contextRef} className="w-64">
-            <GrantPermission action={actionGrantPermission.DELETE}>
-              <ContextMenuItem
-                className={`font-medium  focus:text-red-500 ${selectedRows.length === 0 ? "text-red-500/50" : "text-red-500"}`}
-                disabled={selectedRows.length === 0 ? true : false}
-                onClick={() => {
-                  handleDeleteRow(selectedRows);
-                }}
-              >
-                <Trash2 className="mr-2 size-4" />
-                Xóa dòng
-              </ContextMenuItem>
-            </GrantPermission>
-          </ContextMenuContent>
-        </ContextMenu>
-      </>
+      <ContextMenu>
+        <ContextMenuTrigger className="h-full" disabled={contextMenu === true ? false : true}>
+          <div className={cn("ag-theme-quartz custom-header h-full", className)}>
+            <AgGridReact
+              dataTypeDefinitions={dataTypeDefinitions}
+              ref={ref}
+              rowData={rowData}
+              columnDefs={colDefs}
+              rowSelection={"multiple"}
+              onSelectionChanged={onSelectionChanged}
+              onCellValueChanged={e => {
+                e.data.status ? null : (e.data.status = "update");
+              }}
+              pagination={true}
+              paginationPageSize={10}
+              paginationPageSizeSelector={[10, 30, 50, 100]}
+              overlayLoadingTemplate={
+                '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
+              }
+              overlayNoRowsTemplate={"Không có dữ liệu"}
+              {...props}
+            />
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent ref={contextRef} className="w-64">
+          <GrantPermission action={actionGrantPermission.DELETE}>
+            <ContextMenuItem
+              className={`font-medium  focus:text-red-500 ${selectedRows.length === 0 ? "text-red-500/50" : "text-red-500"}`}
+              disabled={selectedRows.length === 0 ? true : false}
+              onClick={() => {
+                handleDeleteRow(selectedRows);
+              }}
+            >
+              <Trash2 className="mr-2 size-4" />
+              Xóa dòng
+            </ContextMenuItem>
+          </GrantPermission>
+        </ContextMenuContent>
+      </ContextMenu>
     );
   }
 );

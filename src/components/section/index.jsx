@@ -3,7 +3,7 @@ import React from "react";
 import { Separator } from "@/components/ui/separator";
 
 export function Section({ children, className }) {
-  return <div className={cn("", className)}>{children}</div>;
+  return <div className={cn("h-full flex flex-col", className)}>{children}</div>;
 }
 
 Section.Header = ({ title, children, className }) => {
@@ -22,5 +22,5 @@ Section.Header = ({ title, children, className }) => {
 };
 
 Section.Content = ({ children, className }) => {
-  return <div className={cn("px-6 pt-[25px]", className)}>{children}</div>;
+  return <div className={cn("flex-1 px-6 pt-[25px]", className)}>{children}</div>;
 };

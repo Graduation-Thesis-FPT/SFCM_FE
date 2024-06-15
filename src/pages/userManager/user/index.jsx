@@ -5,7 +5,7 @@ import { Section } from "@/components/section";
 import { Badge } from "@/components/ui/badge";
 import { actionGrantPermission } from "@/constants";
 import useFetchData from "@/hooks/useRefetchData";
-import { GripVertical } from "lucide-react";
+import { GripVertical, SquarePen } from "lucide-react";
 import moment from "moment";
 import React, { useRef, useState } from "react";
 import { UserCreationForm } from "./UserCreationForm";
@@ -18,6 +18,16 @@ export function User() {
   let rowData = users ?? [];
 
   const colDefs = [
+    {
+      cellClass: "text-gray-600 bg-gray-50 text-center",
+      width: 50,
+      comparator: (nodeA, nodeB) => {
+        return nodeA.rowIndex - nodeB.rowIndex;
+      },
+      valueFormatter: params => {
+        return Number(params.node.id) + 1;
+      }
+    },
     {
       field: "USER_NAME",
       headerName: "Tài khoản",
@@ -55,7 +65,7 @@ export function User() {
       headerName: "Ngày chỉnh sửa",
       flex: 1,
       cellRenderer: params => {
-        return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
+        return params.value ? moment(params.value).format("DD/MM/YYYY") : "";
       }
     },
     {
@@ -65,7 +75,7 @@ export function User() {
       cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
         return (
-          <GripVertical
+          <SquarePen
             onClick={() => setDetailData(params.data)}
             size={16}
             className="cursor-pointer text-blue-500 hover:text-blue-800"
@@ -91,7 +101,6 @@ export function User() {
 
         <AgGrid
           ref={gridRef}
-          className="h-[50vh]"
           rowData={rowData}
           colDefs={colDefs}
           setRowData={data => {

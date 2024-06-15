@@ -13,7 +13,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { getAllPermissionByRoleCode, updatePermission } from "@/apis/permission";
 
-export function DetailPermission({ open, onOpenChange, detailData }) {
+export function DetailPermission({ onOpenChange, detailData }) {
   const toast = useCustomToast();
   const [permissionData, setPermissionData] = useState([]);
 
@@ -55,7 +55,7 @@ export function DetailPermission({ open, onOpenChange, detailData }) {
 
   return (
     <div>
-      <Sheet open={open} onOpenChange={onOpenChange}>
+      <Sheet open={!!detailData.ROWGUID} onOpenChange={onOpenChange}>
         <SheetContent hiddenIconClose={true} className="sm:max-w-1/2 w-1/2 p-0  ">
           <span className="flex h-screen flex-col justify-between">
             <span>

@@ -1,22 +1,31 @@
-import { getAllRole } from "@/apis/role.api";
 import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { useCustomToast } from "@/components/custom-toast";
-import { SearchInput } from "@/components/search";
 import { Section } from "@/components/section";
+import { Button } from "@/components/ui/button";
 import moment from "moment";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { DetailPermission } from "./DetailPermission";
+import useFetchData from "@/hooks/useRefetchData";
+import { getAllRole } from "@/apis/role.api";
 
 export function Permission() {
   const gridRef = useRef(null);
-  const toast = useCustomToast();
-  const [rowData, setRowData] = useState([]);
   const [detailData, setDetailData] = useState({});
-  const [openDetail, setOpenDetail] = useState(false);
+  const { data: roles } = useFetchData({ service: getAllRole });
+  let rowData = roles ?? [];
 
   const colDefs = [
     {
-      field: "ROWGUID",
+      cellClass: "text-gray-600 bg-gray-50 text-center",
+      width: 50,
+      comparator: (nodeA, nodeB) => {
+        return nodeA.rowIndex - nodeB.rowIndex;
+      },
+      valueFormatter: params => {
+        return Number(params.node.id) + 1;
+      }
+    },
+    {
+      field: "ROLE_CODE",
       headerName: "Mã",
       flex: 1,
       filter: true
@@ -27,66 +36,53 @@ export function Permission() {
       headerName: "Ngày chỉnh sửa",
       flex: 1,
       cellRenderer: params => {
-        return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
+        return params.value ? moment(params.value).format("DD/MM/YYYY") : "";
       }
     },
     {
       field: "#",
       headerName: "",
+      minWidth: 120,
       flex: 0.5,
       cellStyle: { alignContent: "center", textAlign: "center" },
       cellRenderer: params => {
         return (
-          <span
+          <Button
+            variant="link"
+            size="xs"
             onClick={() => {
               setDetailData(params.data);
-              setTimeout(() => {
-                setOpenDetail(true);
-              }, 100);
             }}
-            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
+            className="text-xs text-blue-700 hover:text-blue-700/80"
           >
             Phân quyền
-          </span>
+          </Button>
         );
       }
     }
   ];
 
-  useEffect(() => {}, []);
   return (
     <>
       <Section>
         <Section.Header title="Quản lý quyền"></Section.Header>
         <Section.Content>
-          <SearchInput />
+          {/* <SearchInput /> */}
           <AgGrid
             ref={gridRef}
-            className="h-[50vh]"
+            className="h-full"
             rowData={rowData}
             colDefs={colDefs}
             setRowData={data => {
               setRowData(data);
-            }}
-            onGridReady={() => {
-              gridRef.current.api.showLoadingOverlay();
-              getAllRole()
-                .then(res => {
-                  setRowData(res.data.metadata);
-                })
-                .catch(err => {
-                  toast.error(err);
-                });
             }}
           />
         </Section.Content>
       </Section>
       <DetailPermission
         detailData={detailData}
-        open={openDetail}
         onOpenChange={() => {
           setDetailData({});
-          setOpenDetail(false);
         }}
       />
     </>
