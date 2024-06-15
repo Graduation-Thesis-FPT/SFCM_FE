@@ -56,11 +56,11 @@ CustomSheet.Content = ({ children, className, title }) => {
   );
 };
 
-CustomSheet.Footer = ({ children, className }) => {
+CustomSheet.Footer = ({ children, className = "flex justify-end px-6 py-4" }) => {
   return (
     <div>
       <Separator className="bg-gray-200" />
-      <div className={cn(className ? className : "flex justify-end px-6 py-4")}>{children}</div>
+      <div className={cn(className)}>{children}</div>
     </div>
   );
 };

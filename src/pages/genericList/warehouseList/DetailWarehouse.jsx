@@ -113,7 +113,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
         </Form>
       </CustomSheet.Content>
 
-      <CustomSheet.Footer className="gap-4">
+      <CustomSheet.Footer >
         <GrantPermission action={actionGrantPermission.DELETE}>
           <Button
             onClick={() => {
