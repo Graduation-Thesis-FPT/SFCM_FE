@@ -1,25 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { Rss } from "lucide-react";
-import moment from "moment";
 import { getAllUser } from "@/apis/user.api";
-import { FormCreateAccount } from "./FormCreateAccount";
-import { DetailUser } from "./DetailUser";
-import { useCustomToast } from "@/components/custom-toast";
-import { Section } from "@/components/section";
-import { getAllRole } from "@/apis/role.api";
-import { SearchInput } from "@/components/search";
+import { AgGrid } from "@/components/aggridreact/AgGrid";
 import { GrantPermission } from "@/components/common";
+import { Section } from "@/components/section";
+import { Badge } from "@/components/ui/badge";
 import { actionGrantPermission } from "@/constants";
+import useFetchData from "@/hooks/useRefetchData";
+import { GripVertical } from "lucide-react";
+import moment from "moment";
+import React, { useRef, useState } from "react";
+import { UserCreationForm } from "./UserCreationForm";
+import { UserUpdateForm } from "./UserUpdateForm";
 
 export function User() {
   const gridRef = useRef(null);
-  const toast = useCustomToast();
-  const [roles, setRoles] = useState([]);
-  const [rowData, setRowData] = useState([]);
   const [detailData, setDetailData] = useState({});
-  const [openDetail, setOpenDetail] = useState(false);
+  const { data: users, revalidate } = useFetchData({ service: getAllUser });
+  let rowData = users ?? [];
 
   const colDefs = [
     {
@@ -33,21 +29,24 @@ export function User() {
     { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1 },
     {
       field: "IS_ACTIVE",
-      minWidth: 120,
-      maxWidth: 120,
+      minWidth: 150,
+      maxWidth: 150,
       headerName: "Trạng thái",
       cellRenderer: params => {
         if (params.value) {
           return (
-            <Button className="h-[70%] w-full cursor-default rounded-[6px] bg-green-100 font-medium text-green-800 hover:bg-green-100">
+            // <Button className="h-[70%] w-full cursor-default rounded-[6px] bg-green-100 font-medium text-green-800 hover:bg-green-100">
+            //   Hoạt động
+            // </Button>
+            <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
               Hoạt động
-            </Button>
+            </Badge>
           );
         }
         return (
-          <Button className="h-[70%] w-full cursor-default rounded-[6px] bg-red-100 font-medium text-red-800 hover:bg-red-100">
+          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
             Dừng
-          </Button>
+          </Badge>
         );
       }
     },
@@ -66,74 +65,30 @@ export function User() {
       cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
         return (
-          <Rss
-            onClick={() => {
-              setDetailData(params.data);
-              setTimeout(() => {
-                setOpenDetail(true);
-              }, 100);
-            }}
-            className="size-4 cursor-pointer"
+          <GripVertical
+            onClick={() => setDetailData(params.data)}
+            size={16}
+            className="cursor-pointer text-blue-500 hover:text-blue-800"
           />
         );
       }
     }
   ];
 
-  const handleUpdateUser = row => {
-    let temp = [...rowData];
-    for (let i = 0; i < temp.length; i++) {
-      if (temp[i].ROWGUID === row.ROWGUID) {
-        temp[i] = row;
-        break;
-      }
-    }
-    setRowData(temp);
-  };
+  // const handleSearch = value => {
+  //   console.log(value);
+  // };
 
-  const handleCreateUser = newAccount => {
-    let temp = [...rowData];
-    temp.unshift(newAccount);
-    setRowData(temp);
-  };
-
-  const handleSearch = value => {
-    console.log(value);
-  };
-
-  useEffect(() => {
-    getAllUser()
-      .then(res => {
-        setRowData(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  }, []);
-
-  useEffect(() => {
-    getAllRole()
-      .then(res => {
-        setRoles(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  }, []);
   return (
     <Section>
       <Section.Header title="Danh sách người dùng">
         <GrantPermission action={actionGrantPermission.CREATE}>
-          <FormCreateAccount
-            roles={roles}
-            handleCreateUser={newAccount => {
-              handleCreateUser(newAccount);
-            }}
-          />
+          <UserCreationForm revalidate={revalidate} />
         </GrantPermission>
       </Section.Header>
       <Section.Content>
-        <SearchInput handleSearch={value => handleSearch(value)} />
+        {/* <SearchInput handleSearch={value => handleSearch(value)} /> */}
+
         <AgGrid
           ref={gridRef}
           className="h-[50vh]"
@@ -144,15 +99,11 @@ export function User() {
           }}
         />
       </Section.Content>
-      <DetailUser
-        roles={roles}
+      <UserUpdateForm
         detail={detailData}
-        open={openDetail}
+        revalidate={revalidate}
         onOpenChange={() => {
-          setOpenDetail(false);
-        }}
-        handleUpdateUser={row => {
-          handleUpdateUser(row);
+          setDetailData({});
         }}
       />
     </Section>

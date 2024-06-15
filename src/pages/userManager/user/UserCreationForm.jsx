@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { createAccount, findUserById } from "@/apis/user.api";
+import { useCustomToast } from "@/components/custom-toast";
+import { RoleSelect } from "@/components/form/field/RoleSelect";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
   Form,
   FormControl,
@@ -13,30 +10,29 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { PlusCircle, X } from "lucide-react";
-import { createAccount, findUserById } from "@/apis/user.api";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useCustomToast } from "@/components/custom-toast";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { regexPattern } from "@/constants/regexPattern";
+import { useToggle } from "@/hooks/useToggle";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PlusCircle, X } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
-  ROLE_CODE: z.string({
-    required_error: "Không được để trống!"
+  ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
+  USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
+    message: "Không được chứa khoảng trắng!"
   }),
-  USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!"),
   BIRTHDAY: z.string().optional(),
-  FULLNAME: z.string().refine(data => data === "" || data.length >= 6, {
-    message: "Tối thiểu 6 ký tự!"
+  FULLNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPECIAL_CHAR, {
+    message: "Không chứa ký tự đặc biệt!"
   }),
   TELEPHONE: z.string().refine(data => data === "" || data.length === 10, {
     message: "Số điện thoại bao gồm 11 số!"
   }),
+
   EMAIL: z.string().refine(data => data === "" || z.string().email().safeParse(data).success, {
     message: "Email không hợp lệ. Vd:abc@gmail.com"
   }),
@@ -44,13 +40,13 @@ const formSchema = z.object({
   REMARK: z.string().optional()
 });
 
-export function FormCreateAccount({ roles, handleCreateUser }) {
+export function UserCreationForm({ revalidate }) {
   const toast = useCustomToast();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useToggle();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ROLE_CODE: "manager",
+      ROLE_CODE: "",
       FULLNAME: "",
       USER_NAME: "",
       BIRTHDAY: "",
@@ -67,19 +63,12 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
 
   function onSubmit(values) {
     const dataReq = removeEmptyValues(values);
-    createAccount(dataReq)
+    createAccount({ data: dataReq })
       .then(resCreate => {
-        findUserById(resCreate.data.metadata.ROWGUID)
-          .then(res => {
-            const newAccount = res.data.metadata;
-            handleCreateUser(newAccount);
-            toast.success(resCreate);
-            form.reset();
-            setOpen(false);
-          })
-          .catch(err => {
-            toast.error(err);
-          });
+        toast.success(resCreate);
+        form.reset();
+        setOpen(false);
+        revalidate();
       })
       .catch(err => {
         toast.error(err);
@@ -111,19 +100,20 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
               className="flex h-screen flex-col justify-between overflow-x-auto"
             >
               <span>
-                <div className="flex items-center justify-between p-6">
-                  <div className="text-xl font-bold text-gray-900">Tạo người dùng mới</div>
+                <div className="flex items-center justify-between p-4">
+                  <div className="text-20 font-bold text-gray-900">Tạo người dùng mới</div>
                   <X
                     className="size-4 cursor-pointer hover:opacity-80"
                     onClick={() => {
                       setOpen(false);
+                      form.reset();
                     }}
                   />
                 </div>
                 <Separator className="bg-gray-400" />
 
                 <div className="space-y-4 p-6">
-                  <div className="text-lg font-medium text-gray-900">Thông tin người dùng</div>
+                  <div className="text-18 font-medium text-gray-900">Thông tin người dùng</div>
                   <span className="grid grid-cols-2 gap-x-4">
                     <FormField
                       control={form.control}
@@ -140,31 +130,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="ROLE_CODE"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Chức vụ <span className="text-red">*</span>
-                          </FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="focus:ring-offset-0">
-                                <SelectValue placeholder=" Chức vụ" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {roles?.map(role => (
-                                <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
-                                  {role.ROLE_NAME}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
+                    <RoleSelect form={form} />
                   </span>
                   <span className="grid grid-cols-2 gap-x-4">
                     <FormField
@@ -176,6 +142,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                           <FormControl>
                             <Input type="text" placeholder="Nhập họ và tên" {...field} />
                           </FormControl>
+                          <FormMessage>{form.formState.errors.FULLNAME?.message}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -188,6 +155,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                           <FormControl>
                             <Input type="date" {...field} />
                           </FormControl>
+                          <FormMessage>{form.formState.errors.BIRTHDAY?.message}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -202,6 +170,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                           <FormControl>
                             <Input type="text" placeholder="Nhập email" {...field} />
                           </FormControl>
+                          <FormMessage>{form.formState.errors.EMAIL?.message}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -214,6 +183,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                           <FormControl>
                             <Input type="number" placeholder="Nhập số điện thoại" {...field} />
                           </FormControl>
+                          <FormMessage>{form.formState.errors.TELEPHONE?.message}</FormMessage>
                         </FormItem>
                       )}
                     />
@@ -227,6 +197,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                         <FormControl>
                           <Input type="text" placeholder="Nhập địa chỉ" {...field} />
                         </FormControl>
+                        <FormMessage>{form.formState.errors.ADDRESS?.message}</FormMessage>
                       </FormItem>
                     )}
                   />
@@ -239,6 +210,7 @@ export function FormCreateAccount({ roles, handleCreateUser }) {
                         <FormControl>
                           <Input type="text" placeholder="Nhập ghi chú" {...field} />
                         </FormControl>
+                        <FormMessage>{form.formState.errors.REMARK?.message}</FormMessage>
                       </FormItem>
                     )}
                   />

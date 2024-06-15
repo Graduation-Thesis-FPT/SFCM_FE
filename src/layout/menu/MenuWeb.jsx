@@ -20,7 +20,7 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
   const [accordionValue, setAccordionValue] = useState(mainPath);
 
   return (
-    <div className="flex h-full max-h-screen flex-col gap-x-2">
+    <div className="flex h-full max-h-screen flex-col gap-x-2 shadow-md">
       <div className="relative flex h-16 items-center justify-center border-b px-4">
         <img src={isCollapse ? logoNoText : logo} alt="logo" className="aspect-auto h-8" />
         <div className="absolute bottom-2 right-[-14px]">

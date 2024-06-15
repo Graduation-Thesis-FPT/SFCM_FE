@@ -42,7 +42,7 @@ export function MainLayout() {
         !isCollapse ? "md:grid-cols-[256px_1fr]" : "md:grid-cols-[92px_1fr]"
       } grid min-h-screen bg-gray-50 duration-200`}
     >
-      <div className="hidden h-screen rounded-r-md bg-white shadow-inner md:block">
+      <div className="hidden h-screen rounded-r-md bg-white md:block">
         <MenuWeb
           menu={menu}
           handleScale={() => setIsCollapse(!isCollapse)}
@@ -50,7 +50,7 @@ export function MainLayout() {
         />
       </div>
       <div className="md:pl-5">
-        <header className="mb-3 flex h-16 items-center justify-between rounded-md bg-white px-6 shadow-md">
+        <header className="mb-1.5 flex h-16 items-center justify-between rounded-md bg-white px-6 shadow-sm">
           <h1 className="text-xl font-bold text-blue-800">
             {menu?.map(item =>
               item?.child?.map(child => {

@@ -22,17 +22,18 @@ import ForgotPassword from "./ForgotPassword";
 import { useCustomToast } from "@/components/custom-toast";
 import { login } from "@/apis/access.api";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
+import { regexPattern } from "@/constants/regexPattern";
 
 const formSchema = z.object({
   USER_NAME: z
     .string()
     .min(1, { message: "Vui lòng nhập tài khoản!" }) // Non-empty
     .max(20, { message: "Tài khoản không được vượt quá 20 ký tự!" }) // Max length 20
-    .regex(/^[^\s]+$/, { message: "Tài khoản không được chứa khoảng trắng!" }), // No spaces
+    .regex(regexPattern.NO_SPACE, { message: "Tài khoản không được chứa khoảng trắng!" }), // No spaces
   PASSWORD: z
     .string()
     .min(1, { message: "Vui lòng nhập mật khẩu!" })
-    .regex(/^[^\s]+$/, { message: "Tài khoản không được chứa khoảng trắng!" }) // No spaces
+    .regex(regexPattern.NO_SPACE, { message: "Tài khoản không được chứa khoảng trắng!" }) // No spaces
 });
 
 export function Login() {
