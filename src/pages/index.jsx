@@ -1,6 +1,6 @@
 //userManager
-export * from "./userManager/permission";
-export * from "./userManager/user";
+export * from "./userManagement/permission";
+export * from "./userManagement/user";
 //genericList
 export * from "./genericList/warehouseDesign";
 export * from "./genericList/warehouseList";

@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/common/ui/button";
+import { Input } from "@/components/common/ui/input";
 import {
   Form,
   FormControl,
@@ -10,11 +10,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form";
-import { useCustomToast } from "@/components/custom-toast";
-import { GrantPermission } from "@/components/common";
+} from "@/components/common/ui/form";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { actionGrantPermission } from "@/constants";
-import { CustomSheet } from "@/components/custom-sheet";
+import { CustomSheet } from "@/components/common/custom-sheet";
 import { createWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
 
 const formSchema = z.object({
@@ -50,7 +50,7 @@ export function FormCreateWarehouse({ open, onOpenChange, onCreateData }) {
       <CustomSheet.Content title="Thông tin kho">
         <Form {...form}>
           <form id="create-warehouse" className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <span className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="WAREHOUSE_CODE"
@@ -103,7 +103,7 @@ export function FormCreateWarehouse({ open, onOpenChange, onCreateData }) {
                   </FormItem>
                 )}
               />
-            </span>
+            </div>
           </form>
         </Form>
       </CustomSheet.Content>

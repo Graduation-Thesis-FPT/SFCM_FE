@@ -1,10 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Home, LineChart, Menu, Package, Package2, ShoppingCart, Users } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/common/ui/badge";
+import { Button } from "@/components/common/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/common/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/common/ui/sheet";
 
 export default function MenuMobile() {
   return (

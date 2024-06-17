@@ -1,14 +1,17 @@
 import { createAndUpdateItemType, deleteItemType, getAllItemType } from "@/apis/item-type.api";
-import { AgGrid } from "@/components/aggridreact/AgGrid";
-import { DateTimeByTextRender, OnlyEditWithInsertCell } from "@/components/aggridreact/cellRender";
-import { bs_item_type } from "@/components/aggridreact/dbColumns";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
-import { GrantPermission } from "@/components/common";
-import { useCustomToast } from "@/components/custom-toast";
-import { SearchInput } from "@/components/search";
-import { Section } from "@/components/section";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import {
+  DateTimeByTextRender,
+  OnlyEditWithInsertCell
+} from "@/components/common/aggridreact/cellRender";
+import { bs_item_type } from "@/components/common/aggridreact/dbColumns";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { GrantPermission } from "@/components/common/grant-permission";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { SearchInput } from "@/components/common/search";
+import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";

@@ -1,19 +1,19 @@
 import { getAllCustomerType } from "@/apis/customer-type.api";
 import { createAndUpdateCustomer, deleteCustomer, getAllCustomer } from "@/apis/customer.api";
-import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   CustomerTypeRender,
   DateTimeByTextRender,
   OnlyEditWithInsertCell
-} from "@/components/aggridreact/cellRender";
-import { bs_customer } from "@/components/aggridreact/dbColumns";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
-import { GrantPermission } from "@/components/common";
-import { useCustomToast } from "@/components/custom-toast";
-import { SearchInput } from "@/components/search";
-import { Section } from "@/components/section";
+} from "@/components/common/aggridreact/cellRender";
+import { bs_customer } from "@/components/common/aggridreact/dbColumns";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { GrantPermission } from "@/components/common/grant-permission";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { SearchInput } from "@/components/common/search";
+import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useEffect, useMemo, useRef, useState } from "react";

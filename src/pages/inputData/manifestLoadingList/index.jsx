@@ -1,5 +1,5 @@
-import { Section } from "@/components/section";
-import { Button } from "@/components/ui/button";
+import { Section } from "@/components/common/section";
+import { Button } from "@/components/common/ui/button";
 import {
   Form,
   FormControl,
@@ -7,31 +7,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form";
+} from "@/components/common/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
-import { dt_cntr_mnf_ld, dt_vessel_visit } from "@/components/aggridreact/dbColumns";
-import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { dt_cntr_mnf_ld, dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { getAllVessel } from "@/apis/vessel.api";
-import { useCustomToast } from "@/components/custom-toast";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
-import { GrantPermission } from "@/components/common";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { actionGrantPermission } from "@/constants";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { BtnExportExcel } from "@/components/aggridreact/tableTools/BtnExportExcel";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/common/ui/input";
 import { getAllItemType } from "@/apis/item-type.api";
 import {
   ConsigneeRender,
   ItemTypeCodeRender,
   StatusOfGoodsRender
-} from "@/components/aggridreact/cellRender";
+} from "@/components/common/aggridreact/cellRender";
 import { VesselInfoSheet } from "./vesselInfoSheet";
 import {
   createAndUpdateManifestLoadingListCont,
@@ -39,6 +38,7 @@ import {
   getManifestLoadingListContByFilter
 } from "@/apis/cntr-mnf-ld.api";
 import { getAllCustomer } from "@/apis/customer.api";
+import { GrantPermission } from "@/components/common/grant-permission";
 
 const formSchema = z.object({
   VOYAGEKEY: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),

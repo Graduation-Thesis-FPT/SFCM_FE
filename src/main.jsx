@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import Router from "@/routes/Router";
 import { store } from "./redux/store";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/common/ui/toaster";
 import { AuthProvider } from "./routes/AuthProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

@@ -1,18 +1,18 @@
 import { createAndUpdateMethod, deleteMethod, getAllMethod } from "@/apis/method.api";
-import { AgGrid } from "@/components/aggridreact/AgGrid";
+import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,
   IsInOutRender,
   OnlyEditWithInsertCell
-} from "@/components/aggridreact/cellRender";
-import { bs_method } from "@/components/aggridreact/dbColumns";
-import { BtnAddRow } from "@/components/aggridreact/tableTools/BtnAddRow";
-import { BtnSave } from "@/components/aggridreact/tableTools/BtnSave";
-import { LayoutTool } from "@/components/aggridreact/tableTools/LayoutTool";
-import { GrantPermission } from "@/components/common";
-import { useCustomToast } from "@/components/custom-toast";
-import { SearchInput } from "@/components/search";
-import { Section } from "@/components/section";
+} from "@/components/common/aggridreact/cellRender";
+import { bs_method } from "@/components/common/aggridreact/dbColumns";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { GrantPermission } from "@/components/common/grant-permission";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { SearchInput } from "@/components/common/search";
+import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
