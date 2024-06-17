@@ -91,7 +91,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
                   </div>
                   {parent.child?.map((child, childIndex) => {
                     let disabled = false;
-                    if (child.PARENT_CODE === "user-manager" && child.ROLE_CODE === "admin") {
+                    if (child.PARENT_CODE === "user-management" && child.ROLE_CODE === "admin") {
                       disabled = true;
                     }
                     return (

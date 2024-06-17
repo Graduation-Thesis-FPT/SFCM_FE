@@ -51,7 +51,7 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
             if (item.child?.length === 0) return null;
             if (
               !(
-                item.MENU_CODE === "user-manager" ||
+                item.MENU_CODE === "user-management" ||
                 item.MENU_CODE === "generic-list" ||
                 item.MENU_CODE === "input-data" ||
                 item.MENU_CODE === "tariff" ||
