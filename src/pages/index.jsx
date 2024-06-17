@@ -13,6 +13,6 @@ export * from "./genericList/gateList";
 export * from "./genericList/customerType";
 export * from "./genericList/customerList";
 //inputData
-export * from "./inputData/goodManifest";
 export * from "./inputData/manifestLoadingList";
 export * from "./inputData/vesselInfo";
+export * from "./inputData/goodsManifest";

@@ -14,6 +14,24 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger
 } from "@/components/common/ui/dropdown-menu";
+import { DateTimePickerComponent } from "@syncfusion/ej2-react-calendars";
+import { loadCldr, L10n } from "@syncfusion/ej2-base";
+import * as numberingSystems from "cldr-data/supplemental/numberingSystems.json";
+import * as gregorian from "cldr-data/main/vi/ca-gregorian.json";
+import * as numbers from "cldr-data/main/vi/numbers.json";
+import * as timeZoneNames from "cldr-data/main/vi/timeZoneNames.json";
+
+loadCldr(numberingSystems, gregorian, numbers, timeZoneNames);
+
+L10n.load({
+  vi: {
+    datetimepicker: {
+      placeholder: "Chọn ngày",
+      today: "Hôm nay"
+    }
+  }
+});
+
 export function DateTimeByTextRender(params) {
   return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
 }
@@ -195,6 +213,15 @@ export function StatusOfGoodsRender(params) {
   );
 }
 
+export function StatusOfGoodsByTextRender(params) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(false);
+    }
+  }, []);
+  return params.value ? "Có hàng" : "Rỗng";
+}
+
 export function ItemTypeCodeRender(params, itemType) {
   useEffect(() => {
     if (params.value === undefined) {
@@ -250,5 +277,29 @@ export function ConsigneeRender(params, customerList) {
         </SelectGroup>
       </SelectContent>
     </Select>
+  );
+}
+
+export function DateTimePickerRender(params) {
+  const handleDateChange = e => {
+    if (!e.value) {
+      params.setValue(null);
+      return;
+    }
+    params.setValue(e.value);
+  };
+  useEffect(() => {
+    if (!params.value) {
+      params.setValue(new Date());
+    }
+  }, []);
+  return (
+    <DateTimePickerComponent
+      locale="vi"
+      id="datetimepicker"
+      format="dd/MM/yyyy HH:mm"
+      value={params.value}
+      onChange={handleDateChange}
+    />
   );
 }

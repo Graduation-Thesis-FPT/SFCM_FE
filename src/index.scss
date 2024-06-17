@@ -1,6 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-lists/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-react-calendars/styles/material.css";
 
 @layer base {
   :root {
@@ -159,4 +165,32 @@ body {
 .ag-root-wrapper {
   --ag-value-change-value-highlight-background-color: #cc222244;
   border: none !important;
+}
+
+.ag-cell {
+  font-size: 14px !important ;
+  font-family: "Inter" !important;
+}
+
+.ag-header-cell-text {
+  font-size: 14px !important ;
+  font-family: "Inter" !important;
+}
+
+.e-input-group {
+  border: none !important;
+  margin: 0 !important;
+  display: flex !important;
+  height: 100% !important;
+}
+
+.e-input-group input.e-input,
+.e-input-group.e-control-wrapper input.e-input {
+  font-size: 14px !important ;
+  font-family: "Inter" !important;
+}
+
+.e-input-group.e-control-wrapper:not(.e-float-input)::before,
+.e-input-group.e-control-wrapper:not(.e-float-input)::after {
+  background: #ffffff00 !important;
 }
