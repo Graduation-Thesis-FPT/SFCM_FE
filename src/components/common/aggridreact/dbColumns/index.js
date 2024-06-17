@@ -103,10 +103,10 @@ export class dt_package_mnf_ld extends CommonColumns {
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
   BILLOFLADING = { field: "BILLOFLADING", headerName: "Số vận đơn" };
   CNTRNO = { field: "CNTRNO", headerName: "Số container" };
-  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số house bill" };
+  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill" };
   LOT_NO = { field: "LOT_NO", headerName: "Số lô" };
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng" };
-  COMMODITYDESCRIPTION = { field: "COMMODITYDESCRIPTION", headerName: "Ghi chú" };
+  COMMODITYDESCRIPTION = { field: "COMMODITYDESCRIPTION", headerName: "Mô tả" };
   UNIT_CODE = { field: "UNIT_CODE", headerName: "Đơn vị tính *" };
   CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số kiện" };
   CBM = { field: "CBM", headerName: "CBM *" };

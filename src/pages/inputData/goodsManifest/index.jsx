@@ -43,15 +43,15 @@ export function GoodsManifest() {
       }
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.BILLOFLADING.headerName,
-      field: DT_PACKAGE_MNF_LD.BILLOFLADING.field,
+      headerName: DT_PACKAGE_MNF_LD.HOUSE_BILL.headerName,
+      field: DT_PACKAGE_MNF_LD.HOUSE_BILL.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.CNTRNO.headerName,
-      field: DT_PACKAGE_MNF_LD.CNTRNO.field,
+      headerName: DT_PACKAGE_MNF_LD.LOT_NO.headerName,
+      field: DT_PACKAGE_MNF_LD.LOT_NO.field,
       flex: 1,
       filter: true,
       editable: true
@@ -66,6 +66,41 @@ export function GoodsManifest() {
     {
       headerName: DT_PACKAGE_MNF_LD.COMMODITYDESCRIPTION.headerName,
       field: DT_PACKAGE_MNF_LD.COMMODITYDESCRIPTION.field,
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: DT_PACKAGE_MNF_LD.UNIT_CODE.headerName,
+      field: DT_PACKAGE_MNF_LD.UNIT_CODE.field,
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: DT_PACKAGE_MNF_LD.CARGO_PIECE.headerName,
+      field: DT_PACKAGE_MNF_LD.CARGO_PIECE.field,
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: DT_PACKAGE_MNF_LD.CBM.headerName,
+      field: DT_PACKAGE_MNF_LD.CBM.field,
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: DT_PACKAGE_MNF_LD.DECLARE_NO.headerName,
+      field: DT_PACKAGE_MNF_LD.DECLARE_NO.field,
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
+      headerName: DT_PACKAGE_MNF_LD.NOTE.headerName,
+      field: DT_PACKAGE_MNF_LD.NOTE.field,
       flex: 1,
       filter: true,
       editable: true
