@@ -10,7 +10,7 @@ import { getAllRole } from "@/apis/role.api";
 export function Permission() {
   const gridRef = useRef(null);
   const [detailData, setDetailData] = useState({});
-  const { data: roles } = useFetchData({ service: getAllRole });
+  const { data: roles, revalidate } = useFetchData({ service: getAllRole });
   let rowData = roles ?? [];
 
   const colDefs = [
@@ -84,6 +84,7 @@ export function Permission() {
         onOpenChange={() => {
           setDetailData({});
         }}
+        revalidate={revalidate}
       />
     </>
   );

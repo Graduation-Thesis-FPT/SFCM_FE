@@ -21,7 +21,7 @@ export function CustomSheet({
   ...props
 }) {
   return (
-    <Sheet on className={cn("", className)} onOpenChange={onOpenChange} {...props}>
+    <Sheet className={cn("", className)} onOpenChange={onOpenChange} {...props}>
       <SheetContent
         onInteractOutside={() => {
           onOpenChange();

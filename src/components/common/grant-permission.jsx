@@ -8,7 +8,7 @@ export function GrantPermission({ action, children, ...props }) {
   const [isShow, setIsShow] = React.useState(false);
 
   useEffect(() => {
-    grantPermission(MENU_CODE)
+    grantPermission({ menuCode: MENU_CODE })
       .then(res => {
         setIsShow(res.data.metadata[action]);
       })
