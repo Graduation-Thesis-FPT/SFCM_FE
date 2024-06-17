@@ -41,7 +41,6 @@ export function CustomerList() {
       field: BS_CUSTOMER.CUSTOMER_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       editable: OnlyEditWithInsertCell
     },
     {
