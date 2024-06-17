@@ -28,6 +28,7 @@ import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import moment from "moment";
+import { DateTimePickerRender } from "@/components/common/aggridreact/cellRender";
 
 const formSchema = z.object({
   from_date: z.date({
@@ -89,16 +90,14 @@ export function VesselInfo() {
       field: DT_VESSEL_VISIT.ETA.field,
       flex: 1,
       filter: true,
-      editable: true,
-      cellDataType: "date"
+      cellRenderer: DateTimePickerRender
     },
     {
       headerName: DT_VESSEL_VISIT.ETD.headerName,
       field: DT_VESSEL_VISIT.ETD.field,
       flex: 1,
       filter: true,
-      editable: true,
-      cellDataType: "date"
+      cellRenderer: DateTimePickerRender
     },
     {
       headerName: DT_VESSEL_VISIT.CallSign.headerName,
@@ -233,7 +232,7 @@ export function VesselInfo() {
       </Section.Header>
       <Section.Content>
         <span className="mb-[25px] flex justify-between">
-          <div></div>
+          <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
             <BtnExportExcel gridRef={gridRef} />
             <GrantPermission action={actionGrantPermission.CREATE}>

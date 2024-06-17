@@ -315,7 +315,7 @@ export function ManifestLoadingList() {
       </Section.Header>
       <Section.Content>
         <span className="mb-[25px] flex justify-between">
-          <div></div>
+          <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
             <BtnExportExcel gridRef={gridRef} />
             <GrantPermission action={actionGrantPermission.CREATE}>
