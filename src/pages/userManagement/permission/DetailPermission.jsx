@@ -61,7 +61,6 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
         toast.error(err.message);
       });
   };
-  
 
   return (
     <CustomSheet
