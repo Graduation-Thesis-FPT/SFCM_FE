@@ -90,16 +90,16 @@ export function MainLayout() {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-40">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {/* {TODO: Setting and Support} */}
                 <DropdownMenuItem>
                   <Settings size={16} className="mr-2" />
-                  Settings
+                  Cài đặt
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <CircleHelpIcon size={16} className="mr-2" />
-                  Support
+                  Hỗ trợ
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -109,7 +109,7 @@ export function MainLayout() {
                   }}
                 >
                   <LogOutIcon size={16} className="mr-2" />
-                  Logout
+                  Đăng xuất
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
