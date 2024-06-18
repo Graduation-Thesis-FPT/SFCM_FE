@@ -1,8 +1,6 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { CustomSheet } from "@/components/common/custom-sheet";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { Button } from "@/components/common/ui/button";
-import { Input } from "@/components/common/ui/input";
 import {
   Form,
   FormControl,
@@ -11,12 +9,12 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/common/ui/form";
-import { useCustomToast } from "@/components/common/custom-toast";
-import { GrantPermission } from "@/components/common/grant-permission";
+import { Input } from "@/components/common/ui/input";
 import { actionGrantPermission } from "@/constants";
-import { CustomSheet } from "@/components/common/custom-sheet";
-import { useEffect } from "react";
-import { deleteWarehouse } from "@/apis/warehouse.api";
+import useFetchData from "@/hooks/useRefetchData";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
   WAREHOUSE_CODE: z.string().trim().min(1, "Không được để trống!"),
@@ -24,38 +22,31 @@ const formSchema = z.object({
   ACREAGE: z.number()
 });
 
-export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }) {
-  const toast = useCustomToast();
+export function DetailWarehouse({ onOpenChange, detailData, onDeleteData }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      WAREHOUSE_CODE: "",
-      WAREHOUSE_NAME: "",
-      ACREAGE: 0
+    values: {
+      WAREHOUSE_CODE: detailData.WAREHOUSE_CODE,
+      WAREHOUSE_NAME: detailData.WAREHOUSE_NAME,
+      ACREAGE: detailData.ACREAGE
     }
   });
 
-  const onSubmit = values => {
-    console.log("🚀 ~ DetailWarehouse ~ values:", values);
-  };
-
   const handleDelete = () => {
-    onDeleteData(detailData);
+    onDeleteData([detailData]);
   };
-
-  useEffect(() => {
-    form.reset();
-    Object.keys(detailData).map(key => {
-      form.setValue(key, detailData[key] ?? "");
-    });
-  }, [detailData]);
 
   return (
-    <CustomSheet open={open} onOpenChange={onOpenChange} title="Tạo kho mới">
+    <CustomSheet
+      open={!!detailData.WAREHOUSE_CODE}
+      onOpenChange={onOpenChange}
+      form={form}
+      title="Cập nhật thông tin kho"
+    >
       <CustomSheet.Content title="Thông tin kho">
         <Form {...form}>
-          <form id="update-warehouse" className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <span className="grid grid-cols-3 gap-4">
+          <form id="update-warehouse" className="space-y-4" onSubmit={() => {}}>
+            <span className="grid grid-cols-3 gap-2">
               <FormField
                 control={form.control}
                 name="WAREHOUSE_CODE"
@@ -65,7 +56,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
                       Mã kho <span className="text-red">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Mã kho" {...field} />
+                      <Input disabled type="text" placeholder="Mã kho" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -80,7 +71,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
                       Tên kho <span className="text-red">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Tên kho" {...field} />
+                      <Input disabled type="text" placeholder="Tên kho" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -96,6 +87,7 @@ export function DetailWarehouse({ open, onOpenChange, detailData, onDeleteData }
                     </FormLabel>
                     <FormControl>
                       <Input
+                        disabled
                         type="number"
                         placeholder="Diện tích"
                         {...field}

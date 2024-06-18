@@ -4,7 +4,7 @@ export const getBlock = async () => {
   return await axiosPrivate.get(`block`);
 };
 
-export const createBlock = async data => {
+export const createBlock = async ({data}) => {
   return await axiosPrivate.post(`block`, data);
 };
 

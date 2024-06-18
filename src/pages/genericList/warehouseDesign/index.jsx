@@ -59,11 +59,6 @@ export function WarehouseDesign() {
       filter: true,
       editable: OnlyEditWithInsertCell,
       cellRenderer: params => WarehouseCodeRender(params, warehouses)
-
-      // cellEditor: "agSelectCellEditor",
-      // cellEditorParams: {
-      //   values: warehouses.map(item => item.WAREHOUSE_CODE)
-      // }
     },
     {
       headerName: BS_BLOCK.BLOCK_CODE.headerName,
@@ -158,7 +153,7 @@ export function WarehouseDesign() {
   const handleSaveRows = () => {
     dispatch(setGlobalLoading(true));
     let { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    createBlock(insertAndUpdateData)
+    createBlock({ data: insertAndUpdateData })
       .then(res => {
         toast.success(res);
         getRowData();
