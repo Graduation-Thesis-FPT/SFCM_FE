@@ -27,7 +27,7 @@ const fnAddRowsVer2 = (rowData, colDefs) => {
         return;
       }
       if (col.cellDataType === "number") {
-        //do something
+        newRow[col.field] = 1;
         return;
       }
       if (col.cellDataType === "date") {
