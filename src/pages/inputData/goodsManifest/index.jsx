@@ -4,7 +4,6 @@ import {
   dt_vessel_visit
 } from "@/components/common/aggridreact/dbColumns";
 import { Section } from "@/components/common/section";
-import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { useEffect, useRef, useState } from "react";
@@ -19,11 +18,14 @@ import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow"
 import { actionGrantPermission } from "@/constants";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { createAndUpdatePackageMnfLd, getPackageMnfLdByFilter } from "@/apis/package_mnf_ld.api";
+import {
+  createAndUpdatePackageMnfLd,
+  deletePackageMnfLd,
+  getPackageMnfLdByFilter
+} from "@/apis/package_mnf_ld.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { getAllItemType } from "@/apis/item-type.api";
-import { set } from "date-fns";
 import { ItemTypeCodeRender, UnitCodeRender } from "@/components/common/aggridreact/cellRender";
 import { getAllUnit } from "@/apis/unit.api";
 
@@ -226,7 +228,7 @@ export function GoodsManifest() {
   const handleDeleteRows = selectedRows => {
     dispatch(setGlobalLoading(true));
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(rowData, selectedRows, "ROWGUID");
-    delelePackageMnfLd(deleteIdList)
+    deletePackageMnfLd(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
