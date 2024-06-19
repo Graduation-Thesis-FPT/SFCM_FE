@@ -7,7 +7,7 @@ import { Section } from "@/components/common/section";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VesselInfoSelect } from "./VesselInfoSelect";
 import { ContainerInfoSelect } from "./ContainerInfoSelect";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
@@ -18,11 +18,21 @@ import { GrantPermission } from "@/components/common/grant-permission";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { actionGrantPermission } from "@/constants";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
-import { fnAddRowsVer2 } from "@/lib/fnTable";
+import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { createAndUpdatePackageMnfLd, getPackageMnfLdByFilter } from "@/apis/package_mnf_ld.api";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { getAllItemType } from "@/apis/item-type.api";
+import { set } from "date-fns";
+import { ItemTypeCodeRender, UnitCodeRender } from "@/components/common/aggridreact/cellRender";
+import { getAllUnit } from "@/apis/unit.api";
 
 export function GoodsManifest() {
+  const dispatch = useDispatch();
   const gridRef = useRef(null);
   const [rowData, setRowData] = useState([]);
+  const [itemType, setItemType] = useState([]);
+  const [unit, setUnit] = useState([]);
   const [openVesselInfoSelect, setOpenVesselInfoSelect] = useState(false);
   const [openContainerInfoSelect, setOpenContainerInfoSelect] = useState(false);
   const [vesselInfo, setVesselInfo] = useState({});
@@ -61,7 +71,8 @@ export function GoodsManifest() {
       field: DT_PACKAGE_MNF_LD.ITEM_TYPE_CODE.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellRenderer: params => ItemTypeCodeRender(params, itemType)
     },
     {
       headerName: DT_PACKAGE_MNF_LD.COMMODITYDESCRIPTION.headerName,
@@ -75,7 +86,8 @@ export function GoodsManifest() {
       field: DT_PACKAGE_MNF_LD.UNIT_CODE.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellRenderer: params => UnitCodeRender(params, unit)
     },
     {
       headerName: DT_PACKAGE_MNF_LD.CARGO_PIECE.headerName,
@@ -150,77 +162,171 @@ export function GoodsManifest() {
 
   const handleSelectVesselInfo = vessel => {
     setContainerInfo({});
+    setRowData([]);
     setVesselInfo(vessel);
     setOpenVesselInfoSelect(false);
     setOpenContainerInfoSelect(true);
   };
+
   const handleSelectContainerInfo = container => {
     setContainerInfo(container);
     setOpenContainerInfoSelect(false);
+    dispatch(setGlobalLoading(true));
+    getPackageMnfLdByFilter(container.ROWGUID)
+      .then(res => {
+        setRowData(res.data.metadata);
+        toast.success(res);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const handleContainerGoBackVessel = () => {
+    setOpenContainerInfoSelect(false);
+    setOpenVesselInfoSelect(true);
   };
 
   const handleAddRow = () => {
+    if (!vesselInfo.VOYAGEKEY) {
+      toast.warning("Vui lòng chọn tàu chuyến");
+      return;
+    }
+    if (!containerInfo.ROWGUID) {
+      toast.warning("Vui lòng chọn container");
+      return;
+    }
     const newRow = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRow);
   };
-  const handleSaveRows = () => {};
+
+  const handleSaveRows = () => {
+    const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      toast.warning("Không có dữ liệu thay đổi");
+      return;
+    }
+
+    dispatch(setGlobalLoading(true));
+    if (insertAndUpdateData.insert.length > 0) {
+      insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
+        return { ...item, REF_CONTAINER: containerInfo.ROWGUID };
+      });
+    }
+    createAndUpdatePackageMnfLd(insertAndUpdateData)
+      .then(res => {
+        toast.success(res);
+        getRowData();
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const handleDeleteRows = selectedRows => {
+    dispatch(setGlobalLoading(true));
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(rowData, selectedRows, "ROWGUID");
+    delelePackageMnfLd(deleteIdList)
+      .then(res => {
+        toast.success(res);
+        setRowData(newRowDataAfterDeleted);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const getRowData = () => {
+    getPackageMnfLdByFilter(containerInfo.ROWGUID)
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const getItemType = () => {
+    getAllItemType()
+      .then(res => {
+        setItemType(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const getUnit = () => {
+    getAllUnit()
+      .then(res => {
+        setUnit(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  useEffect(() => {
+    getItemType();
+    getUnit();
+  }, []);
+
   return (
     <Section>
-      <Section.Header className="flex items-end justify-between">
-        <span className="space-y-2">
-          <span className="grid grid-cols-3 gap-3">
-            {vesselFilter.map(item => (
-              <div key={item.field} className="space-y-2">
-                <Label htmlFor={item.field}>{item.name}</Label>
-                <Input
-                  onClick={() => {
-                    setOpenVesselInfoSelect(true);
-                  }}
-                  defaultValue={vesselInfo[item.field]}
-                  readOnly
-                  className="hover:cursor-pointer"
-                  id={item.field}
-                  placeholder="Chọn tàu chuyến"
-                />
-              </div>
-            ))}
-          </span>
-          <span className="grid grid-cols-6 gap-3">
-            {containerFilter.map(item => (
-              <div key={item.field} className="space-y-2">
-                <Label htmlFor={item.field}>{item.name}</Label>
-                <Input
-                  onClick={() => {
-                    if (!vesselInfo.VOYAGEKEY) {
-                      toast.warning("Vui lòng chọn tàu chuyến");
-                      return;
-                    }
-                    setOpenContainerInfoSelect(true);
-                  }}
-                  defaultValue={
-                    typeof containerInfo[item.field] === "boolean"
-                      ? containerInfo[item.field]
-                        ? "Có hàng"
-                        : "Rỗng"
-                      : containerInfo[item.field] ?? ""
-                  }
-                  readOnly
-                  className="hover:cursor-pointer"
-                  id={item.field}
-                  placeholder="Chọn container"
-                />
-              </div>
-            ))}
-          </span>
+      <Section.Header className="grid space-y-4">
+        <span className="grid grid-cols-3 gap-3">
+          {vesselFilter.map(item => (
+            <div key={item.field} className="space-y-2">
+              <Label htmlFor={item.field}>{item.name}</Label>
+              <Input
+                onClick={() => {
+                  setOpenVesselInfoSelect(true);
+                }}
+                defaultValue={vesselInfo[item.field]}
+                readOnly
+                className="hover:cursor-pointer"
+                id={item.field}
+                placeholder="Chọn tàu chuyến"
+              />
+            </div>
+          ))}
         </span>
-        <Button
-          variant="blue"
-          onClick={() => {
-            setOpenVesselInfoSelect(true);
-          }}
-        >
-          Chọn tàu chuyến
-        </Button>
+        <span className="grid grid-cols-6 gap-3">
+          {containerFilter.map(item => (
+            <div key={item.field} className="space-y-2">
+              <Label htmlFor={item.field}>{item.name}</Label>
+              <Input
+                onClick={() => {
+                  if (!vesselInfo.VOYAGEKEY) {
+                    toast.warning("Vui lòng chọn tàu chuyến");
+                    return;
+                  }
+                  setOpenContainerInfoSelect(true);
+                }}
+                defaultValue={
+                  typeof containerInfo[item.field] === "boolean"
+                    ? containerInfo[item.field]
+                      ? "Có hàng"
+                      : "Rỗng"
+                    : containerInfo[item.field] ?? ""
+                }
+                readOnly
+                className="hover:cursor-pointer"
+                id={item.field}
+                placeholder="Chọn container"
+              />
+            </div>
+          ))}
+        </span>
       </Section.Header>
       <Section.Content>
         <span className="mb-[25px] flex justify-between">
@@ -264,6 +370,7 @@ export function GoodsManifest() {
           setOpenContainerInfoSelect(false);
         }}
         onSelectContainerInfo={handleSelectContainerInfo}
+        onGoBack={handleContainerGoBackVessel}
       />
     </Section>
   );

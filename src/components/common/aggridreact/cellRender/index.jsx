@@ -69,7 +69,7 @@ export function IsInOutRender(params) {
 export function WarehouseCodeRender(params, warehouses) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(warehouses[0].WAREHOUSE_CODE);
+      params.setValue(warehouses[0]?.WAREHOUSE_CODE);
     }
   }, []);
   return (
@@ -85,8 +85,8 @@ export function WarehouseCodeRender(params, warehouses) {
       <SelectContent>
         <SelectGroup>
           {warehouses.map(item => (
-            <SelectItem key={item.WAREHOUSE_CODE} value={item.WAREHOUSE_CODE}>
-              {item.WAREHOUSE_NAME}
+            <SelectItem key={item?.WAREHOUSE_CODE} value={item?.WAREHOUSE_CODE}>
+              {item?.WAREHOUSE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -98,7 +98,7 @@ export function WarehouseCodeRender(params, warehouses) {
 export function EquTypeRender(params, equTypes) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(equTypes[0].EQU_TYPE);
+      params.setValue(equTypes[0]?.EQU_TYPE);
     }
   }, []);
   return (
@@ -114,8 +114,8 @@ export function EquTypeRender(params, equTypes) {
       <SelectContent>
         <SelectGroup>
           {equTypes.map(item => (
-            <SelectItem key={item.EQU_TYPE} value={item.EQU_TYPE}>
-              {item.EQU_TYPE}
+            <SelectItem key={item?.EQU_TYPE} value={item?.EQU_TYPE}>
+              {item?.EQU_TYPE}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -161,7 +161,7 @@ export function BlockCodeRender(params, blockCodes) {
 export function CustomerTypeRender(params, customerType) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(customerType[0].CUSTOMER_TYPE_CODE);
+      params.setValue(customerType[0]?.CUSTOMER_TYPE_CODE);
     }
   }, []);
   return (
@@ -177,8 +177,8 @@ export function CustomerTypeRender(params, customerType) {
       <SelectContent>
         <SelectGroup>
           {customerType.map(item => (
-            <SelectItem key={item.CUSTOMER_TYPE_CODE} value={item.CUSTOMER_TYPE_CODE}>
-              {item.CUSTOMER_TYPE_NAME}
+            <SelectItem key={item?.CUSTOMER_TYPE_CODE} value={item?.CUSTOMER_TYPE_CODE}>
+              {item?.CUSTOMER_TYPE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -225,7 +225,7 @@ export function StatusOfGoodsByTextRender(params) {
 export function ItemTypeCodeRender(params, itemType) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(itemType[0].ITEM_TYPE_CODE);
+      params.setValue(itemType[0]?.ITEM_TYPE_CODE);
     }
   }, []);
   return (
@@ -241,8 +241,8 @@ export function ItemTypeCodeRender(params, itemType) {
       <SelectContent>
         <SelectGroup>
           {itemType.map(item => (
-            <SelectItem key={item.ITEM_TYPE_CODE} value={item.ITEM_TYPE_CODE}>
-              {item.ITEM_TYPE_CODE}
+            <SelectItem key={item?.ITEM_TYPE_CODE} value={item?.ITEM_TYPE_CODE}>
+              {item?.ITEM_TYPE_CODE} - {item?.ITEM_TYPE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -254,7 +254,7 @@ export function ItemTypeCodeRender(params, itemType) {
 export function ConsigneeRender(params, customerList) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(customerList[0].CUSTOMER_CODE);
+      params.setValue(customerList[0]?.CUSTOMER_CODE);
     }
   }, []);
   return (
@@ -270,8 +270,8 @@ export function ConsigneeRender(params, customerList) {
       <SelectContent>
         <SelectGroup>
           {customerList.map(item => (
-            <SelectItem key={item.CUSTOMER_CODE} value={item.CUSTOMER_CODE}>
-              {item.CUSTOMER_NAME} - {item.CUSTOMER_CODE}
+            <SelectItem key={item?.CUSTOMER_CODE} value={item?.CUSTOMER_CODE}>
+              {item?.CUSTOMER_NAME} - {item?.CUSTOMER_CODE}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -301,5 +301,34 @@ export function DateTimePickerRender(params) {
       value={params.value}
       onChange={handleDateChange}
     />
+  );
+}
+
+export function UnitCodeRender(params, unit) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(unit[0]?.UNIT_CODE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {unit.map(item => (
+            <SelectItem key={item?.UNIT_CODE} value={item?.UNIT_CODE}>
+              {item?.UNIT_CODE} - {item?.UNIT_NAME}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

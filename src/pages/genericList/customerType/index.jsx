@@ -68,7 +68,7 @@ export function CustomerType() {
   const handleSaveRows = () => {
     const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
     if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.error("Không có dữ liệu thay đổi để lưu");
+      toast.error("Không có dữ liệu thay đổi");
       return;
     }
     createAndUpdateCustomerType(insertAndUpdateData)

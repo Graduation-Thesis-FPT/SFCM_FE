@@ -8,7 +8,13 @@ import { Sheet, SheetContent } from "@/components/common/ui/sheet";
 import useFetchData from "@/hooks/useRefetchData";
 import { useEffect, useRef } from "react";
 
-export function ContainerInfoSelect({ open, onOpenChange, VOYAGEKEY, onSelectContainerInfo }) {
+export function ContainerInfoSelect({
+  open,
+  onOpenChange,
+  VOYAGEKEY,
+  onSelectContainerInfo,
+  onGoBack
+}) {
   const { data: manifestLoadingList, revalidate } = useFetchData({
     service: getManifestLoadingListContByFilter,
     params: VOYAGEKEY
@@ -85,6 +91,7 @@ export function ContainerInfoSelect({ open, onOpenChange, VOYAGEKEY, onSelectCon
     }
     onSelectContainerInfo(rowSelected[0]);
   };
+
   useEffect(() => {
     revalidate();
   }, [VOYAGEKEY]);
@@ -94,11 +101,17 @@ export function ContainerInfoSelect({ open, onOpenChange, VOYAGEKEY, onSelectCon
       <SheetContent side="top" hiddenIconClose={true} className="p-0">
         <span className="mx-10 my-3 flex items-end justify-between">
           <div className="text-lg font-bold">Chọn container</div>
-          <Button onClick={handleSelectRow} variant="blue">
-            Chọn
-          </Button>
+          <div className="space-x-3">
+            <Button onClick={onGoBack} variant="outline">
+              Chọn lại tàu chuyến
+            </Button>
+            {manifestLoadingList?.length > 0 && (
+              <Button onClick={handleSelectRow} variant="blue">
+                Chọn
+              </Button>
+            )}
+          </div>
         </span>
-
         <AgGrid
           ref={gridRef}
           rowSelection={"single"}

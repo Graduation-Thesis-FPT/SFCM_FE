@@ -168,7 +168,7 @@ export function ManifestLoadingList() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
-
+    dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
         return { ...item, VOYAGEKEY: form.getValues("VOYAGEKEY") };
@@ -181,6 +181,9 @@ export function ManifestLoadingList() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
