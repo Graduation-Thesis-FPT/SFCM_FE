@@ -23,7 +23,7 @@ export function BtnPrintGoodsManifest({ rowData, isLoading, containerInfo, vesse
 
   const handleOpenDialog = () => {
     if (rowData.length === 0) {
-      toast.warning("Không có dữ liệu để in. Vui lòng chọn tàu chuyến và container!");
+      toast.warning("Không có dữ liệu để in. Vui lòng kiểm tra lại!");
       return;
     }
     let check = rowData.filter(item => item.status);
