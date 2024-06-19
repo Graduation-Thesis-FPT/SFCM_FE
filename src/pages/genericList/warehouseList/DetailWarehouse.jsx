@@ -11,7 +11,6 @@ import {
 } from "@/components/common/ui/form";
 import { Input } from "@/components/common/ui/input";
 import { actionGrantPermission } from "@/constants";
-import useFetchData from "@/hooks/useRefetchData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -118,16 +117,6 @@ export function DetailWarehouse({ onOpenChange, detailData, onDeleteData }) {
             Xóa kho
           </Button>
         </GrantPermission>
-        {/* <GrantPermission action={actionGrantPermission.UPDATE}>
-          <Button
-            type="submit"
-            form="update-warehouse"
-            className="h-[36px] w-[126px]"
-            variant="blue"
-          >
-            Cập nhật
-          </Button>
-        </GrantPermission> */}
       </CustomSheet.Footer>
     </CustomSheet>
   );
