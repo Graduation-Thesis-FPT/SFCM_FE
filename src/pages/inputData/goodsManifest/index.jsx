@@ -28,6 +28,7 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { getAllItemType } from "@/apis/item-type.api";
 import { ItemTypeCodeRender, UnitCodeRender } from "@/components/common/aggridreact/cellRender";
 import { getAllUnit } from "@/apis/unit.api";
+import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -329,6 +330,11 @@ export function GoodsManifest() {
         <span className="flex items-end justify-between">
           <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
+            <BtnPrintGoodsManifest
+              rowData={rowData}
+              vesselInfo={vesselInfo}
+              containerInfo={containerInfo}
+            />
             <BtnExportExcel gridRef={gridRef} />
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />

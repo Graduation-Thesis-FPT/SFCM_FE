@@ -104,7 +104,7 @@ export class dt_package_mnf_ld extends CommonColumns {
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
   UNIT_CODE = { field: "UNIT_CODE", headerName: "Đơn vị tính *" };
   CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số lượng *" };
-  CBM = { field: "CBM", headerName: "CBM *" };
+  CBM = { field: "CBM", headerName: "Số khối (m³) *" };
   DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
   REF_CONTAINER = { field: "REF_CONTAINER", headerName: "Container tham chiếu *" };

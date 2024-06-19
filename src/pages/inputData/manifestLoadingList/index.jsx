@@ -129,7 +129,7 @@ export function ManifestLoadingList() {
       cellRenderer: StatusOfGoodsRender
     },
     {
-      headerName: "Tên đại lý *",
+      headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
       field: DT_CNTR_MNF_LD.CONSIGNEE.field,
       flex: 1,
       filter: true,
