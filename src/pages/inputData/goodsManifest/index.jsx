@@ -75,13 +75,6 @@ export function GoodsManifest() {
       cellRenderer: params => ItemTypeCodeRender(params, itemType)
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.COMMODITYDESCRIPTION.headerName,
-      field: DT_PACKAGE_MNF_LD.COMMODITYDESCRIPTION.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
       headerName: DT_PACKAGE_MNF_LD.UNIT_CODE.headerName,
       field: DT_PACKAGE_MNF_LD.UNIT_CODE.field,
       flex: 1,
@@ -101,7 +94,8 @@ export function GoodsManifest() {
       field: DT_PACKAGE_MNF_LD.CBM.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "number"
     },
     {
       headerName: DT_PACKAGE_MNF_LD.DECLARE_NO.headerName,
@@ -329,7 +323,7 @@ export function GoodsManifest() {
         </span>
       </Section.Header>
       <Section.Content>
-        <span className="mb-[25px] flex justify-between">
+        <span className="flex items-end justify-between">
           <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
             <BtnExportExcel gridRef={gridRef} />
@@ -341,20 +335,20 @@ export function GoodsManifest() {
             </GrantPermission>
           </LayoutTool>
         </span>
-
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-full"
-          rowData={rowData}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-        />
+        <Section.Table>
+          <AgGrid
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+          />
+        </Section.Table>
       </Section.Content>
       <VesselInfoSelect
         open={openVesselInfoSelect}

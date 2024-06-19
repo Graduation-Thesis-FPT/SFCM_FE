@@ -231,7 +231,7 @@ export function VesselInfo() {
         </Form>
       </Section.Header>
       <Section.Content>
-        <span className="mb-[25px] flex justify-between">
+        <span className="flex justify-between">
           <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
             <BtnExportExcel gridRef={gridRef} />
@@ -243,19 +243,20 @@ export function VesselInfo() {
             </GrantPermission>
           </LayoutTool>
         </span>
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-        />
+        <Section.Table>
+          <AgGrid
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+          />
+        </Section.Table>
       </Section.Content>
     </Section>
   );
