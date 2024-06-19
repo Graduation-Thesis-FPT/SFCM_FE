@@ -89,7 +89,8 @@ export function GoodsManifest() {
       field: DT_PACKAGE_MNF_LD.CARGO_PIECE.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "number"
     },
     {
       headerName: DT_PACKAGE_MNF_LD.CBM.headerName,
