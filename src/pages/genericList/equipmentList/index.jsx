@@ -5,7 +5,8 @@ import {
   BlockCodeRender,
   DateTimeByTextRender,
   EquTypeRender,
-  OnlyEditWithInsertCell
+  OnlyEditWithInsertCell,
+  WarehouseCodeRender
 } from "@/components/common/aggridreact/cellRender";
 import { bs_equipment } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
@@ -18,6 +19,8 @@ import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useEffect, useRef, useState } from "react";
+import { getAllWarehouse } from "@/apis/warehouse.api";
+import { setWeek } from "date-fns";
 
 export function EquipmentList() {
   const gridRef = useRef(null);
@@ -25,7 +28,8 @@ export function EquipmentList() {
   const [rowData, setRowData] = useState([]);
   const [searchData, setSearchData] = useState("");
   const BS_EQUIPMENT = new bs_equipment();
-  const [equipType, setEquipType] = useState([]);
+  const [equipTypes, setEquipTypes] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
 
   const colDefs = [
     {
@@ -44,7 +48,7 @@ export function EquipmentList() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: param => EquTypeRender(param, equipType)
+      cellRenderer: param => EquTypeRender(param, equipTypes)
     },
     {
       headerName: BS_EQUIPMENT.EQU_CODE.headerName,
@@ -61,18 +65,12 @@ export function EquipmentList() {
       editable: true
     },
     {
-      headerName: BS_EQUIPMENT.BLOCK_CODE.headerName,
-      field: BS_EQUIPMENT.BLOCK_CODE.field,
+      headerName: BS_EQUIPMENT.WAREHOUSE_CODE.headerName,
+      field: BS_EQUIPMENT.WAREHOUSE_CODE.field,
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: params =>
-        BlockCodeRender(params, [
-          { id: 1, name: "Item 1" },
-          { id: 2, name: "Item 2" },
-          { id: 3, name: "Item 3" },
-          { id: 4, name: "Item 4" }
-        ])
+      cellRenderer: params => WarehouseCodeRender(params, warehouses)
     },
     {
       headerName: BS_EQUIPMENT.UPDATE_DATE.headerName,
@@ -135,14 +133,27 @@ export function EquipmentList() {
       });
   };
 
-  useEffect(() => {
+  const getEquipType = () => {
     getAllEquipType()
       .then(res => {
-        setEquipType(res.data.metadata);
+        setEquipTypes(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
       });
+  };
+
+  const getWarehouse = () => {
+    getAllWarehouse()
+      .then(res => {
+        setWarehouses(res.data.metadata);
+      })
+      .catch(err => toast.error(err));
+  };
+
+  useEffect(() => {
+    getEquipType();
+    getWarehouse();
   }, []);
 
   return (

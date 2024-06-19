@@ -37,9 +37,8 @@ export class bs_equipment_type extends CommonColumns {
 export class bs_equipment extends CommonColumns {
   EQU_TYPE = { field: "EQU_TYPE", headerName: "Mã loại thiết bị *" };
   EQU_CODE = { field: "EQU_CODE", headerName: "Mã thiết bị *" };
-  EQU_CODE_NAME = { field: "EQU_CODE_NAME", headerName: "Tên thiết bị" };
-  BLOCK_CODE = { field: "BLOCK_CODE", headerName: "Mã dãy" };
-  BLOCK = { field: "BLOCK", headerName: "Dãy" };
+  EQU_CODE_NAME = { field: "EQU_CODE_NAME", headerName: "Tên thiết bị *" };
+  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
 }
 
 export class bs_method extends CommonColumns {

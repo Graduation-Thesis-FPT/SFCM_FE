@@ -86,7 +86,7 @@ export function WarehouseCodeRender(params, warehouses) {
         <SelectGroup>
           {warehouses.map(item => (
             <SelectItem key={item?.WAREHOUSE_CODE} value={item?.WAREHOUSE_CODE}>
-              {item?.WAREHOUSE_NAME}
+              {item?.WAREHOUSE_CODE} - {item?.WAREHOUSE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -115,7 +115,7 @@ export function EquTypeRender(params, equTypes) {
         <SelectGroup>
           {equTypes.map(item => (
             <SelectItem key={item?.EQU_TYPE} value={item?.EQU_TYPE}>
-              {item?.EQU_TYPE}
+              {item?.EQU_TYPE} - {item?.EQU_TYPE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -178,7 +178,7 @@ export function CustomerTypeRender(params, customerType) {
         <SelectGroup>
           {customerType.map(item => (
             <SelectItem key={item?.CUSTOMER_TYPE_CODE} value={item?.CUSTOMER_TYPE_CODE}>
-              {item?.CUSTOMER_TYPE_NAME}
+              {item?.CUSTOMER_TYPE_CODE} - {item?.CUSTOMER_TYPE_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
