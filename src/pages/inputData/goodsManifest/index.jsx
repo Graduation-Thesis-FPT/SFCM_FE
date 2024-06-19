@@ -228,8 +228,8 @@ export function GoodsManifest() {
 
   const handleDeleteRows = selectedRows => {
     dispatch(setGlobalLoading(true));
-    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(rowData, selectedRows, "ROWGUID");
-    deletePackageMnfLd(deleteIdList)
+    const { newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ROWGUID");
+    deletePackageMnfLd(selectedRows)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
