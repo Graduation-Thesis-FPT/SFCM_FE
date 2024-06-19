@@ -118,6 +118,7 @@ export function ContainerInfoSelect({
           className="h-[50vh]"
           rowData={manifestLoadingList || []}
           colDefs={colDefs}
+          onRowDoubleClicked={handleSelectRow}
         />
       </SheetContent>
     </Sheet>
