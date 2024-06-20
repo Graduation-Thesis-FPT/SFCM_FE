@@ -27,15 +27,14 @@ import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnEx
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import moment from "moment";
 import { DateTimePickerRender } from "@/components/common/aggridreact/cellRender";
 
 const formSchema = z.object({
   from_date: z.date({
-    required_error: "Vui lòng chọn ngày!"
+    required_error: "Vui lòng chọn khoảng thời gian ngày tàu đến!"
   }),
   to_date: z.date({
-    required_error: "Vui lòng chọn ngày!"
+    required_error: "Vui lòng chọn khoảng thời gian ngày tàu đến!"
   })
 });
 
@@ -47,8 +46,8 @@ export function VesselInfo() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      from_date: moment(addDays(new Date(), -30)).startOf("day")._d,
-      to_date: moment(addDays(new Date(), 30)).endOf("day")._d
+      from_date: addDays(new Date(), -30),
+      to_date: addDays(new Date(), 30)
     }
   });
   const DT_VESSEL_VISIT = new dt_vessel_visit();
@@ -215,15 +214,19 @@ export function VesselInfo() {
                     <DatePickerWithRangeInForm
                       date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
                       onSelected={value => {
-                        form.setValue("from_date", moment(value.from).startOf("day")._d);
-                        form.setValue("to_date", moment(value.to).endOf("day")._d);
+                        form.setValue("from_date", value?.from);
+                        form.setValue("to_date", value?.to);
                       }}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>
+                    {form.formState.errors?.from_date?.message ||
+                      form.formState.errors?.to_date?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
+
             <Button variant="blue" type="submit">
               Nạp dữ liệu
             </Button>
