@@ -29,6 +29,7 @@ import { getAllItemType } from "@/apis/item-type.api";
 import { ItemTypeCodeRender, UnitCodeRender } from "@/components/common/aggridreact/cellRender";
 import { getAllUnit } from "@/apis/unit.api";
 import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
+import { BtnPrintLabel } from "./btnPrintLabel";
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -335,6 +336,7 @@ export function GoodsManifest() {
               vesselInfo={vesselInfo}
               containerInfo={containerInfo}
             />
+            <BtnPrintLabel />
             <BtnExportExcel gridRef={gridRef} />
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />

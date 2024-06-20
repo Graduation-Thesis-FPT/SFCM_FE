@@ -6,18 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
-import { Loader2, ReceiptText } from "lucide-react";
+import { Loader2, Printer } from "lucide-react";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { ComponentPrintGoodsMnf } from "./ComponentPrintGoodsMnf";
+import { ComponentPrintLabel } from "./ComponentPrintLabel";
 
-export function BtnPrintGoodsManifest({
-  rowData = [],
-  isLoading = false,
-  containerInfo = {},
-  vesselInfo = {}
-}) {
+export function BtnPrintLabel({ isLoading = false }) {
   const [open, setOpen] = useState(false);
   const printRef = useRef(null);
   const toast = useCustomToast();
@@ -27,18 +22,17 @@ export function BtnPrintGoodsManifest({
   });
 
   const handleOpenDialog = () => {
-    if (rowData.length === 0) {
-      toast.warning("Không có dữ liệu để in. Vui lòng kiểm tra lại!");
-      return;
-    }
-    let check = rowData.filter(item => item.status);
-    if (check.length > 0) {
-      toast.warning("Dữ liệu thay đổi chưa được lưu. Vui lòng lưu trước khi in!");
-      return;
-    }
+    // if (rowData.length === 0) {
+    //   toast.warning("Không có dữ liệu để in. Vui lòng kiểm tra lại!");
+    //   return;
+    // }
+    // let check = rowData.filter(item => item.status);
+    // if (check.length > 0) {
+    //   toast.warning("Dữ liệu thay đổi chưa được lưu. Vui lòng lưu trước khi in!");
+    //   return;
+    // }
     setOpen(true);
   };
-
   return (
     <>
       <TooltipProvider delayDuration={200}>
@@ -55,12 +49,12 @@ export function BtnPrintGoodsManifest({
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <ReceiptText className="h-4 w-4" />
+                <Printer className="h-4 w-4" />
               )}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>In công văn</p>
+            <p>In label</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -77,11 +71,11 @@ export function BtnPrintGoodsManifest({
             e.preventDefault();
           }}
         >
-          <ComponentPrintGoodsMnf
+          <ComponentPrintLabel
             ref={printRef}
-            rowData={rowData}
-            vesselInfo={vesselInfo}
-            containerInfo={containerInfo}
+            // rowData={rowData}
+            // vesselInfo={vesselInfo}
+            // containerInfo={containerInfo}
           />
           <DialogFooter className="p-5">
             <Button
