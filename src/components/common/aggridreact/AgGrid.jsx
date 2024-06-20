@@ -92,7 +92,7 @@ const AgGrid = forwardRef(
                 e.data.status ? null : (e.data.status = "update");
               }}
               pagination={true}
-              paginationPageSize={10}
+              paginationPageSize={30}
               paginationPageSizeSelector={[10, 30, 50, 100]}
               overlayLoadingTemplate={
                 '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
