@@ -109,3 +109,8 @@ export class dt_package_mnf_ld extends CommonColumns {
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
   REF_CONTAINER = { field: "REF_CONTAINER", headerName: "Container tham chiếu *" };
 }
+
+export class trf_codes extends CommonColumns {
+  TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
+  TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả *" };
+}

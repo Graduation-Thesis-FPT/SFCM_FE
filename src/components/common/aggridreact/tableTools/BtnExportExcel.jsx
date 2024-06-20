@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
-import { Loader2, Upload } from "lucide-react";
+import { FileDown, Loader2 } from "lucide-react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -79,7 +79,7 @@ export function BtnExportExcel({ gridRef, isLoading, customExport, ...props }) {
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Upload className="h-4 w-4" />
+              <FileDown className="h-4 w-4" />
             )}
           </Button>
         </TooltipTrigger>

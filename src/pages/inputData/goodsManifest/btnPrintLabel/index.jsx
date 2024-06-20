@@ -12,8 +12,9 @@ import { useReactToPrint } from "react-to-print";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { ComponentPrintLabel } from "./ComponentPrintLabel";
 
-export function BtnPrintLabel({ isLoading = false }) {
+export function BtnPrintLabel({ isLoading = false, gridRef, vesselInfo = {}, containerInfo = {} }) {
   const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState([]);
   const printRef = useRef(null);
   const toast = useCustomToast();
 
@@ -22,15 +23,24 @@ export function BtnPrintLabel({ isLoading = false }) {
   });
 
   const handleOpenDialog = () => {
-    // if (rowData.length === 0) {
-    //   toast.warning("Không có dữ liệu để in. Vui lòng kiểm tra lại!");
-    //   return;
-    // }
-    // let check = rowData.filter(item => item.status);
-    // if (check.length > 0) {
-    //   toast.warning("Dữ liệu thay đổi chưa được lưu. Vui lòng lưu trước khi in!");
-    //   return;
-    // }
+    if (gridRef.current.props.rowData.length === 0) {
+      toast.warning("Không có dữ liệu để in. Vui lòng kiểm tra lại!");
+      return;
+    }
+
+    if (gridRef.current.api.getSelectedRows().length === 0) {
+      toast.warning("Vui lòng chọn dòng cần in!");
+      return;
+    }
+
+    let check = gridRef.current.props.rowData.filter(item => item.status);
+    if (check.length > 0) {
+      toast.warning("Dữ liệu thay đổi chưa được lưu. Vui lòng lưu trước khi in!");
+      return;
+    }
+
+    setSelectedRow(gridRef.current.api.getSelectedRows());
+
     setOpen(true);
   };
   return (
@@ -73,9 +83,9 @@ export function BtnPrintLabel({ isLoading = false }) {
         >
           <ComponentPrintLabel
             ref={printRef}
-            // rowData={rowData}
-            // vesselInfo={vesselInfo}
-            // containerInfo={containerInfo}
+            selectedRow={selectedRow}
+            vesselInfo={vesselInfo}
+            containerInfo={containerInfo}
           />
           <DialogFooter className="p-5">
             <Button

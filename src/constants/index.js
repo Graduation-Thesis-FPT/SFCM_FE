@@ -117,7 +117,17 @@ export const SUCCESS_MESSAGE = {
   // CONTAINER
   SAVE_CONTAINER_SUCCESS: "Lưu thông tin container thành công",
   DELETE_CONTAINER_SUCCESS: "Xóa thông tin container thành công",
-  GET_CONTAINER_SUCCESS: "Lấy thông tin container thành công"
+  GET_CONTAINER_SUCCESS: "Lấy thông tin container thành công",
+
+  // PACKAGE
+  SAVE_PACKAGE_SUCCESS: "Lưu bảng kê hàng hóa thành công",
+  DELETE_PACKAGE_SUCCESS: "Xóa bảng kê hàng hóa thành công",
+  GET_PACKAGE_SUCCESS: "Lấy bảng kê hàng hóa thành công",
+
+  //Unit
+  DELETE_TARIFFCODE_SUCCESS: "Xóa mã biểu cước thành công",
+  GET_TARIFFCODE_SUCCESS: "Lấy mã biểu cước thành công",
+  SAVE_TARIFFCODE_SUCCESS: "Lưu mã biểu cước thành công"
 };
 
 export const REASON_PHRASES = {
