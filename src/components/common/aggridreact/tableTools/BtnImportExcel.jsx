@@ -9,8 +9,7 @@ import { FileUp, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import * as XLSX from "xlsx";
 
-export function BtnImportExcel({ isLoading, ...props }) {
-  const [file, setFile] = useState([]);
+export function BtnImportExcel({ isLoading, onFileUpload, ...props }) {
   const fileInputRef = useRef(null);
 
   const handleFileUpload = event => {
@@ -23,7 +22,8 @@ export function BtnImportExcel({ isLoading, ...props }) {
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        setFile(jsonData);
+        fileInputRef.current.value = "";
+        onFileUpload(jsonData);
       };
       reader.readAsArrayBuffer(file);
     }

@@ -31,6 +31,7 @@ import { getAllUnit } from "@/apis/unit.api";
 import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
 import { BtnPrintLabel } from "./btnPrintLabel";
 import { BtnImportExcel } from "@/components/common/aggridreact/tableTools/BtnImportExcel";
+import { v4 as uuidv4 } from "uuid";
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -280,6 +281,32 @@ export function GoodsManifest() {
     getUnit();
   }, []);
 
+  const handleFileUpload = fileData => {
+    let col = colDefs
+      .filter(item => item.field)
+      .map(item => {
+        return { field: item.field, headerName: item.headerName };
+      });
+    const rowDataFileUpload = mapKeysFileUpload(fileData, col);
+    setRowData(rowDataFileUpload);
+  };
+
+  function mapKeysFileUpload(data, colDefs) {
+    const headerToFieldMap = {};
+    colDefs.forEach(colDef => {
+      headerToFieldMap[colDef.headerName] = colDef.field;
+    });
+    return data.map(item => {
+      const newItem = {};
+      Object.keys(item).forEach(key => {
+        if (headerToFieldMap[key]) {
+          newItem[headerToFieldMap[key]] = item[key];
+        }
+      });
+      return { ...newItem, status: "insert", key: uuidv4() };
+    });
+  }
+
   return (
     <Section>
       <Section.Header className="grid space-y-4">
@@ -343,7 +370,7 @@ export function GoodsManifest() {
               containerInfo={containerInfo}
             />
             <BtnExportExcel gridRef={gridRef} />
-            <BtnImportExcel />
+            <BtnImportExcel onFileUpload={handleFileUpload} />
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />
             </GrantPermission>
