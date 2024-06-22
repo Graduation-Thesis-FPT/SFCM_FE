@@ -190,7 +190,7 @@ export function CustomerTypeRender(params, customerType) {
 export function StatusOfGoodsRender(params) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(false);
+      params.setValue(true);
     }
   }, []);
   return (

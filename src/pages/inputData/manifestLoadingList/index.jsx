@@ -121,14 +121,6 @@ export function ManifestLoadingList() {
       editable: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.STATUSOFGOOD.headerName,
-      field: DT_CNTR_MNF_LD.STATUSOFGOOD.field,
-      flex: 1,
-      filter: true,
-      editable: true,
-      cellRenderer: StatusOfGoodsRender
-    },
-    {
       headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
       field: DT_CNTR_MNF_LD.CONSIGNEE.field,
       flex: 1,
