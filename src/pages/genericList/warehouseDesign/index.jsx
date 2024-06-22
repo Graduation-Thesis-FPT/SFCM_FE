@@ -1,6 +1,16 @@
+import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
+import { getAllWarehouse } from "@/apis/warehouse.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import {
+  OnlyEditWithInsertCell,
+  WarehouseCodeRender
+} from "@/components/common/aggridreact/cellRender";
+import { bs_block } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { useCustomToast } from "@/components/common/custom-toast";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import {
@@ -11,27 +21,22 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
-import { fnAddRows, fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { useEffect, useRef, useState } from "react";
-import { GrantPermission } from "@/components/common/grant-permission";
 import { actionGrantPermission } from "@/constants";
-import { createBlock, deleteBlock, getBlock } from "@/apis/block.api";
-import { useCustomToast } from "@/components/common/custom-toast";
-import { getAllWarehouse } from "@/apis/warehouse.api";
-import { useDispatch } from "react-redux";
+import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { bs_block } from "@/components/common/aggridreact/dbColumns";
-import {
-  OnlyEditWithInsertCell,
-  WarehouseCodeRender
-} from "@/components/common/aggridreact/cellRender";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { DisplayCell } from "./displayCell";
-import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import useFetchData from "@/hooks/useRefetchData";
+import { useSetData } from "@/hooks/useSetData";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const [rowData, setRowData] = useState([]);
+  const { data: blocks, revalidate } = useFetchData({
+    service: getBlock
+  });
+  const [rowData, setRowData] = useSetData(blocks);
   const [warehouses, setWarehouses] = useState([]);
   const [displayType, setDisplayType] = useState("table");
   const [filterData, setFilterData] = useState({
@@ -143,8 +148,6 @@ export function WarehouseDesign() {
     }
   ];
 
-  const handleSearch = value => {};
-
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
@@ -186,16 +189,6 @@ export function WarehouseDesign() {
       });
   };
 
-  const getRowData = () => {
-    getBlock()
-      .then(res => {
-        setRowData(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
   useEffect(() => {
     getAllWarehouse()
       .then(res => {
@@ -214,6 +207,19 @@ export function WarehouseDesign() {
     <Section>
       <Section.Header title="Danh sách các dãy (block)" />
       <Section.Content>
+        {/* <AgGrid
+          contextMenu={true}
+          setRowData={data => {
+            setRowData(data);
+          }}
+          ref={gridRef}
+          className="h-[50vh]"
+          rowData={rowData}
+          colDefs={colDefs}
+          onDeleteRow={selectedRows => {
+            handleDeleteRows(selectedRows);
+          }}
+        /> */}
         <div className="flex justify-between">
           {displayType === "table" ? (
             <SearchInput handleSearch={value => handleSearch(value)} />
