@@ -37,9 +37,8 @@ export class bs_equipment_type extends CommonColumns {
 export class bs_equipment extends CommonColumns {
   EQU_TYPE = { field: "EQU_TYPE", headerName: "Mã loại thiết bị *" };
   EQU_CODE = { field: "EQU_CODE", headerName: "Mã thiết bị *" };
-  EQU_CODE_NAME = { field: "EQU_CODE_NAME", headerName: "Tên thiết bị" };
-  BLOCK_CODE = { field: "BLOCK_CODE", headerName: "Mã dãy" };
-  BLOCK = { field: "BLOCK", headerName: "Dãy" };
+  EQU_CODE_NAME = { field: "EQU_CODE_NAME", headerName: "Tên thiết bị *" };
+  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
 }
 
 export class bs_method extends CommonColumns {
@@ -100,17 +99,18 @@ export class dt_cntr_mnf_ld extends CommonColumns {
 
 export class dt_package_mnf_ld extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
-  VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
-  BILLOFLADING = { field: "BILLOFLADING", headerName: "Số vận đơn" };
-  CNTRNO = { field: "CNTRNO", headerName: "Số container" };
-  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill" };
+  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill *" };
   LOT_NO = { field: "LOT_NO", headerName: "Số lô" };
-  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng" };
-  COMMODITYDESCRIPTION = { field: "COMMODITYDESCRIPTION", headerName: "Mô tả" };
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
   UNIT_CODE = { field: "UNIT_CODE", headerName: "Đơn vị tính *" };
-  CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số kiện" };
-  CBM = { field: "CBM", headerName: "CBM *" };
+  CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số lượng *" };
+  CBM = { field: "CBM", headerName: "Số khối (m³) *" };
   DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
-  REF_CONTAINER = { field: "REF_CONTAINER", headerName: "Container tham chiếu" };
+  REF_CONTAINER = { field: "REF_CONTAINER", headerName: "Container tham chiếu *" };
+}
+
+export class trf_codes extends CommonColumns {
+  TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
+  TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả *" };
 }

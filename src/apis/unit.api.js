@@ -1,6 +1,6 @@
 import { axiosPrivate } from "@/config/axios";
 
-export const getUnit = async () => {
+export const getAllUnit = async () => {
   return await axiosPrivate.get(`unit`);
 };
 

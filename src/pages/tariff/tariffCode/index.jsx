@@ -1,27 +1,34 @@
-import { createAndUpdateItemType, deleteItemType, getAllItemType } from "@/apis/item-type.api";
+import {
+  createAndUpdateTariffCode,
+  deleteTariffCode,
+  getAllTariffCode
+} from "@/apis/tariff-code.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import {
   DateTimeByTextRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
-import { bs_item_type } from "@/components/common/aggridreact/dbColumns";
+import { trf_codes } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
-import { GrantPermission } from "@/components/common/grant-permission";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { SearchInput } from "@/components/common/search";
+import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 
-export function ItemType() {
-  const gridRef = useRef(null);
-  const toast = useCustomToast();
+export function TariffCode() {
   const [rowData, setRowData] = useState([]);
-  const BS_ITEM_TYPE = new bs_item_type();
-
+  const gridRef = useRef(null);
+  const dispatch = useDispatch();
+  const toast = useCustomToast();
+  const TRF_CODES = new trf_codes();
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -34,47 +41,51 @@ export function ItemType() {
       }
     },
     {
-      headerName: BS_ITEM_TYPE.ITEM_TYPE_CODE.headerName,
-      field: BS_ITEM_TYPE.ITEM_TYPE_CODE.field,
+      headerName: TRF_CODES.TRF_CODE.headerName,
+      field: TRF_CODES.TRF_CODE.field,
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: OnlyEditWithInsertCell,
+      onCellValueChanged: UpperCase
     },
     {
-      headerName: BS_ITEM_TYPE.ITEM_TYPE_NAME.headerName,
-      field: BS_ITEM_TYPE.ITEM_TYPE_NAME.field,
+      headerName: TRF_CODES.TRF_DESC.headerName,
+      field: TRF_CODES.TRF_DESC.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: BS_ITEM_TYPE.UPDATE_DATE.headerName,
-      field: BS_ITEM_TYPE.UPDATE_DATE.field,
+      headerName: TRF_CODES.UPDATE_DATE.headerName,
+      field: TRF_CODES.UPDATE_DATE.field,
       flex: 1,
+      filter: true,
       cellRenderer: DateTimeByTextRender
     }
   ];
 
-  const [searchData, setSearchData] = useState("");
-
   const handleAddRow = () => {
-    let newRowData = fnAddRowsVer2(rowData, colDefs);
-    setRowData(newRowData);
+    const newRow = fnAddRowsVer2(rowData, colDefs);
+    setRowData(newRow);
   };
 
   const handleSaveRows = () => {
-    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.error("Không có dữ liệu thay đổi");
+    const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      toast.warning("Không có dữ liệu thay đổi");
       return;
     }
-    createAndUpdateItemType(insertAndUpdateData)
+    dispatch(setGlobalLoading(true));
+    createAndUpdateTariffCode(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
@@ -82,21 +93,24 @@ export function ItemType() {
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
       selectedRows,
       rowData,
-      "ITEM_TYPE_CODE"
+      "TRF_CODE"
     );
-
-    deleteItemType(deleteIdList)
+    dispatch(setGlobalLoading(true));
+    deleteTariffCode(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
   const getRowData = () => {
-    getAllItemType()
+    getAllTariffCode()
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -107,15 +121,12 @@ export function ItemType() {
 
   return (
     <Section>
-      <Section.Header title="Danh mục loại hàng hóa"></Section.Header>
+      <Section.Header title="Mã biểu cước"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
-          <SearchInput
-            handleSearch={value => {
-              setSearchData(value);
-            }}
-          />
+          <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
+            <BtnExportExcel gridRef={gridRef} />
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />
             </GrantPermission>
@@ -124,27 +135,24 @@ export function ItemType() {
             </GrantPermission>
           </LayoutTool>
         </span>
-
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData?.filter(item => {
-            if (searchData === "") return item;
-            return item.METHOD_CODE?.toLowerCase().includes(searchData.toLowerCase());
-          })}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getRowData();
-          }}
-        />
+        <Section.Table>
+          <AgGrid
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getRowData();
+            }}
+          />
+        </Section.Table>
       </Section.Content>
     </Section>
   );

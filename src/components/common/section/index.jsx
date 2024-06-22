@@ -25,4 +25,9 @@ Section.Content = ({ children, className }) => {
   return (
     <div className={cn("flex flex-1 flex-col gap-4 p-6", className)}>{children}</div>
   );
+  // return <div className={cn("flex h-full flex-col px-6 pt-6", className)}>{children}</div>;
+};
+
+Section.Table = ({ children, className }) => {
+  return <div className={cn("mt-6 flex-1", className)}>{children}</div>;
 };

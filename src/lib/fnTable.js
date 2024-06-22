@@ -27,7 +27,7 @@ const fnAddRowsVer2 = (rowData, colDefs) => {
         return;
       }
       if (col.cellDataType === "number") {
-        //do something
+        newRow[col.field] = 0;
         return;
       }
       if (col.cellDataType === "date") {
@@ -55,10 +55,20 @@ const fnDeleteRows = (selectedRows, rowData, deleteBy) => {
 function fnFilterInsertAndUpdateData(listData) {
   const insertData = listData
     .filter(item => item.status === "insert")
-    .map(({ status, key, ...rest }) => rest);
+    .map(({ status, key, ...rest }) => rest)
+    .map(item =>
+      Object.fromEntries(
+        Object.entries(item).map(([key, value]) => [key, value === null ? "" : value])
+      )
+    );
   const updateData = listData
     .filter(item => item.status === "update")
-    .map(({ status, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, ...rest }) => rest);
+    .map(({ status, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, ...rest }) => rest)
+    .map(item =>
+      Object.fromEntries(
+        Object.entries(item).map(([key, value]) => [key, value === null ? "" : value])
+      )
+    );
   return {
     insertData: { insert: insertData },
     updateData: { update: updateData },

@@ -93,6 +93,7 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
           className="h-[50vh]"
           rowData={vesselList || []}
           colDefs={colDefs}
+          onRowDoubleClicked={handleSelectRow}
         />
       </SheetContent>
     </Sheet>

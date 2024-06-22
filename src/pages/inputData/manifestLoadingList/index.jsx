@@ -121,15 +121,7 @@ export function ManifestLoadingList() {
       editable: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.STATUSOFGOOD.headerName,
-      field: DT_CNTR_MNF_LD.STATUSOFGOOD.field,
-      flex: 1,
-      filter: true,
-      editable: true,
-      cellRenderer: StatusOfGoodsRender
-    },
-    {
-      headerName: "Tên đại lý *",
+      headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
       field: DT_CNTR_MNF_LD.CONSIGNEE.field,
       flex: 1,
       filter: true,
@@ -168,7 +160,7 @@ export function ManifestLoadingList() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
-
+    dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
         return { ...item, VOYAGEKEY: form.getValues("VOYAGEKEY") };
@@ -181,6 +173,9 @@ export function ManifestLoadingList() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
@@ -314,7 +309,7 @@ export function ManifestLoadingList() {
         </Form>
       </Section.Header>
       <Section.Content>
-        <span className="mb-[25px] flex justify-between">
+        <span className="flex justify-between">
           <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
             <BtnExportExcel gridRef={gridRef} />
@@ -326,19 +321,20 @@ export function ManifestLoadingList() {
             </GrantPermission>
           </LayoutTool>
         </span>
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-        />
+        <Section.Table>
+          <AgGrid
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+          />
+        </Section.Table>
       </Section.Content>
       <VesselInfoSheet
         onChangeVesselInfo={handleChangeVesselInfo}

@@ -8,7 +8,7 @@ export const getAllVessel = async () => {
 export const getVesselByFilter = async (fromDate, toDate) => {
   if (fromDate > toDate) throw new Error("Chọn ngày không hợp lệ!");
   return await axiosPrivate.get(
-    `vessel?from=${moment(fromDate).format("Y-M-D H:m:s")}&to=${moment(toDate).format("Y-M-D H:m:s")}`
+    `vessel?from=${moment(fromDate).startOf("day").format("Y-MM-DD HH:mm:ss")}&to=${moment(toDate).endOf("day").format("Y-MM-DD HH:mm:ss")}`
   );
 };
 

@@ -1,4 +1,4 @@
-import { createAndUpdateUnit, deleteUnit, getUnit } from "@/apis/unit.api";
+import { createAndUpdateUnit, deleteUnit, getAllUnit } from "@/apis/unit.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,
@@ -65,7 +65,7 @@ export function UnitList() {
   const handleSaveRows = () => {
     const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
     if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.error("Không có dữ liệu thay đổi để lưu");
+      toast.error("Không có dữ liệu thay đổi");
       return;
     }
     createAndUpdateUnit(insertAndUpdateData)
@@ -96,7 +96,7 @@ export function UnitList() {
   };
 
   const getRowData = () => {
-    getUnit()
+    getAllUnit()
       .then(res => {
         setRowData(res.data.metadata);
       })
