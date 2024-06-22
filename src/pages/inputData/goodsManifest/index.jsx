@@ -31,7 +31,8 @@ import { getAllUnit } from "@/apis/unit.api";
 import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
 import { BtnPrintLabel } from "./btnPrintLabel";
 import { BtnImportExcel } from "@/components/common/aggridreact/tableTools/BtnImportExcel";
-import { v4 as uuidv4 } from "uuid";
+import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -281,31 +282,26 @@ export function GoodsManifest() {
     getUnit();
   }, []);
 
-  const handleFileUpload = fileData => {
-    let col = colDefs
-      .filter(item => item.field)
-      .map(item => {
-        return { field: item.field, headerName: item.headerName };
-      });
-    const rowDataFileUpload = mapKeysFileUpload(fileData, col);
-    setRowData(rowDataFileUpload);
+  const handleFileUpload = rowDataFileUpload => {
+    if (!vesselInfo.VOYAGEKEY) {
+      toast.warning("Vui lòng chọn tàu chuyến");
+      return;
+    }
+    if (!containerInfo.ROWGUID) {
+      toast.warning("Vui lòng chọn container");
+      return;
+    }
+    const finalRowData = rowDataFileUpload?.map(item => {
+      return {
+        ...item,
+        HOUSE_BILL: item.HOUSE_BILL?.toString(),
+        LOT_NO: item.LOT_NO?.toString(),
+        DECLARE_NO: item.DECLARE_NO?.toString(),
+        NOTE: item.NOTE?.toString()
+      };
+    });
+    setRowData(finalRowData);
   };
-
-  function mapKeysFileUpload(data, colDefs) {
-    const headerToFieldMap = {};
-    colDefs.forEach(colDef => {
-      headerToFieldMap[colDef.headerName] = colDef.field;
-    });
-    return data.map(item => {
-      const newItem = {};
-      Object.keys(item).forEach(key => {
-        if (headerToFieldMap[key]) {
-          newItem[headerToFieldMap[key]] = item[key];
-        }
-      });
-      return { ...newItem, status: "insert", key: uuidv4() };
-    });
-  }
 
   return (
     <Section>
@@ -369,8 +365,9 @@ export function GoodsManifest() {
               vesselInfo={vesselInfo}
               containerInfo={containerInfo}
             />
+            <BtnDownExcelGoodsMnfSample gridRef={gridRef} itemType={itemType} unit={unit} />
             <BtnExportExcel gridRef={gridRef} />
-            <BtnImportExcel onFileUpload={handleFileUpload} />
+            <BtnImportExcel gridRef={gridRef} onFileUpload={handleFileUpload} />
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />
             </GrantPermission>

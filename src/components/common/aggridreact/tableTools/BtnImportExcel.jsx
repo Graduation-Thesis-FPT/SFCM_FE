@@ -6,15 +6,30 @@ import {
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
 import { FileUp, Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import * as XLSX from "xlsx";
+import { useCustomToast } from "../../custom-toast";
+import { useDispatch } from "react-redux";
 
-export function BtnImportExcel({ isLoading, onFileUpload, ...props }) {
+export function BtnImportExcel({ isLoading, onFileUpload, gridRef, ...props }) {
   const fileInputRef = useRef(null);
+  const toast = useCustomToast();
 
   const handleFileUpload = event => {
     const file = event.target.files[0];
+
     if (file) {
+      if (
+        (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
+          file.type !== "application/vnd.ms-excel") ||
+        (file.name.split(".").pop().toLowerCase() !== "xlsx" &&
+          file.name.split(".").pop().toLowerCase() !== "xls")
+      ) {
+        fileInputRef.current.value = "";
+        toast.error("File không đúng định dạng. Vui lòng chọn file excel (.xlsx, .xls)!");
+        return;
+      }
       const reader = new FileReader();
       reader.onload = e => {
         const data = new Uint8Array(e.target.result);
@@ -23,10 +38,33 @@ export function BtnImportExcel({ isLoading, onFileUpload, ...props }) {
         const worksheet = workbook.Sheets[firstSheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
         fileInputRef.current.value = "";
-        onFileUpload(jsonData);
+        const rowDataFileUpload = mapKeysFileUpload(jsonData);
+        onFileUpload(rowDataFileUpload);
       };
       reader.readAsArrayBuffer(file);
     }
+  };
+
+  const mapKeysFileUpload = jsonData => {
+    const colDefs = gridRef.current.props.columnDefs
+      ?.filter(item => item.field)
+      .map(item => {
+        return { field: item.field, headerName: item.headerName };
+      });
+
+    const headerToFieldMap = {};
+    colDefs.forEach(colDef => {
+      headerToFieldMap[colDef.headerName] = colDef.field;
+    });
+    return jsonData.map(item => {
+      const newItem = {};
+      Object.keys(item).forEach(key => {
+        if (headerToFieldMap[key]) {
+          newItem[headerToFieldMap[key]] = item[key];
+        }
+      });
+      return { ...newItem, status: "insert", key: uuidv4() };
+    });
   };
 
   const handleClick = () => {
