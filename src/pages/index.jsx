@@ -18,3 +18,4 @@ export * from "./inputData/vesselInfo";
 export * from "./inputData/goodsManifest";
 //tariff
 export * from "./tariff/tariffCode";
+export * from "./tariff/standardTariff";

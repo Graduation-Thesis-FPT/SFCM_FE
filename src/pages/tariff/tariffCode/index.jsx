@@ -2,7 +2,7 @@ import {
   createAndUpdateTariffCode,
   deleteTariffCode,
   getAllTariffCode
-} from "@/apis/tariff-code.api";
+} from "@/apis/trf-codes.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import {

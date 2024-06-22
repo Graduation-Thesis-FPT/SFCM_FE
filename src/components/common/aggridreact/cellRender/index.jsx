@@ -271,7 +271,7 @@ export function ConsigneeRender(params, customerList) {
         <SelectGroup>
           {customerList.map(item => (
             <SelectItem key={item?.CUSTOMER_CODE} value={item?.CUSTOMER_CODE}>
-              {item?.CUSTOMER_NAME} - {item?.CUSTOMER_CODE}
+              {item?.CUSTOMER_CODE} - {item?.CUSTOMER_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -325,6 +325,64 @@ export function UnitCodeRender(params, unit) {
           {unit.map(item => (
             <SelectItem key={item?.UNIT_CODE} value={item?.UNIT_CODE}>
               {item?.UNIT_CODE} - {item?.UNIT_NAME}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function TrfCodeRender(params, TrfCode) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(TrfCode[0]?.TRF_CODE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {TrfCode.map(item => (
+            <SelectItem key={item?.TRF_CODE} value={item?.TRF_CODE}>
+              {item?.TRF_CODE} - {item?.TRF_DESC}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function MethodCodeRender(params, method) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(method[0]?.METHOD_CODE);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {method.map(item => (
+            <SelectItem key={item?.METHOD_CODE} value={item?.METHOD_CODE}>
+              {item?.METHOD_CODE} - {item?.METHOD_NAME}
             </SelectItem>
           ))}
         </SelectGroup>
