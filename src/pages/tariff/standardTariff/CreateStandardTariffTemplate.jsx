@@ -1,4 +1,4 @@
-import { createAndUpdateStandardTariff } from "@/apis/trf-std.api";
+import { createAndUpdateStandardTariff, createStandardTariffTemplate } from "@/apis/trf-std.api";
 import { trf_std } from "@/components/common/aggridreact/dbColumns";
 import { CustomSheet } from "@/components/common/custom-sheet";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -72,11 +72,11 @@ export function CreateStandardTariffTemplate({
   });
 
   const onSubmit = values => {
-    createAndUpdateStandardTariff({ insert: [values], update: [] })
+    createStandardTariffTemplate({ insert: [values] })
       .then(res => {
         toast.success(res);
         setOpen(false);
-        onCreateNewTemplate(res.data);
+        onCreateNewTemplate(res);
       })
       .catch(err => {
         toast.error(err);

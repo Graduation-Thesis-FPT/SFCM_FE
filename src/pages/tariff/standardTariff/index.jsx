@@ -103,7 +103,8 @@ export function StandardTariff() {
       field: TRF_STD.AMT_CBM.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "number"
     },
     {
       headerName: TRF_STD.VAT.headerName,
@@ -184,8 +185,24 @@ export function StandardTariff() {
       });
   };
 
-  const handleCreateNewTemplate = data => {
-    console.log("🚀 ~ handleCreateNewTemplate ~ data:", data);
+  const handleCreateNewTemplate = res => {
+    let TRF_TEMP = res.data.metadata?.createdTariff[0]?.TRF_TEMP;
+    getAllStandardTariffTemplate()
+      .then(res => {
+        setTariffTemplate(res.data.metadata);
+      })
+      .then(res => {
+        getStandardTariffByFilter(TRF_TEMP);
+        setTariffTemplateFilter({
+          template: TRF_TEMP,
+          from: moment(TRF_TEMP.split("-")[0], "DD/MM/YYYY")?._d,
+          to: moment(TRF_TEMP.split("-")[1], "DD/MM/YYYY")?._d,
+          name: TRF_TEMP.split("-")[2]
+        });
+      })
+      .catch(err => {
+        toast.error(err);
+      });
   };
 
   useEffect(() => {
