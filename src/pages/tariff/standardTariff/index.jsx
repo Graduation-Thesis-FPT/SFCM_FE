@@ -37,10 +37,13 @@ import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { CreateStandardTariffTemplate } from "./CreateStandardTariffTemplate";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function StandardTariff() {
   const toast = useCustomToast();
   const gridRef = useRef(null);
+  const dispatch = useDispatch();
   const [tariffTemplate, setTariffTemplate] = useState([]);
   const [tariffTemplateFilter, setTariffTemplateFilter] = useState({
     template: "",
@@ -137,7 +140,9 @@ export function StandardTariff() {
     if (!isContinue) {
       return toast.warning("Không có dữ liệu thay đổi");
     }
-    insertAndUpdateData.insert = insertAndUpdateData.insert.map(({ TRF_TEMP, ...rest }) => {
+    dispatch(setGlobalLoading(true));
+
+    insertAndUpdateData.insert = insertAndUpdateData.insert?.map(({ TRF_TEMP, ...rest }) => {
       return {
         ...rest,
         FROM_DATE: tariffTemplateFilter.from,
@@ -145,27 +150,42 @@ export function StandardTariff() {
         TRF_NAME: tariffTemplateFilter.name
       };
     });
-    insertAndUpdateData.update = insertAndUpdateData.update.map(({ TRF_TEMP, ...rest }) => rest);
+    insertAndUpdateData.update = insertAndUpdateData.update?.map(({ TRF_TEMP, ...rest }) => rest);
+
     createAndUpdateStandardTariff(insertAndUpdateData)
       .then(res => {
         toast.success(res);
-        getStandardTariffTemplate();
         getStandardTariffByFilter(tariffTemplateFilter.template);
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
   const handleDeleteRows = selectedRows => {
+    dispatch(setGlobalLoading(true));
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ROWGUID");
+
     deleteStandardTariff(deleteIdList)
       .then(res => {
+        if (newRowDataAfterDeleted.length === 0) {
+          getStandardTariffTemplate();
+          setTariffTemplateFilter({ template: "", from: "", to: "", name: "" });
+        }
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
-        getStandardTariffTemplate();
       })
-      .catch(err => toast.error(err));
+      .catch(err => toast.error(err))
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const handleCreateNewTemplate = data => {
+    console.log("🚀 ~ handleCreateNewTemplate ~ data:", data);
   };
 
   useEffect(() => {
@@ -299,7 +319,12 @@ export function StandardTariff() {
             />
           </div>
         </span>
-        <CreateStandardTariffTemplate />
+        <CreateStandardTariffTemplate
+          tariffCode={tariffCode}
+          method={method}
+          itemType={itemType}
+          onCreateNewTemplate={handleCreateNewTemplate}
+        />
       </Section.Header>
       <Section.Content>
         <span className="flex justify-between">

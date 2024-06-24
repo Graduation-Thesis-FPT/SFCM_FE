@@ -1,8 +1,10 @@
+import { createAndUpdateStandardTariff } from "@/apis/trf-std.api";
 import { trf_std } from "@/components/common/aggridreact/dbColumns";
 import { CustomSheet } from "@/components/common/custom-sheet";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { Button } from "@/components/common/ui/button";
+import { Checkbox } from "@/components/common/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -12,6 +14,14 @@ import {
   FormMessage
 } from "@/components/common/ui/form";
 import { Input } from "@/components/common/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/common/ui/select";
 import { useToggle } from "@/hooks/useToggle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
@@ -26,17 +36,22 @@ const formSchema = z.object({
   TO_DATE: z.date({
     required_error: "Vui lòng chọn khoảng thời gian hiệu lực!"
   }),
-  TRF_NAME: z.string(),
-  TRF_CODE: z.string(),
+  TRF_NAME: z.string().min(1, "Không được để trống!"),
+  TRF_CODE: z.string().min(1, "Không được để trống!"),
   TRF_DESC: z.string(),
-  METHOD_CODE: z.string(),
-  ITEM_TYPE_CODE: z.string(),
-  AMT_CBM: z.string(),
-  VAT: z.string(),
-  INCLUDE_VAT: z.string()
+  METHOD_CODE: z.string().min(1, "Không được để trống!"),
+  ITEM_TYPE_CODE: z.string().min(1, "Không được để trống!"),
+  AMT_CBM: z.number(),
+  VAT: z.number(),
+  INCLUDE_VAT: z.boolean()
 });
 
-export function CreateStandardTariffTemplate() {
+export function CreateStandardTariffTemplate({
+  tariffCode = [],
+  method = [],
+  itemType = [],
+  onCreateNewTemplate
+}) {
   const toast = useCustomToast();
   const [open, setOpen] = useToggle();
   const TRF_STD = new trf_std();
@@ -50,18 +65,26 @@ export function CreateStandardTariffTemplate() {
       TRF_DESC: "",
       METHOD_CODE: "",
       ITEM_TYPE_CODE: "",
-      AMT_CBM: "",
-      VAT: "",
-      INCLUDE_VAT: ""
+      AMT_CBM: 0,
+      VAT: 0,
+      INCLUDE_VAT: false
     }
   });
 
   const onSubmit = values => {
-    console.log("🚀 ~ CreateStandardTariffTemplate ~ values:", values);
+    createAndUpdateStandardTariff({ insert: [values], update: [] })
+      .then(res => {
+        toast.success(res);
+        setOpen(false);
+        onCreateNewTemplate(res.data);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
   };
 
   return (
-    <div>
+    <>
       <Button
         onClick={() => {
           setOpen(true);
@@ -80,7 +103,7 @@ export function CreateStandardTariffTemplate() {
         title="Tạo mẫu biểu cước mới"
         form={form}
       >
-        <CustomSheet.Content title="Thông tin biểu cước">
+        <CustomSheet.Content title="Thông tin mẫu biểu cước">
           <Form {...form}>
             <form
               id="creat-user"
@@ -130,7 +153,72 @@ export function CreateStandardTariffTemplate() {
                   <FormItem>
                     <FormLabel>{TRF_STD.TRF_CODE.headerName}</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn mã biểu cước" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {tariffCode.map(item => (
+                              <SelectItem key={item?.TRF_CODE} value={item?.TRF_CODE}>
+                                {item?.TRF_CODE} - {item?.TRF_DESC}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="METHOD_CODE"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{TRF_STD.METHOD_CODE.headerName}</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn mã phương án" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {method.map(item => (
+                              <SelectItem key={item?.METHOD_CODE} value={item?.METHOD_CODE}>
+                                {item?.METHOD_CODE} - {item?.METHOD_NAME}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ITEM_TYPE_CODE"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{TRF_STD.ITEM_TYPE_CODE.headerName}</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn mã loại hàng" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {itemType.map(item => (
+                              <SelectItem key={item?.ITEM_TYPE_CODE} value={item?.ITEM_TYPE_CODE}>
+                                {item?.ITEM_TYPE_CODE} - {item?.ITEM_TYPE_NAME}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -151,40 +239,19 @@ export function CreateStandardTariffTemplate() {
               />
               <FormField
                 control={form.control}
-                name="METHOD_CODE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.METHOD_CODE.headerName}</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="ITEM_TYPE_CODE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.ITEM_TYPE_CODE.headerName}</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="AMT_CBM"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{TRF_STD.AMT_CBM.headerName}</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Nhập tài khoản"
+                        {...field}
+                        onChange={e => {
+                          field.onChange(Number(e.target.value));
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -198,7 +265,14 @@ export function CreateStandardTariffTemplate() {
                   <FormItem>
                     <FormLabel>{TRF_STD.VAT.headerName}</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Nhập tài khoản"
+                        {...field}
+                        onChange={e => {
+                          field.onChange(Number(e.target.value));
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -209,10 +283,14 @@ export function CreateStandardTariffTemplate() {
                 control={form.control}
                 name="INCLUDE_VAT"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex items-end space-x-3">
                     <FormLabel>{TRF_STD.INCLUDE_VAT.headerName}</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="Nhập tài khoản" {...field} />
+                      <Checkbox
+                        className=" size-5 border-gray-400 data-[state=checked]:bg-blue-600"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -238,6 +316,6 @@ export function CreateStandardTariffTemplate() {
           </Button>
         </CustomSheet.Footer>
       </CustomSheet>
-    </div>
+    </>
   );
 }
