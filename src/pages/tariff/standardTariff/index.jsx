@@ -9,7 +9,6 @@ import {
 } from "@/apis/trf-std.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
-  IsInOutRender,
   ItemTypeCodeRender,
   MethodCodeRender,
   TrfCodeRender
@@ -20,14 +19,10 @@ import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnEx
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
-import { Button } from "@/components/common/ui/button";
-import { Calendar } from "@/components/common/ui/calendar";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/common/ui/popover";
 import {
   Select,
   SelectContent,
@@ -38,8 +33,7 @@ import {
 } from "@/components/common/ui/select";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { CreateStandardTariffTemplate } from "./CreateStandardTariffTemplate";
@@ -47,7 +41,6 @@ import { CreateStandardTariffTemplate } from "./CreateStandardTariffTemplate";
 export function StandardTariff() {
   const toast = useCustomToast();
   const gridRef = useRef(null);
-  const [date, setDate] = useState({ from: "", to: "" });
   const [tariffTemplate, setTariffTemplate] = useState([]);
   const [tariffTemplateFilter, setTariffTemplateFilter] = useState({
     template: "",
