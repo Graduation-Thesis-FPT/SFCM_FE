@@ -114,3 +114,19 @@ export class trf_codes extends CommonColumns {
   TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
   TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả *" };
 }
+
+export class trf_std extends CommonColumns {
+  ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
+  TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
+  TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả chi tiết" };
+  METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
+  AMT_CBM = { field: "AMT_CBM", headerName: "Tổng tiền *" };
+  VAT = { field: "VAT", headerName: "VAT" };
+  INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
+  //template
+  FROM_DATE = { field: "FROM_DATE", headerName: "Hiệu lực từ ngày *" };
+  TO_DATE = { field: "TO_DATE", headerName: "Hiệu lực đến ngày *" };
+  TRF_NAME = { field: "TRF_NAME", headerName: "Tên biểu cước *" };
+  TRF_TEMPLATE = { field: "TRF_TEMPLATE", headerName: "Mẫu biểu cước *" };
+}
