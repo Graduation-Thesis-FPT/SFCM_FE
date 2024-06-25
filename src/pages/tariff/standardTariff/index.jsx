@@ -151,7 +151,9 @@ export function StandardTariff() {
         TRF_NAME: tariffTemplateFilter.name
       };
     });
-    insertAndUpdateData.update = insertAndUpdateData.update?.map(({ TRF_TEMP, ...rest }) => rest);
+    insertAndUpdateData.update = insertAndUpdateData.update?.map(
+      ({ TRF_TEMP, FROM_DATE, TO_DATE, ...rest }) => rest
+    );
 
     createAndUpdateStandardTariff(insertAndUpdateData)
       .then(res => {

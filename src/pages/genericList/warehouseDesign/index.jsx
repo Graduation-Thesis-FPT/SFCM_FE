@@ -113,7 +113,7 @@ export function WarehouseDesign() {
             min: 0,
             max: 1000
           },
-          headerClass: "hidden-border center-header",
+          headerClass: " center-header",
           cellStyle: { textAlign: "center" },
           flex: 1,
           editable: OnlyEditWithInsertCell
@@ -126,7 +126,7 @@ export function WarehouseDesign() {
             min: 0,
             max: 1000
           },
-          headerClass: "hidden-border center-header",
+          headerClass: " center-header",
           cellStyle: { textAlign: "center" },
           flex: 1,
           editable: OnlyEditWithInsertCell
@@ -139,7 +139,7 @@ export function WarehouseDesign() {
             min: 0,
             max: 1000
           },
-          headerClass: "hidden-border center-header",
+          headerClass: " center-header",
           cellStyle: { textAlign: "center" },
           flex: 1,
           editable: OnlyEditWithInsertCell

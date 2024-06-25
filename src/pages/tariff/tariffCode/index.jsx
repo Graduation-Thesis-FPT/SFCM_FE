@@ -59,7 +59,6 @@ export function TariffCode() {
       headerName: TRF_CODES.UPDATE_DATE.headerName,
       field: TRF_CODES.UPDATE_DATE.field,
       flex: 1,
-      filter: true,
       cellRenderer: DateTimeByTextRender
     }
   ];

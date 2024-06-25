@@ -43,14 +43,12 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
       headerName: DT_VESSEL_VISIT.ETA.headerName,
       field: DT_VESSEL_VISIT.ETA.field,
       flex: 1,
-      filter: true,
       cellRenderer: DateTimeByTextRender
     },
     {
       headerName: DT_VESSEL_VISIT.ETD.headerName,
       field: DT_VESSEL_VISIT.ETD.field,
       flex: 1,
-      filter: true,
       cellRenderer: DateTimeByTextRender
     },
     {
