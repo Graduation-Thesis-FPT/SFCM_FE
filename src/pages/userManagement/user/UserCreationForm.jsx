@@ -1,4 +1,4 @@
-import { createAccount, findUserById } from "@/apis/user.api";
+import { createAccount } from "@/apis/user.api";
 import { CustomSheet } from "@/components/common/custom-sheet";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
@@ -11,13 +11,12 @@ import {
   FormMessage
 } from "@/components/common/ui/form";
 import { Input } from "@/components/common/ui/input";
-import { Separator } from "@/components/common/ui/separator";
-import { Sheet, SheetContent } from "@/components/common/ui/sheet";
 import { RoleSelect } from "@/components/user-management/RoleSelect";
 import { regexPattern } from "@/constants/regexPattern";
 import { useToggle } from "@/hooks/useToggle";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle, X } from "lucide-react";
+import { PlusCircle } from "lucide-react";
+import moment from "moment";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -26,7 +25,17 @@ const formSchema = z.object({
   USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
     message: "Không được chứa khoảng trắng!"
   }),
-  BIRTHDAY: z.string().optional(),
+  BIRTHDAY: z.string().refine(
+    dateString => {
+      const date = moment(dateString);
+      const today = moment();
+      const age = today.diff(date, "years");
+      return dateString === "" || (date.isBefore(today, "day") && age >= 18);
+    },
+    {
+      message: "Ngày sinh không hợp lệ. Bạn phải trên 18 tuổi và ngày sinh không thể là hôm nay."
+    }
+  ),
   FULLNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPECIAL_CHAR, {
     message: "Không chứa ký tự đặc biệt!"
   }),
@@ -34,11 +43,19 @@ const formSchema = z.object({
     message: "Số điện thoại bao gồm 11 số!"
   }),
 
-  EMAIL: z.string().refine(data => data === "" || z.string().email().safeParse(data).success, {
-    message: "Email không hợp lệ. Vd:abc@gmail.com"
-  }),
-  ADDRESS: z.string().optional(),
-  REMARK: z.string().optional()
+  EMAIL: z
+    .string()
+    .trim()
+    .refine(data => data === "" || z.string().email().safeParse(data).success, {
+      message: "Email không hợp lệ. Vd:abc@gmail.com"
+    }),
+  ADDRESS: z
+    .string()
+    .trim()
+    .refine(data => data === "" || data.length <= 500, {
+      message: "Địa chỉ không được quá 500 ký tự!"
+    }),
+  REMARK: z.string().trim().optional()
 });
 
 export function UserCreationForm({ revalidate }) {

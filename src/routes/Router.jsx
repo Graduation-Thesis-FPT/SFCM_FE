@@ -7,6 +7,7 @@ import { FirstLogin } from "@/pages/login/FirstLogin";
 import { MainLayout } from "@/layout/MainLayout";
 import { PrivateRoute } from "./PrivateRoute";
 import * as Comp from "@/pages/index";
+import { ProfilePage } from "@/pages/profile";
 
 export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
@@ -31,6 +32,7 @@ export default function Router() {
               </Route>
             );
           })}
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<ErrorPage />} />
         </Route>
       </Route>

@@ -36,7 +36,20 @@ const formSchema = z.object({
   USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
     message: "Không được chứa khoảng trắng!"
   }),
-  BIRTHDAY: z.string().optional(),
+  BIRTHDAY: z
+    .string()
+    .refine(
+      dateString => {
+        const date = moment(dateString);
+        const today = moment();
+        const age = today.diff(date, "years");
+        return dateString === "" || (date.isBefore(today, "day") && age >= 18);
+      },
+      {
+        message: "Ngày sinh không hợp lệ. Bạn phải trên 18 tuổi và ngày sinh không thể là hôm nay."
+      }
+    )
+    .optional(),
   FULLNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPECIAL_CHAR, {
     message: "Không chứa ký tự đặc biệt!"
   }),
@@ -44,11 +57,19 @@ const formSchema = z.object({
     message: "Số điện thoại bao gồm 11 số!"
   }),
 
-  EMAIL: z.string().refine(data => data === "" || z.string().email().safeParse(data).success, {
-    message: "Email không hợp lệ. Vd:abc@gmail.com"
-  }),
-  ADDRESS: z.string().optional(),
-  REMARK: z.string().optional(),
+  EMAIL: z
+    .string()
+    .trim()
+    .refine(data => data === "" || z.string().email().safeParse(data).success, {
+      message: "Email không hợp lệ. Vd:abc@gmail.com"
+    }),
+  ADDRESS: z
+    .string()
+    .trim()
+    .refine(data => data === "" || data.length <= 500, {
+      message: "Địa chỉ không được quá 500 ký tự!"
+    }),
+  REMARK: z.string().trim().optional(),
   IS_ACTIVE: z.boolean()
 });
 
