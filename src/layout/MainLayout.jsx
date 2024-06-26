@@ -15,13 +15,13 @@ import {
   Bell,
   ChevronDown,
   CircleHelpIcon,
+  CircleUserRound,
   Loader2,
   LogOutIcon,
-  MessageCircle,
-  Settings
+  MessageCircle
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export function MainLayout() {
   const menu = useSelector(state => state.menuSlice.menu);
@@ -30,7 +30,7 @@ export function MainLayout() {
   let { pathname } = useLocation();
   const [isCollapse, setIsCollapse] = useToggle();
   const userGlobal = useCustomStore();
-
+  const navigate = useNavigate();
   const handleLogout = () => {
     userGlobal.remove();
     window.location.href = "/login";
@@ -93,13 +93,17 @@ export function MainLayout() {
                 <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {/* {TODO: Setting and Support} */}
-                <DropdownMenuItem>
-                  <Settings size={16} className="mr-2" />
-                  Cài đặt
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigate("/profile");
+                  }}
+                >
+                  <CircleUserRound size={18} className="mr-2" />
+                  Tài khoản
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <CircleHelpIcon size={16} className="mr-2" />
-                  Hỗ trợ
+                  <CircleHelpIcon size={18} className="mr-2" />
+                  Tài liệu hướng dẫn
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem

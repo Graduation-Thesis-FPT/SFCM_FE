@@ -5,7 +5,7 @@ import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { actionGrantPermission } from "@/constants";
 import useFetchData from "@/hooks/useRefetchData";
-import { GripVertical, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import moment from "moment";
 import React, { useRef, useState } from "react";
 import { UserCreationForm } from "./UserCreationForm";

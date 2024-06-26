@@ -7,10 +7,11 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
+import { useToggle } from "@/hooks/useToggle";
 import React, { useState } from "react";
 
 export default function ForgotPassword() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useToggle();
 
   return (
     <>
