@@ -13,6 +13,10 @@ export const getAllStandardTariffTemplate = async () => {
 };
 
 export const createAndUpdateStandardTariff = async data => {
+  return await axiosPrivate.patch(`tariff`, data);
+};
+
+export const createStandardTariffTemplate = async data => {
   return await axiosPrivate.post(`tariff`, data);
 };
 

@@ -15,7 +15,7 @@ export function DatePickerWithRangeInForm({ className, onSelected, date }) {
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[290px] justify-start text-left font-normal",
+              "w-72 justify-start text-left font-normal",
               !date && "text-muted-foreground",
               className
             )}

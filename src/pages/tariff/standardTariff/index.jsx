@@ -9,7 +9,6 @@ import {
 } from "@/apis/trf-std.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
-  IsInOutRender,
   ItemTypeCodeRender,
   MethodCodeRender,
   TrfCodeRender
@@ -34,14 +33,24 @@ import {
 } from "@/components/common/ui/select";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
+import { CreateStandardTariffTemplate } from "./CreateStandardTariffTemplate";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function StandardTariff() {
   const toast = useCustomToast();
   const gridRef = useRef(null);
+  const dispatch = useDispatch();
   const [tariffTemplate, setTariffTemplate] = useState([]);
-  const [tariffTemplateInfo, setTariffTemplateInfo] = useState("");
+  const [tariffTemplateFilter, setTariffTemplateFilter] = useState({
+    template: "",
+    from: "",
+    to: "",
+    name: ""
+  });
   const [rowData, setRowData] = useState([]);
   const [tariffCode, setTariffCode] = useState([]);
   const [itemType, setItemType] = useState([]);
@@ -94,7 +103,8 @@ export function StandardTariff() {
       field: TRF_STD.AMT_CBM.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "number"
     },
     {
       headerName: TRF_STD.VAT.headerName,
@@ -119,7 +129,7 @@ export function StandardTariff() {
   ];
 
   const handleAddRow = () => {
-    if (!tariffTemplateInfo) {
+    if (!tariffTemplateFilter.template) {
       return toast.warning("Vui lòng chọn mẫu biểu cước!");
     }
     const newRow = fnAddRowsVer2(rowData, colDefs);
@@ -131,41 +141,66 @@ export function StandardTariff() {
     if (!isContinue) {
       return toast.warning("Không có dữ liệu thay đổi");
     }
-    insertAndUpdateData.insert = insertAndUpdateData.insert.map(({ TRF_TEMP, ...rest }) => {
+    dispatch(setGlobalLoading(true));
+
+    insertAndUpdateData.insert = insertAndUpdateData.insert?.map(({ TRF_TEMP, ...rest }) => {
       return {
         ...rest,
-        FROM_DATE: moment(tariffTemplateInfo?.split("-")[0], "DD/MM/YYYY").format("YYYY-MM-DD"),
-        TO_DATE: moment(tariffTemplateInfo?.split("-")[1], "DD/MM/YYYY").format("YYYY-MM-DD"),
-        TRF_NAME: tariffTemplateInfo?.split("-")[2]
+        FROM_DATE: tariffTemplateFilter.from,
+        TO_DATE: tariffTemplateFilter.to,
+        TRF_NAME: tariffTemplateFilter.name
       };
     });
-    insertAndUpdateData.update = insertAndUpdateData.update.map(({ TRF_TEMP, ...rest }) => rest);
+    insertAndUpdateData.update = insertAndUpdateData.update?.map(
+      ({ TRF_TEMP, FROM_DATE, TO_DATE, ...rest }) => rest
+    );
+
     createAndUpdateStandardTariff(insertAndUpdateData)
       .then(res => {
         toast.success(res);
-        getStandardTariffByFilter();
-        getStandardTariffTemplate();
+        getStandardTariffByFilter(tariffTemplateFilter.template);
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
   const handleDeleteRows = selectedRows => {
+    dispatch(setGlobalLoading(true));
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ROWGUID");
+
     deleteStandardTariff(deleteIdList)
       .then(res => {
+        if (newRowDataAfterDeleted.length === 0) {
+          getStandardTariffTemplate();
+          setTariffTemplateFilter({ template: "", from: "", to: "", name: "" });
+        }
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
-        getStandardTariffTemplate();
       })
-      .catch(err => toast.error(err));
+      .catch(err => toast.error(err))
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
   };
 
-  const getStandardTariffByFilter = template => {
-    getStandardTariffByTemplate(template ?? tariffTemplateInfo)
+  const handleCreateNewTemplate = res => {
+    let TRF_TEMP = res.data.metadata?.createdTariff[0]?.TRF_TEMP;
+    getAllStandardTariffTemplate()
       .then(res => {
-        setRowData(res.data.metadata);
+        setTariffTemplate(res.data.metadata);
+      })
+      .then(res => {
+        getStandardTariffByFilter(TRF_TEMP);
+        setTariffTemplateFilter({
+          template: TRF_TEMP,
+          from: moment(TRF_TEMP.split("-")[0], "DD/MM/YYYY")?._d,
+          to: moment(TRF_TEMP.split("-")[1], "DD/MM/YYYY")?._d,
+          name: TRF_TEMP.split("-")[2]
+        });
       })
       .catch(err => {
         toast.error(err);
@@ -178,6 +213,16 @@ export function StandardTariff() {
     getItemType();
     getMethod();
   }, []);
+
+  const getStandardTariffByFilter = template => {
+    getStandardTariffByTemplate(template)
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
 
   const getTariffiCode = () => {
     getAllTariffCode()
@@ -221,47 +266,84 @@ export function StandardTariff() {
 
   return (
     <Section>
-      <Section.Header className="flex gap-3">
-        <span>
-          <div className="mb-2 text-xs font-medium">Mẫu biểu cước</div>
-          <Select
-            onValueChange={value => {
-              setTariffTemplateInfo(value);
-              getStandardTariffByTemplate(value)
-                .then(res => {
-                  toast.success(res);
-                  setRowData(res.data.metadata);
-                })
-                .catch(err => {
-                  toast.error(err);
+      <Section.Header className="flex items-end justify-between gap-3">
+        <span className="flex gap-3">
+          <div>
+            <div className="mb-2 text-xs font-medium">Mẫu biểu cước</div>
+            <Select
+              onValueChange={value => {
+                setTariffTemplateFilter({
+                  template: value,
+                  from: moment(value.split("-")[0], "DD/MM/YYYY")?._d,
+                  to: moment(value.split("-")[1], "DD/MM/YYYY")?._d,
+                  name: value.split("-")[2]
                 });
-            }}
-            value={tariffTemplateInfo?.TRF_TEMP}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn mẫu biểu cước" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {tariffTemplate.map(item => (
-                  <SelectItem key={item?.TRF_TEMP} value={item?.TRF_TEMP}>
-                    {item?.TRF_TEMP}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+                getStandardTariffByTemplate(value)
+                  .then(res => {
+                    toast.success(res);
+                    setRowData(res.data.metadata);
+                  })
+                  .catch(err => {
+                    toast.error(err);
+                  });
+              }}
+              value={tariffTemplateFilter.template}
+            >
+              <SelectTrigger className="min-w-72">
+                <SelectValue placeholder="Chọn mẫu biểu cước" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {tariffTemplate.map(item => (
+                    <SelectItem key={item?.TRF_TEMP} value={item?.TRF_TEMP}>
+                      {item?.TRF_TEMP}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="FROM_DATE">Hiệu lực từ ngày</Label>
+            <Input
+              value={
+                tariffTemplateFilter.from ? moment(tariffTemplateFilter.from).format("DD/MM/Y") : ""
+              }
+              readOnly
+              className="hover:cursor-not-allowed"
+              id="FROM_DATE"
+              placeholder="Chọn mẫu biểu cước"
+            />
+          </div>
+          <div>
+            <Label htmlFor="TO_DATE">Hiệu lực đến ngày</Label>
+            <Input
+              value={
+                tariffTemplateFilter.to ? moment(tariffTemplateFilter.to).format("DD/MM/Y") : ""
+              }
+              readOnly
+              className="hover:cursor-not-allowed"
+              id="TO_DATE"
+              placeholder="Chọn mẫu biểu cước"
+            />
+          </div>
+          <div>
+            <Label htmlFor="TRF_NAME">Tên biểu cước</Label>
+            <Input
+              value={tariffTemplateFilter.name}
+              readOnly
+              className="hover:cursor-not-allowed"
+              id="TRF_NAME"
+              placeholder="Chọn mẫu biểu cước"
+            />
+          </div>
         </span>
-        <span>
-          <Label htmlFor="TRF_NAME">Tên biểu cước</Label>
-          <Input
-            defaultValue={tariffTemplateInfo?.split("-")[2]}
-            readOnly
-            className="hover:cursor-pointer"
-            id="TRF_NAME"
-            placeholder="Chọn mẫu biểu cước"
-          />
-        </span>
+        <CreateStandardTariffTemplate
+          tariffCode={tariffCode}
+          method={method}
+          itemType={itemType}
+          onCreateNewTemplate={handleCreateNewTemplate}
+        />
       </Section.Header>
       <Section.Content>
         <span className="flex justify-between">

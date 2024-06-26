@@ -82,6 +82,13 @@ const AgGrid = forwardRef(
         <ContextMenuTrigger className="h-full" disabled={contextMenu === true ? false : true}>
           <div className={cn("ag-theme-quartz custom-header h-full", className)}>
             <AgGridReact
+              getRowClass={params =>
+                params.data.status
+                  ? params.data.status === "update"
+                    ? "!bg-yellow-50"
+                    : "!bg-green-50"
+                  : null
+              }
               dataTypeDefinitions={dataTypeDefinitions}
               ref={ref}
               rowData={rowData}
