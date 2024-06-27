@@ -19,3 +19,5 @@ export * from "./inputData/goodsManifest";
 //tariff
 export * from "./tariff/tariffCode";
 export * from "./tariff/standardTariff";
+//procedure
+export * from "./procedure/importOrder";

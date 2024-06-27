@@ -3,7 +3,13 @@ import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender
 import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
-import { Sheet, SheetContent } from "@/components/common/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "@/components/common/ui/sheet";
 import { useRef } from "react";
 
 export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVesselInfo }) {
@@ -77,13 +83,17 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="top" hiddenIconClose={true} className="p-0">
-        <span className="mx-10 my-3 flex items-end justify-between">
-          <div className="text-lg font-bold">Chọn tàu chuyến</div>
-          <Button onClick={handleSelectRow} variant="blue">
-            Chọn
-          </Button>
-        </span>
-
+        <SheetHeader>
+          <SheetTitle>
+            <span className="mx-10 my-3 flex items-end justify-between">
+              <div className="text-lg font-bold">Chọn tàu chuyến</div>
+              <Button onClick={handleSelectRow} variant="blue">
+                Chọn
+              </Button>
+            </span>
+          </SheetTitle>
+          <SheetDescription />
+        </SheetHeader>
         <AgGrid
           ref={gridRef}
           rowSelection={"single"}

@@ -305,7 +305,7 @@ export function GoodsManifest() {
 
   return (
     <Section>
-      <Section.Header className="grid space-y-4">
+      <Section.Header className="space-y-4">
         <span className="grid grid-cols-3 gap-3">
           {vesselFilter.map(item => (
             <div key={item.field} className="space-y-2">

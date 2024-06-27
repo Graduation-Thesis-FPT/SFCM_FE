@@ -9,7 +9,13 @@
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/common/ui/separator";
-import { Sheet, SheetContent } from "@/components/common/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "@/components/common/ui/sheet";
 import { X } from "lucide-react";
 
 export function CustomSheet({
@@ -30,17 +36,22 @@ export function CustomSheet({
         hiddenIconClose={true}
         className="sm:max-w-1/2 flex h-full max-h-screen w-1/2 flex-col gap-0 p-0"
       >
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="text-20 font-bold text-blue-700">{title}</div>
-          <X
-            className="size-4 cursor-pointer hover:opacity-80"
-            onClick={() => {
-              onOpenChange();
-              form.reset();
-            }}
-          />
-        </div>
-        <Separator className="bg-gray-400" />
+        <SheetHeader>
+          <SheetTitle>
+            <span className="flex items-center justify-between px-6 py-4">
+              <div className="text-20 font-bold text-blue-700">{title}</div>
+              <X
+                className="size-4 cursor-pointer hover:opacity-80"
+                onClick={() => {
+                  onOpenChange();
+                  form.reset();
+                }}
+              />
+            </span>
+            <Separator className="bg-gray-400" />
+          </SheetTitle>
+          <SheetDescription />
+        </SheetHeader>
         {children}
       </SheetContent>
     </Sheet>
