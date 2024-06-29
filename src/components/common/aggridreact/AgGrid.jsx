@@ -11,13 +11,23 @@ import {
   ContextMenuTrigger
 } from "@/components/common/ui/context-menu";
 import { actionGrantPermission } from "@/constants";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import moment from "moment";
 import { GrantPermission } from "../grant-permission";
 
 const AgGrid = forwardRef(
   (
-    { rowData, colDefs, className, defaultColDef, setRowData, contextMenu, onDeleteRow, ...props },
+    {
+      rowData = [],
+      colDefs = [],
+      className,
+      defaultColDef,
+      setRowData,
+      contextMenu = false,
+      onDeleteRow,
+      showCountRowSelected = false,
+      ...props
+    },
     ref
   ) => {
     const [selectedRows, setSelectedRows] = useState([]);
@@ -74,13 +84,23 @@ const AgGrid = forwardRef(
     };
 
     const onSelectionChanged = useCallback(() => {
-      setSelectedRows(ref.current.api.getSelectedRows());
+      setSelectedRows(ref?.current?.api.getSelectedRows());
+    }, []);
+
+    const clearSelectedRows = useCallback(() => {
+      ref?.current?.api.deselectAll();
     }, []);
 
     return (
       <ContextMenu>
-        <ContextMenuTrigger className="h-full" disabled={contextMenu === true ? false : true}>
-          <div className={cn("ag-theme-quartz custom-header h-full", className)}>
+        <ContextMenuTrigger className=" h-full" disabled={contextMenu === true ? false : true}>
+          <div className={cn("ag-theme-quartz custom-header relative h-full", className)}>
+            {showCountRowSelected && selectedRows.length > 0 && (
+              <div className="pointer-events-none absolute -top-10">
+                Đang chọn {selectedRows.length} dòng
+              </div>
+            )}
+
             <AgGridReact
               getRowClass={params =>
                 params.data.status
@@ -105,6 +125,8 @@ const AgGrid = forwardRef(
                 '<span class="ag-overlay-loading-center">Đang tải dữ liệu...</span>'
               }
               overlayNoRowsTemplate={"Không có dữ liệu"}
+              stopEditingWhenCellsLoseFocus={true}
+              stop
               {...props}
             />
           </div>

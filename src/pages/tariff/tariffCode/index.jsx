@@ -54,6 +54,16 @@ export function TariffCode() {
       flex: 1,
       filter: true,
       editable: true
+      // valueSetter: params => {
+      //   const newValue = params.newValue;
+      //   // Kiểm tra xem chuỗi có khoảng cách không
+      //   if (!/\s/.test(newValue)) {
+      //     params.data.customString = newValue;
+      //     return true; // Giá trị hợp lệ
+      //   } else {
+      //     return false; // Giá trị không hợp lệ
+      //   }
+      // }
     },
     {
       headerName: TRF_CODES.UPDATE_DATE.headerName,
@@ -122,7 +132,7 @@ export function TariffCode() {
     <Section>
       <Section.Header title="Mã biểu cước"></Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
+        <span className="flex items-end justify-between">
           <div>{/* Sau này để cái gì đó vô đây */}</div>
           <LayoutTool>
             <BtnExportExcel gridRef={gridRef} />
@@ -136,6 +146,7 @@ export function TariffCode() {
         </span>
         <Section.Table>
           <AgGrid
+            showCountRowSelected={true}
             contextMenu={true}
             setRowData={data => {
               setRowData(data);

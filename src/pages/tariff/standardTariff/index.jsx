@@ -33,18 +33,22 @@ import {
 } from "@/components/common/ui/select";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { CreateStandardTariffTemplate } from "./CreateStandardTariffTemplate";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import useFetchData from "@/hooks/useRefetchData";
 
 export function StandardTariff() {
+  const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
+  const { data: itemTypes } = useFetchData({ service: getAllItemType });
+  const { data: methods } = useFetchData({ service: getAllMethod });
+
   const toast = useCustomToast();
   const gridRef = useRef(null);
   const dispatch = useDispatch();
-  const [tariffTemplate, setTariffTemplate] = useState([]);
+  const [tariffTemplateList, setTariffTemplateList] = useState([]);
   const [tariffTemplateFilter, setTariffTemplateFilter] = useState({
     template: "",
     from: "",
@@ -52,9 +56,6 @@ export function StandardTariff() {
     name: ""
   });
   const [rowData, setRowData] = useState([]);
-  const [tariffCode, setTariffCode] = useState([]);
-  const [itemType, setItemType] = useState([]);
-  const [method, setMethod] = useState([]);
   const TRF_STD = new trf_std();
   const colDefs = [
     {
@@ -73,7 +74,7 @@ export function StandardTariff() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: params => TrfCodeRender(params, tariffCode)
+      cellRenderer: params => TrfCodeRender(params, tariffCodes)
     },
     {
       headerName: TRF_STD.TRF_DESC.headerName,
@@ -88,7 +89,7 @@ export function StandardTariff() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: params => MethodCodeRender(params, method)
+      cellRenderer: params => MethodCodeRender(params, methods)
     },
     {
       headerName: TRF_STD.ITEM_TYPE_CODE.headerName,
@@ -96,7 +97,7 @@ export function StandardTariff() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: params => ItemTypeCodeRender(params, itemType)
+      cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
       headerName: TRF_STD.AMT_CBM.headerName,
@@ -146,14 +147,9 @@ export function StandardTariff() {
     insertAndUpdateData.insert = insertAndUpdateData.insert?.map(({ TRF_TEMP, ...rest }) => {
       return {
         ...rest,
-        FROM_DATE: tariffTemplateFilter.from,
-        TO_DATE: tariffTemplateFilter.to,
-        TRF_NAME: tariffTemplateFilter.name
+        TRF_TEMP_NAME: tariffTemplateFilter.name
       };
     });
-    insertAndUpdateData.update = insertAndUpdateData.update?.map(
-      ({ TRF_TEMP, FROM_DATE, TO_DATE, ...rest }) => rest
-    );
 
     createAndUpdateStandardTariff(insertAndUpdateData)
       .then(res => {
@@ -191,7 +187,7 @@ export function StandardTariff() {
     let TRF_TEMP = res.data.metadata?.createdTariff[0]?.TRF_TEMP;
     getAllStandardTariffTemplate()
       .then(res => {
-        setTariffTemplate(res.data.metadata);
+        setTariffTemplateList(res.data.metadata);
       })
       .then(res => {
         getStandardTariffByFilter(TRF_TEMP);
@@ -209,9 +205,6 @@ export function StandardTariff() {
 
   useEffect(() => {
     getStandardTariffTemplate();
-    getTariffiCode();
-    getItemType();
-    getMethod();
   }, []);
 
   const getStandardTariffByFilter = template => {
@@ -224,40 +217,10 @@ export function StandardTariff() {
       });
   };
 
-  const getTariffiCode = () => {
-    getAllTariffCode()
-      .then(res => {
-        setTariffCode(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const getItemType = () => {
-    getAllItemType()
-      .then(res => {
-        setItemType(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const getMethod = () => {
-    getAllMethod()
-      .then(res => {
-        setMethod(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
   const getStandardTariffTemplate = () => {
     getAllStandardTariffTemplate()
       .then(res => {
-        setTariffTemplate(res.data.metadata);
+        setTariffTemplateList(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
@@ -294,7 +257,7 @@ export function StandardTariff() {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {tariffTemplate.map(item => (
+                  {tariffTemplateList.map(item => (
                     <SelectItem key={item?.TRF_TEMP} value={item?.TRF_TEMP}>
                       {item?.TRF_TEMP}
                     </SelectItem>
@@ -302,6 +265,16 @@ export function StandardTariff() {
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <Label htmlFor="TRF_NAME">Tên biểu cước</Label>
+            <Input
+              value={tariffTemplateFilter.name}
+              readOnly
+              className="hover:cursor-not-allowed"
+              id="TRF_NAME"
+              placeholder="Chọn mẫu biểu cước"
+            />
           </div>
           <div>
             <Label htmlFor="FROM_DATE">Hiệu lực từ ngày</Label>
@@ -327,23 +300,8 @@ export function StandardTariff() {
               placeholder="Chọn mẫu biểu cước"
             />
           </div>
-          <div>
-            <Label htmlFor="TRF_NAME">Tên biểu cước</Label>
-            <Input
-              value={tariffTemplateFilter.name}
-              readOnly
-              className="hover:cursor-not-allowed"
-              id="TRF_NAME"
-              placeholder="Chọn mẫu biểu cước"
-            />
-          </div>
         </span>
-        <CreateStandardTariffTemplate
-          tariffCode={tariffCode}
-          method={method}
-          itemType={itemType}
-          onCreateNewTemplate={handleCreateNewTemplate}
-        />
+        <CreateStandardTariffTemplate onCreateNewTemplate={handleCreateNewTemplate} />
       </Section.Header>
       <Section.Content>
         <span className="flex justify-between">

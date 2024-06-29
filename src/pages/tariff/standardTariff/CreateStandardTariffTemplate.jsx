@@ -1,10 +1,9 @@
-import { createAndUpdateStandardTariff, createStandardTariffTemplate } from "@/apis/trf-std.api";
-import { trf_std } from "@/components/common/aggridreact/dbColumns";
+import { createStandardTariffTemplate } from "@/apis/trf-std.api";
+import { trf_temp } from "@/components/common/aggridreact/dbColumns";
 import { CustomSheet } from "@/components/common/custom-sheet";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
+import { DatePicker } from "@/components/common/date-picker";
 import { Button } from "@/components/common/ui/button";
-import { Checkbox } from "@/components/common/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,64 +13,44 @@ import {
   FormMessage
 } from "@/components/common/ui/form";
 import { Input } from "@/components/common/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/common/ui/select";
-import { useToggle } from "@/hooks/useToggle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { PlusCircle } from "lucide-react";
+import moment from "moment";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
+  TRF_TEMP_NAME: z.string().min(1, "Không được để trống!"),
   FROM_DATE: z.date({
-    required_error: "Vui lòng chọn khoảng thời gian hiệu lực"
+    required_error: "Vui lòng chọn thời ghi hiệu lực từ!"
   }),
   TO_DATE: z.date({
-    required_error: "Vui lòng chọn khoảng thời gian hiệu lực!"
-  }),
-  TRF_NAME: z.string().min(1, "Không được để trống!"),
-  TRF_CODE: z.string().min(1, "Không được để trống!"),
-  TRF_DESC: z.string(),
-  METHOD_CODE: z.string().min(1, "Không được để trống!"),
-  ITEM_TYPE_CODE: z.string().min(1, "Không được để trống!"),
-  AMT_CBM: z.number(),
-  VAT: z.number(),
-  INCLUDE_VAT: z.boolean()
+    required_error: "Vui lòng chọn thời ghi hiệu lực đến!"
+  })
 });
 
-export function CreateStandardTariffTemplate({
-  tariffCode = [],
-  method = [],
-  itemType = [],
-  onCreateNewTemplate
-}) {
+export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
   const toast = useCustomToast();
-  const [open, setOpen] = useToggle();
-  const TRF_STD = new trf_std();
+  const [open, setOpen] = useState(false);
+  const TRF_TEMP = new trf_temp();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      TRF_TEMP_NAME: "",
       FROM_DATE: addDays(new Date(), -30),
-      TO_DATE: addDays(new Date(), 30),
-      TRF_NAME: "",
-      TRF_CODE: "",
-      TRF_DESC: "",
-      METHOD_CODE: "",
-      ITEM_TYPE_CODE: "",
-      AMT_CBM: 0,
-      VAT: 0,
-      INCLUDE_VAT: false
+      TO_DATE: addDays(new Date(), 30)
     }
   });
 
   const onSubmit = values => {
+    if (values.FROM_DATE >= values.TO_DATE) {
+      return toast.error("Thời gian hiệu lực không hợp lệ!");
+    }
+    values.FROM_DATE = moment(values.FROM_DATE).startOf("day").format();
+    values.TO_DATE = moment(values.TO_DATE).endOf("day").format();
     createStandardTariffTemplate({ insert: [values] })
       .then(res => {
         toast.success(res);
@@ -112,33 +91,10 @@ export function CreateStandardTariffTemplate({
             >
               <FormField
                 control={form.control}
-                name="TO_DATE"
+                name="TRF_TEMP_NAME"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thời gian hiệu lực *</FormLabel>
-                    <FormControl>
-                      <DatePickerWithRangeInForm
-                        className="w-full"
-                        date={{ from: form.getValues("FROM_DATE"), to: form.getValues("TO_DATE") }}
-                        onSelected={value => {
-                          form.setValue("FROM_DATE", value?.from);
-                          form.setValue("TO_DATE", value?.to);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors?.FROM_DATE?.message ||
-                        form.formState.errors?.TO_DATE?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="TRF_NAME"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.TRF_NAME.headerName}</FormLabel>
+                    <FormLabel>{TRF_TEMP.TRF_TEMP_NAME.headerName}</FormLabel>
                     <FormControl>
                       <Input type="text" placeholder="Nhập tên biểu cước" {...field} />
                     </FormControl>
@@ -146,27 +102,15 @@ export function CreateStandardTariffTemplate({
                   </FormItem>
                 )}
               />
+              <div></div>
               <FormField
                 control={form.control}
-                name="TRF_CODE"
+                name="FROM_DATE"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{TRF_STD.TRF_CODE.headerName}</FormLabel>
+                    <FormLabel>{TRF_TEMP.FROM_DATE.headerName}</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn mã biểu cước" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {tariffCode.map(item => (
-                              <SelectItem key={item?.TRF_CODE} value={item?.TRF_CODE}>
-                                {item?.TRF_CODE} - {item?.TRF_DESC}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <DatePicker onSelected={field.onChange} date={field.value} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -174,123 +118,12 @@ export function CreateStandardTariffTemplate({
               />
               <FormField
                 control={form.control}
-                name="METHOD_CODE"
+                name="TO_DATE"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{TRF_STD.METHOD_CODE.headerName}</FormLabel>
+                    <FormLabel>{TRF_TEMP.TO_DATE.headerName}</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn mã phương án" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {method.map(item => (
-                              <SelectItem key={item?.METHOD_CODE} value={item?.METHOD_CODE}>
-                                {item?.METHOD_CODE} - {item?.METHOD_NAME}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="ITEM_TYPE_CODE"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.ITEM_TYPE_CODE.headerName}</FormLabel>
-                    <FormControl>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn mã loại hàng" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {itemType.map(item => (
-                              <SelectItem key={item?.ITEM_TYPE_CODE} value={item?.ITEM_TYPE_CODE}>
-                                {item?.ITEM_TYPE_CODE} - {item?.ITEM_TYPE_NAME}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="TRF_DESC"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.TRF_DESC.headerName}</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Nhập mô tả" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="AMT_CBM"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.AMT_CBM.headerName}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Nhập tài khoản"
-                        {...field}
-                        onChange={e => {
-                          field.onChange(Number(e.target.value));
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="VAT"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_STD.VAT.headerName}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Nhập tài khoản"
-                        {...field}
-                        onChange={e => {
-                          field.onChange(Number(e.target.value));
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="INCLUDE_VAT"
-                render={({ field }) => (
-                  <FormItem className="flex items-end space-x-3">
-                    <FormLabel>{TRF_STD.INCLUDE_VAT.headerName}</FormLabel>
-                    <FormControl>
-                      <Checkbox
-                        className=" size-5 border-gray-400 data-[state=checked]:bg-blue-600"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <DatePicker onSelected={field.onChange} date={field.value} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
