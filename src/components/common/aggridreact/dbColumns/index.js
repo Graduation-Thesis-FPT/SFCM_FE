@@ -126,10 +126,23 @@ export class trf_std extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
   TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả chi tiết" };
-  TRF_TEMP_CODE = { field: "TRF_TEMPLATE", headerName: "Mã mẫu biểu cước *" };
+  TRF_TEMP_CODE = { field: "TRF_TEMP_CODE", headerName: "Mã mẫu biểu cước *" };
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
-  AMT_CBM = { field: "AMT_CBM", headerName: "Tổng tiền *" };
+  AMT_RT = { field: "AMT_RT", headerName: "Tổng tiền *" };
   VAT = { field: "VAT", headerName: "VAT" };
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
+}
+
+export class trf_discount extends CommonColumns {
+  ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
+  TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
+  TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả chi tiết" };
+  TRF_TEMP_CODE = { field: "TRF_TEMP_CODE", headerName: "Mã mẫu biểu cước *" };
+  METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
+  AMT_RT = { field: "AMT_RT", headerName: "Tổng tiền *" };
+  VAT = { field: "VAT", headerName: "VAT" };
+  INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
+  CUSTOMER_CODE = { field: "CUSTOMER_CODE", headerName: "Mã khách hàng *" };
 }

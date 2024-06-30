@@ -8,11 +8,12 @@ import {
 } from "@/apis/trf-std.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
+  ConsigneeRender,
   ItemTypeCodeRender,
   MethodCodeRender,
   TrfCodeRender
 } from "@/components/common/aggridreact/cellRender";
-import { trf_std } from "@/components/common/aggridreact/dbColumns";
+import { trf_discount, trf_std } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
@@ -34,17 +35,19 @@ import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import { CreateStandardTariffTemplate } from "./CreateStandardTariffTemplate";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import useFetchData from "@/hooks/useRefetchData";
 import { deleteTariffTemp, getAllTariffTemp } from "@/apis/tariff-temp.api";
 import { Button } from "@/components/common/ui/button";
+import { CreateTariffTemplate } from "./CreateTariffTemplate";
+import { getAllCustomer } from "@/apis/customer.api";
 
-export function StandardTariff() {
+export function DiscountTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
   const { data: itemTypes } = useFetchData({ service: getAllItemType });
   const { data: methods } = useFetchData({ service: getAllMethod });
+  const { data: customers } = useFetchData({ service: getAllCustomer });
 
   const toast = useCustomToast();
   const gridRef = useRef(null);
@@ -57,7 +60,7 @@ export function StandardTariff() {
     name: ""
   });
   const [rowData, setRowData] = useState([]);
-  const TRF_STD = new trf_std();
+  const TRF_DISCOUNT = new trf_discount();
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -70,54 +73,62 @@ export function StandardTariff() {
       }
     },
     {
-      headerName: TRF_STD.TRF_CODE.headerName,
-      field: TRF_STD.TRF_CODE.field,
+      headerName: TRF_DISCOUNT.TRF_CODE.headerName,
+      field: TRF_DISCOUNT.TRF_CODE.field,
       flex: 1,
       filter: true,
       editable: true,
       cellRenderer: params => TrfCodeRender(params, tariffCodes)
     },
     {
-      headerName: TRF_STD.TRF_DESC.headerName,
-      field: TRF_STD.TRF_DESC.field,
+      headerName: TRF_DISCOUNT.TRF_DESC.headerName,
+      field: TRF_DISCOUNT.TRF_DESC.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: TRF_STD.METHOD_CODE.headerName,
-      field: TRF_STD.METHOD_CODE.field,
+      headerName: TRF_DISCOUNT.CUSTOMER_CODE.headerName,
+      field: TRF_DISCOUNT.CUSTOMER_CODE.field,
+      flex: 1,
+      filter: true,
+      editable: true,
+      cellRenderer: params => ConsigneeRender(params, customers)
+    },
+    {
+      headerName: TRF_DISCOUNT.METHOD_CODE.headerName,
+      field: TRF_DISCOUNT.METHOD_CODE.field,
       flex: 1,
       filter: true,
       editable: true,
       cellRenderer: params => MethodCodeRender(params, methods)
     },
     {
-      headerName: TRF_STD.ITEM_TYPE_CODE.headerName,
-      field: TRF_STD.ITEM_TYPE_CODE.field,
+      headerName: TRF_DISCOUNT.ITEM_TYPE_CODE.headerName,
+      field: TRF_DISCOUNT.ITEM_TYPE_CODE.field,
       flex: 1,
       filter: true,
       editable: true,
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
-      headerName: TRF_STD.AMT_RT.headerName,
-      field: TRF_STD.AMT_RT.field,
+      headerName: TRF_DISCOUNT.AMT_RT.headerName,
+      field: TRF_DISCOUNT.AMT_RT.field,
       flex: 1,
       filter: true,
       editable: true,
       cellDataType: "number"
     },
     {
-      headerName: TRF_STD.VAT.headerName,
-      field: TRF_STD.VAT.field,
+      headerName: TRF_DISCOUNT.VAT.headerName,
+      field: TRF_DISCOUNT.VAT.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: TRF_STD.INCLUDE_VAT.headerName,
-      field: TRF_STD.INCLUDE_VAT.field,
+      headerName: TRF_DISCOUNT.INCLUDE_VAT.headerName,
+      field: TRF_DISCOUNT.INCLUDE_VAT.field,
       headerClass: "center-header",
       cellStyle: {
         justifyContent: "center",
@@ -319,7 +330,7 @@ export function StandardTariff() {
           <Button variant="outline" onClick={handleDeleteTariffTemp}>
             Xóa mẫu biểu cước
           </Button>
-          <CreateStandardTariffTemplate onCreateNewTemplate={handleCreateNewTemplate} />
+          <CreateTariffTemplate onCreateNewTemplate={handleCreateNewTemplate} />
         </span>
       </Section.Header>
       <Section.Content>

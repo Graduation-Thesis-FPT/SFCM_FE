@@ -32,7 +32,7 @@ const formSchema = z.object({
   })
 });
 
-export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
+export function CreateTariffTemplate({ onCreateNewTemplate }) {
   const toast = useCustomToast();
   const [open, setOpen] = useState(false);
   const TRF_TEMP = new trf_temp();
