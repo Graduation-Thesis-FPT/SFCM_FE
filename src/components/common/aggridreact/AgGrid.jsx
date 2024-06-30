@@ -96,7 +96,7 @@ const AgGrid = forwardRef(
         <ContextMenuTrigger className=" h-full" disabled={contextMenu === true ? false : true}>
           <div className={cn("ag-theme-quartz custom-header relative h-full", className)}>
             {showCountRowSelected && selectedRows.length > 0 && (
-              <div className="pointer-events-none absolute -top-10">
+              <div className="pointer-events-none absolute -top-10 right-0">
                 Đang chọn {selectedRows.length} dòng
               </div>
             )}

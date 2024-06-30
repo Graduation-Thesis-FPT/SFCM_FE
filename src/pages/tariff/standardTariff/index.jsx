@@ -304,20 +304,18 @@ export function StandardTariff() {
         <CreateStandardTariffTemplate onCreateNewTemplate={handleCreateNewTemplate} />
       </Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <div>{/* Sau này để cái gì đó vô đây */}</div>
-          <LayoutTool>
-            <BtnExportExcel gridRef={gridRef} />
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <BtnExportExcel gridRef={gridRef} />
+        </LayoutTool>
         <Section.Table>
           <AgGrid
+            showCountRowSelected={true}
             contextMenu={true}
             setRowData={data => {
               setRowData(data);

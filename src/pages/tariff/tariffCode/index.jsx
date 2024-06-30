@@ -132,18 +132,15 @@ export function TariffCode() {
     <Section>
       <Section.Header title="Mã biểu cước"></Section.Header>
       <Section.Content>
-        <span className="flex items-end justify-between">
-          <div>{/* Sau này để cái gì đó vô đây */}</div>
-          <LayoutTool>
-            <BtnExportExcel gridRef={gridRef} />
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <BtnExportExcel gridRef={gridRef} />
+        </LayoutTool>
         <Section.Table>
           <AgGrid
             showCountRowSelected={true}
