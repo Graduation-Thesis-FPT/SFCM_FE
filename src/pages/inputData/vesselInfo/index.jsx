@@ -78,21 +78,8 @@ export function VesselInfo() {
       editable: true
     },
     {
-      headerName: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
       headerName: DT_VESSEL_VISIT.ETA.headerName,
       field: DT_VESSEL_VISIT.ETA.field,
-      flex: 1,
-      cellRenderer: DateTimePickerRender
-    },
-    {
-      headerName: DT_VESSEL_VISIT.ETD.headerName,
-      field: DT_VESSEL_VISIT.ETD.field,
       flex: 1,
       cellRenderer: DateTimePickerRender
     },
@@ -141,6 +128,7 @@ export function VesselInfo() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
+    insertAndUpdateData.update = insertAndUpdateData.update.map(({ ETD, ...rest }) => rest);
     dispatch(setGlobalLoading(true));
     createAndUpdateVessel(insertAndUpdateData)
       .then(res => {
@@ -232,20 +220,18 @@ export function VesselInfo() {
         </Form>
       </Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <div>{/* Sau này để cái gì đó vô đây */}</div>
-          <LayoutTool>
-            <BtnExportExcel gridRef={gridRef} />
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
+        <LayoutTool>
+          <BtnExportExcel gridRef={gridRef} />
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
         <Section.Table>
           <AgGrid
+            showCountRowSelected
             contextMenu={true}
             setRowData={data => {
               setRowData(data);
