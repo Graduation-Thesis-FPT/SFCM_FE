@@ -221,13 +221,13 @@ export function VesselInfo() {
       </Section.Header>
       <Section.Content>
         <LayoutTool>
-          <BtnExportExcel gridRef={gridRef} />
-          <GrantPermission action={actionGrantPermission.CREATE}>
-            <BtnAddRow onAddRow={handleAddRow} />
-          </GrantPermission>
           <GrantPermission action={actionGrantPermission.UPDATE}>
             <BtnSave onClick={handleSaveRows} />
           </GrantPermission>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <BtnExportExcel gridRef={gridRef} />
         </LayoutTool>
         <Section.Table>
           <AgGrid
