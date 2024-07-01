@@ -87,11 +87,14 @@ const AgGrid = forwardRef(
       setSelectedRows(ref?.current?.api.getSelectedRows());
     }, []);
 
-    const getRowClass = useCallback(params => {
-      if (params.data.status) {
-        return params.data.status === "update" ? "!bg-yellow-50" : "!bg-green-50";
-      }
-    }, [selectedRows]);
+    const getRowClass = useCallback(
+      params => {
+        if (params.data.status) {
+          return params.data.status === "update" ? "!bg-yellow-50" : "!bg-green-50";
+        }
+      },
+      [selectedRows]
+    );
 
     const clearSelectedRows = useCallback(() => {
       ref?.current?.api.deselectAll();
@@ -102,7 +105,7 @@ const AgGrid = forwardRef(
         <ContextMenuTrigger className=" h-full" disabled={contextMenu === true ? false : true}>
           <div className={cn("ag-theme-quartz custom-header relative h-full", className)}>
             {showCountRowSelected && selectedRows.length > 0 && (
-              <div className="pointer-events-none absolute -top-10 right-0">
+              <div className="pointer-events-none absolute -top-10 left-0">
                 Đang chọn {selectedRows.length} dòng
               </div>
             )}

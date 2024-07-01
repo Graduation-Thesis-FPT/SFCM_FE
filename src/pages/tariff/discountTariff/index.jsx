@@ -257,8 +257,9 @@ export function DiscountTariff() {
       <Section.Header className="flex items-end justify-between gap-3">
         <span className="flex gap-3">
           <div>
-            <div className="mb-2 text-xs font-medium">Mẫu biểu cước</div>
+            <Label htmlFor="TRF_TEMP_CODE">Mẫu biểu cước</Label>
             <Select
+              id="TRF_TEMP_CODE"
               onValueChange={value => {
                 setTariffTemplateFilter({
                   template: value,

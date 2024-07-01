@@ -131,13 +131,13 @@ export function TariffCode() {
       <Section.Header title="Mã biểu cước"></Section.Header>
       <Section.Content>
         <LayoutTool>
-          <GrantPermission action={actionGrantPermission.UPDATE}>
-            <BtnSave onClick={handleSaveRows} />
-          </GrantPermission>
+          <BtnExportExcel gridRef={gridRef} />
           <GrantPermission action={actionGrantPermission.CREATE}>
             <BtnAddRow onAddRow={handleAddRow} />
           </GrantPermission>
-          <BtnExportExcel gridRef={gridRef} />
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
         </LayoutTool>
         <Section.Table>
           <AgGrid

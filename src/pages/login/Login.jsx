@@ -96,7 +96,7 @@ export function Login() {
                 control={form.control}
                 name="USER_NAME"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-2">
                     <FormLabel className="text-base">Tài khoản</FormLabel>
                     <FormControl>
                       <Input
@@ -130,7 +130,7 @@ export function Login() {
                 control={form.control}
                 name="PASSWORD"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-2">
                     <FormLabel className="text-base">Mật khẩu</FormLabel>
                     <FormControl>
                       <div className="relative">

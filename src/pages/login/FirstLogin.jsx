@@ -93,7 +93,7 @@ export function FirstLogin() {
               control={form.control}
               name="PASSWORD"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="space-y-2">
                   <FormLabel className="text-base font-bold">Mật khẩu mới</FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -139,7 +139,7 @@ export function FirstLogin() {
               name="CONFIRM_PASSWORD"
               render={({ field }) => {
                 return (
-                  <FormItem>
+                  <FormItem className="space-y-2">
                     <FormLabel className="text-base font-bold">Nhập lại mật khẩu</FormLabel>
                     <FormControl>
                       <div className="relative">

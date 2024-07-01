@@ -209,7 +209,7 @@ export function ImportOrder() {
       <Section.Header className="space-y-4">
         <span className="grid grid-cols-3 gap-3">
           {vesselFilter.map(item => (
-            <div key={item.field} className="space-y-2">
+            <div key={item.field}>
               <Label htmlFor={item.field}>{item.name}</Label>
               <Input
                 onClick={() => {
@@ -225,7 +225,7 @@ export function ImportOrder() {
           ))}
         </span>
         <span className="grid grid-cols-6 gap-3">
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="BILLOFLADING">{DT_CNTR_MNF_LD.BILLOFLADING.headerName} *</Label>
             <Input
               id="BILLOFLADING"
@@ -251,7 +251,7 @@ export function ImportOrder() {
               onBlur={handleEnterBillOfLading}
             />
           </div>
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="CNTRNO">{DT_CNTR_MNF_LD.CNTRNO.headerName}</Label>
             <Input
               id="CNTRNO"
@@ -278,7 +278,7 @@ export function ImportOrder() {
               onBlur={handleEnterCntrNo}
             />
           </div>
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="HANLENH">Hạn lệnh</Label>
             <DatePicker
               id="HANLENH"
@@ -291,7 +291,7 @@ export function ImportOrder() {
               date={HANLENH}
             />
           </div>
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="CUSTOMER_CODE">Khách hàng</Label>
             <Select
               disabled={rowData.length === 0}

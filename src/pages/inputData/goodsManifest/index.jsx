@@ -33,6 +33,7 @@ import { BtnPrintLabel } from "./btnPrintLabel";
 import { BtnImportExcel } from "@/components/common/aggridreact/tableTools/BtnImportExcel";
 import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
+import moment from "moment";
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -131,8 +132,8 @@ export function GoodsManifest() {
       field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field
     },
     {
-      name: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.field
+      name: DT_VESSEL_VISIT.ETA.headerName,
+      field: DT_VESSEL_VISIT.ETA.field
     }
   ];
   const containerFilter = [
@@ -163,6 +164,7 @@ export function GoodsManifest() {
   ];
 
   const handleSelectVesselInfo = vessel => {
+    vessel.ETA = moment(vessel.ETA).format("DD/MM/YYYY HH:mm");
     setContainerInfo({});
     setRowData([]);
     setVesselInfo(vessel);
@@ -308,7 +310,7 @@ export function GoodsManifest() {
       <Section.Header className="space-y-4">
         <span className="grid grid-cols-3 gap-3">
           {vesselFilter.map(item => (
-            <div key={item.field} className="space-y-2">
+            <div key={item.field}>
               <Label htmlFor={item.field}>{item.name}</Label>
               <Input
                 onClick={() => {
@@ -325,7 +327,7 @@ export function GoodsManifest() {
         </span>
         <span className="grid grid-cols-6 gap-3">
           {containerFilter.map(item => (
-            <div key={item.field} className="space-y-2">
+            <div key={item.field}>
               <Label htmlFor={item.field}>{item.name}</Label>
               <Input
                 onClick={() => {

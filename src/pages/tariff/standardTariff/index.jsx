@@ -260,8 +260,9 @@ export function StandardTariff() {
       <Section.Header className="flex items-end justify-between gap-3">
         <span className="flex gap-3">
           <div>
-            <div className="mb-2 text-xs font-medium">Mẫu biểu cước</div>
+            <Label htmlFor="TRF_TEMP_CODE">Mẫu biểu cước</Label>
             <Select
+              id="TRF_TEMP_CODE"
               onValueChange={value => {
                 setTariffTemplateFilter({
                   template: value,
@@ -338,13 +339,13 @@ export function StandardTariff() {
       </Section.Header>
       <Section.Content>
         <LayoutTool>
-          <GrantPermission action={actionGrantPermission.UPDATE}>
-            <BtnSave onClick={handleSaveRows} />
-          </GrantPermission>
+          <BtnExportExcel gridRef={gridRef} />
           <GrantPermission action={actionGrantPermission.CREATE}>
             <BtnAddRow onAddRow={handleAddRow} />
           </GrantPermission>
-          <BtnExportExcel gridRef={gridRef} />
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
         </LayoutTool>
         <Section.Table>
           <AgGrid

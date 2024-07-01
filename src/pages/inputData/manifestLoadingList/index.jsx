@@ -39,12 +39,13 @@ import {
 } from "@/apis/cntr-mnf-ld.api";
 import { getAllCustomer } from "@/apis/customer.api";
 import { GrantPermission } from "@/components/common/grant-permission";
+import moment from "moment";
 
 const formSchema = z.object({
   VOYAGEKEY: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
   VESSEL_NAME: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
   INBOUND_VOYAGE: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
-  OUTBOUND_VOYAGE: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" })
+  ETA: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" })
 });
 
 const DT_VESSEL_VISIT = new dt_vessel_visit();
@@ -56,8 +57,8 @@ const formField = [
     label: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName
   },
   {
-    name: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.field,
-    label: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.headerName
+    name: DT_VESSEL_VISIT.ETA.field,
+    label: DT_VESSEL_VISIT.ETA.headerName
   }
 ];
 
@@ -76,7 +77,7 @@ export function ManifestLoadingList() {
       VOYAGEKEY: "",
       VESSEL_NAME: "",
       INBOUND_VOYAGE: "",
-      OUTBOUND_VOYAGE: ""
+      ETA: ""
     }
   });
   const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
@@ -213,7 +214,7 @@ export function ManifestLoadingList() {
     form.setValue("VOYAGEKEY", rowSelected[0].VOYAGEKEY);
     form.setValue("VESSEL_NAME", rowSelected[0].VESSEL_NAME);
     form.setValue("INBOUND_VOYAGE", rowSelected[0].INBOUND_VOYAGE);
-    form.setValue("OUTBOUND_VOYAGE", rowSelected[0].OUTBOUND_VOYAGE);
+    form.setValue("ETA", moment(rowSelected[0].ETA).format("DD/MM/YYYY HH:mm"));
 
     dispatch(setGlobalLoading(true));
     getManifestLoadingListContByFilter(rowSelected[0].VOYAGEKEY)
@@ -309,20 +310,18 @@ export function ManifestLoadingList() {
         </Form>
       </Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <div>{/* Sau này để cái gì đó vô đây */}</div>
-          <LayoutTool>
-            <BtnExportExcel gridRef={gridRef} />
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
+        <LayoutTool>
+          <BtnExportExcel gridRef={gridRef} />
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
         <Section.Table>
           <AgGrid
+            showCountRowSelected={true}
             contextMenu={true}
             setRowData={data => {
               setRowData(data);

@@ -27,6 +27,7 @@ import {
 } from "@/components/common/aggridreact/cellRender";
 import { DisplayCell } from "./displayCell";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { Label } from "@/components/common/ui/label";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
@@ -294,7 +295,7 @@ export function WarehouseDesign() {
             ) : null}
 
             <span>
-              <div className="mb-2 text-xs font-medium">Hiển thị</div>
+              <Label>Hiển thị</Label>
               <Select
                 onValueChange={value => {
                   setDisplayType(value);

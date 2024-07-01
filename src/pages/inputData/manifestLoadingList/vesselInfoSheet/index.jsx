@@ -40,20 +40,8 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.field,
-      flex: 1,
-      filter: true
-    },
-    {
       headerName: DT_VESSEL_VISIT.ETA.headerName,
       field: DT_VESSEL_VISIT.ETA.field,
-      flex: 1,
-      cellRenderer: DateTimeByTextRender
-    },
-    {
-      headerName: DT_VESSEL_VISIT.ETD.headerName,
-      field: DT_VESSEL_VISIT.ETD.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     },
