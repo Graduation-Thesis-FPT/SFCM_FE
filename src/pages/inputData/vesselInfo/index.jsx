@@ -231,7 +231,7 @@ export function VesselInfo() {
         </LayoutTool>
         <Section.Table>
           <AgGrid
-            showCountRowSelected
+            showCountRowSelected={true}
             contextMenu={true}
             setRowData={data => {
               setRowData(data);

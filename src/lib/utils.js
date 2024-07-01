@@ -17,6 +17,14 @@ export function getFirstLetterOfLastWord(text) {
   return lastWord ? lastWord[0].toUpperCase() : "";
 }
 
+export function removeLastAsterisk(str) {
+  if (str.endsWith(" *")) {
+    return `(${str.slice(0, -2)})`;
+  } else {
+    return str;
+  }
+}
+
 export const exportToExcel = (exportData, fileName) => {
   try {
     const ws = XLSX.utils.json_to_sheet(exportData);

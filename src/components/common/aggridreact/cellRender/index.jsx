@@ -53,6 +53,34 @@ export function IsInOutRender(params) {
       }}
       value={params.value}
     >
+      <SelectTrigger
+        className={`${params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK" ? null : "pointer-events-none"} border-none bg-white/0 focus:ring-0`}
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="O">Ra</SelectItem>
+          <SelectItem value="I">Vào</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
+export function IsInOutGateRender(params) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue("I");
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
       <SelectTrigger className="border-none bg-white/0 focus:ring-0">
         <SelectValue />
       </SelectTrigger>

@@ -112,8 +112,8 @@ export function DiscountTariff() {
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
-      headerName: TRF_DISCOUNT.AMT_RT.headerName,
-      field: TRF_DISCOUNT.AMT_RT.field,
+      headerName: TRF_DISCOUNT.AMT_CBM.headerName,
+      field: TRF_DISCOUNT.AMT_CBM.field,
       flex: 1,
       filter: true,
       editable: true,
@@ -336,13 +336,13 @@ export function DiscountTariff() {
       </Section.Header>
       <Section.Content>
         <LayoutTool>
-          <GrantPermission action={actionGrantPermission.UPDATE}>
-            <BtnSave onClick={handleSaveRows} />
-          </GrantPermission>
+          <BtnExportExcel gridRef={gridRef} />
           <GrantPermission action={actionGrantPermission.CREATE}>
             <BtnAddRow onAddRow={handleAddRow} />
           </GrantPermission>
-          <BtnExportExcel gridRef={gridRef} />
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
         </LayoutTool>
         <Section.Table>
           <AgGrid

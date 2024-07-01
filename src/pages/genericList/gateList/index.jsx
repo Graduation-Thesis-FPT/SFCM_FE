@@ -3,7 +3,7 @@ import { getAllWarehouse } from "@/apis/warehouse.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,
-  IsInOutRender,
+  IsInOutGateRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
 import { bs_gate } from "@/components/common/aggridreact/dbColumns";
@@ -59,7 +59,7 @@ export function GateList() {
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: IsInOutRender
+      cellRenderer: IsInOutGateRender
     },
     {
       headerName: BS_GATE.UPDATE_DATE.headerName,

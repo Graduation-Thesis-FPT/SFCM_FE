@@ -105,7 +105,7 @@ export function CustomerList() {
   const handleSaveRows = () => {
     const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
     if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.error("Không có dữ liệu thay đổi");
+      toast.warning("Không có dữ liệu thay đổi");
       return;
     }
     createAndUpdateCustomer(insertAndUpdateData)

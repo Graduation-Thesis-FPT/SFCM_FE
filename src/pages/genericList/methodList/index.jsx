@@ -35,29 +35,46 @@ export function MethodList() {
       }
     },
     {
+      cellClass: params => {
+        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+          ? null
+          : "bg-gray-100";
+      },
       headerName: BS_METHOD.METHOD_CODE.headerName,
       field: BS_METHOD.METHOD_CODE.field,
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell
     },
-
     {
+      cellClass: params => {
+        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+          ? null
+          : "bg-gray-100";
+      },
       headerName: BS_METHOD.METHOD_NAME.headerName,
       field: BS_METHOD.METHOD_NAME.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: params => params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
     },
     {
+      cellClass: params => {
+        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+          ? null
+          : "bg-gray-100";
+      },
       headerName: BS_METHOD.IS_IN_OUT.headerName,
       field: BS_METHOD.IS_IN_OUT.field,
       flex: 1,
-      filter: true,
-      editable: true,
       cellRenderer: IsInOutRender
     },
     {
+      cellClass: params => {
+        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+          ? null
+          : "bg-gray-100";
+      },
       headerName: BS_METHOD.IS_SERVICE.headerName,
       field: BS_METHOD.IS_SERVICE.field,
       headerClass: "center-header",
@@ -66,11 +83,16 @@ export function MethodList() {
         display: "flex"
       },
       flex: 1,
-      editable: true,
+      editable: params => params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK",
       cellEditor: "agCheckboxCellEditor",
       cellRenderer: "agCheckboxCellRenderer"
     },
     {
+      cellClass: params => {
+        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+          ? null
+          : "bg-gray-100";
+      },
       headerName: BS_METHOD.UPDATE_DATE.headerName,
       field: BS_METHOD.UPDATE_DATE.field,
       flex: 1,
@@ -86,9 +108,9 @@ export function MethodList() {
   };
 
   const handleSaveRows = () => {
-    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.error("Không có dữ liệu thay đổi");
+    const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      toast.warning("Không có dữ liệu thay đổi");
       return;
     }
     createAndUpdateMethod(insertAndUpdateData)
@@ -119,8 +141,21 @@ export function MethodList() {
   };
 
   const getRowData = () => {
+    const idsToMove = ["NK", "XK"];
     getAllMethod()
       .then(res => {
+        res.data.metadata.sort((a, b) => {
+          if (idsToMove.includes(a.METHOD_CODE) && idsToMove.includes(b.METHOD_CODE)) {
+            return idsToMove.indexOf(a.METHOD_CODE) - idsToMove.indexOf(b.METHOD_CODE);
+          }
+          if (idsToMove.includes(a.METHOD_CODE)) {
+            return -1;
+          }
+          if (idsToMove.includes(b.METHOD_CODE)) {
+            return 1;
+          }
+          return 0;
+        });
         setRowData(res.data.metadata);
       })
       .catch(err => {
@@ -132,42 +167,36 @@ export function MethodList() {
     <Section>
       <Section.Header title="Danh sách phương án"></Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <SearchInput
-            handleSearch={value => {
-              setSearchData(value);
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
+        <Section.Table>
+          <AgGrid
+            isRowSelectable={params => {
+              return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK";
+            }}
+            showCountRowSelected={true}
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getRowData();
             }}
           />
-          <LayoutTool>
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
-
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData?.filter(item => {
-            if (searchData === "") return item;
-            return item.METHOD_CODE?.toLowerCase().includes(searchData.toLowerCase());
-          })}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getRowData();
-          }}
-        />
+        </Section.Table>
       </Section.Content>
     </Section>
   );

@@ -45,7 +45,7 @@ export class bs_method extends CommonColumns {
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   METHOD_NAME = { field: "METHOD_NAME", headerName: "Tên phương án *" };
   IS_IN_OUT = { field: "IS_IN_OUT", headerName: "Trạng thái *" };
-  IS_SERVICE = { field: "IS_SERVICE", headerName: "Dịch vụ *" };
+  IS_SERVICE = { field: "IS_SERVICE", headerName: "Dịch vụ đính kèm *" };
 }
 
 export class bs_item_type extends CommonColumns {
@@ -129,7 +129,7 @@ export class trf_std extends CommonColumns {
   TRF_TEMP_CODE = { field: "TRF_TEMP_CODE", headerName: "Mã mẫu biểu cước *" };
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
-  AMT_RT = { field: "AMT_CBM", headerName: "Tổng tiền *" };
+  AMT_CBM = { field: "AMT_CBM", headerName: "Tổng tiền *" };
   VAT = { field: "VAT", headerName: "VAT" };
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
 }
@@ -141,7 +141,7 @@ export class trf_discount extends CommonColumns {
   TRF_TEMP_CODE = { field: "TRF_TEMP_CODE", headerName: "Mã mẫu biểu cước *" };
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
-  AMT_RT = { field: "AMT_RT", headerName: "Tổng tiền *" };
+  AMT_CBM = { field: "AMT_CBM", headerName: "Tổng tiền *" };
   VAT = { field: "VAT", headerName: "VAT" };
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
   CUSTOMER_CODE = { field: "CUSTOMER_CODE", headerName: "Mã khách hàng *" };

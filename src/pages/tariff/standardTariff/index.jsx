@@ -101,8 +101,8 @@ export function StandardTariff() {
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
-      headerName: TRF_STD.AMT_RT.headerName,
-      field: TRF_STD.AMT_RT.field,
+      headerName: TRF_STD.AMT_CBM.headerName,
+      field: TRF_STD.AMT_CBM.field,
       flex: 1,
       filter: true,
       editable: true,
