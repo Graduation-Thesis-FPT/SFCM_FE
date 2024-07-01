@@ -19,9 +19,11 @@ import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { checkTariffCode } from "@/lib/validation";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { ErrorAction } from "./ErrorAction";
 
 export function TariffCode() {
   const [rowData, setRowData] = useState([]);
@@ -54,16 +56,6 @@ export function TariffCode() {
       flex: 1,
       filter: true,
       editable: true
-      // valueSetter: params => {
-      //   const newValue = params.newValue;
-      //   // Kiểm tra xem chuỗi có khoảng cách không
-      //   if (!/\s/.test(newValue)) {
-      //     params.data.customString = newValue;
-      //     return true; // Giá trị hợp lệ
-      //   } else {
-      //     return false; // Giá trị không hợp lệ
-      //   }
-      // }
     },
     {
       headerName: TRF_CODES.UPDATE_DATE.headerName,
@@ -79,6 +71,12 @@ export function TariffCode() {
   };
 
   const handleSaveRows = () => {
+    const { isValid, result } = checkTariffCode(gridRef);
+    if (!isValid) {
+      toast.errorWithAction(<ErrorAction result={result} />);
+      return;
+    }
+
     const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
     if (!isContinue) {
       toast.warning("Không có dữ liệu thay đổi");

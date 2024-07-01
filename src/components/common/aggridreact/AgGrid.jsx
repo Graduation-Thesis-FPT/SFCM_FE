@@ -87,6 +87,12 @@ const AgGrid = forwardRef(
       setSelectedRows(ref?.current?.api.getSelectedRows());
     }, []);
 
+    const getRowClass = useCallback(params => {
+      if (params.data.status) {
+        return params.data.status === "update" ? "!bg-yellow-50" : "!bg-green-50";
+      }
+    }, [selectedRows]);
+
     const clearSelectedRows = useCallback(() => {
       ref?.current?.api.deselectAll();
     }, []);
@@ -102,13 +108,7 @@ const AgGrid = forwardRef(
             )}
 
             <AgGridReact
-              getRowClass={params =>
-                params.data.status
-                  ? params.data.status === "update"
-                    ? "!bg-yellow-50"
-                    : "!bg-green-50"
-                  : null
-              }
+              getRowClass={getRowClass}
               dataTypeDefinitions={dataTypeDefinitions}
               ref={ref}
               rowData={rowData}
@@ -126,7 +126,6 @@ const AgGrid = forwardRef(
               }
               overlayNoRowsTemplate={"Không có dữ liệu"}
               stopEditingWhenCellsLoseFocus={true}
-              stop
               {...props}
             />
           </div>

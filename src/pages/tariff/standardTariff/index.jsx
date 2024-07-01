@@ -113,7 +113,8 @@ export function StandardTariff() {
       field: TRF_STD.VAT.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "number"
     },
     {
       headerName: TRF_STD.INCLUDE_VAT.headerName,
@@ -143,14 +144,13 @@ export function StandardTariff() {
     if (!isContinue) {
       return toast.warning("Không có dữ liệu thay đổi");
     }
-    dispatch(setGlobalLoading(true));
-
-    insertAndUpdateData.insert = insertAndUpdateData.insert?.map(({ TRF_TEMP, ...rest }) => {
-      return {
-        ...rest,
-        TRF_TEMP_NAME: tariffTemplateFilter.name
-      };
+    insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
+      return { ...item, TRF_TEMP_CODE: tariffTemplateFilter.template };
     });
+    insertAndUpdateData.update = removeKeysFromArrayObjects(insertAndUpdateData.update, [
+      "TRF_TEMP_CODE"
+    ]);
+    dispatch(setGlobalLoading(true));
 
     createAndUpdateStandardTariff(insertAndUpdateData)
       .then(res => {
@@ -164,6 +164,20 @@ export function StandardTariff() {
         dispatch(setGlobalLoading(false));
       });
   };
+
+  function removeKeysFromArrayObjects(array, keysToRemove) {
+    // Trả về một mảng mới, mỗi đối tượng trong mảng được "lọc" để loại bỏ các key không mong muốn
+    return array.map(object => {
+      // Sử dụng reduce để tạo một đối tượng mới
+      return Object.keys(object).reduce((newObject, currentKey) => {
+        // Nếu key hiện tại không nằm trong danh sách keysToRemove, thêm nó vào đối tượng mới
+        if (!keysToRemove.includes(currentKey)) {
+          newObject[currentKey] = object[currentKey];
+        }
+        return newObject;
+      }, {});
+    });
+  }
 
   const handleDeleteRows = selectedRows => {
     dispatch(setGlobalLoading(true));

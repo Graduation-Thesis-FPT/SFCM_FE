@@ -63,7 +63,16 @@ export const useCustomToast = () => {
     });
   };
 
+  const errorWithAction = (mess, duration) => {
+    toast({
+      variant: "error",
+      title: <Error message={mess} />,
+      duration: duration ?? 2000
+    });
+  };
+
   return {
+    errorWithAction,
     success,
     warning,
     error
