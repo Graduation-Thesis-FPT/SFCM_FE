@@ -208,7 +208,7 @@ export function WarehouseDesign() {
         setWarehouses(res.data.metadata);
         setFilterData(prevState => ({
           ...prevState,
-          warehouseCode: res.data.metadata[0].WAREHOUSE_CODE
+          warehouseCode: res.data.metadata[0]?.WAREHOUSE_CODE
         }));
       })
       .catch(err => {
