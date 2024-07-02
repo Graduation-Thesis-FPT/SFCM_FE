@@ -137,7 +137,25 @@ export function StandardTariff() {
     setRowData(newRow);
   };
 
+  function checkForDuplicateValues(array) {
+    const keys = ["ITEM_TYPE_CODE", "METHOD_CODE", "TRF_CODE"];
+    const seen = new Map();
+    for (let obj of array) {
+      const keyValues = keys.map(key => obj[key]).join("|");
+      if (seen.has(keyValues)) {
+        return false;
+      }
+      seen.set(keyValues, true);
+    }
+    return true;
+  }
+
   const handleSaveRows = () => {
+    const res = checkForDuplicateValues(rowData);
+    if (!res) {
+      return toast.error("Dữ liệu biểu cước không được trùng lặp, vui lòng kiểm tra lại!");
+    }
+
     let { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
     if (!isContinue) {
       return toast.warning("Không có dữ liệu thay đổi");
