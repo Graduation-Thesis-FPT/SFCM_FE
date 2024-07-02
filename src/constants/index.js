@@ -49,6 +49,7 @@ export const SUCCESS_MESSAGE = {
   UPDATE_SUCCESS: "Cập nhật thành công",
   LOGIN_SUCCESS: "Đăng nhập thành công",
   CHANGE_DEFAULT_PASSWORD_SUCCESS: "Thay đổi mật khẩu mặc định thành công",
+  CHANGE_PASSWORD_SUCCESS: "Đổi mật khẩu thành công",
   GET_TOKEN_SUCCESS: "Lấy token thành công",
   GET_MENU_SUCCESS: "Lấy menu thành công",
   GRANT_PERMISSION_SUCCESS: "Cấp quyền thành công",
@@ -61,6 +62,8 @@ export const SUCCESS_MESSAGE = {
   UPDATE_USER_SUCCESS: "Cập nhật người dùng thành công",
   RESET_PASSWORD_SUCCESS: "Đặt lại mật khẩu thành công",
 
+  //common
+  GET_DATA_SUCCESS: "Lấy dữ liệu thành công",
   // BLOCK
   SAVE_BLOCK_SUCCESS: "Lưu khối thành công",
   DELETE_BLOCK_SUCCESS: "Xóa khối thành công",
@@ -124,10 +127,15 @@ export const SUCCESS_MESSAGE = {
   DELETE_PACKAGE_SUCCESS: "Xóa bảng kê hàng hóa thành công",
   GET_PACKAGE_SUCCESS: "Lấy bảng kê hàng hóa thành công",
 
-  //Unit
+  // TARIFFCODE
   DELETE_TARIFFCODE_SUCCESS: "Xóa mã biểu cước thành công",
   GET_TARIFFCODE_SUCCESS: "Lấy mã biểu cước thành công",
-  SAVE_TARIFFCODE_SUCCESS: "Lưu mã biểu cước thành công"
+  SAVE_TARIFFCODE_SUCCESS: "Lưu mã biểu cước thành công",
+
+  // TARIFF
+  DELETE_TARIFF_SUCCESS: "Xóa biểu cước thành công",
+  GET_TARIFF_SUCCESS: "Lấy biểu cước thành công",
+  SAVE_TARIFF_SUCCESS: "Lưu biểu cước thành công"
 };
 
 export const REASON_PHRASES = {
