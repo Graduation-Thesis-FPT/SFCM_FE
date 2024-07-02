@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function ErrorAction({ result = [], ...props }) {
+export function ErrorWithDetail({ mess = [], ...props }) {
   const [isShow, setIsShow] = useState(false);
   return (
     <span
@@ -14,8 +14,8 @@ export function ErrorAction({ result = [], ...props }) {
       Dữ liệu không hợp lệ
       {isShow && (
         <>
-          {result.map((item, index) => (
-            <div key={index}>- {item.message}</div>
+          {mess.map(item => (
+            <div key={item}>- {item}</div>
           ))}
         </>
       )}

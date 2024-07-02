@@ -129,6 +129,7 @@ const AgGrid = forwardRef(
               }
               overlayNoRowsTemplate={"Không có dữ liệu"}
               stopEditingWhenCellsLoseFocus={true}
+              suppressDragLeaveHidesColumns={true} // không cho ẩn cột khi kéo ra khỏi grid
               {...props}
             />
           </div>

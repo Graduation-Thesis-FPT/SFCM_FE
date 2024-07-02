@@ -40,6 +40,9 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import useFetchData from "@/hooks/useRefetchData";
 import { deleteTariffTemp, getAllTariffTemp } from "@/apis/tariff-temp.api";
 import { Button } from "@/components/common/ui/button";
+import { checkTariffCode } from "@/lib/validation/checkTariffCode";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { checkStandardTariff } from "@/lib/validation/checkStandradTariff";
 
 export function StandardTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
@@ -74,7 +77,6 @@ export function StandardTariff() {
       field: TRF_STD.TRF_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => TrfCodeRender(params, tariffCodes)
     },
     {
@@ -88,16 +90,12 @@ export function StandardTariff() {
       headerName: TRF_STD.METHOD_CODE.headerName,
       field: TRF_STD.METHOD_CODE.field,
       flex: 1,
-      filter: true,
-      editable: true,
       cellRenderer: params => MethodCodeRender(params, methods)
     },
     {
       headerName: TRF_STD.ITEM_TYPE_CODE.headerName,
       field: TRF_STD.ITEM_TYPE_CODE.field,
       flex: 1,
-      filter: true,
-      editable: true,
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
@@ -144,6 +142,13 @@ export function StandardTariff() {
     if (!isContinue) {
       return toast.warning("Không có dữ liệu thay đổi");
     }
+
+    const { isValid, mess } = checkStandardTariff(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
       return { ...item, TRF_TEMP_CODE: tariffTemplateFilter.template };
     });

@@ -19,11 +19,11 @@ import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { checkTariffCode } from "@/lib/validation";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ErrorAction } from "./ErrorAction";
+import { checkTariffCode } from "@/lib/validation/checkTariffCode";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 
 export function TariffCode() {
   const [rowData, setRowData] = useState([]);
@@ -71,17 +71,18 @@ export function TariffCode() {
   };
 
   const handleSaveRows = () => {
-    const { isValid, result } = checkTariffCode(gridRef);
-    if (!isValid) {
-      toast.errorWithAction(<ErrorAction result={result} />);
-      return;
-    }
-
     const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
     if (!isContinue) {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
+
+    const { isValid, mess } = checkTariffCode(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     dispatch(setGlobalLoading(true));
     createAndUpdateTariffCode(insertAndUpdateData)
       .then(res => {

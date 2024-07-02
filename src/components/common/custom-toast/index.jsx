@@ -63,7 +63,7 @@ export const useCustomToast = () => {
     });
   };
 
-  const errorWithAction = (mess, duration) => {
+  const errorWithDetail = (mess, duration) => {
     toast({
       variant: "error",
       title: <Error message={mess} />,
@@ -72,7 +72,7 @@ export const useCustomToast = () => {
   };
 
   return {
-    errorWithAction,
+    errorWithDetail,
     success,
     warning,
     error
