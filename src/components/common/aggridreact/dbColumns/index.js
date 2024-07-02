@@ -146,3 +146,9 @@ export class trf_discount extends CommonColumns {
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
   CUSTOMER_CODE = { field: "CUSTOMER_CODE", headerName: "Mã khách hàng *" };
 }
+
+export class config_attach_srv extends CommonColumns {
+  ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
+  METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
+  ATTACH_SERVICE_CODE = { field: "ATTACH_SERVICE_CODE", headerName: "Mã dịch vụ *" };
+}

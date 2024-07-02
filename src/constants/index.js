@@ -135,7 +135,10 @@ export const SUCCESS_MESSAGE = {
   // TARIFF
   DELETE_TARIFF_SUCCESS: "Xóa biểu cước thành công",
   GET_TARIFF_SUCCESS: "Lấy biểu cước thành công",
-  SAVE_TARIFF_SUCCESS: "Lưu biểu cước thành công"
+  SAVE_TARIFF_SUCCESS: "Lưu biểu cước thành công",
+
+  //config-attach-srv
+  UPDATE_CONFIG_ATTACH_SRV_SUCCESS: "Cập nhật dịch vụ đính kèm thành công"
 };
 
 export const REASON_PHRASES = {

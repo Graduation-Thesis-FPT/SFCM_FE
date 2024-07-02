@@ -20,6 +20,6 @@ export * from "./inputData/goodsManifest";
 export * from "./tariff/tariffCode";
 export * from "./tariff/standardTariff";
 export * from "./tariff/discountTariff";
-export * from "./tariff/serviceTariffConf";
+export * from "./tariff/configAttachSrv";
 //procedure
 export * from "./procedure/importOrder";
