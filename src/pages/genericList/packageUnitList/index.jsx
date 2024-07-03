@@ -1,10 +1,9 @@
-import { createAndUpdateUnit, deleteUnit, getAllUnit } from "@/apis/unit.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
-import { bs_unit } from "@/components/common/aggridreact/dbColumns";
+import { bs_backage_unit } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
@@ -15,12 +14,17 @@ import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
+import {
+  createAndUpdatePackageUnit,
+  deletePackageUnit,
+  getAllPackageUnit
+} from "@/apis/pakage-unit.api";
 
-export function UnitList() {
+export function PackageUnitList() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const BS_UNIT = new bs_unit();
+  const BS_UNIT = new bs_backage_unit();
 
   const colDefs = [
     {
@@ -34,15 +38,15 @@ export function UnitList() {
       }
     },
     {
-      headerName: BS_UNIT.UNIT_CODE.headerName,
-      field: BS_UNIT.UNIT_CODE.field,
+      headerName: BS_UNIT.PACKAGE_UNIT_CODE.headerName,
+      field: BS_UNIT.PACKAGE_UNIT_CODE.field,
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell
     },
     {
-      headerName: BS_UNIT.UNIT_NAME.headerName,
-      field: BS_UNIT.UNIT_NAME.field,
+      headerName: BS_UNIT.PACKAGE_UNIT_NAME.headerName,
+      field: BS_UNIT.PACKAGE_UNIT_NAME.field,
       flex: 1,
       filter: true,
       editable: true
@@ -68,7 +72,7 @@ export function UnitList() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
-    createAndUpdateUnit(insertAndUpdateData)
+    createAndUpdatePackageUnit(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -82,10 +86,10 @@ export function UnitList() {
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
       selectedRows,
       rowData,
-      "UNIT_CODE"
+      "PACKAGE_UNIT_CODE"
     );
 
-    deleteUnit(deleteIdList)
+    deletePackageUnit(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -96,7 +100,7 @@ export function UnitList() {
   };
 
   const getRowData = () => {
-    getAllUnit()
+    getAllPackageUnit()
       .then(res => {
         setRowData(res.data.metadata);
       })

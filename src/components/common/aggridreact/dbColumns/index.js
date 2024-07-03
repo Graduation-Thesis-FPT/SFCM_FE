@@ -53,9 +53,9 @@ export class bs_item_type extends CommonColumns {
   ITEM_TYPE_NAME = { field: "ITEM_TYPE_NAME", headerName: "Tên loại hàng *" };
 }
 
-export class bs_unit extends CommonColumns {
-  UNIT_CODE = { field: "UNIT_CODE", headerName: "Mã đơn vị *" };
-  UNIT_NAME = { field: "UNIT_NAME", headerName: "Tên đơn vị *" };
+export class bs_backage_unit extends CommonColumns {
+  PACKAGE_UNIT_CODE = { field: "PACKAGE_UNIT_CODE", headerName: "Mã đơn vị *" };
+  PACKAGE_UNIT_NAME = { field: "PACKAGE_UNIT_NAME", headerName: "Tên đơn vị *" };
 }
 
 export class bs_customer_type extends CommonColumns {
@@ -102,7 +102,7 @@ export class dt_package_mnf_ld extends CommonColumns {
   HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill *" };
   LOT_NO = { field: "LOT_NO", headerName: "Số lô" };
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
-  UNIT_CODE = { field: "UNIT_CODE", headerName: "Đơn vị tính *" };
+  PACKAGE_UNIT_CODE = { field: "PACKAGE_UNIT_CODE", headerName: "Đơn vị tính *" };
   CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số lượng *" };
   CBM = { field: "CBM", headerName: "Số khối (m³) *" };
   DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai" };

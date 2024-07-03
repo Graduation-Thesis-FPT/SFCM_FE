@@ -332,10 +332,10 @@ export function DateTimePickerRender(params) {
   );
 }
 
-export function UnitCodeRender(params, unit) {
+export function PackageUnitCodeRender(params, packageUnitList) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(unit[0]?.UNIT_CODE);
+      params.setValue(packageUnitList[0]?.PACKAGE_UNIT_CODE);
     }
   }, []);
   return (
@@ -350,9 +350,9 @@ export function UnitCodeRender(params, unit) {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {unit.map(item => (
-            <SelectItem key={item?.UNIT_CODE} value={item?.UNIT_CODE}>
-              {item?.UNIT_CODE} - {item?.UNIT_NAME}
+          {packageUnitList.map(item => (
+            <SelectItem key={item?.PACKAGE_UNIT_CODE} value={item?.PACKAGE_UNIT_CODE}>
+              {item?.PACKAGE_UNIT_CODE} - {item?.PACKAGE_UNIT_NAME}
             </SelectItem>
           ))}
         </SelectGroup>

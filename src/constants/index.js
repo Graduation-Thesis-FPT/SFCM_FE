@@ -102,10 +102,10 @@ export const SUCCESS_MESSAGE = {
   GET_ITEMTYPE_SUCCESS: "Lấy loại hàng thành công",
   SAVE_ITEMTYPE_SUCCESS: "Lưu loại hàng thành công",
 
-  //Unit
-  DELETE_UNIT_SUCCESS: "Xóa đơn vị thành công",
-  GET_UNIT_SUCCESS: "Lấy đơn vị thành công",
-  SAVE_UNIT_SUCCESS: "Lưu đơn vị thành công",
+  //Package-Unit
+  DELETE_PACKAGE_UNIT_SUCCESS: "Xóa đơn vị thành công",
+  GET_PACKAGE_UNIT_SUCCESS: "Lấy đơn vị thành công",
+  SAVE_PACKAGE_UNIT_SUCCESS: "Lưu đơn vị thành công",
 
   // BLOCK
   SAVE_CUSTOMERTYPE_SUCCESS: "Lưu loại khách hàng thành công",

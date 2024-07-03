@@ -92,8 +92,8 @@ export function ImportOrder() {
       flex: 1
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.UNIT_CODE.headerName,
-      field: DT_PACKAGE_MNF_LD.UNIT_CODE.field,
+      headerName: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.headerName,
+      field: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.field,
       flex: 1
     },
     {

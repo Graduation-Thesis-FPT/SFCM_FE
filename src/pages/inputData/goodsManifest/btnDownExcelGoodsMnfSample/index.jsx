@@ -27,7 +27,7 @@ export const BtnDownExcelGoodsMnfSample = ({
     worksheet.columns = [{ header: "STT", key: "STT", width: 10 }, ...firstRow];
 
     const itemTypeCodeOption = itemType.map(item => item.ITEM_TYPE_CODE).join(",");
-    const unitCodeOption = unit.map(item => item.UNIT_CODE).join(",");
+    const unitCodeOption = unit.map(item => item.PACKAGE_UNIT_CODE).join(",");
 
     worksheet.getCell("D2").dataValidation = {
       type: "list",

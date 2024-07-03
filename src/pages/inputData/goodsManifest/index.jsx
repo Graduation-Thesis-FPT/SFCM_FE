@@ -26,14 +26,17 @@ import {
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { getAllItemType } from "@/apis/item-type.api";
-import { ItemTypeCodeRender, UnitCodeRender } from "@/components/common/aggridreact/cellRender";
-import { getAllUnit } from "@/apis/unit.api";
+import {
+  ItemTypeCodeRender,
+  PackageUnitCodeRender
+} from "@/components/common/aggridreact/cellRender";
 import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
 import { BtnPrintLabel } from "./btnPrintLabel";
 import { BtnImportExcel } from "@/components/common/aggridreact/tableTools/BtnImportExcel";
 import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import moment from "moment";
+import { getAllPackageUnit } from "@/apis/pakage-unit.api";
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -83,12 +86,12 @@ export function GoodsManifest() {
       cellRenderer: params => ItemTypeCodeRender(params, itemType)
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.UNIT_CODE.headerName,
-      field: DT_PACKAGE_MNF_LD.UNIT_CODE.field,
+      headerName: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.headerName,
+      field: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.field,
       flex: 1,
       filter: true,
       editable: true,
-      cellRenderer: params => UnitCodeRender(params, unit)
+      cellRenderer: params => PackageUnitCodeRender(params, unit)
     },
     {
       headerName: DT_PACKAGE_MNF_LD.CARGO_PIECE.headerName,
@@ -270,7 +273,7 @@ export function GoodsManifest() {
   };
 
   const getUnit = () => {
-    getAllUnit()
+    getAllPackageUnit()
       .then(res => {
         setUnit(res.data.metadata);
       })

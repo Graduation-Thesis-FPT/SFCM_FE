@@ -8,7 +8,7 @@ export * from "./genericList/warehouseList";
 // export * from "./genericList/equipmentList"; (bỏ)
 export * from "./genericList/methodList";
 export * from "./genericList/itemType";
-export * from "./genericList/unitList";
+export * from "./genericList/packageUnitList";
 // export * from "./genericList/gateList"; (bỏ)
 export * from "./genericList/customerType";
 export * from "./genericList/customerList";
