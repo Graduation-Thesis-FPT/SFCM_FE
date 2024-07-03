@@ -9,7 +9,6 @@ import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
@@ -19,12 +18,15 @@ import {
   deletePackageUnit,
   getAllPackageUnit
 } from "@/apis/pakage-unit.api";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { checkPackageUnit } from "@/lib/validation/generic-list/checkPackageUnit";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 export function PackageUnitList() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const BS_UNIT = new bs_backage_unit();
+  const BS_PACKAGE_UNIT = new bs_backage_unit();
 
   const colDefs = [
     {
@@ -38,28 +40,27 @@ export function PackageUnitList() {
       }
     },
     {
-      headerName: BS_UNIT.PACKAGE_UNIT_CODE.headerName,
-      field: BS_UNIT.PACKAGE_UNIT_CODE.field,
+      headerName: BS_PACKAGE_UNIT.PACKAGE_UNIT_CODE.headerName,
+      field: BS_PACKAGE_UNIT.PACKAGE_UNIT_CODE.field,
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: OnlyEditWithInsertCell,
+      onCellValueChanged: UpperCase
     },
     {
-      headerName: BS_UNIT.PACKAGE_UNIT_NAME.headerName,
-      field: BS_UNIT.PACKAGE_UNIT_NAME.field,
+      headerName: BS_PACKAGE_UNIT.PACKAGE_UNIT_NAME.headerName,
+      field: BS_PACKAGE_UNIT.PACKAGE_UNIT_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: BS_UNIT.UPDATE_DATE.headerName,
-      field: BS_UNIT.UPDATE_DATE.field,
+      headerName: BS_PACKAGE_UNIT.UPDATE_DATE.headerName,
+      field: BS_PACKAGE_UNIT.UPDATE_DATE.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }
   ];
-
-  const [searchData, setSearchData] = useState("");
 
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
@@ -67,11 +68,18 @@ export function PackageUnitList() {
   };
 
   const handleSaveRows = () => {
-    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
+    const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
+
+    const { isValid, mess } = checkPackageUnit(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     createAndUpdatePackageUnit(insertAndUpdateData)
       .then(res => {
         toast.success(res);
@@ -111,44 +119,35 @@ export function PackageUnitList() {
 
   return (
     <Section>
-      <Section.Header title="Danh mục đơn vị tính"></Section.Header>
+      <Section.Header title="Danh sách các đơn vị" />
       <Section.Content>
-        <span className="flex justify-between">
-          <SearchInput
-            handleSearch={value => {
-              setSearchData(value);
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
+        <Section.Table>
+          <AgGrid
+            showCountRowSelected={true}
+            contextMenu={true}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getRowData();
             }}
           />
-          <LayoutTool>
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
-
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData?.filter(item => {
-            if (searchData === "") return item;
-            return item.METHOD_CODE?.toLowerCase().includes(searchData.toLowerCase());
-          })}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getRowData();
-          }}
-        />
+        </Section.Table>
       </Section.Content>
     </Section>
   );

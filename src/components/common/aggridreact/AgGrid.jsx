@@ -133,7 +133,7 @@ const AgGrid = forwardRef(
             {showCountRowSelected && (
               <div className="absolute -top-8 left-0 flex cursor-default">
                 <Checkbox
-                  className="mr-2 border-blue-600 data-[state=checked]:bg-blue-600 data-[state=indeterminate]:bg-blue-600 "
+                  className="mr-2 border-gray-600/50 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=indeterminate]:bg-gray-600/50"
                   checked={checkBoxSelected}
                   onCheckedChange={handleCheckBoxSelected}
                 />

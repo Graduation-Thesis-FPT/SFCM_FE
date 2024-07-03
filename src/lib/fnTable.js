@@ -42,7 +42,9 @@ const fnAddRowsVer2 = (rowData, colDefs) => {
 };
 
 const fnDeleteRows = (selectedRows, rowData, deleteBy) => {
-  const deleteIdList = selectedRows.filter(item => item[deleteBy]).map(item => item[deleteBy]);
+  const deleteIdList = selectedRows
+    .filter(item => item.status !== "insert" && item[deleteBy])
+    .map(item => item[deleteBy]);
 
   const deleteKeys = selectedRows.map(item => item.key || item[deleteBy] || item.ROWGUID);
   const newRowDataAfterDeleted = rowData.filter(
