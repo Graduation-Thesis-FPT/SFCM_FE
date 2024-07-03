@@ -134,7 +134,7 @@ export class trf_std extends CommonColumns {
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
 }
 
-export class trf_discount extends CommonColumns {
+export class trf_dis extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
   TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả chi tiết" };

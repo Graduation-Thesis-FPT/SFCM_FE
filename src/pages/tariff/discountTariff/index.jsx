@@ -1,11 +1,6 @@
 import { getAllItemType } from "@/apis/item-type.api";
 import { getAllMethod } from "@/apis/method.api";
 import { getAllTariffCode } from "@/apis/trf-codes.api";
-import {
-  createAndUpdateStandardTariff,
-  deleteStandardTariff,
-  getStandardTariffByTemplate
-} from "@/apis/trf-std.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   ConsigneeRender,
@@ -13,7 +8,7 @@ import {
   MethodCodeRender,
   TrfCodeRender
 } from "@/components/common/aggridreact/cellRender";
-import { trf_discount, trf_std } from "@/components/common/aggridreact/dbColumns";
+import { trf_dis } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
@@ -42,6 +37,13 @@ import { deleteTariffTemp, getAllTariffTemp } from "@/apis/tariff-temp.api";
 import { Button } from "@/components/common/ui/button";
 import { CreateTariffTemplate } from "./CreateTariffTemplate";
 import { getAllCustomer } from "@/apis/customer.api";
+import {
+  createAndUpdateDiscountTariff,
+  deleteDiscountTariff,
+  getDiscountTariffByTemplate
+} from "@/apis/discount-tariff.api";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { checkDiscountTariff } from "@/lib/validation/checkDiscountTariff";
 
 export function DiscountTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
@@ -60,7 +62,7 @@ export function DiscountTariff() {
     name: ""
   });
   const [rowData, setRowData] = useState([]);
-  const TRF_DISCOUNT = new trf_discount();
+  const TRF_DISCOUNT = new trf_dis();
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -77,7 +79,6 @@ export function DiscountTariff() {
       field: TRF_DISCOUNT.TRF_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => TrfCodeRender(params, tariffCodes)
     },
     {
@@ -92,7 +93,6 @@ export function DiscountTariff() {
       field: TRF_DISCOUNT.CUSTOMER_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => ConsigneeRender(params, customers)
     },
     {
@@ -100,7 +100,6 @@ export function DiscountTariff() {
       field: TRF_DISCOUNT.METHOD_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => MethodCodeRender(params, methods)
     },
     {
@@ -108,7 +107,6 @@ export function DiscountTariff() {
       field: TRF_DISCOUNT.ITEM_TYPE_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
@@ -124,7 +122,8 @@ export function DiscountTariff() {
       field: TRF_DISCOUNT.VAT.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "number"
     },
     {
       headerName: TRF_DISCOUNT.INCLUDE_VAT.headerName,
@@ -149,24 +148,50 @@ export function DiscountTariff() {
     setRowData(newRow);
   };
 
+  function checkForDuplicateValues(array) {
+    const keys = ["ITEM_TYPE_CODE", "CUSTOMER_CODE", "METHOD_CODE", "TRF_CODE"];
+    const seen = new Map();
+    for (let obj of array) {
+      const keyValues = keys.map(key => obj[key]).join("|");
+      if (seen.has(keyValues)) {
+        return false;
+      }
+      seen.set(keyValues, true);
+    }
+    return true;
+  }
+
   const handleSaveRows = () => {
+    const res = checkForDuplicateValues(rowData);
+    if (!res) {
+      return toast.error("Dữ liệu biểu cước giảm giá không được trùng lặp, vui lòng kiểm tra lại!");
+    }
+
     let { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
     if (!isContinue) {
       return toast.warning("Không có dữ liệu thay đổi");
     }
+
+    const { isValid, mess } = checkDiscountTariff(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     dispatch(setGlobalLoading(true));
 
-    insertAndUpdateData.insert = insertAndUpdateData.insert?.map(({ TRF_TEMP, ...rest }) => {
-      return {
-        ...rest,
-        TRF_TEMP_NAME: tariffTemplateFilter.name
-      };
+    insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
+      return { ...item, TRF_TEMP_CODE: tariffTemplateFilter.template };
     });
 
-    createAndUpdateStandardTariff(insertAndUpdateData)
+    insertAndUpdateData.update = insertAndUpdateData.update.map(
+      ({ TRF_TEMP_CODE, ...rest }) => rest
+    );
+
+    createAndUpdateDiscountTariff(insertAndUpdateData)
       .then(res => {
         toast.success(res);
-        getStandardTariffByFilter(tariffTemplateFilter.template);
+        getDiscountTariffByFilter(tariffTemplateFilter.template);
       })
       .catch(err => {
         toast.error(err);
@@ -180,7 +205,7 @@ export function DiscountTariff() {
     dispatch(setGlobalLoading(true));
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ROWGUID");
 
-    deleteStandardTariff(deleteIdList)
+    deleteDiscountTariff(deleteIdList)
       .then(res => {
         if (newRowDataAfterDeleted.length === 0) {
           getTariffTemp();
@@ -228,12 +253,8 @@ export function DiscountTariff() {
       });
   };
 
-  useEffect(() => {
-    getTariffTemp();
-  }, []);
-
-  const getStandardTariffByFilter = template => {
-    getStandardTariffByTemplate(template)
+  const getDiscountTariffByFilter = template => {
+    getDiscountTariffByTemplate(template)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -241,6 +262,10 @@ export function DiscountTariff() {
         toast.error(err);
       });
   };
+
+  useEffect(() => {
+    getTariffTemp();
+  }, []);
 
   const getTariffTemp = () => {
     getAllTariffTemp()
@@ -267,7 +292,7 @@ export function DiscountTariff() {
                   to: moment(value.split("-")[1], "DD/MM/YYYY")?._d,
                   name: value.split("-")[2]
                 });
-                getStandardTariffByTemplate(value)
+                getDiscountTariffByTemplate(value)
                   .then(res => {
                     toast.success(res);
                     setRowData(res.data.metadata);

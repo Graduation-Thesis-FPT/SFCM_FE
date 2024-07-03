@@ -51,7 +51,7 @@ export const checkStandardTariff = gridRef => {
   });
 
   const arrSchema = z.array(tariffCodeSchema);
-  const rowData = gridRef.current.props.rowData.filter(row => row.status);
+  const rowData = gridRef.current.props.rowData;
   const result = arrSchema.safeParse(rowData);
 
   return handleResult(result, gridRef);
