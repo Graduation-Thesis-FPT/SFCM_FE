@@ -45,9 +45,6 @@ export function User() {
       cellRenderer: params => {
         if (params.value) {
           return (
-            // <Button className="h-[70%] w-full cursor-default rounded-[6px] bg-green-100 font-medium text-green-800 hover:bg-green-100">
-            //   Hoạt động
-            // </Button>
             <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
               Hoạt động
             </Badge>
@@ -85,10 +82,6 @@ export function User() {
     }
   ];
 
-  // const handleSearch = value => {
-  //   console.log(value);
-  // };
-
   return (
     <Section>
       <Section.Header title="Danh sách người dùng">
@@ -97,8 +90,6 @@ export function User() {
         </GrantPermission>
       </Section.Header>
       <Section.Content>
-        {/* <SearchInput handleSearch={value => handleSearch(value)} /> */}
-
         <AgGrid
           ref={gridRef}
           rowData={rowData}

@@ -1,52 +1,56 @@
-import { deleteWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
+import { createWarehouse, deleteWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { OnlyEditWithInsertCell } from "@/components/common/aggridreact/cellRender";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { GrantPermission } from "@/components/common/grant-permission";
-import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import { Button } from "@/components/common/ui/button";
 import { actionGrantPermission } from "@/constants";
-import { fnDeleteRows } from "@/lib/fnTable";
-import { PlusCircle } from "lucide-react";
+import useFetchData from "@/hooks/useRefetchData";
+import { useSetData } from "@/hooks/useSetData";
+import { fnAddRowsVer2, fnDeleteRows } from "@/lib/fnTable";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import { DetailWarehouse } from "./DetailWarehouse";
 import { FormCreateWarehouse } from "./FormCreateWarehouse";
 
-let data = [
-  { WAREHOUSE_CODE: "SFCM", WAREHOUSE_NAME: "SFCM", ACREAGE: 10000 },
-  { WAREHOUSE_CODE: "CFS", WAREHOUSE_NAME: "CFS", ACREAGE: 10000 }
-];
-
 export function WarehouseList() {
+  const dispatch = useDispatch();
   const gridRef = useRef(null);
-  const [isOpenCreateWarehouse, setIsOpenCreateWarehouse] = useState(false);
   const toast = useCustomToast();
-  const [rowData, setRowData] = useState([]);
   const [detailWarehouse, setDetailData] = useState({});
-  const [isOpenDetailWarehouse, setIsOpenDetailWarehouse] = useState(false);
-  const [searchData, setSearchData] = useState("");
+  const { data: warehouses, revalidate } = useFetchData({ service: getAllWarehouse });
+  const [rowData, setRowData] = useSetData(warehouses);
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
-      width: 60,
-      comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
+      width: 50,
+      comparator: (nodeA, nodeB) => {
         return nodeA.rowIndex - nodeB.rowIndex;
       },
       valueFormatter: params => {
         return Number(params.node.id) + 1;
-      }
+      },
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: "Mã kho *",
       field: "WAREHOUSE_CODE",
       flex: 1,
-      filter: true
+      filter: true,
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: "Tên kho *",
       field: "WAREHOUSE_NAME",
       flex: 1,
-      filter: true
+      filter: true,
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: "Diện tích (m2) *",
@@ -56,114 +60,103 @@ export function WarehouseList() {
         min: 0,
         max: 10000
       },
-      flex: 1
+      flex: 1,
+      editable: OnlyEditWithInsertCell
     },
     {
-      flex: 0.5,
+      flex: 0.6,
+      minWidth: 100,
       cellRenderer: params => {
+        if (params.data.status === "insert") return null;
         return (
-          <span
+          <Button
+            variant="link"
             onClick={() => {
               setDetailData(params.data);
-              setIsOpenDetailWarehouse(true);
             }}
             className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
           >
             Xem
-          </span>
+          </Button>
         );
       }
     }
   ];
-  const handleAddRow = () => {};
-
-  const handleSave = () => {};
 
   const handleDeleteData = deteleData => {
-    let { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
-      [deteleData],
-      rowData,
-      "WAREHOUSE_CODE"
-    );
-    deleteWarehouse(deleteIdList)
+    let { deleteIdList } = fnDeleteRows(deteleData, rowData, "WAREHOUSE_CODE");
+    deleteWarehouse({ data: deleteIdList })
       .then(res => {
-        setIsOpenDetailWarehouse(false);
         toast.success(res);
-        setRowData(newRowDataAfterDeleted);
+        revalidate();
       })
       .catch(err => {
         toast.error(err);
       });
   };
 
-  const handleCreateWarehouse = newRows => {
-    setRowData(prevRowData => [...newRows, ...prevRowData]);
+  const handleAddRow = () => {
+    let newRowData = fnAddRowsVer2(rowData, colDefs);
+    setRowData(newRowData);
   };
+  const handleSaveRows = () => {
+    dispatch(setGlobalLoading(true));
+    const newData = rowData
+      .filter(item => item.status === "insert")
+      .map(({ key, status, ...rest }) => rest);
+
+    createWarehouse({ data: { insert: newData, update: [] } })
+      .then(res => {
+        toast.success(res);
+        revalidate();
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
   return (
     <Section>
       <Section.Header title="Danh sách các kho">
         <GrantPermission action={actionGrantPermission.CREATE}>
-          <Button
-            variant="blue"
-            className="h-[36px] px-[16px] py-[8px] text-xs"
-            onClick={() => {
-              setIsOpenCreateWarehouse(true);
-            }}
-          >
-            <PlusCircle className="mr-2 size-4" />
-            Tạo kho mới
-          </Button>
+          <FormCreateWarehouse revalidate={revalidate} />
         </GrantPermission>
       </Section.Header>
 
       <Section.Content>
-        <SearchInput
-          handleSearch={value => {
-            setSearchData(value);
-          }}
-        />
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
         <AgGrid
+          contextMenu
           setRowData={data => {
             setRowData(data);
           }}
           ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData?.filter(item => {
-            if (searchData === "") return item;
-            return (
-              item.WAREHOUSE_CODE.toLowerCase().includes(searchData.toLowerCase()) ||
-              item.WAREHOUSE_NAME.toLowerCase().includes(searchData.toLowerCase())
-            );
-          })}
+          rowData={rowData}
           colDefs={colDefs}
           onDeleteRow={selectedRows => {
-            handleDeleteRow(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getAllWarehouse().then(res => {
-              setRowData(res.data.metadata);
-            });
+            handleDeleteData(selectedRows);
           }}
         />
       </Section.Content>
-      <FormCreateWarehouse
-        open={isOpenCreateWarehouse}
-        onOpenChange={() => {
-          setIsOpenCreateWarehouse(false);
-        }}
-        onCreateData={newRows => {
-          handleCreateWarehouse(newRows);
-        }}
-      />
+
       <DetailWarehouse
         onDeleteData={deteleData => {
           handleDeleteData(deteleData);
+          setDetailData({});
         }}
-        open={isOpenDetailWarehouse}
         detailData={detailWarehouse}
         onOpenChange={() => {
-          setIsOpenDetailWarehouse(false);
+          setDetailData({});
         }}
       />
     </Section>

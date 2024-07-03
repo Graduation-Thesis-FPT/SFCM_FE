@@ -137,7 +137,10 @@ const AgGrid = forwardRef(
         <ContextMenuContent ref={contextRef} className="w-64">
           <GrantPermission action={actionGrantPermission.DELETE}>
             <ContextMenuItem
-              className={`font-medium  focus:text-red-500 ${selectedRows.length === 0 ? "text-red-500/50" : "text-red-500"}`}
+              className={cn(
+                "font-medium focus:text-red-500",
+                selectedRows.length === 0 ? "text-red-500/50" : "text-red-500"
+              )}
               disabled={selectedRows.length === 0 ? true : false}
               onClick={() => {
                 handleDeleteRow(selectedRows);
