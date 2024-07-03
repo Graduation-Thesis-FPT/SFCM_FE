@@ -58,13 +58,7 @@ export function WarehouseDesign() {
       field: BS_BLOCK.WAREHOUSE_CODE.field,
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell,
       cellRenderer: params => WarehouseCodeRender(params, warehouses)
-
-      // cellEditor: "agSelectCellEditor",
-      // cellEditorParams: {
-      //   values: warehouses.map(item => item.WAREHOUSE_CODE)
-      // }
     },
     {
       headerName: BS_BLOCK.BLOCK_CODE.headerName,
@@ -78,7 +72,7 @@ export function WarehouseDesign() {
       field: BS_BLOCK.BLOCK_NAME.field,
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: true
     },
     {
       headerName: BS_BLOCK.TIER_COUNT.headerName,
@@ -89,7 +83,7 @@ export function WarehouseDesign() {
         min: 0,
         max: 1000
       },
-      editable: OnlyEditWithInsertCell
+      editable: true
     },
     {
       headerName: BS_BLOCK.SLOT_COUNT.headerName,
@@ -100,7 +94,7 @@ export function WarehouseDesign() {
         max: 1000
       },
       flex: 1,
-      editable: OnlyEditWithInsertCell
+      editable: true
     },
     {
       headerName: "Diện tích",
@@ -117,7 +111,7 @@ export function WarehouseDesign() {
           headerClass: " center-header",
           cellStyle: { textAlign: "center" },
           flex: 1,
-          editable: OnlyEditWithInsertCell
+          editable: true
         },
         {
           headerName: BS_BLOCK.BLOCK_WIDTH.headerName,
@@ -130,7 +124,7 @@ export function WarehouseDesign() {
           headerClass: " center-header",
           cellStyle: { textAlign: "center" },
           flex: 1,
-          editable: OnlyEditWithInsertCell
+          editable: true
         },
         {
           headerName: BS_BLOCK.BLOCK_HEIGHT.headerName,
@@ -143,7 +137,7 @@ export function WarehouseDesign() {
           headerClass: " center-header",
           cellStyle: { textAlign: "center" },
           flex: 1,
-          editable: OnlyEditWithInsertCell
+          editable: true
         }
       ]
     }
