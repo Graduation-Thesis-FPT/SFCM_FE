@@ -11,9 +11,10 @@ import {
   ContextMenuTrigger
 } from "@/components/common/ui/context-menu";
 import { actionGrantPermission } from "@/constants";
-import { Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import moment from "moment";
 import { GrantPermission } from "../grant-permission";
+import { Checkbox } from "../ui/checkbox";
 
 const AgGrid = forwardRef(
   (
@@ -32,6 +33,7 @@ const AgGrid = forwardRef(
   ) => {
     const [selectedRows, setSelectedRows] = useState([]);
     const contextRef = useRef(null);
+    const [checkBoxSelected, setCheckBoxSelected] = useState(false);
     const dataTypeDefinitions = useMemo(() => {
       return {
         email: {
@@ -84,7 +86,19 @@ const AgGrid = forwardRef(
     };
 
     const onSelectionChanged = useCallback(() => {
-      setSelectedRows(ref?.current?.api.getSelectedRows());
+      const dataSelected = ref?.current?.api.getSelectedRows();
+      if (ref?.current?.props?.rowData.length === dataSelected.length) {
+        setCheckBoxSelected(true);
+      } else if (dataSelected.length === 0) {
+        setCheckBoxSelected(false);
+      } else if (
+        dataSelected.length > 0 &&
+        dataSelected.length < ref?.current?.props?.rowData.length
+      ) {
+        setCheckBoxSelected("indeterminate");
+      }
+
+      setSelectedRows(dataSelected);
     }, []);
 
     const getRowClass = useCallback(
@@ -96,17 +110,38 @@ const AgGrid = forwardRef(
       [selectedRows]
     );
 
-    const clearSelectedRows = useCallback(() => {
-      ref?.current?.api.deselectAll();
-    }, []);
+    const handleCheckBoxSelected = () => {
+      if (ref?.current?.props?.rowData.length === 0) return;
+      let nextStatus;
+      if (checkBoxSelected === "indeterminate") {
+        ref.current.api.selectAll();
+        nextStatus = true;
+      } else if (checkBoxSelected === true) {
+        ref.current.api.deselectAll();
+        nextStatus = false;
+      } else if (checkBoxSelected === false) {
+        ref.current.api.selectAll();
+        nextStatus = true;
+      }
+      setCheckBoxSelected(nextStatus);
+    };
 
     return (
       <ContextMenu>
         <ContextMenuTrigger className=" h-full" disabled={contextMenu === true ? false : true}>
           <div className={cn("ag-theme-quartz custom-header relative h-full", className)}>
-            {showCountRowSelected && selectedRows.length > 0 && (
-              <div className="pointer-events-none absolute -top-10 left-0">
-                Đang chọn {selectedRows.length} dòng
+            {showCountRowSelected && (
+              <div className="absolute -top-8 left-0 flex cursor-default">
+                <Checkbox
+                  className="mr-2 border-blue-600 data-[state=checked]:bg-blue-600 data-[state=indeterminate]:bg-blue-600 "
+                  checked={checkBoxSelected}
+                  onCheckedChange={handleCheckBoxSelected}
+                />
+                {checkBoxSelected === "indeterminate"
+                  ? `Đang chọn ${selectedRows.length} dòng`
+                  : checkBoxSelected
+                    ? `Đang chọn tất cả`
+                    : `Chưa chọn dòng`}
               </div>
             )}
 

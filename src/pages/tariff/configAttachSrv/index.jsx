@@ -162,7 +162,9 @@ export function ConfigAttachSrv() {
       </Section.Header>
       <Section.Content>
         <span className="flex items-end justify-between">
-          <div className="text-lg font-bold text-gray-900">Danh sách các dịch vụ đính kèm</div>
+          <span className="text-lg font-bold leading-5 text-gray-900">
+            Danh sách các dịch vụ đính kèm
+          </span>
           <LayoutTool>
             <GrantPermission action={actionGrantPermission.UPDATE}>
               <BtnSave onClick={handleSaveRows} />

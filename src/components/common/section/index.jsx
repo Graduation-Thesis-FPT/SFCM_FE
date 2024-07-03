@@ -22,10 +22,9 @@ Section.Header = ({ title, children, className }) => {
 };
 
 Section.Content = ({ children, className }) => {
-  return <div className={cn("flex flex-1 flex-col gap-4 p-6", className)}>{children}</div>
+  return <div className={cn("flex flex-1 flex-col gap-4 px-6 pt-4", className)}>{children}</div>;
 };
 
-
 Section.Table = ({ children, className }) => {
-  return <div className={cn("mt-6 flex-1", className)}>{children}</div>;
+  return <div className={cn("flex-1", className)}>{children}</div>;
 };
