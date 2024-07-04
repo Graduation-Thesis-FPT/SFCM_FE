@@ -152,3 +152,28 @@ export class config_attach_srv extends CommonColumns {
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án *" };
   ATTACH_SERVICE_CODE = { field: "ATTACH_SERVICE_CODE", headerName: "Mã dịch vụ *" };
 }
+
+export class deliver_order extends CommonColumns {
+  DE_ORDER_NO = { field: "DE_ORDER_NO", headerName: "Mã đơn hàng *" };
+  CUSTOMER_CODE = { field: "CUSTOMER_CODE", headerName: "Mã khách hàng *" };
+  CONTAINER_ID = { field: "CONTAINER_ID", headerName: "Số container" };
+  PACKAGE_ID = { field: "PACKAGE_ID", headerName: "Số lô" };
+  INV_ID = { field: "INV_ID", headerName: "Số hóa đơn" };
+  INV_DRAFT_ID = { field: "INV_DRAFT_ID", headerName: "Số hóa đơn tạm" };
+  ISSUE_DATE = { field: "ISSUE_DATE", headerName: "Ngày làm lệnh *" };
+  EXP_DATE = { field: "EXP_DATE", headerName: "Ngày hết hạn lệnh *" };
+  TOTAL_CBM = { field: "TOTAL_CBM", headerName: "Tổng khối lượng (m³)" };
+  JOB_CHK = { field: "JOB_CHK", headerName: "Kiểm đếm *" };
+  NOTE = { field: "NOTE", headerName: "Ghi chú" };
+}
+
+export class job_quantity_check extends CommonColumns {
+  ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
+  PACKAGE_ID = { field: "PACKAGE_ID", headerName: "Số lô *" };
+  ESTIMATED_CARGO_PIECE = { field: "ESTIMATED_CARGO_PIECE", headerName: "Số lượng dự kiến" };
+  ACTUAL_CARGO_PIECE = { field: "ACTUAL_CARGO_PIECE", headerName: "Số lượng thực tế" };
+  SEQ = { field: "SEQ", headerName: "Thứ tự" };
+  START_DATE = { field: "START_DATE", headerName: "Ngày bắt đầu" };
+  FINISH_DATE = { field: "FINISH_DATE", headerName: "Ngày kết thúc" };
+  JOB_STATUS = { field: "JOB_STATUS", headerName: "Trạng thái" };
+}

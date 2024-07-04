@@ -23,3 +23,6 @@ export * from "./tariff/discountTariff";
 export * from "./tariff/configAttachSrv";
 //procedure
 export * from "./procedure/importOrder";
+//warehouseOperation
+export * from "./warehouseOperation/importTally";
+export * from "./warehouseOperation/exportTally";

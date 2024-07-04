@@ -63,7 +63,7 @@ export const SUCCESS_MESSAGE = {
   RESET_PASSWORD_SUCCESS: "Đặt lại mật khẩu thành công",
 
   //common
-  GET_DATA_SUCCESS: "Lấy dữ liệu thành công",
+  GET_DATA_SUCCESS: "Tải dữ liệu thành công",
   // BLOCK
   SAVE_BLOCK_SUCCESS: "Lưu khối thành công",
   DELETE_BLOCK_SUCCESS: "Xóa khối thành công",

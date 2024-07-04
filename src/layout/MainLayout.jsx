@@ -37,7 +37,7 @@ export function MainLayout() {
   };
 
   return (
-    <div className="flex h-screen w-screen flex-row gap-2 bg-gray-50 duration-200">
+    <div className="flex h-screen min-w-0 flex-row gap-2 bg-gray-50 duration-200">
       <div
         className={cn(
           "h-full rounded-r-md bg-white transition-all ease-linear",
@@ -121,7 +121,7 @@ export function MainLayout() {
         </header>
         <main
           className={cn(
-            "w-full flex-1 rounded-md bg-white",
+            "min-h-0 w-full flex-1 rounded-md bg-white",
             globalLoading && "pointer-events-none opacity-50"
           )}
         >

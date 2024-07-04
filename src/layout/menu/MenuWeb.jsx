@@ -56,8 +56,7 @@ export default function MenuWeb({ handleScale, isCollapse, menu }) {
                 item.MENU_CODE === "input-data" ||
                 item.MENU_CODE === "tariff" ||
                 item.MENU_CODE === "procedure" ||
-                item.MENU_CODE === "gate-operation" ||
-                item.MENU_CODE === "query-info"
+                item.MENU_CODE === "warehouse-operation"
               )
             )
               return null;
