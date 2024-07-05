@@ -4,6 +4,7 @@ import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { Textarea } from "@/components/common/ui/textarea";
 import { cn } from "@/lib/utils";
+import moment from "moment";
 
 export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQuantityCheckList }) {
   const JOB_QUANTITY_CHECK = new job_quantity_check();
@@ -42,20 +43,26 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
     onChangeJobQuantityCheckList(newList);
   };
 
+  if (!jobQuantityCheckList.length) {
+    return <div className="mt-10 text-center text-sm opacity-50">Chưa thực hiện kiểm đếm</div>;
+  }
+
   return (
-    <div className="space-y-4 overflow-auto">
+    <div className="space-y-4 overflow-auto pt-4">
       {jobQuantityCheckList?.map((item, index) => (
         <div
           key={index}
           className={cn(
+            "m-auto w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-105",
             "rounded-md border bg-gray-50 p-4",
-            item.status === "insert" && "bg-green-50"
+            item.status === "insert" && "bg-green-50",
+            item.status === "update" && "bg-yellow-50"
           )}
         >
           <span className="flex justify-between text-sm">
             <div>STT: {item.SEQ}</div>
             <div className="font-bold">{item.PALLET_NO}</div>
-            <div></div>
+            <div>{item.START_DATE ? moment(item.START_DATE).format("DD/MM/Y HH:mm") : null}</div>
             {/* <Button size="tool" variant="none-border" className="bg-gray-200">
               <FileUp className="h-4 w-4" />
             </Button> */}

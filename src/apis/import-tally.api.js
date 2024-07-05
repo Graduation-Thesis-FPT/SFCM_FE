@@ -9,5 +9,5 @@ export const getImportTallyContainerInfoByCONTAINER_ID = async CONTAINER_ID =>
 export const getAllJobQuantityCheckByPACKAGE_ID = async PACKAGE_ID =>
   await axiosPrivate.get(`job-quantity-check/${PACKAGE_ID}`);
 
-export const insertJobQuantityCheck = async arr =>
-  await axiosPrivate.post(`job-quantity-check`, arr);
+export const insertAndUpdateJobQuantityCheck = async (PACKAGE_ID, arr) =>
+  await axiosPrivate.post(`job-quantity-check/${PACKAGE_ID}`, arr);

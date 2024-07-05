@@ -2,7 +2,7 @@ import {
   getAllImportTallyContainer,
   getAllJobQuantityCheckByPACKAGE_ID,
   getImportTallyContainerInfoByCONTAINER_ID,
-  insertJobQuantityCheck
+  insertAndUpdateJobQuantityCheck
 } from "@/apis/import-tally.api";
 import { deliver_order } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -31,6 +31,11 @@ import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutToo
 import { v4 as uuidv4 } from "uuid";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup
+} from "@/components/common/ui/resizable";
 
 export function ImportTally() {
   const { data: importTallyContainerList, revalidate } = useFetchData({
@@ -157,7 +162,7 @@ export function ImportTally() {
     }
 
     dispatch(setGlobalLoading(true));
-    insertJobQuantityCheck(insertAndUpdateData)
+    insertAndUpdateJobQuantityCheck(selectedPackage.PK_ROWGUID, insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getJobQuantityCheckByPACKAGE_ID();
@@ -205,57 +210,83 @@ export function ImportTally() {
           />
         </span>
       </Section.Header>
-      <Section.Content className="grid min-h-0 grid-cols-2 gap-0 p-0">
-        <div className="flex min-h-0 flex-col">
-          <div className="py-4 text-center text-lg font-bold leading-5 text-gray-900">
-            Danh sách các kiện hàng
-          </div>
-          <div className="mx-4 space-y-4 overflow-y-auto">
-            {importTallyPackageList.map(item => (
-              <div
-                key={item.HOUSE_BILL}
-                className={cn(
-                  "flex cursor-pointer items-end justify-between rounded-md border p-4 hover:bg-primary-foreground",
-                  selectedPackage?.PK_ROWGUID === item.PK_ROWGUID && "bg-primary-foreground"
-                )}
-                onClick={() => {
-                  handleSelectPackage(item);
-                }}
-              >
-                <span>
-                  <div>Số Housebill: {item?.HOUSE_BILL}</div>
-                  <div>Số tờ khai: {item?.DECLARE_NO}</div>
-                  <div>Số Seal: {item?.SEALNO}</div>
-                  <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
-                </span>
-                <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel>
+          <div className="flex h-full flex-col px-4">
+            <div className="pt-8 text-center text-lg font-bold leading-5 text-gray-900">
+              Danh sách các kiện hàng
+            </div>
+            {importTallyPackageList.length === 0 ? (
+              <div className="mt-10 text-center text-sm opacity-50">Không có dữ liệu</div>
+            ) : (
+              <div className="h-full space-y-4 overflow-y-auto pt-4 text-sm">
+                {importTallyPackageList.map(item => (
+                  <div
+                    key={item.HOUSE_BILL}
+                    className={cn(
+                      "m-auto flex cursor-pointer justify-between rounded-md border p-4",
+                      selectedPackage?.PK_ROWGUID === item.PK_ROWGUID && "bg-blue-50 ",
+                      "w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-105"
+                    )}
+                    onClick={() => {
+                      handleSelectPackage(item);
+                    }}
+                  >
+                    <span>
+                      <div>Số Housebill: {item?.HOUSE_BILL}</div>
+                      <div>Số tờ khai: {item?.DECLARE_NO}</div>
+                      <div>Số Seal: {item?.SEALNO}</div>
+                      <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
+                    </span>
+                    <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel>
+          <div className="flex h-full flex-col border-l px-4">
+            <div className="pt-8 text-center text-lg font-bold leading-5 text-gray-900">
+              Kiểm đếm
+            </div>
+            {!selectedPackage.HOUSE_BILL ? (
+              <div className="mt-10 text-center text-sm opacity-50">Không có dữ liệu</div>
+            ) : (
+              <div className="flex h-full min-h-0 flex-col">
+                <span className="mx-auto flex w-[95%] justify-between pt-4 text-sm">
+                  <div className="flex flex-col justify-between">
+                    <div>
+                      Số lượng hàng chưa kiểm đếm:{" "}
+                      <span className="font-bold">
+                        {calculateEstimatedCargoPiece()}/{selectedPackage.CARGO_PIECE}
+                      </span>
+                    </div>
+                    <div>
+                      Số Housebill: <span className="font-bold">{selectedPackage.HOUSE_BILL}</span>
+                    </div>
+                  </div>
 
-        <div className="flex min-h-0 flex-col space-y-4 border-l px-4 pt-4">
-          <div className="text-center text-lg font-bold leading-5 text-gray-900">Kiểm đếm</div>
-          <span className="flex justify-between text-sm">
-            <div>
-              Số lượng hàng chưa kiểm đếm:
-              {calculateEstimatedCargoPiece()}/{selectedPackage.CARGO_PIECE}
-            </div>
-            <div>
-              <LayoutTool>
-                <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
-                <BtnSave onClick={handleSaveJobQuantityCheck} />
-              </LayoutTool>
-            </div>
-          </span>
-          <JobQuantityCheckList
-            jobQuantityCheckList={jobQuantityCheckList}
-            onChangeJobQuantityCheckList={newList => {
-              setJobQuantityCheckList(newList);
-            }}
-          />
-        </div>
-      </Section.Content>
+                  <div>
+                    <LayoutTool>
+                      <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
+                      <BtnSave onClick={handleSaveJobQuantityCheck} />
+                    </LayoutTool>
+                  </div>
+                </span>
+
+                <JobQuantityCheckList
+                  jobQuantityCheckList={jobQuantityCheckList}
+                  onChangeJobQuantityCheckList={newList => {
+                    setJobQuantityCheckList(newList);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </Section>
   );
 }
