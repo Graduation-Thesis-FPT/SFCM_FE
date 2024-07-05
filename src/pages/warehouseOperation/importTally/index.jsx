@@ -1,37 +1,36 @@
 import {
   getAllImportTallyContainer,
   getAllJobQuantityCheckByPACKAGE_ID,
-  getImportTallyContainerInfoByCONTAINER_ID
+  getImportTallyContainerInfoByCONTAINER_ID,
+  insertJobQuantityCheck
 } from "@/apis/import-tally.api";
 import { deliver_order } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Section } from "@/components/common/section";
 import { SelectSearch } from "@/components/common/select-search";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/common/ui/card";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
-import { ScrollArea } from "@/components/common/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/common/ui/select";
 import useFetchData from "@/hooks/useRefetchData";
 import { cn } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import moment from "moment";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { JobQuantityCheckList } from "./jobQuantityCheckList";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from "@/components/common/ui/select";
+import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { v4 as uuidv4 } from "uuid";
+import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
+import { fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 
 export function ImportTally() {
   const { data: importTallyContainerList, revalidate } = useFetchData({
@@ -58,6 +57,9 @@ export function ImportTally() {
         ISSUE_DATE: "",
         EXP_DATE: ""
       });
+      setImportTallyPackageList([]);
+      setSelectedPackage({});
+      setJobQuantityCheckList([]);
       return;
     }
 
@@ -92,6 +94,73 @@ export function ImportTally() {
     getAllJobQuantityCheckByPACKAGE_ID(packageInfo.PK_ROWGUID)
       .then(res => {
         setJobQuantityCheckList(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const getJobQuantityCheckByPACKAGE_ID = () => {
+    getAllJobQuantityCheckByPACKAGE_ID(selectedPackage.PK_ROWGUID)
+      .then(res => {
+        setJobQuantityCheckList(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const calculateEstimatedCargoPiece = () => {
+    let totalEstimatedCargoPiece = 0;
+    jobQuantityCheckList.forEach(item => {
+      totalEstimatedCargoPiece += item.ESTIMATED_CARGO_PIECE;
+    });
+    return selectedPackage.CARGO_PIECE - totalEstimatedCargoPiece;
+  };
+
+  const handleAddNewJobQuantityCheck = () => {
+    if (!calculateEstimatedCargoPiece()) {
+      return toast.warning("Đã kiểm đếm hết số lượng hàng");
+    }
+    let newRow = {
+      key: uuidv4(),
+      status: "insert",
+      PACKAGE_ID: selectedPackage.PK_ROWGUID,
+      SEQ: jobQuantityCheckList.length + 1,
+      ESTIMATED_CARGO_PIECE: calculateEstimatedCargoPiece(),
+      ACTUAL_CARGO_PIECE: selectedPackage.CARGO_PIECE,
+      START_DATE: new Date(),
+      JOB_STATUS: "I",
+      PALLET_LENGTH: 0,
+      PALLET_WIDTH: 0,
+      PALLET_HEIGHT: 0,
+      HOUSE_BILL: selectedPackage.HOUSE_BILL
+    };
+    setJobQuantityCheckList([newRow, ...jobQuantityCheckList]);
+  };
+
+  const handleSaveJobQuantityCheck = () => {
+    let { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(jobQuantityCheckList);
+
+    if (!isContinue) {
+      return toast.warning("Không có dữ liệu thay đổi");
+    }
+
+    if (calculateEstimatedCargoPiece() < 0) {
+      return toast.warning("Số lượng hàng kiểm đếm không chính xác. Vui lòng kiểm tra lại!");
+    }
+
+    dispatch(setGlobalLoading(true));
+    insertJobQuantityCheck(insertAndUpdateData)
+      .then(res => {
+        toast.success(res);
+        getJobQuantityCheckByPACKAGE_ID();
       })
       .catch(err => {
         toast.error(err);
@@ -165,12 +234,26 @@ export function ImportTally() {
           </div>
         </div>
 
-        <div className="border-l p-4">
-          {jobQuantityCheckList?.map(item => (
-            <div key={item.ROWGUID} className="h-[1000px]">
-              {item.ESTIMATED_CARGO_PIECE}-{item.ACTUAL_CARGO_PIECE}-{item.ROWGUID}
+        <div className="flex min-h-0 flex-col space-y-4 border-l px-4 pt-4">
+          <div className="text-center text-lg font-bold leading-5 text-gray-900">Kiểm đếm</div>
+          <span className="flex justify-between text-sm">
+            <div>
+              Số lượng hàng chưa kiểm đếm:
+              {calculateEstimatedCargoPiece()}/{selectedPackage.CARGO_PIECE}
             </div>
-          ))}
+            <div>
+              <LayoutTool>
+                <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
+                <BtnSave onClick={handleSaveJobQuantityCheck} />
+              </LayoutTool>
+            </div>
+          </span>
+          <JobQuantityCheckList
+            jobQuantityCheckList={jobQuantityCheckList}
+            onChangeJobQuantityCheckList={newList => {
+              setJobQuantityCheckList(newList);
+            }}
+          />
         </div>
       </Section.Content>
     </Section>

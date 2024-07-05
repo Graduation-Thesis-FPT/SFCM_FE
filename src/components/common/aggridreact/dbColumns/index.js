@@ -170,10 +170,22 @@ export class deliver_order extends CommonColumns {
 export class job_quantity_check extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   PACKAGE_ID = { field: "PACKAGE_ID", headerName: "Số lô *" };
-  ESTIMATED_CARGO_PIECE = { field: "ESTIMATED_CARGO_PIECE", headerName: "Số lượng dự kiến" };
-  ACTUAL_CARGO_PIECE = { field: "ACTUAL_CARGO_PIECE", headerName: "Số lượng thực tế" };
+  ESTIMATED_CARGO_PIECE = { field: "ESTIMATED_CARGO_PIECE", headerName: "Số lượng hàng *" };
+  ACTUAL_CARGO_PIECE = { field: "ACTUAL_CARGO_PIECE", headerName: "Tổng số lượng kiện hàng" };
   SEQ = { field: "SEQ", headerName: "Thứ tự" };
   START_DATE = { field: "START_DATE", headerName: "Ngày bắt đầu" };
   FINISH_DATE = { field: "FINISH_DATE", headerName: "Ngày kết thúc" };
   JOB_STATUS = { field: "JOB_STATUS", headerName: "Trạng thái" };
+  NOTE = { field: "NOTE", headerName: "Ghi chú" };
+}
+
+export class dt_pallet_stock extends CommonColumns {
+  PALLET_NO = { field: "PALLET_NO", headerName: "Mã pallet *" };
+  JOB_QUANTITY_ID = { field: "JOB_QUANTITY_ID", headerName: "Mã kiểm đếm *" };
+  CELL_ID = { field: "CELL_ID", headerName: "Mã ô" };
+  PALLET_STATUS = { field: "PALLET_STATUS", headerName: "Trạng thái pallet" };
+  PALLET_LENGTH = { field: "PALLET_LENGTH", headerName: "Chiều dài" };
+  PALLET_WIDTH = { field: "PALLET_WIDTH", headerName: "Chiều rộng" };
+  PALLET_HEIGHT = { field: "PALLET_HEIGHT", headerName: "Chiều cao" };
+  NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
