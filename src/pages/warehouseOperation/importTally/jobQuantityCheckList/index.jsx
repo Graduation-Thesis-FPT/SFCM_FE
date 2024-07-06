@@ -87,7 +87,7 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
                     min={col.field === "ESTIMATED_CARGO_PIECE" ? 1 : 0}
                     id={col.field}
                     placeholder="Nhập số"
-                    value={item[col.field] ?? 0}
+                    value={Number(item[col.field]).toString() ?? 0}
                     onChange={e => {
                       handleOnChange(col.field, e.target.value, item);
                     }}
