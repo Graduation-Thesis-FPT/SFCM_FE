@@ -36,6 +36,14 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from "@/components/common/ui/resizable";
+import { Button } from "@/components/common/ui/button";
+import {
+  CheckCircle,
+  CheckCircle2,
+  CheckCircle2Icon,
+  CircleCheck,
+  CircleCheckBigIcon
+} from "lucide-react";
 
 export function ImportTally() {
   const { data: importTallyContainerList, revalidate } = useFetchData({
@@ -224,9 +232,9 @@ export function ImportTally() {
                   <div
                     key={item.HOUSE_BILL}
                     className={cn(
-                      "m-auto flex cursor-pointer justify-between rounded-md border p-4",
+                      "flex cursor-pointer justify-between rounded-md border p-4",
                       selectedPackage?.PK_ROWGUID === item.PK_ROWGUID && "bg-blue-50 ",
-                      "w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-105"
+                      "m-auto w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-105"
                     )}
                     onClick={() => {
                       handleSelectPackage(item);
@@ -238,6 +246,7 @@ export function ImportTally() {
                       <div>Số Seal: {item?.SEALNO}</div>
                       <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
                     </span>
+
                     <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
                   </div>
                 ))}

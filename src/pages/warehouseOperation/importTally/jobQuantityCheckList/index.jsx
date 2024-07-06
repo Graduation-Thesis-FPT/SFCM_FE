@@ -48,12 +48,12 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
   }
 
   return (
-    <div className="space-y-4 overflow-auto pt-4">
+    <div className="h-full space-y-4 overflow-auto pt-4">
       {jobQuantityCheckList?.map((item, index) => (
         <div
           key={index}
           className={cn(
-            "m-auto w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-105",
+            "m-auto w-[95%] shadow-lg transition-all duration-300 hover:scale-105",
             "rounded-md border bg-gray-50 p-4",
             item.status === "insert" && "bg-green-50",
             item.status === "update" && "bg-yellow-50"
