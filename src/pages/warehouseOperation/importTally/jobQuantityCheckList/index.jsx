@@ -1,12 +1,15 @@
 import { dt_pallet_stock, job_quantity_check } from "@/components/common/aggridreact/dbColumns";
-import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { Textarea } from "@/components/common/ui/textarea";
 import { cn } from "@/lib/utils";
-import moment from "moment";
+import { PrintPallet } from "./PrintPallet";
 
-export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQuantityCheckList }) {
+export function JobQuantityCheckList({
+  jobQuantityCheckList = [],
+  onChangeJobQuantityCheckList,
+  isCompleteJobQuantityCheck
+}) {
   const JOB_QUANTITY_CHECK = new job_quantity_check();
   const DT_PALLET_STOCK = new dt_pallet_stock();
   const colDefs = [
@@ -53,8 +56,8 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
         <div
           key={index}
           className={cn(
-            "m-auto w-[95%] shadow-lg transition-all duration-300 hover:scale-105",
-            "rounded-md border bg-gray-50 p-4",
+            "m-auto w-[95%] shadow-lg transition-all duration-300 hover:scale-[1.02]",
+            "rounded-md border bg-gray-50 px-8 py-6",
             item.status === "insert" && "bg-green-50",
             item.status === "update" && "bg-yellow-50"
           )}
@@ -62,10 +65,7 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
           <span className="flex justify-between text-sm">
             <div>STT: {item.SEQ}</div>
             <div className="font-bold">{item.PALLET_NO}</div>
-            <div>{item.START_DATE ? moment(item.START_DATE).format("DD/MM/Y HH:mm") : null}</div>
-            {/* <Button size="tool" variant="none-border" className="bg-gray-200">
-              <FileUp className="h-4 w-4" />
-            </Button> */}
+            <div>{isCompleteJobQuantityCheck() && <PrintPallet />}</div>
           </span>
           <div className="grid grid-cols-4 gap-x-4 gap-y-2">
             {colDefs.map((col, index) => (
@@ -73,7 +73,11 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
                 <Label htmlFor={col.field}>{col.headerName}</Label>
                 {col.field === "NOTE" ? (
                   <Textarea
-                    className="h-10 min-h-10 bg-white"
+                    readOnly={isCompleteJobQuantityCheck()}
+                    className={cn(
+                      "h-10 min-h-10 bg-white",
+                      isCompleteJobQuantityCheck() && "cursor-not-allowed"
+                    )}
                     id={col.field}
                     placeholder="Nhập ghi chú"
                     value={item[col.field] ?? ""}
@@ -83,6 +87,8 @@ export function JobQuantityCheckList({ jobQuantityCheckList = [], onChangeJobQua
                   />
                 ) : (
                   <Input
+                    className={cn(isCompleteJobQuantityCheck() && "cursor-not-allowed")}
+                    readOnly={isCompleteJobQuantityCheck()}
                     type="number"
                     min={col.field === "ESTIMATED_CARGO_PIECE" ? 1 : 0}
                     id={col.field}

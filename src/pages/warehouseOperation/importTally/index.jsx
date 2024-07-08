@@ -1,4 +1,5 @@
 import {
+  completeJobQuantityCheckByPackageId,
   getAllImportTallyContainer,
   getAllJobQuantityCheckByPACKAGE_ID,
   getImportTallyContainerInfoByCONTAINER_ID,
@@ -38,12 +39,20 @@ import {
 } from "@/components/common/ui/resizable";
 import { Button } from "@/components/common/ui/button";
 import {
+  Check,
   CheckCircle,
   CheckCircle2,
   CheckCircle2Icon,
   CircleCheck,
-  CircleCheckBigIcon
+  CircleCheckBigIcon,
+  SquareCheckBig
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/common/ui/tooltip";
 
 export function ImportTally() {
   const { data: importTallyContainerList, revalidate } = useFetchData({
@@ -182,6 +191,45 @@ export function ImportTally() {
         dispatch(setGlobalLoading(false));
       });
   };
+
+  const isCompleteJobQuantityCheck = () => {
+    if (
+      jobQuantityCheckList.filter(item => item.JOB_STATUS === "C").length ===
+        jobQuantityCheckList.length &&
+      jobQuantityCheckList.length > 0
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  const handleCompleteJobQuantityCheck = () => {
+    if (isCompleteJobQuantityCheck()) {
+      return toast.warning("Đã xác nhận hoàn thành kiểm đếm");
+    }
+
+    if (jobQuantityCheckList.filter(item => item.status).length > 0) {
+      return toast.warning("Vui lòng lưu dữ liệu trước khi hoàn thành kiểm đếm");
+    }
+
+    if (calculateEstimatedCargoPiece()) {
+      return toast.warning("Vui lòng kiểm đếm hết số lượng hàng");
+    }
+
+    dispatch(setGlobalLoading(true));
+    completeJobQuantityCheckByPackageId(selectedPackage.PK_ROWGUID)
+      .then(res => {
+        toast.success(res);
+        getJobQuantityCheckByPACKAGE_ID();
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
   return (
     <Section>
       <Section.Header className="grid grid-cols-4 gap-3">
@@ -232,9 +280,9 @@ export function ImportTally() {
                   <div
                     key={item.HOUSE_BILL}
                     className={cn(
-                      "flex cursor-pointer justify-between rounded-md border p-4",
+                      "flex cursor-pointer justify-between rounded-md border px-8 py-6",
                       selectedPackage?.PK_ROWGUID === item.PK_ROWGUID && "bg-blue-50 ",
-                      "m-auto w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-105"
+                      "m-auto w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-[1.02]"
                     )}
                     onClick={() => {
                       handleSelectPackage(item);
@@ -246,7 +294,6 @@ export function ImportTally() {
                       <div>Số Seal: {item?.SEALNO}</div>
                       <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
                     </span>
-
                     <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
                   </div>
                 ))}
@@ -278,14 +325,38 @@ export function ImportTally() {
                   </div>
 
                   <div>
-                    <LayoutTool>
-                      <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
-                      <BtnSave onClick={handleSaveJobQuantityCheck} />
-                    </LayoutTool>
+                    {isCompleteJobQuantityCheck() ? (
+                      <div className="flex flex-col items-center justify-center font-bold text-green-600">
+                        <CheckCircle />
+                        <div>Hoàn thành kiểm đếm</div>
+                      </div>
+                    ) : (
+                      <LayoutTool>
+                        <TooltipProvider delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                onClick={handleCompleteJobQuantityCheck}
+                                size="tool"
+                                variant="none-border"
+                              >
+                                <SquareCheckBig className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Xác nhận hoàn thành kiểm đếm</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
+                        <BtnSave onClick={handleSaveJobQuantityCheck} />
+                      </LayoutTool>
+                    )}
                   </div>
                 </span>
 
                 <JobQuantityCheckList
+                  isCompleteJobQuantityCheck={isCompleteJobQuantityCheck}
                   jobQuantityCheckList={jobQuantityCheckList}
                   onChangeJobQuantityCheckList={newList => {
                     setJobQuantityCheckList(newList);
