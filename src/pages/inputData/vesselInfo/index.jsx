@@ -106,8 +106,7 @@ export function VesselInfo() {
           res.data.metadata?.map(rowData => {
             return {
               ...rowData,
-              ETA: rowData.ETA ? new Date(rowData.ETA) : null,
-              ETD: rowData.ETD ? new Date(rowData.ETD) : null
+              ETA: rowData.ETA ? new Date(rowData.ETA) : null
             };
           })
         );
@@ -128,7 +127,6 @@ export function VesselInfo() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
-    insertAndUpdateData.update = insertAndUpdateData.update.map(({ ETD, ...rest }) => rest);
     dispatch(setGlobalLoading(true));
     createAndUpdateVessel(insertAndUpdateData)
       .then(res => {
@@ -171,8 +169,7 @@ export function VesselInfo() {
           res.data.metadata?.map(rowData => {
             return {
               ...rowData,
-              ETA: rowData.ETA ? new Date(rowData.ETA) : null,
-              ETD: rowData.ETD ? new Date(rowData.ETD) : null
+              ETA: rowData.ETA ? new Date(rowData.ETA) : null
             };
           })
         );

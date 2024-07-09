@@ -99,7 +99,6 @@ export function BtnPrintLabel({ isLoading = false, gridRef, vesselInfo = {}, con
             </DialogTitle>
             <DialogDescription className="hidden" />
           </DialogHeader>
-
           <DialogFooter className="p-5">
             <Button
               onClick={() => {

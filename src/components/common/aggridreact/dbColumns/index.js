@@ -77,9 +77,7 @@ export class dt_vessel_visit extends CommonColumns {
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
   VESSEL_NAME = { field: "VESSEL_NAME", headerName: "Tên tàu *" };
   INBOUND_VOYAGE = { field: "INBOUND_VOYAGE", headerName: "Chuyến nhập *" };
-  OUTBOUND_VOYAGE = { field: "OUTBOUND_VOYAGE", headerName: "Chuyến xuất" };
   ETA = { field: "ETA", headerName: "Ngày tàu đến *" };
-  ETD = { field: "ETD", headerName: "Ngày tàu rời" };
   CallSign = { field: "CallSign", headerName: "CALLSIGN" };
   IMO = { field: "IMO", headerName: "IMO" };
 }

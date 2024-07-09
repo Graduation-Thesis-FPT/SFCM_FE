@@ -59,8 +59,8 @@ export function ImportOrder() {
       field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field
     },
     {
-      name: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.OUTBOUND_VOYAGE.field
+      name: DT_VESSEL_VISIT.ETA.headerName,
+      field: DT_VESSEL_VISIT.ETA.field
     }
   ];
   const colDefs = [
@@ -77,12 +77,6 @@ export function ImportOrder() {
     {
       headerName: DT_PACKAGE_MNF_LD.HOUSE_BILL.headerName,
       field: DT_PACKAGE_MNF_LD.HOUSE_BILL.field,
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: DT_PACKAGE_MNF_LD.LOT_NO.headerName,
-      field: DT_PACKAGE_MNF_LD.LOT_NO.field,
       flex: 1,
       filter: true
     },
@@ -215,7 +209,13 @@ export function ImportOrder() {
                 onClick={() => {
                   setOpenVesselInfoSelect(true);
                 }}
-                defaultValue={vesselInfo[item.field] ?? ""}
+                defaultValue={
+                  vesselInfo[item.field]
+                    ? item.field === "ETA"
+                      ? moment(vesselInfo[item.field]).format("DD/MM/YYYY HH:ss")
+                      : vesselInfo[item.field]
+                    : ""
+                }
                 readOnly
                 className="hover:cursor-pointer"
                 id={item.field}
