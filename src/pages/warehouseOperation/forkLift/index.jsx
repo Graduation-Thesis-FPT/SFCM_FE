@@ -1,4 +1,5 @@
 import {
+  changePalletPosition,
   getAllPalletPositionByWarehouseCode,
   getPalletByStatus,
   inputPalletToCell
@@ -25,17 +26,30 @@ import { useEffect, useRef, useState } from "react";
 import { CellList } from "./cellList";
 import { JobList } from "./jobList";
 import { Button } from "@/components/common/ui/button";
-import { DndContext } from "@dnd-kit/core";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/common/ui/dialog";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
   const toast = useCustomToast();
   const cellRef = useRef(null);
+  const dispacth = useDispatch();
+  const [openDialogChangePosition, setOpenDialogChangePosition] = useState(false);
   const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
   const [warehouseData, setWarehouseData] = useState([]);
   const [selectedCell, setSelectedCell] = useState({});
   const [jobList, setJobList] = useState([]);
   const [selectedJob, setSelectedJob] = useState({});
+  const [dataChangePosition, setDataChangePosition] = useState({});
 
   const handleSelectedWarehouse = value => {
     setSelectedWarehouseCode(value);
@@ -50,10 +64,24 @@ export function ForkLift() {
   };
 
   const handleSelectedCell = cell => {
+    if (!cell.PALLET_NO && selectedCell.PALLET_NO) {
+      setDataChangePosition({
+        oldPALLET_NO: selectedCell.PALLET_NO,
+        newPALLET_NO: cell.PALLET_NO,
+        oldCell: `${selectedCell.BLOCK_CODE}-${selectedCell.TIER_ORDERED}-${selectedCell.SLOT_ORDERED}`,
+        newCell: `${cell.BLOCK_CODE}-${cell.TIER_ORDERED}-${cell.SLOT_ORDERED}`,
+        oldCellId: selectedCell.ROWGUID,
+        newCellId: cell.ROWGUID
+      });
+      setOpenDialogChangePosition(true);
+      return;
+    }
+
     if (cell.ROWGUID === selectedCell.ROWGUID) {
       setSelectedCell({});
       return;
     }
+
     setSelectedCell(cell);
   };
 
@@ -74,6 +102,7 @@ export function ForkLift() {
       toast.warning("Vui lòng chọn pallet cần chuyển hàng");
       return;
     }
+    dispacth(setGlobalLoading(true));
     const obj = {
       CELL_ID: selectedCell.ROWGUID,
       PALLET_NO: selectedJob.PALLET_NO,
@@ -89,6 +118,34 @@ export function ForkLift() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
+      });
+  };
+
+  const handleChangePalletPosition = () => {
+    dispacth(setGlobalLoading(true));
+
+    const obj = {
+      CELL_ID: dataChangePosition.newCellId,
+      PALLET_NO: dataChangePosition.oldPALLET_NO,
+      WAREHOUSE_CODE: selectedWarehouseCode
+    };
+    changePalletPosition(obj)
+      .then(res => {
+        setOpenDialogChangePosition(false);
+        toast.success(res);
+        setSelectedCell({});
+        setSelectedJob({});
+        getAllCellByWarehouseCode(selectedWarehouseCode);
+        getJob("I");
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
       });
   };
 
@@ -115,11 +172,7 @@ export function ForkLift() {
         toast.catch(err);
       });
   };
-  ///////////////////////////////
 
-  const onDragEnd = event => {
-    console.log("🚀 ~ onDragEnd ~ event:", event);
-  };
   return (
     <Section>
       <Section.Header className="flex items-end justify-between">
@@ -144,26 +197,45 @@ export function ForkLift() {
           Chuyển hàng
         </Button>
       </Section.Header>
-      <DndContext onDragEnd={onDragEnd}>
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={75}>
-            <CellList
-              ref={cellRef}
-              warehouseData={warehouseData}
-              onSelectedCell={handleSelectedCell}
-              selectedCell={selectedCell}
-            />
-          </ResizablePanel>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={25} className="max-w-[50%]">
-            <JobList
-              jobList={jobList}
-              selectedJob={selectedJob}
-              onSelectedJob={handleSelectedJob}
-            />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </DndContext>
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={75}>
+          <CellList
+            ref={cellRef}
+            warehouseData={warehouseData}
+            onSelectedCell={handleSelectedCell}
+            selectedCell={selectedCell}
+          />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={25} className="max-w-[50%]">
+          <JobList jobList={jobList} selectedJob={selectedJob} onSelectedJob={handleSelectedJob} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+      <Dialog
+        open={openDialogChangePosition}
+        onOpenChange={() => {
+          setOpenDialogChangePosition(false);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bạn có muốn di chuyển pallet ?</DialogTitle>
+            <DialogDescription>
+              Chuyển Pallet:<span className="font-bold"> {dataChangePosition.oldPALLET_NO} </span>từ
+              ô<span className="font-bold"> {dataChangePosition.oldCell} </span>sang ô
+              <span className="font-bold"> {dataChangePosition.newCell}</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenDialogChangePosition(false)}>
+              Hủy
+            </Button>
+            <Button variant="blue" onClick={handleChangePalletPosition}>
+              Tiếp tục
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Section>
   );
 }

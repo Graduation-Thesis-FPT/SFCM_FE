@@ -11,3 +11,7 @@ export const getPalletByStatus = async palletStatus => {
 export const inputPalletToCell = async obj => {
   return await axiosPrivate.patch("pallet", obj);
 };
+
+export const changePalletPosition = async obj => {
+  return await axiosPrivate.patch("pallet/change-position", obj);
+};
