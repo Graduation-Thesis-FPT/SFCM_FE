@@ -21,12 +21,12 @@ module.exports = {
         minusHeader: "calc(100vh - 64px - 6px)"
       },
       width: {
-        minusMenuIsCollapse: "calc(100vw - 92px - 20px)",
-        minusMenuNotCollapse: "calc(100vw - 256px - 20px)"
+        minusMenuIsCollapse: "calc(100vw - 92px - 6px)",
+        minusMenuNotCollapse: "calc(100vw - 256px - 6px)"
       },
       maxWidth: {
-        minusMenuIsCollapse: "calc(100vw - 92px - 20px)",
-        minusMenuNotCollapse: "calc(100vw - 256px - 20px)"
+        minusMenuIsCollapse: "calc(100vw - 92px - 6px)",
+        minusMenuNotCollapse: "calc(100vw - 256px - 6px)"
       },
       fontSize: {
         4: "4px",

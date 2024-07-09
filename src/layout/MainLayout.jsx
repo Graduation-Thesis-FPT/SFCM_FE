@@ -11,6 +11,7 @@ import { useToggle } from "@/hooks/useToggle";
 import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
 import { cn, getFirstLetterOfLastWord } from "@/lib/utils";
+import { setMenuIsCollapse } from "@/redux/slice/menuIsCollapseSlice";
 import {
   Bell,
   ChevronDown,
@@ -20,7 +21,7 @@ import {
   LogOutIcon,
   MessageCircle
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export function MainLayout() {
@@ -31,6 +32,8 @@ export function MainLayout() {
   const [isCollapse, setIsCollapse] = useToggle();
   const userGlobal = useCustomStore();
   const navigate = useNavigate();
+  const dispacth = useDispatch();
+
   const handleLogout = () => {
     userGlobal.remove();
     window.location.href = "/login";
@@ -46,7 +49,10 @@ export function MainLayout() {
       >
         <MenuWeb
           menu={menu}
-          handleScale={() => setIsCollapse(!isCollapse)}
+          handleScale={() => {
+            dispacth(setMenuIsCollapse(!isCollapse));
+            setIsCollapse(!isCollapse);
+          }}
           isCollapse={isCollapse}
         />
       </div>

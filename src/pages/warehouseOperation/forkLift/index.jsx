@@ -35,14 +35,17 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { cn } from "@/lib/utils";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
   const toast = useCustomToast();
   const cellRef = useRef(null);
   const dispacth = useDispatch();
+  const menuIsCollapse = useSelector(state => state.menuIsCollapseSlice.menuIsCollapse);
+
   const [openDialogChangePosition, setOpenDialogChangePosition] = useState(false);
   const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
   const [warehouseData, setWarehouseData] = useState([]);
@@ -197,7 +200,10 @@ export function ForkLift() {
           Chuyển hàng
         </Button>
       </Section.Header>
-      <ResizablePanelGroup direction="horizontal">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className={cn(menuIsCollapse ? "max-w-minusMenuIsCollapse" : "max-w-minusMenuNotCollapse")}
+      >
         <ResizablePanel defaultSize={75} className="relative">
           {warehouseData.length === 0 ? (
             <div className="absolute-center text-sm opacity-50">Chưa chọn kho</div>

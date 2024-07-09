@@ -33,7 +33,7 @@ export const CellList = forwardRef(
           .map(block => {
             const listCellGroupedByTier = groupedByTierOrdered(warehouseData[block]);
             return (
-              <span key={block} className="h-full pb-4">
+              <div key={block} className="h-full pb-4">
                 <div className="text-center font-bold ">Dãy {block}</div>
                 <div className="flex h-full flex-row overflow-auto overflow-x-hidden rounded-md border p-2 shadow-md">
                   {Object.keys(listCellGroupedByTier).map(tier => {
@@ -83,7 +83,7 @@ export const CellList = forwardRef(
                     );
                   })}
                 </div>
-              </span>
+              </div>
             );
           })}
       </div>
