@@ -198,13 +198,17 @@ export function ForkLift() {
         </Button>
       </Section.Header>
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={75}>
-          <CellList
-            ref={cellRef}
-            warehouseData={warehouseData}
-            onSelectedCell={handleSelectedCell}
-            selectedCell={selectedCell}
-          />
+        <ResizablePanel defaultSize={75} className="relative">
+          {warehouseData.length === 0 ? (
+            <div className="absolute-center text-sm opacity-50">Chưa chọn kho</div>
+          ) : (
+            <CellList
+              ref={cellRef}
+              warehouseData={warehouseData}
+              onSelectedCell={handleSelectedCell}
+              selectedCell={selectedCell}
+            />
+          )}
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={25} className="max-w-[50%]">
