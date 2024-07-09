@@ -186,3 +186,20 @@ export class dt_pallet_stock extends CommonColumns {
   PALLET_HEIGHT = { field: "PALLET_HEIGHT", headerName: "Chiều cao (m)" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
+
+export class bill_info extends CommonColumns {
+  AMOUNT = { field: "AMOUNT", headerName: "Thành tiền" };
+  AMT_CBM = { field: "AMT_CBM", headerName: "Tổng khối lượng (m³)" };
+  INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng" };
+  METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án" };
+  QTY = { field: "QTY", headerName: "Số lượng" };
+  ROWGUID = { field: "ROWGUID", headerName: "ROWGUID" };
+  TAMOUNT = { field: "TAMOUNT", headerName: "Tổng tiền" };
+  TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước" };
+  TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả chi tiết" };
+  TRF_TEMP_CODE = { field: "TRF_TEMP_CODE", headerName: "Mã mẫu biểu cước" };
+  UNIT_RATE = { field: "UNIT_RATE", headerName: "Đơn giá" };
+  VAT = { field: "VAT", headerName: "VAT (%)" };
+  VAT_PRICE = { field: "VAT_PRICE", headerName: "Tiền VAT" };
+}

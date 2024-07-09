@@ -4,7 +4,6 @@ import {
   dt_package_mnf_ld,
   dt_vessel_visit
 } from "@/components/common/aggridreact/dbColumns";
-import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { Section } from "@/components/common/section";
 import { Button } from "@/components/common/ui/button";
 import { useEffect, useRef, useState } from "react";
@@ -14,9 +13,9 @@ import { VesselInfoSelect } from "./VesselInfoSelect";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { regexPattern } from "@/constants/regexPattern";
 import { DatePicker } from "@/components/common/date-picker";
-import { addDays } from "date-fns";
+import { addDays, set } from "date-fns";
 import moment from "moment";
-import { getContList, getManifestPackage } from "@/apis/order.api";
+import { getContList, getManifestPackage, getToBillIn } from "@/apis/order.api";
 import { ContainerSelect } from "./ContainerSelect";
 import {
   Select,
@@ -28,6 +27,8 @@ import {
   SelectValue
 } from "@/components/common/ui/select";
 import { getAllCustomer } from "@/apis/customer.api";
+import { DialogBillInfo } from "./dialogBillInfo";
+import { DialogSaveBillSuccess } from "./dialogSaveBillSuccess";
 
 export function ImportOrder() {
   const gridRef = useRef(null);
@@ -44,7 +45,14 @@ export function ImportOrder() {
   const [CUSTOMER_CODE, setCUSTOMER_CODE] = useState("");
   const [BILLOFLADING, setBILLOFLADING] = useState("");
   const [CNTRNO, setCNTRNO] = useState("");
-  const [HANLENH, setHANLENH] = useState(addDays(new Date(), 2));
+  const [EXP_DATE, setEXP_DATE] = useState(addDays(new Date(), 2));
+
+  const [billInfoList, setBillInfoList] = useState([]);
+
+  const [dataBillAfterSave, setDataBillAfterSave] = useState({});
+
+  const [openDialogBillInfo, setOpenDialogBillInfo] = useState(false);
+  const [openDialogSaveBillSuccess, setOpenDialogSaveBillSuccess] = useState(false);
 
   const DT_VESSEL_VISIT = new dt_vessel_visit();
   const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
@@ -198,6 +206,40 @@ export function ImportOrder() {
       });
   };
 
+  ///////
+
+  const handleGetToBillIn = () => {
+    if (!CUSTOMER_CODE) {
+      return toast.warning("Vui lòng chọn khách hàng!");
+    }
+    getToBillIn(rowData, [])
+      .then(res => {
+        setBillInfoList(res.data.metadata);
+      })
+      .then(() => {
+        setOpenDialogBillInfo(true);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
+  const handleSaveInOrderSuccess = data => {
+    setDataBillAfterSave(data);
+    setOpenDialogSaveBillSuccess(true);
+  };
+
+  const handleMakeNewOrder = () => {
+    setOpenDialogSaveBillSuccess(false);
+    setRowData([]);
+    setVesselInfo({});
+    setBILLOFLADING("");
+    setCNTRNO("");
+    setCUSTOMER_CODE("");
+    setBillInfoList([]);
+    setDataBillAfterSave({});
+  };
+
   return (
     <Section>
       <Section.Header className="space-y-4">
@@ -224,7 +266,7 @@ export function ImportOrder() {
             </div>
           ))}
         </span>
-        <span className="grid grid-cols-6 gap-3">
+        <span className="grid grid-cols-6 items-end gap-3">
           <div>
             <Label htmlFor="BILLOFLADING">{DT_CNTR_MNF_LD.BILLOFLADING.headerName} *</Label>
             <Input
@@ -279,16 +321,16 @@ export function ImportOrder() {
             />
           </div>
           <div>
-            <Label htmlFor="HANLENH">Hạn lệnh</Label>
+            <Label htmlFor="EXP_DATE">Hạn lệnh</Label>
             <DatePicker
-              id="HANLENH"
+              id="EXP_DATE"
               onSelected={data => {
                 if (moment(data).isBefore(moment(new Date()), "day")) {
                   return toast.error("Hạn lệnh tối thiểu phải là ngày hôm nay!");
                 }
-                setHANLENH(data);
+                setEXP_DATE(data);
               }}
-              date={HANLENH}
+              date={EXP_DATE}
             />
           </div>
           <div>
@@ -315,15 +357,19 @@ export function ImportOrder() {
               </SelectContent>
             </Select>
           </div>
+          <div></div>
+          <div className="flex justify-end">
+            <Button
+              onClick={handleGetToBillIn}
+              disabled={rowData.length > 0 ? false : true}
+              variant="blue"
+            >
+              Tính tiền
+            </Button>
+          </div>
         </span>
       </Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <Button variant="outline">Quay lại</Button>
-          <Button id="search" variant="green">
-            Tiếp tục
-          </Button>
-        </span>
         <Section.Table>
           <AgGrid
             contextMenu={true}
@@ -353,6 +399,25 @@ export function ImportOrder() {
           setOpenContainerSelect(false);
         }}
         onSelectContainerInfo={handleSelectContainerInfo}
+      />
+      <DialogBillInfo
+        rowData={rowData}
+        EXP_DATE={EXP_DATE}
+        selectedCustomer={customerList.find(customer => customer.CUSTOMER_CODE === CUSTOMER_CODE)}
+        billInfoList={billInfoList}
+        open={openDialogBillInfo}
+        onOpenChange={() => {
+          setOpenDialogBillInfo(false);
+        }}
+        onSaveInOrderSuccess={handleSaveInOrderSuccess}
+      />
+      <DialogSaveBillSuccess
+        onMakeNewOrder={handleMakeNewOrder}
+        data={dataBillAfterSave}
+        open={openDialogSaveBillSuccess}
+        onOpenChange={() => {
+          setOpenDialogSaveBillSuccess(false);
+        }}
       />
     </Section>
   );

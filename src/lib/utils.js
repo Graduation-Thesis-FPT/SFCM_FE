@@ -17,12 +17,27 @@ export function getFirstLetterOfLastWord(text) {
   return lastWord ? lastWord[0].toUpperCase() : "";
 }
 
-export function removeLastAsterisk(str) {
+export function removeLastAsteriskAndAddBrackets(str) {
   if (str.endsWith(" *")) {
     return `(${str.slice(0, -2)})`;
   } else {
     return str;
   }
+}
+
+export function removeLastAsterisk(str) {
+  if (str.endsWith(" *")) {
+    return `${str.slice(0, -2)}`;
+  } else {
+    return str;
+  }
+}
+
+export function formatVnd(value) {
+  return Number(value).toLocaleString("it-IT", {
+    style: "currency",
+    currency: "VND"
+  });
 }
 
 export const exportToExcel = (exportData, fileName) => {

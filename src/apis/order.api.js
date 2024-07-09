@@ -11,3 +11,11 @@ export const getManifestPackage = async (data = {}) => {
     `order/getPackageData?VOYAGEKEY=${data.VOYAGEKEY}&CNTRNO=${data.CNTRNO}`
   );
 };
+
+export const getToBillIn = async (arrayPackage, addInfo) => {
+  return await axiosPrivate.post(`order/getToBillIn`, { arrayPackage, addInfo });
+};
+
+export const saveInOrder = async data => {
+  return await axiosPrivate.post(`order/saveInOrder`, { arrayPackage: data });
+};
