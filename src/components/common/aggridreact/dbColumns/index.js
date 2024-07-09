@@ -103,7 +103,7 @@ export class dt_package_mnf_ld extends CommonColumns {
   HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill *" };
   CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số lượng" };
   CBM = { field: "CBM", headerName: "Số khối (m³) *" };
-  DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai *" };
+  DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
 
