@@ -99,15 +99,14 @@ export class dt_cntr_mnf_ld extends CommonColumns {
 
 export class dt_package_mnf_ld extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
-  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill *" };
-  LOT_NO = { field: "LOT_NO", headerName: "Số lô" };
-  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
   PACKAGE_UNIT_CODE = { field: "PACKAGE_UNIT_CODE", headerName: "Đơn vị tính *" };
-  CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số lượng *" };
+  ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng *" };
+  CONTAINER_ID = { field: "CONTAINER_ID", headerName: "Container tham chiếu *" };
+  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill *" };
+  CARGO_PIECE = { field: "CARGO_PIECE", headerName: "Số lượng" };
   CBM = { field: "CBM", headerName: "Số khối (m³) *" };
-  DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai" };
+  DECLARE_NO = { field: "DECLARE_NO", headerName: "Số tờ khai *" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
-  REF_CONTAINER = { field: "REF_CONTAINER", headerName: "Container tham chiếu *" };
 }
 
 export class trf_codes extends CommonColumns {

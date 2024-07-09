@@ -44,7 +44,6 @@ export const ComponentPrintLabel = forwardRef(
                 <div>Loại hàng: {row.ITEM_TYPE_CODE}</div>
               </span>
               <span className="space-y-3">
-                <div>Số lô: {row.LOT_NO}</div>
                 <div>Số lượng: {row.CARGO_PIECE}</div>
                 <div>Số khối: {row.CBM}</div>
               </span>

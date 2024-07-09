@@ -71,13 +71,6 @@ export function GoodsManifest() {
       editable: true
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.LOT_NO.headerName,
-      field: DT_PACKAGE_MNF_LD.LOT_NO.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
       headerName: DT_PACKAGE_MNF_LD.ITEM_TYPE_CODE.headerName,
       field: DT_PACKAGE_MNF_LD.ITEM_TYPE_CODE.field,
       flex: 1,
@@ -220,7 +213,7 @@ export function GoodsManifest() {
     dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
-        return { ...item, REF_CONTAINER: containerInfo.ROWGUID };
+        return { ...item, CONTAINER_ID: containerInfo.ROWGUID };
       });
     }
     createAndUpdatePackageMnfLd(insertAndUpdateData)
@@ -300,7 +293,6 @@ export function GoodsManifest() {
       return {
         ...item,
         HOUSE_BILL: item.HOUSE_BILL?.toString(),
-        LOT_NO: item.LOT_NO?.toString(),
         DECLARE_NO: item.DECLARE_NO?.toString(),
         NOTE: item.NOTE?.toString()
       };

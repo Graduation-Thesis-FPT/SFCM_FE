@@ -17,6 +17,15 @@ export const CellList = forwardRef(
     const handleSelectedCell = cell => {
       onSelectedCell(cell);
     };
+
+    const scrollToElement = cellID => {
+      const element = document.getElementById(cellID);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        element.classList.add("pallet-blink");
+      }
+    };
+
     return (
       <div className="flex h-full gap-4 overflow-hidden overflow-x-auto p-4" ref={ref}>
         {Object.keys(warehouseData)
@@ -25,7 +34,7 @@ export const CellList = forwardRef(
             const listCellGroupedByTier = groupedByTierOrdered(warehouseData[block]);
             return (
               <span key={block} className="h-full pb-4">
-                <div className="text-center font-bold">Dãy {block}</div>
+                <div className="text-center font-bold ">Dãy {block}</div>
                 <div className="flex h-full flex-row overflow-auto overflow-x-hidden rounded-md border p-2 shadow-md">
                   {Object.keys(listCellGroupedByTier).map(tier => {
                     return (
@@ -39,6 +48,7 @@ export const CellList = forwardRef(
                                 onClick={() => {
                                   handleSelectedCell(cell);
                                 }}
+                                id={cell.ROWGUID}
                                 key={index}
                                 className={cn(
                                   cell.ROWGUID === selectedCell.ROWGUID && "bg-blue-100",

@@ -1,5 +1,12 @@
 import { Button } from "@/components/common/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/common/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/common/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -81,12 +88,18 @@ export function BtnPrintLabel({ isLoading = false, gridRef, vesselInfo = {}, con
             e.preventDefault();
           }}
         >
-          <ComponentPrintLabel
-            ref={printRef}
-            selectedRow={selectedRow}
-            vesselInfo={vesselInfo}
-            containerInfo={containerInfo}
-          />
+          <DialogHeader>
+            <DialogTitle>
+              <ComponentPrintLabel
+                ref={printRef}
+                selectedRow={selectedRow}
+                vesselInfo={vesselInfo}
+                containerInfo={containerInfo}
+              />
+            </DialogTitle>
+            <DialogDescription className="hidden" />
+          </DialogHeader>
+
           <DialogFooter className="p-5">
             <Button
               onClick={() => {

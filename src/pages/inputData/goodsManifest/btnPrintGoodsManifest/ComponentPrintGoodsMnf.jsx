@@ -71,7 +71,6 @@ export const ComponentPrintGoodsMnf = forwardRef(
               <th>Số Container</th>
               <th>Số Seal</th>
               <th>Tên đại lý</th>
-              <th>Số lô</th>
               <th>Số lượng</th>
               <th>Số khối</th>
             </tr>
@@ -84,13 +83,12 @@ export const ComponentPrintGoodsMnf = forwardRef(
                 <td>{index === 0 ? containerInfo?.CNTRNO : ""}</td>
                 <td>{index === 0 ? containerInfo?.SEALNO : ""}</td>
                 <td>{index === 0 ? customerInfo?.CUSTOMER_NAME : ""}</td>
-                <td>{row[DT_PACKAGE_MNF_LD.LOT_NO.field]}</td>
                 <td>{row[DT_PACKAGE_MNF_LD.CARGO_PIECE.field]}</td>
                 <td>{row[DT_PACKAGE_MNF_LD.CBM.field]}</td>
               </tr>
             ))}
             <tr className="bg-gray-300">
-              <td colSpan="6">Tổng cộng</td>
+              <td colSpan="5">Tổng cộng</td>
               <td>
                 {rowData?.reduce(
                   (total, item) => total + item[DT_PACKAGE_MNF_LD.CARGO_PIECE.field],
