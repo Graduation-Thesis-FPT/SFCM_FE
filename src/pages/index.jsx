@@ -26,3 +26,4 @@ export * from "./procedure/importOrder";
 //warehouseOperation
 export * from "./warehouseOperation/importTally";
 export * from "./warehouseOperation/exportTally";
+export * from "./warehouseOperation/forkLift";
