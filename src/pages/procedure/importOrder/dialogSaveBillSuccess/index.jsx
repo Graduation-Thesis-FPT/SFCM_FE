@@ -3,18 +3,31 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
 
-import { CheckCircle, CheckCircle2 } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import moment from "moment";
+import { ComponentPrintInOrder } from "./ComponentPrintInOrder";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
 
-export function DialogSaveBillSuccess({ open = false, onOpenChange, data = {}, onMakeNewOrder }) {
+export function DialogSaveBillSuccess({
+  open = false,
+  onOpenChange,
+  data = {},
+  onMakeNewOrder,
+  selectedCustomer,
+  CNTRNO
+}) {
   if (!data.neworder || !data.neworderDtl) {
     return null;
   }
+  const printRef = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current
+  });
   return (
     <Dialog open={open}>
       <DialogContent hiddenIconClose className="max-w-[60%]">
@@ -39,8 +52,16 @@ export function DialogSaveBillSuccess({ open = false, onOpenChange, data = {}, o
               <Button variant="outline" onClick={onMakeNewOrder}>
                 Làm lệnh mới
               </Button>
-              <Button variant="blue">In lệnh</Button>
+              <Button onClick={handlePrint} variant="blue">
+                In lệnh
+              </Button>
               <Button variant="green">In hóa đơn</Button>
+              <ComponentPrintInOrder
+                ref={printRef}
+                data={data}
+                CNTRNO={CNTRNO}
+                selectedCustomer={selectedCustomer}
+              />
             </div>
           </DialogTitle>
           <DialogDescription className="hidden" />

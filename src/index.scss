@@ -227,3 +227,9 @@ body {
 .bold2nd > div:nth-child(2n) {
   font-weight: 600;
 }
+
+@media screen {
+  .hidden-to-print {
+    display: none;
+  }
+}

@@ -412,6 +412,8 @@ export function ImportOrder() {
         onSaveInOrderSuccess={handleSaveInOrderSuccess}
       />
       <DialogSaveBillSuccess
+        CNTRNO={CNTRNO}
+        selectedCustomer={customerList.find(customer => customer.CUSTOMER_CODE === CUSTOMER_CODE)}
         onMakeNewOrder={handleMakeNewOrder}
         data={dataBillAfterSave}
         open={openDialogSaveBillSuccess}
