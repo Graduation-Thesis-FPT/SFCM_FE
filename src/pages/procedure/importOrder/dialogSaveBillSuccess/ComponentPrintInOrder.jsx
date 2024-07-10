@@ -12,7 +12,7 @@ export const ComponentPrintInOrder = forwardRef(
             <div>Cảng quốc tế SFCM</div>
             <div>Kho SFCM</div>
           </span>
-          <span className="text-center">
+          <span className="text-center font-bold">
             <div>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
             <div>ĐỘC LẬP - TỰ DO - HẠNH PHÚC</div>
           </span>

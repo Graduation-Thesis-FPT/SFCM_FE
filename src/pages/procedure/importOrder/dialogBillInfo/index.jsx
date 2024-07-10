@@ -27,9 +27,6 @@ export function DialogBillInfo({
   EXP_DATE = "",
   rowData = []
 }) {
-  if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
-    return null;
-  }
   const dispatch = useDispatch();
   const gridRef = useRef(null);
   const [thuNgay, setThuNgay] = useState(true);
@@ -122,6 +119,11 @@ export function DialogBillInfo({
         dispatch(setGlobalLoading(false));
       });
   };
+
+  if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
+    return null;
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[80%]">

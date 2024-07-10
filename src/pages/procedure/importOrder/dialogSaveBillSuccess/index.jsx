@@ -21,13 +21,14 @@ export function DialogSaveBillSuccess({
   selectedCustomer,
   CNTRNO
 }) {
-  if (!data.neworder || !data.neworderDtl) {
-    return null;
-  }
   const printRef = useRef(null);
   const handlePrint = useReactToPrint({
     content: () => printRef.current
   });
+
+  if (!data.neworder || !data.neworderDtl) {
+    return <></>;
+  }
   return (
     <Dialog open={open}>
       <DialogContent hiddenIconClose className="max-w-[60%]">
