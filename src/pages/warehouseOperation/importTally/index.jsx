@@ -15,18 +15,9 @@ import useFetchData from "@/hooks/useRefetchData";
 import { cn } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { JobQuantityCheckList } from "./jobQuantityCheckList";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from "@/components/common/ui/select";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { v4 as uuidv4 } from "uuid";
@@ -38,26 +29,20 @@ import {
   ResizablePanelGroup
 } from "@/components/common/ui/resizable";
 import { Button } from "@/components/common/ui/button";
-import {
-  Check,
-  CheckCircle,
-  CheckCircle2,
-  CheckCircle2Icon,
-  CircleCheck,
-  CircleCheckBigIcon,
-  SquareCheckBig
-} from "lucide-react";
+import { CheckCircle, SquareCheckBig } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
+import { useSocket } from "@/hooks/useSocket";
 
 export function ImportTally() {
   const { data: importTallyContainerList, revalidate } = useFetchData({
     service: getAllImportTallyContainer
   });
+  const socket = useSocket();
   const DELIVER_ORDER = new deliver_order();
   const toast = useCustomToast();
   const dispatch = useDispatch();
@@ -221,6 +206,7 @@ export function ImportTally() {
       .then(res => {
         toast.success(res);
         getJobQuantityCheckByPACKAGE_ID();
+        socket.emit("completeJobQuantityCheck");
       })
       .catch(err => {
         toast.error(err);
@@ -229,6 +215,15 @@ export function ImportTally() {
         dispatch(setGlobalLoading(false));
       });
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("receiveSaveInOrderSuccess", message => {
+        revalidate();
+      });
+      return () => socket.off("receiveSaveInOrderSuccess");
+    }
+  }, [socket]);
 
   return (
     <Section>

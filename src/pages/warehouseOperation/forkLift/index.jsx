@@ -38,6 +38,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
+import { useSocket } from "@/hooks/useSocket";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
@@ -45,6 +46,7 @@ export function ForkLift() {
   const cellRef = useRef(null);
   const dispacth = useDispatch();
   const menuIsCollapse = useSelector(state => state.menuIsCollapseSlice.menuIsCollapse);
+  const socket = useSocket();
 
   const [openDialogChangePosition, setOpenDialogChangePosition] = useState(false);
   const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
@@ -175,6 +177,15 @@ export function ForkLift() {
         toast.catch(err);
       });
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("receiveCompleteJobQuantityCheck", message => {
+        getJob("I");
+      });
+      return () => socket.off("receiveCompleteJobQuantityCheck");
+    }
+  }, [socket]);
 
   return (
     <Section>
