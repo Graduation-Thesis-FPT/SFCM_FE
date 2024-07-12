@@ -120,6 +120,7 @@ export function ForkLift() {
         setSelectedJob({});
         getAllCellByWarehouseCode(selectedWarehouseCode);
         getJob("I");
+        socket.emit("inputPalletToCellSuccess");
       })
       .catch(err => {
         toast.error(err);
@@ -145,6 +146,7 @@ export function ForkLift() {
         setSelectedJob({});
         getAllCellByWarehouseCode(selectedWarehouseCode);
         getJob("I");
+        socket.emit("inputPalletToCellSuccess");
       })
       .catch(err => {
         toast.error(err);
@@ -183,7 +185,15 @@ export function ForkLift() {
       socket.on("receiveCompleteJobQuantityCheck", message => {
         getJob("I");
       });
-      return () => socket.off("receiveCompleteJobQuantityCheck");
+      socket.on("receiveInputPalletToCellSuccess", message => {
+        // getJob("I");
+        getAllCellByWarehouseCode(selectedWarehouseCode);
+      });
+
+      return () => {
+        socket.off("receiveCompleteJobQuantityCheck");
+        socket.off("receiveInputPalletToCellSuccess");
+      };
     }
   }, [socket]);
 
