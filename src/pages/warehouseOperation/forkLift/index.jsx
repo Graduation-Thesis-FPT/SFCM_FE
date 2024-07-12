@@ -38,7 +38,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
-import { useSocket } from "@/hooks/useSocket";
+import { socket } from "@/config/socket";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
@@ -54,8 +54,6 @@ export function ForkLift() {
   const [jobList, setJobList] = useState([]);
   const [selectedJob, setSelectedJob] = useState({});
   const [dataChangePosition, setDataChangePosition] = useState({});
-
-  const socket = useSocket();
 
   const handleSelectedWarehouse = value => {
     selectedWarehouseCode.current = value;
@@ -182,6 +180,13 @@ export function ForkLift() {
   };
 
   useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     if (socket) {
       socket.on("receiveCompleteJobQuantityCheck", message => {
         getJob("I");
@@ -190,13 +195,12 @@ export function ForkLift() {
         getJob("I");
         getAllCellByWarehouseCode(selectedWarehouseCode.current);
       });
-
       return () => {
         socket.off("receiveCompleteJobQuantityCheck");
         socket.off("receiveInputPalletToCellSuccess");
       };
     }
-  }, [socket]);
+  }, []);
 
   return (
     <Section>
