@@ -36,13 +36,12 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
-import { useSocket } from "@/hooks/useSocket";
+import { socket } from "@/config/socket";
 
 export function ImportTally() {
   const { data: importTallyContainerList, revalidate } = useFetchData({
     service: getAllImportTallyContainer
   });
-  const socket = useSocket();
   const DELIVER_ORDER = new deliver_order();
   const toast = useCustomToast();
   const dispatch = useDispatch();
@@ -217,13 +216,20 @@ export function ImportTally() {
   };
 
   useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     if (socket) {
       socket.on("receiveSaveInOrderSuccess", message => {
         revalidate();
       });
       return () => socket.off("receiveSaveInOrderSuccess");
     }
-  }, [socket]);
+  }, []);
 
   return (
     <Section>

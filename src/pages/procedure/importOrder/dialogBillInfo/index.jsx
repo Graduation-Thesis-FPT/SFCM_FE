@@ -13,7 +13,7 @@ import {
   DialogTitle
 } from "@/components/common/ui/dialog";
 import { Separator } from "@/components/common/ui/separator";
-import { useSocket } from "@/hooks/useSocket";
+import { socket } from "@/config/socket";
 import { formatVnd, removeLastAsterisk } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";
@@ -34,7 +34,6 @@ export function DialogBillInfo({
   const BILL_INFO = new bill_info();
   const BS_CUSTOMER = new bs_customer();
   const toast = useCustomToast();
-  const socket = useSocket();
 
   const colDefs = [
     {
