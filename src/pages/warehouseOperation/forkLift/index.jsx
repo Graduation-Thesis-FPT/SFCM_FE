@@ -39,7 +39,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
 import { useSocket } from "@/hooks/useSocket";
-import { se } from "date-fns/locale";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
@@ -47,18 +46,19 @@ export function ForkLift() {
   const cellRef = useRef(null);
   const dispacth = useDispatch();
   const menuIsCollapse = useSelector(state => state.menuIsCollapseSlice.menuIsCollapse);
-  const socket = useSocket();
 
   const [openDialogChangePosition, setOpenDialogChangePosition] = useState(false);
-  const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
+  const selectedWarehouseCode = useRef("");
   const [warehouseData, setWarehouseData] = useState([]);
   const [selectedCell, setSelectedCell] = useState({});
   const [jobList, setJobList] = useState([]);
   const [selectedJob, setSelectedJob] = useState({});
   const [dataChangePosition, setDataChangePosition] = useState({});
 
+  const socket = useSocket();
+
   const handleSelectedWarehouse = value => {
-    setSelectedWarehouseCode(value);
+    selectedWarehouseCode.current = value;
     getAllPalletPositionByWarehouseCode(value)
       .then(res => {
         toast.success(res);
@@ -112,14 +112,14 @@ export function ForkLift() {
     const obj = {
       CELL_ID: selectedCell.ROWGUID,
       PALLET_NO: selectedJob.PALLET_NO,
-      WAREHOUSE_CODE: selectedWarehouseCode
+      WAREHOUSE_CODE: selectedWarehouseCode.current
     };
     inputPalletToCell(obj)
       .then(res => {
         toast.success(res);
         setSelectedCell({});
         setSelectedJob({});
-        getAllCellByWarehouseCode(selectedWarehouseCode);
+        getAllCellByWarehouseCode(selectedWarehouseCode.current);
         getJob("I");
         socket.emit("inputPalletToCellSuccess");
       })
@@ -137,7 +137,7 @@ export function ForkLift() {
     const obj = {
       CELL_ID: dataChangePosition.newCellId,
       PALLET_NO: dataChangePosition.oldPALLET_NO,
-      WAREHOUSE_CODE: selectedWarehouseCode
+      WAREHOUSE_CODE: selectedWarehouseCode.current
     };
     changePalletPosition(obj)
       .then(res => {
@@ -146,7 +146,7 @@ export function ForkLift() {
         toast.success(res);
         setSelectedCell({});
         setSelectedJob({});
-        getAllCellByWarehouseCode(selectedWarehouseCode);
+        getAllCellByWarehouseCode(selectedWarehouseCode.current);
         getJob("I");
       })
       .catch(err => {
@@ -187,9 +187,8 @@ export function ForkLift() {
         getJob("I");
       });
       socket.on("receiveInputPalletToCellSuccess", message => {
-        setSelectedWarehouseCode(selectedWarehouseCode);
         getJob("I");
-        getAllCellByWarehouseCode(selectedWarehouseCode);
+        getAllCellByWarehouseCode(selectedWarehouseCode.current);
       });
 
       return () => {
@@ -204,7 +203,7 @@ export function ForkLift() {
       <Section.Header className="flex items-end justify-between">
         <span>
           <Label>Mã kho</Label>
-          <Select onValueChange={handleSelectedWarehouse} value={selectedWarehouseCode}>
+          <Select onValueChange={handleSelectedWarehouse} value={selectedWarehouseCode.current}>
             <SelectTrigger className="min-w-56">
               <SelectValue placeholder="Mã kho" />
             </SelectTrigger>
