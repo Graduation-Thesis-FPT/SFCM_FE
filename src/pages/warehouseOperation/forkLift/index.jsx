@@ -39,6 +39,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
 import { useSocket } from "@/hooks/useSocket";
+import { se } from "date-fns/locale";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
@@ -141,12 +142,12 @@ export function ForkLift() {
     changePalletPosition(obj)
       .then(res => {
         setOpenDialogChangePosition(false);
+        socket.emit("inputPalletToCellSuccess");
         toast.success(res);
         setSelectedCell({});
         setSelectedJob({});
         getAllCellByWarehouseCode(selectedWarehouseCode);
         getJob("I");
-        socket.emit("inputPalletToCellSuccess");
       })
       .catch(err => {
         toast.error(err);
@@ -186,7 +187,8 @@ export function ForkLift() {
         getJob("I");
       });
       socket.on("receiveInputPalletToCellSuccess", message => {
-        // getJob("I");
+        setSelectedWarehouseCode(selectedWarehouseCode);
+        getJob("I");
         getAllCellByWarehouseCode(selectedWarehouseCode);
       });
 
