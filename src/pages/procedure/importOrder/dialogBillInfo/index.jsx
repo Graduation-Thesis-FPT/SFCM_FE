@@ -1,4 +1,4 @@
-import { saveInOrder } from "@/apis/order.api";
+import { invoicePublish, saveInOrder } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { bill_info, bs_customer } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -34,6 +34,7 @@ export function DialogBillInfo({
   const BILL_INFO = new bill_info();
   const BS_CUSTOMER = new bs_customer();
   const toast = useCustomToast();
+  const [invoiceInfo, setInvoiceInfo] = useState({});
 
   const colDefs = [
     {
@@ -102,25 +103,66 @@ export function DialogBillInfo({
   ];
 
   const handleSaveInOrder = () => {
-    dispatch(setGlobalLoading(true));
-    let temp = [...rowData];
-    const reqData = temp.map(item => {
-      return { ...item, EXP_DATE: EXP_DATE, CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE };
+    let datasTemp = billInfoList.map(item => {
+      return {
+        TariffName: item.TRF_DESC,
+        UnitCode: "CBM",
+        UnitRate: item.UNIT_RATE,
+        Amount: item.AMOUNT,
+        Vat: item.VAT_PRICE,
+        VatRate: item.VAT
+      };
     });
-    saveInOrder(reqData)
+    let args = {
+      cusTaxCode: selectedCustomer.TAX_CODE,
+      cusAddr: selectedCustomer.ADDRESS,
+      cusName: selectedCustomer.CUSTOMER_NAME,
+      sum_amount: billInfoList.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+      vat_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
+      total_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0),
+      paymentMethod: "TM",
+      datas: [...datasTemp]
+    };
+    invoicePublish(args)
       .then(res => {
-        onOpenChange();
-        socket.emit("saveInOrderSuccess");
-        onSaveInOrderSuccess(res.data.metadata);
-        toast.success(res);
+        if (!res.data.metadata.success) {
+          throw new Error(res.data.metadata.error);
+        }
+        setInvoiceInfo(res.data.metadata);
+        return res.data.metadata;
+      })
+      .then(invoiceInfo => {
+        dispatch(setGlobalLoading(true));
+        let temp = [...rowData];
+        const reqData = temp.map(item => {
+          return {
+            ...item,
+            EXP_DATE: EXP_DATE,
+            CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE,
+            DE_ORDER_NO: invoiceInfo.fkey,
+            INV_ID: invoiceInfo.inv
+          };
+        });
+        saveInOrder(reqData)
+          .then(res => {
+            onOpenChange();
+            socket.emit("saveInOrderSuccess");
+            onSaveInOrderSuccess(res.data.metadata);
+            toast.success(res);
+          })
+          .catch(err => {
+            toast.error(err);
+          })
+          .finally(() => {
+            dispatch(setGlobalLoading(false));
+          });
       })
       .catch(err => {
         toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
       });
   };
+
+  const handleInvoicePublish = () => {};
 
   if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
     return null;
@@ -152,11 +194,23 @@ export function DialogBillInfo({
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
                   <div>{BILL_INFO.AMOUNT.headerName}</div>
-                  <div>{formatVnd(billInfoList[0][BILL_INFO.AMOUNT.field])}</div>
+                  <div>
+                    {formatVnd(
+                      billInfoList.reduce(
+                        (accumulator, currentValue) =>
+                          accumulator + currentValue[BILL_INFO.AMOUNT.field],
+                        0
+                      )
+                    )}
+                  </div>
                   <div>{BILL_INFO.VAT_PRICE.headerName}</div>
-                  <div>{formatVnd(billInfoList[0][BILL_INFO.VAT_PRICE.field])}</div>
+                  <div>
+                    {formatVnd(billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0))}
+                  </div>
                   <div>{BILL_INFO.TAMOUNT.headerName}</div>
-                  <div>{formatVnd(billInfoList[0][BILL_INFO.TAMOUNT.field])}</div>
+                  <div>
+                    {formatVnd(billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0))}
+                  </div>
                 </div>
               </span>
 

@@ -19,3 +19,11 @@ export const getToBillIn = async (arrayPackage, addInfo) => {
 export const saveInOrder = async data => {
   return await axiosPrivate.post(`order/saveInOrder`, { arrayPackage: data });
 };
+
+export const invoicePublish = async args => {
+  return await axiosPrivate.post(`order/publishInvoice`, args);
+};
+
+export const viewInvoice = async fkey => {
+  return await axiosPrivate.get(`order/viewInvoice?fkey=${fkey}`);
+};

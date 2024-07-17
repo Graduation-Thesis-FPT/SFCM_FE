@@ -7,24 +7,46 @@ import {
   DialogTitle
 } from "@/components/common/ui/dialog";
 
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 import moment from "moment";
 import { ComponentPrintInOrder } from "./ComponentPrintInOrder";
 import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { viewInvoice } from "@/apis/order.api";
+import { useCustomToast } from "@/components/common/custom-toast";
 
 export function DialogSaveBillSuccess({
   open = false,
-  onOpenChange,
   data = {},
   onMakeNewOrder,
   selectedCustomer,
   CNTRNO
 }) {
+  const toast = useCustomToast();
   const printRef = useRef(null);
+  const [isPrintInvoice, setIsPrintInvoice] = useState(false);
+
   const handlePrint = useReactToPrint({
     content: () => printRef.current
   });
+
+  const handleInvoicePublish = () => {
+    setIsPrintInvoice(true);
+    viewInvoice(data.neworder.DE_ORDER_NO)
+      .then(res => {
+        let base64Data = res.data.metadata.content.data;
+        const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+      })
+      .then(() => {})
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        setIsPrintInvoice(false);
+      });
+  };
 
   if (!data.neworder || !data.neworderDtl) {
     return <></>;
@@ -49,14 +71,17 @@ export function DialogSaveBillSuccess({
                 {moment(data.neworder.EXP_DATE).format("DD/MM/Y HH:mm")}
               </span>
             </div>
-            <div className="space-x-4">
+            <div className="flex justify-center gap-4">
               <Button variant="outline" onClick={onMakeNewOrder}>
                 Làm lệnh mới
               </Button>
               <Button onClick={handlePrint} variant="blue">
                 In lệnh
               </Button>
-              <Button variant="green">In hóa đơn</Button>
+              <Button onClick={handleInvoicePublish} variant="green" disabled={isPrintInvoice}>
+                {isPrintInvoice && <Loader2 className="mr-2 animate-spin" />}
+                Hóa đơn điện tử
+              </Button>
               <ComponentPrintInOrder
                 ref={printRef}
                 data={data}
