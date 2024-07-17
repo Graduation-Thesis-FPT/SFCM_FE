@@ -7,7 +7,8 @@ export default defineConfig({
     react({
       babel: {
         plugins: [["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]]
-      }
+      },
+      jsxRuntime: 'classic'
     })
   ],
   server: {
