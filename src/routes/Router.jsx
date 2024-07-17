@@ -26,7 +26,7 @@ export default function Router() {
                     );
                   }
                   return (
-                    <Route key={child.ROWGUID} path={child.MENU_CODE} element={<Component />} />
+                    <Route key={child.ROWGUID} path={child.MENU_CODE} element={<ErrorPage />} />
                   );
                 })}
               </Route>
