@@ -7,10 +7,10 @@ import Router from "@/routes/Router";
 import { store } from "./redux/store";
 import { Toaster } from "@/components/common/ui/toaster";
 import { AuthProvider } from "./routes/AuthProvider";
-import { registerLicense } from "@syncfusion/ej2-base";
+// import { registerLicense } from "@syncfusion/ej2-base";
 
-registerLicense(import.meta.env.VITE_SYNCFUSION_LICENSE_KEY);
-console.log("cc", import.meta.env.VITE_SYNCFUSION_LICENSE_KEY);
+// registerLicense(import.meta.env.VITE_SYNCFUSION_LICENSE_KEY);
+// console.log("cc", import.meta.env.VITE_SYNCFUSION_LICENSE_KEY);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <React.StrictMode>
