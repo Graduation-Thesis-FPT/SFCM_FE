@@ -5,10 +5,7 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react({
-      babel: {
-        plugins: [["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]]
-      },
-      jsxRuntime: 'classic'
+      jsxRuntime: "classic"
     })
   ],
   server: {

@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "jsx": "react",
+    "target": "esnext",
+    "module": "commonjs",
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
