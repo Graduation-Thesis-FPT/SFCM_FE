@@ -12,14 +12,14 @@ import { registerLicense } from "@syncfusion/ej2-base";
 registerLicense(import.meta.env.VITE_SYNCFUSION_LICENSE_KEY);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  // <React.StrictMode>
-  <Provider store={store}>
-    <BrowserRouter>
-      <AuthProvider>
-        <Router />
-      </AuthProvider>
-    </BrowserRouter>
-    <Toaster />
-  </Provider>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Router />
+        </AuthProvider>
+      </BrowserRouter>
+      <Toaster />
+    </Provider>
+  </React.StrictMode>
 );
