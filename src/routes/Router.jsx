@@ -9,7 +9,7 @@ import { PrivateRoute } from "./PrivateRoute";
 import * as Comp from "@/pages/index";
 import { ProfilePage } from "@/pages/profile";
 
-export function Router() {
+export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
   return (
     <Routes>
