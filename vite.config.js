@@ -5,7 +5,8 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react({
-      jsxRuntime: "automatic"
+      jsxRuntime: "classic",
+      plugins: [["@babel/plugin-transform-react-jsx", { runtime: "automatic" }]]
     })
   ],
   server: {
@@ -13,7 +14,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
+      "@": path.resolve(__dirname, "./src"),
+      "react/jsx-runtime": "react/jsx-runtime.js"
     }
   }
 });
