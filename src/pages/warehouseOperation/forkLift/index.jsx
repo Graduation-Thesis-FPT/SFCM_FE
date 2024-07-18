@@ -39,6 +39,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
 import { socket } from "@/config/socket";
+import { suggestCellByWarehouseCode } from "@/apis/cell.api";
 
 export function ForkLift() {
   const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
@@ -91,10 +92,33 @@ export function ForkLift() {
 
   const handleSelectedJob = job => {
     if (job.PALLET_NO === selectedJob.PALLET_NO) {
+      removePalletBlinkClass();
       setSelectedJob({});
       return;
     }
+    suggestCellByWarehouseCode(selectedWarehouseCode.current, job)
+      .then(res => {
+        scrollToElement(res.data.metadata?.matchedCell?.ROWGUID);
+      })
+      .catch(err => {
+        removePalletBlinkClass();
+      });
     setSelectedJob(job);
+  };
+
+  const scrollToElement = cellID => {
+    const element = document.getElementById(cellID);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      element.classList.add("pallet-blink");
+    }
+  };
+
+  const removePalletBlinkClass = () => {
+    const elements = document.querySelectorAll(".pallet-blink");
+    elements.forEach(element => {
+      element.classList.remove("pallet-blink");
+    });
   };
 
   const handleInputPallet = () => {

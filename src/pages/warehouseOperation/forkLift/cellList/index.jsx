@@ -1,3 +1,4 @@
+import { suggestCellByWarehouseCode } from "@/apis/cell.api";
 import { cn } from "@/lib/utils";
 import React, { forwardRef } from "react";
 
@@ -71,9 +72,11 @@ export const CellList = forwardRef(
                                     <div className="font-bold">{cell.PALLET_NO}</div>
                                   </div>
                                 ) : (
-                                  <div className="p-2">
-                                    <br />
-                                    <br />
+                                  <div className="p-2 text-center opacity-40">
+                                    <div>Kích thước (m)</div>
+                                    <div className="font-bold">
+                                      {cell.CELL_LENGTH}x{cell.CELL_WIDTH}x{cell.CELL_HEIGHT}
+                                    </div>
                                   </div>
                                 )}
                               </div>
