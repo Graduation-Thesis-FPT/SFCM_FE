@@ -1,4 +1,3 @@
-import { suggestCellByWarehouseCode } from "@/apis/cell.api";
 import { cn } from "@/lib/utils";
 import React, { forwardRef } from "react";
 
@@ -17,14 +16,6 @@ export const CellList = forwardRef(
   ({ warehouseData = [], onSelectedCell, selectedCell = {} }, ref) => {
     const handleSelectedCell = cell => {
       onSelectedCell(cell);
-    };
-
-    const scrollToElement = cellID => {
-      const element = document.getElementById(cellID);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-        element.classList.add("pallet-blink");
-      }
     };
 
     return (
