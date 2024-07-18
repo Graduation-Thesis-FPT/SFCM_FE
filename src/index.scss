@@ -171,6 +171,12 @@ body {
       justify-content: center;
     }
   }
+  .number-header {
+    justify-content: flex-end;
+    .ag-header-cell-label {
+      justify-content: flex-end;
+    }
+  }
 }
 
 .e-input-group {

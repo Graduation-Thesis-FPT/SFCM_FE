@@ -13,7 +13,7 @@ import { VesselInfoSelect } from "./VesselInfoSelect";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { regexPattern } from "@/constants/regexPattern";
 import { DatePicker } from "@/components/common/date-picker";
-import { addDays, set } from "date-fns";
+import { addDays } from "date-fns";
 import moment from "moment";
 import { getContList, getManifestPackage, getToBillIn } from "@/apis/order.api";
 import { ContainerSelect } from "./ContainerSelect";
@@ -29,11 +29,16 @@ import {
 import { getAllCustomer } from "@/apis/customer.api";
 import { DialogBillInfo } from "./dialogBillInfo";
 import { DialogSaveBillSuccess } from "./dialogSaveBillSuccess";
+import { getConfigAttachSrvByMethodCode } from "@/apis/config-attach-srv.api";
+import { useNavigate } from "react-router-dom";
 
 export function ImportOrder() {
+  const navigate = useNavigate();
+
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
+  const [configAttachSrvList, setConfigAttachSrvList] = useState([]);
   const [vesselInfo, setVesselInfo] = useState({});
   const [openVesselInfoSelect, setOpenVesselInfoSelect] = useState(false);
 
@@ -42,6 +47,7 @@ export function ImportOrder() {
 
   const [customerList, setCustomerList] = useState([]);
 
+  const [ATTACHSRV_CODE, setATTACHSRV_CODE] = useState("");
   const [CUSTOMER_CODE, setCUSTOMER_CODE] = useState("");
   const [BILLOFLADING, setBILLOFLADING] = useState("");
   const [CNTRNO, setCNTRNO] = useState("");
@@ -99,11 +105,15 @@ export function ImportOrder() {
       flex: 1
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: DT_PACKAGE_MNF_LD.CARGO_PIECE.headerName,
       field: DT_PACKAGE_MNF_LD.CARGO_PIECE.field,
       flex: 1
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: DT_PACKAGE_MNF_LD.CBM.headerName,
       field: DT_PACKAGE_MNF_LD.CBM.field,
       flex: 1
@@ -194,6 +204,7 @@ export function ImportOrder() {
 
   useEffect(() => {
     getCustomerList();
+    getConfigAttachSrv();
   }, []);
 
   const getCustomerList = () => {
@@ -206,13 +217,24 @@ export function ImportOrder() {
       });
   };
 
+  const getConfigAttachSrv = async () => {
+    getConfigAttachSrvByMethodCode("NK")
+      .then(res => {
+        setConfigAttachSrvList(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
   ///////
 
   const handleGetToBillIn = () => {
     if (!CUSTOMER_CODE) {
       return toast.warning("Vui lòng chọn khách hàng!");
     }
-    getToBillIn(rowData, [])
+    let temp = ATTACHSRV_CODE === "" ? [] : [ATTACHSRV_CODE];
+    getToBillIn(rowData, [...temp])
       .then(res => {
         setBillInfoList(res.data.metadata);
       })
@@ -236,6 +258,7 @@ export function ImportOrder() {
     setBILLOFLADING("");
     setCNTRNO("");
     setCUSTOMER_CODE("");
+    setATTACHSRV_CODE("");
     setBillInfoList([]);
     setDataBillAfterSave({});
   };
@@ -357,7 +380,30 @@ export function ImportOrder() {
               </SelectContent>
             </Select>
           </div>
-          <div></div>
+          <div>
+            <Label htmlFor="ATTACHSRV_CODE">Dịch vụ đính kèm</Label>
+            <Select
+              disabled={rowData.length === 0}
+              id="ATTACHSRV_CODE"
+              value={ATTACHSRV_CODE}
+              onValueChange={value => {
+                setATTACHSRV_CODE(value);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn khách hàng" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {configAttachSrvList.map(item => (
+                    <SelectItem key={item.ROWGUID} value={item.ROWGUID}>
+                      {item.ATTACH_SERVICE_CODE} - {item.METHOD_NAME}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="flex justify-end">
             <Button
               onClick={handleGetToBillIn}

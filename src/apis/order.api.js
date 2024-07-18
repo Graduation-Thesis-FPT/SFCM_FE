@@ -12,12 +12,20 @@ export const getManifestPackage = async (data = {}) => {
   );
 };
 
-export const getToBillIn = async (arrayPackage, addInfo) => {
-  return await axiosPrivate.post(`order/getToBillIn`, { arrayPackage, addInfo });
+export const getToBillIn = async (arrayPackage, services) => {
+  return await axiosPrivate.post(`order/getToBillIn`, { arrayPackage, services });
 };
 
-export const saveInOrder = async data => {
-  return await axiosPrivate.post(`order/saveInOrder`, { arrayPackage: data });
+export const saveInOrder = async (
+  arrayPackage = [],
+  paymentInfoHeader = {},
+  paymentInfoDtl = []
+) => {
+  return await axiosPrivate.post(`order/saveInOrder`, {
+    arrayPackage: arrayPackage,
+    paymentInfoHeader: paymentInfoHeader,
+    paymentInfoDtl: paymentInfoDtl
+  });
 };
 
 export const invoicePublish = async args => {

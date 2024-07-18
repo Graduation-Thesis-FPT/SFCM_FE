@@ -3,7 +3,6 @@ import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { bill_info, bs_customer } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
-import { Checkbox } from "@/components/common/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +11,18 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/common/ui/select";
 import { Separator } from "@/components/common/ui/separator";
 import { socket } from "@/config/socket";
 import { formatVnd, removeLastAsterisk } from "@/lib/utils";
-import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -30,11 +37,11 @@ export function DialogBillInfo({
 }) {
   const dispatch = useDispatch();
   const gridRef = useRef(null);
-  const [thuNgay, setThuNgay] = useState(true);
   const BILL_INFO = new bill_info();
   const BS_CUSTOMER = new bs_customer();
   const toast = useCustomToast();
-  const [invoiceInfo, setInvoiceInfo] = useState({});
+  const [HTTT, setHTTT] = useState("TM");
+  const [isSaveInOrder, setIsSaveInOrder] = useState(false);
 
   const colDefs = [
     {
@@ -48,11 +55,15 @@ export function DialogBillInfo({
       flex: 1
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BILL_INFO.QTY.headerName,
       field: BILL_INFO.QTY.field,
       flex: 1
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BILL_INFO.UNIT_RATE.headerName,
       field: BILL_INFO.UNIT_RATE.field,
       flex: 1,
@@ -62,18 +73,23 @@ export function DialogBillInfo({
         });
       }
     },
-
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BILL_INFO.AMT_CBM.headerName,
       field: BILL_INFO.AMT_CBM.field,
       flex: 1
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BILL_INFO.VAT.headerName,
       field: BILL_INFO.VAT.field,
       flex: 1
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BILL_INFO.VAT_PRICE.headerName,
       field: BILL_INFO.VAT_PRICE.field,
       flex: 1,
@@ -83,8 +99,9 @@ export function DialogBillInfo({
         });
       }
     },
-
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BILL_INFO.AMOUNT.headerName,
       field: BILL_INFO.AMOUNT.field,
       flex: 1,
@@ -103,6 +120,7 @@ export function DialogBillInfo({
   ];
 
   const handleSaveInOrder = () => {
+    setIsSaveInOrder(true);
     let datasTemp = billInfoList.map(item => {
       return {
         TariffName: item.TRF_DESC,
@@ -117,10 +135,10 @@ export function DialogBillInfo({
       cusTaxCode: selectedCustomer.TAX_CODE,
       cusAddr: selectedCustomer.ADDRESS,
       cusName: selectedCustomer.CUSTOMER_NAME,
-      sum_amount: billInfoList.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+      sum_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
       vat_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
       total_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0),
-      paymentMethod: "TM",
+      paymentMethod: HTTT,
       datas: [...datasTemp]
     };
     invoicePublish(args)
@@ -128,22 +146,41 @@ export function DialogBillInfo({
         if (!res.data.metadata.success) {
           throw new Error(res.data.metadata.error);
         }
-        setInvoiceInfo(res.data.metadata);
         return res.data.metadata;
       })
       .then(invoiceInfo => {
-        dispatch(setGlobalLoading(true));
-        let temp = [...rowData];
-        const reqData = temp.map(item => {
+        const reqData = rowData.map(item => {
           return {
             ...item,
             EXP_DATE: EXP_DATE,
             CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE,
-            DE_ORDER_NO: invoiceInfo.fkey,
-            INV_ID: invoiceInfo.inv
+            DE_ORDER_NO: invoiceInfo.fkey
           };
         });
-        saveInOrder(reqData)
+
+        const paymentInfoHeader = {
+          INV_NO: invoiceInfo.inv,
+          ACC_CD: HTTT,
+          INV_DATE: invoiceInfo.invoiceDate,
+          AMOUNT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+          VAT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
+          TAMOUNT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0)
+        };
+
+        const paymentInfoDtl = billInfoList.map(item => {
+          return {
+            QTY: item.QTY,
+            UNIT_RATE: item.UNIT_RATE,
+            AMOUNT: item.AMOUNT,
+            VAT: item.VAT_PRICE,
+            VAT_RATE: item.VAT,
+            TAMOUNT: item.TAMOUNT,
+            CARGO_TYPE: item.ITEM_TYPE_CODE,
+            TRF_DESC: item.TRF_DESC
+          };
+        });
+
+        saveInOrder(reqData, paymentInfoHeader, paymentInfoDtl)
           .then(res => {
             onOpenChange();
             socket.emit("saveInOrderSuccess");
@@ -152,17 +189,15 @@ export function DialogBillInfo({
           })
           .catch(err => {
             toast.error(err);
-          })
-          .finally(() => {
-            dispatch(setGlobalLoading(false));
           });
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        setIsSaveInOrder(false);
       });
   };
-
-  const handleInvoicePublish = () => {};
 
   if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
     return null;
@@ -194,7 +229,7 @@ export function DialogBillInfo({
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
                   <div>{BILL_INFO.AMOUNT.headerName}</div>
-                  <div>
+                  <div className="text-end">
                     {formatVnd(
                       billInfoList.reduce(
                         (accumulator, currentValue) =>
@@ -204,11 +239,11 @@ export function DialogBillInfo({
                     )}
                   </div>
                   <div>{BILL_INFO.VAT_PRICE.headerName}</div>
-                  <div>
+                  <div className="text-end">
                     {formatVnd(billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0))}
                   </div>
                   <div>{BILL_INFO.TAMOUNT.headerName}</div>
-                  <div>
+                  <div className="text-end">
                     {formatVnd(billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0))}
                   </div>
                 </div>
@@ -217,18 +252,30 @@ export function DialogBillInfo({
               <span className="space-y-2">
                 <div className="text-16 font-semibold">Hình thức thanh toán</div>
                 <Separator />
-                <div className="">
-                  <span className="flex items-center space-x-2">
-                    <Checkbox
-                      className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                      checked={thuNgay}
-                      onCheckedChange={setThuNgay}
-                    />
-                    <div className="font-semibold">THU NGAY</div>
-                  </span>
+                <div>
+                  <Select
+                    id="HTTT"
+                    value={HTTT}
+                    onValueChange={value => {
+                      setHTTT(value);
+                    }}
+                  >
+                    <SelectTrigger className="min-w-72">
+                      <SelectValue placeholder="Chọn hình thức thanh toán" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="TM">Tiền mặt</SelectItem>
+                        <SelectItem value="CK">Chuyển khoản</SelectItem>
+                        <SelectItem value="TM/CK">Tiền mặt và chuyển khoản</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
+
                 <div className="flex justify-center">
-                  <Button onClick={handleSaveInOrder} variant="blue">
+                  <Button onClick={handleSaveInOrder} variant="blue" disabled={isSaveInOrder}>
+                    {isSaveInOrder && <Loader2 className="mr-2 animate-spin" />}
                     Xác nhận thanh toán
                   </Button>
                 </div>
