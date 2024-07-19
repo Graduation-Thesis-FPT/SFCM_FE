@@ -32,11 +32,54 @@ import {
 } from "@/components/common/aggridreact/cellRender";
 import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
 import { BtnPrintLabel } from "./btnPrintLabel";
-import { BtnImportExcel } from "@/components/common/aggridreact/tableTools/BtnImportExcel";
 import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
-import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import moment from "moment";
 import { getAllPackageUnit } from "@/apis/pakage-unit.api";
+import { BtnImportExcel } from "./btnImportExcel";
+
+const DT_VESSEL_VISIT = new dt_vessel_visit();
+const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
+const DT_PACKAGE_MNF_LD = new dt_package_mnf_ld();
+const vesselFilter = [
+  {
+    name: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
+    field: DT_VESSEL_VISIT.VESSEL_NAME.field
+  },
+  {
+    name: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
+    field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field
+  },
+  {
+    name: DT_VESSEL_VISIT.ETA.headerName,
+    field: DT_VESSEL_VISIT.ETA.field
+  }
+];
+const containerFilter = [
+  {
+    name: DT_CNTR_MNF_LD.BILLOFLADING.headerName,
+    field: DT_CNTR_MNF_LD.BILLOFLADING.field
+  },
+  {
+    name: DT_CNTR_MNF_LD.CNTRNO.headerName,
+    field: DT_CNTR_MNF_LD.CNTRNO.field
+  },
+  {
+    name: DT_CNTR_MNF_LD.CNTRSZTP.headerName,
+    field: DT_CNTR_MNF_LD.CNTRSZTP.field
+  },
+  {
+    name: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.headerName,
+    field: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.field
+  },
+  {
+    name: DT_CNTR_MNF_LD.SEALNO.headerName,
+    field: DT_CNTR_MNF_LD.SEALNO.field
+  },
+  {
+    name: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
+    field: DT_CNTR_MNF_LD.CONSIGNEE.field
+  }
+];
 
 export function GoodsManifest() {
   const dispatch = useDispatch();
@@ -48,9 +91,7 @@ export function GoodsManifest() {
   const [openContainerInfoSelect, setOpenContainerInfoSelect] = useState(false);
   const [vesselInfo, setVesselInfo] = useState({});
   const [containerInfo, setContainerInfo] = useState({});
-  const DT_VESSEL_VISIT = new dt_vessel_visit();
-  const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
-  const DT_PACKAGE_MNF_LD = new dt_package_mnf_ld();
+
   const toast = useCustomToast();
   const colDefs = [
     {
@@ -87,6 +128,8 @@ export function GoodsManifest() {
       cellRenderer: params => PackageUnitCodeRender(params, unit)
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: DT_PACKAGE_MNF_LD.CARGO_PIECE.headerName,
       field: DT_PACKAGE_MNF_LD.CARGO_PIECE.field,
       flex: 1,
@@ -95,6 +138,8 @@ export function GoodsManifest() {
       cellDataType: "number"
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: DT_PACKAGE_MNF_LD.CBM.headerName,
       field: DT_PACKAGE_MNF_LD.CBM.field,
       flex: 1,
@@ -115,47 +160,6 @@ export function GoodsManifest() {
       flex: 1,
       filter: true,
       editable: true
-    }
-  ];
-
-  const vesselFilter = [
-    {
-      name: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
-      field: DT_VESSEL_VISIT.VESSEL_NAME.field
-    },
-    {
-      name: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field
-    },
-    {
-      name: DT_VESSEL_VISIT.ETA.headerName,
-      field: DT_VESSEL_VISIT.ETA.field
-    }
-  ];
-  const containerFilter = [
-    {
-      name: DT_CNTR_MNF_LD.CNTRNO.headerName,
-      field: DT_CNTR_MNF_LD.CNTRNO.field
-    },
-    {
-      name: DT_CNTR_MNF_LD.CNTRSZTP.headerName,
-      field: DT_CNTR_MNF_LD.CNTRSZTP.field
-    },
-    {
-      name: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.headerName,
-      field: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.field
-    },
-    {
-      name: DT_CNTR_MNF_LD.SEALNO.headerName,
-      field: DT_CNTR_MNF_LD.SEALNO.field
-    },
-    {
-      name: DT_CNTR_MNF_LD.STATUSOFGOOD.headerName,
-      field: DT_CNTR_MNF_LD.STATUSOFGOOD.field
-    },
-    {
-      name: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
-      field: DT_CNTR_MNF_LD.CONSIGNEE.field
     }
   ];
 
@@ -255,6 +259,32 @@ export function GoodsManifest() {
       });
   };
 
+  const handleFileUpload = rowDataFileUpload => {
+    if (!vesselInfo.VOYAGEKEY) {
+      toast.warning("Vui lòng chọn tàu chuyến");
+      return;
+    }
+    if (!containerInfo.ROWGUID) {
+      toast.warning("Vui lòng chọn container");
+      return;
+    }
+    const finalRowData = rowDataFileUpload?.map(item => {
+      return {
+        ...item,
+        HOUSE_BILL: item.HOUSE_BILL?.toString(),
+        DECLARE_NO: item.DECLARE_NO?.toString(),
+        NOTE: item.NOTE?.toString()
+      };
+    });
+    toast.success("Nhập file thành công");
+    setRowData(finalRowData);
+  };
+
+  useEffect(() => {
+    getItemType();
+    getUnit();
+  }, []);
+
   const getItemType = () => {
     getAllItemType()
       .then(res => {
@@ -273,31 +303,6 @@ export function GoodsManifest() {
       .catch(err => {
         toast.error(err);
       });
-  };
-
-  useEffect(() => {
-    getItemType();
-    getUnit();
-  }, []);
-
-  const handleFileUpload = rowDataFileUpload => {
-    if (!vesselInfo.VOYAGEKEY) {
-      toast.warning("Vui lòng chọn tàu chuyến");
-      return;
-    }
-    if (!containerInfo.ROWGUID) {
-      toast.warning("Vui lòng chọn container");
-      return;
-    }
-    const finalRowData = rowDataFileUpload?.map(item => {
-      return {
-        ...item,
-        HOUSE_BILL: item.HOUSE_BILL?.toString(),
-        DECLARE_NO: item.DECLARE_NO?.toString(),
-        NOTE: item.NOTE?.toString()
-      };
-    });
-    setRowData(finalRowData);
   };
 
   return (

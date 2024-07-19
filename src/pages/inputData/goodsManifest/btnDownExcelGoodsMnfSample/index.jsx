@@ -29,13 +29,33 @@ export const BtnDownExcelGoodsMnfSample = ({
     const itemTypeCodeOption = itemType.map(item => item.ITEM_TYPE_CODE).join(",");
     const unitCodeOption = unit.map(item => item.PACKAGE_UNIT_CODE).join(",");
 
-    worksheet.getCell("D2").dataValidation = {
+    worksheet.getCell("C2").dataValidation = {
+      type: "list",
+      allowBlank: true,
+      formulae: [`"${itemTypeCodeOption}"`]
+    };
+    worksheet.getCell("C3").dataValidation = {
+      type: "list",
+      allowBlank: true,
+      formulae: [`"${itemTypeCodeOption}"`]
+    };
+    worksheet.getCell("C4").dataValidation = {
       type: "list",
       allowBlank: true,
       formulae: [`"${itemTypeCodeOption}"`]
     };
 
-    worksheet.getCell("E2").dataValidation = {
+    worksheet.getCell("D2").dataValidation = {
+      type: "list",
+      allowBlank: true,
+      formulae: [`"${unitCodeOption}"`]
+    };
+    worksheet.getCell("D3").dataValidation = {
+      type: "list",
+      allowBlank: true,
+      formulae: [`"${unitCodeOption}"`]
+    };
+    worksheet.getCell("D4").dataValidation = {
       type: "list",
       allowBlank: true,
       formulae: [`"${unitCodeOption}"`]
@@ -66,7 +86,7 @@ export const BtnDownExcelGoodsMnfSample = ({
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Xuất file excel mẫu</p>
+          <p>Tải file excel mẫu</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

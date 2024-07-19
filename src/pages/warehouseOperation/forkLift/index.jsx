@@ -116,7 +116,7 @@ export function ForkLift() {
 
   const removePalletBlinkClass = () => {
     const elements = document.querySelectorAll(".pallet-blink");
-    elements.forEach(element => {
+    elements?.forEach(element => {
       element.classList.remove("pallet-blink");
     });
   };

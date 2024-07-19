@@ -1,3 +1,4 @@
+import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
   Tooltip,
@@ -9,15 +10,32 @@ import { FileUp, Loader2 } from "lucide-react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import * as XLSX from "xlsx";
-import { useCustomToast } from "../../custom-toast";
-import { useDispatch } from "react-redux";
+
+const checkColumns = columns => {
+  const requiredColumns = [
+    "STT",
+    "Số House Bill *",
+    "Mã loại hàng *",
+    "Đơn vị tính *",
+    "Số lượng",
+    "Số khối (m³) *",
+    "Số tờ khai",
+    "Ghi chú"
+  ];
+  return requiredColumns.every(col => columns.includes(col));
+};
 
 export function BtnImportExcel({ isLoading, onFileUpload, gridRef, ...props }) {
   const fileInputRef = useRef(null);
   const toast = useCustomToast();
 
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
   const handleFileUpload = event => {
     const file = event.target.files[0];
+    fileInputRef.current.value = "";
 
     if (file) {
       if (
@@ -26,20 +44,24 @@ export function BtnImportExcel({ isLoading, onFileUpload, gridRef, ...props }) {
         (file.name.split(".").pop().toLowerCase() !== "xlsx" &&
           file.name.split(".").pop().toLowerCase() !== "xls")
       ) {
-        fileInputRef.current.value = "";
         toast.error("File không đúng định dạng. Vui lòng chọn file excel (.xlsx, .xls)!");
         return;
       }
+
       const reader = new FileReader();
       reader.onload = e => {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: "array" });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        fileInputRef.current.value = "";
-        const rowDataFileUpload = mapKeysFileUpload(jsonData);
-        onFileUpload(rowDataFileUpload);
+        const jsonDataCheck = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        if (!checkColumns(jsonDataCheck[0])) {
+          return toast.error("Vui lòng chọn nhập file theo định dạng của file excel mẫu!");
+        } else {
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          const rowDataFileUpload = mapKeysFileUpload(jsonData);
+          onFileUpload(rowDataFileUpload);
+        }
       };
       reader.readAsArrayBuffer(file);
     }
@@ -65,10 +87,6 @@ export function BtnImportExcel({ isLoading, onFileUpload, gridRef, ...props }) {
       });
       return { ...newItem, status: "insert", key: uuidv4() };
     });
-  };
-
-  const handleClick = () => {
-    fileInputRef.current.click();
   };
 
   return (
