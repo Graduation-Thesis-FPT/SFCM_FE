@@ -6,21 +6,20 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-
 import { CheckCircle, Loader2 } from "lucide-react";
 import moment from "moment";
-import { ComponentPrintInOrder } from "./ComponentPrintInOrder";
 import { useReactToPrint } from "react-to-print";
 import { useRef, useState } from "react";
 import { viewInvoice } from "@/apis/order.api";
 import { useCustomToast } from "@/components/common/custom-toast";
+import { ComponentPrintExOrder } from "./ComponentPrintExOrder";
 
-export function DialogSaveBillSuccess({
+export function DialogSaveBillExSuccess({
   open = false,
-  data = {},
-  onMakeNewOrder,
-  selectedCustomer,
-  CNTRNO
+  dataBillAfterSave = {},
+  selectedCustomer = {},
+  packageFilter = {},
+  onMakeNewExOrder
 }) {
   const toast = useCustomToast();
   const printRef = useRef(null);
@@ -32,9 +31,9 @@ export function DialogSaveBillSuccess({
 
   const handleInvoicePublish = () => {
     setIsPrintInvoice(true);
-    viewInvoice(data.neworder.DE_ORDER_NO)
+    viewInvoice(dataBillAfterSave.neworder.DE_ORDER_NO)
       .then(res => {
-        let base64Data = res.data.metadata.content.data;
+        let base64Data = res.data.metadata.content.dataBillAfterSave;
         const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
         window.open(url, "_blank");
@@ -47,7 +46,7 @@ export function DialogSaveBillSuccess({
       });
   };
 
-  if (!data.neworder || !data.neworderDtl) {
+  if (!dataBillAfterSave.neworder || !dataBillAfterSave.neworderDtl) {
     return <></>;
   }
   return (
@@ -58,20 +57,21 @@ export function DialogSaveBillSuccess({
             <div className="text-xl font-bold text-green-600">Tạo lệnh thành công !</div>
             <CheckCircle className="m-auto size-16 text-green-600" />
             <div>
-              Mã lệnh: <span className="font-semibold">{data.neworder.DE_ORDER_NO}</span>
+              Mã lệnh:{" "}
+              <span className="font-semibold">{dataBillAfterSave.neworder.DE_ORDER_NO}</span>
             </div>
             <div>
-              Mã hóa đơn: <span className="font-semibold">{data.neworder.INV_ID}</span>
+              Mã hóa đơn: <span className="font-semibold">{dataBillAfterSave.neworder.INV_ID}</span>
             </div>
             <div>
               Ngày hết hạn lệnh:
               <span className="font-semibold">
                 {" "}
-                {moment(data.neworder.EXP_DATE).format("DD/MM/Y HH:mm")}
+                {moment(dataBillAfterSave.neworder.EXP_DATE).format("DD/MM/Y HH:mm")}
               </span>
             </div>
             <div className="flex justify-center gap-4">
-              <Button variant="outline" onClick={onMakeNewOrder}>
+              <Button variant="outline" onClick={onMakeNewExOrder}>
                 Làm lệnh mới
               </Button>
               <Button onClick={handlePrint} variant="blue">
@@ -81,10 +81,10 @@ export function DialogSaveBillSuccess({
                 {isPrintInvoice && <Loader2 className="mr-2 animate-spin" />}
                 Hóa đơn điện tử
               </Button>
-              <ComponentPrintInOrder
+              <ComponentPrintExOrder
+                packageFilter={packageFilter}
                 ref={printRef}
-                data={data}
-                CNTRNO={CNTRNO}
+                data={dataBillAfterSave}
                 selectedCustomer={selectedCustomer}
               />
             </div>

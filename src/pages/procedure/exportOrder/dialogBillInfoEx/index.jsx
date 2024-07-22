@@ -1,4 +1,4 @@
-import { invoicePublishIn, saveInOrder } from "@/apis/order.api";
+import { invoicePublishEx, saveExOrder, saveInOrder } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { bill_info, bs_customer } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -26,22 +26,23 @@ import { Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
-export function DialogBillInfo({
+const BILL_INFO = new bill_info();
+const BS_CUSTOMER = new bs_customer();
+
+export function DialogBillInfoEx({
   open = false,
   onOpenChange,
-  onSaveInOrderSuccess,
-  billInfoList = [],
+  packageFilter = {},
+  packageList = [],
+  billInfoEx = [],
   selectedCustomer = {},
-  EXP_DATE = "",
-  rowData = []
+  onSaveExOrderSuccess
 }) {
   const dispatch = useDispatch();
   const gridRef = useRef(null);
-  const BILL_INFO = new bill_info();
-  const BS_CUSTOMER = new bs_customer();
   const toast = useCustomToast();
   const [HTTT, setHTTT] = useState("TM");
-  const [isSaveInOrder, setIsSaveInOrder] = useState(false);
+  const [isSaveExOrder, setIsSaveExOrder] = useState(false);
 
   const colDefs = [
     {
@@ -119,9 +120,9 @@ export function DialogBillInfo({
     }
   ];
 
-  const handleSaveInOrder = () => {
-    setIsSaveInOrder(true);
-    let datasTemp = billInfoList.map(item => {
+  const handleSaveExOrder = () => {
+    setIsSaveExOrder(true);
+    let datasTemp = billInfoEx.map(item => {
       return {
         TariffName: item.TRF_DESC,
         UnitCode: "CBM",
@@ -131,17 +132,18 @@ export function DialogBillInfo({
         VatRate: item.VAT
       };
     });
+
     let args = {
       cusTaxCode: selectedCustomer.TAX_CODE,
       cusAddr: selectedCustomer.ADDRESS,
       cusName: selectedCustomer.CUSTOMER_NAME,
-      sum_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
-      vat_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
-      total_amount: billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0),
+      sum_amount: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+      vat_amount: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
+      total_amount: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0),
       paymentMethod: HTTT,
       datas: [...datasTemp]
     };
-    invoicePublishIn(args)
+    invoicePublishEx(args)
       .then(res => {
         if (!res.data.metadata.success) {
           throw new Error(res.data.metadata.error);
@@ -149,10 +151,10 @@ export function DialogBillInfo({
         return res.data.metadata;
       })
       .then(invoiceInfo => {
-        const reqData = rowData.map(item => {
+        const reqData = packageList.map(item => {
           return {
             ...item,
-            EXP_DATE: EXP_DATE,
+            EXP_DATE: packageFilter.EXP_DATE,
             CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE,
             DE_ORDER_NO: invoiceInfo.fkey
           };
@@ -162,12 +164,12 @@ export function DialogBillInfo({
           INV_NO: invoiceInfo.inv,
           ACC_CD: HTTT,
           INV_DATE: invoiceInfo.invoiceDate,
-          AMOUNT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
-          VAT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
-          TAMOUNT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0)
+          AMOUNT: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+          VAT: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
+          TAMOUNT: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0)
         };
 
-        const paymentInfoDtl = billInfoList.map(item => {
+        const paymentInfoDtl = packageList.map(item => {
           return {
             QTY: item.QTY,
             UNIT_RATE: item.UNIT_RATE,
@@ -180,12 +182,11 @@ export function DialogBillInfo({
           };
         });
 
-        saveInOrder(reqData, paymentInfoHeader, paymentInfoDtl)
+        saveExOrder(reqData, paymentInfoHeader, paymentInfoDtl)
           .then(res => {
-            onOpenChange();
-            socket.emit("saveInOrderSuccess");
-            onSaveInOrderSuccess(res.data.metadata);
             toast.success(res);
+            // socket.emit("saveInOrderSuccess");
+            onSaveExOrderSuccess(res.data.metadata);
           })
           .catch(err => {
             toast.error(err);
@@ -195,11 +196,11 @@ export function DialogBillInfo({
         toast.error(err);
       })
       .finally(() => {
-        setIsSaveInOrder(false);
+        setIsSaveExOrder(false);
       });
   };
 
-  if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
+  if (!selectedCustomer.CUSTOMER_NAME || !packageList.length) {
     return null;
   }
 
@@ -230,21 +231,15 @@ export function DialogBillInfo({
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
                   <div>{BILL_INFO.AMOUNT.headerName}</div>
                   <div className="text-end">
-                    {formatVnd(
-                      billInfoList.reduce(
-                        (accumulator, currentValue) =>
-                          accumulator + currentValue[BILL_INFO.AMOUNT.field],
-                        0
-                      )
-                    )}
+                    {formatVnd(billInfoEx.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0))}
                   </div>
                   <div>{BILL_INFO.VAT_PRICE.headerName}</div>
                   <div className="text-end">
-                    {formatVnd(billInfoList?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0))}
+                    {formatVnd(billInfoEx?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0))}
                   </div>
                   <div>{BILL_INFO.TAMOUNT.headerName}</div>
                   <div className="text-end">
-                    {formatVnd(billInfoList?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0))}
+                    {formatVnd(billInfoEx?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0))}
                   </div>
                 </div>
               </span>
@@ -274,8 +269,8 @@ export function DialogBillInfo({
                 </div>
 
                 <div className="flex justify-center">
-                  <Button onClick={handleSaveInOrder} variant="blue" disabled={isSaveInOrder}>
-                    {isSaveInOrder && <Loader2 className="mr-2 animate-spin" />}
+                  <Button onClick={handleSaveExOrder} variant="blue" disabled={isSaveExOrder}>
+                    {isSaveExOrder && <Loader2 className="mr-2 animate-spin" />}
                     Xác nhận thanh toán
                   </Button>
                 </div>
@@ -286,7 +281,7 @@ export function DialogBillInfo({
                   ref={gridRef}
                   rowSelection={"none"}
                   className="h-[200px]"
-                  rowData={billInfoList || []}
+                  rowData={billInfoEx || []}
                   colDefs={colDefs}
                   pagination={false}
                 />

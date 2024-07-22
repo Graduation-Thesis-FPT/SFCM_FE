@@ -28,10 +28,41 @@ export const saveInOrder = async (
   });
 };
 
-export const invoicePublish = async args => {
+export const invoicePublishIn = async args => {
   return await axiosPrivate.post(`order/publishInvoice`, args);
 };
 
 export const viewInvoice = async fkey => {
   return await axiosPrivate.get(`order/viewInvoice?fkey=${fkey}`);
+};
+
+//export order
+export const getExContainerByVoyagekey = async VOYAGEKEY => {
+  return await axiosPrivate.get(`order/getContainerList?VOYAGEKEY=${VOYAGEKEY}`);
+};
+
+export const getExManifest = async ({ VOYAGEKEY, CONTAINER_ID, HOUSE_BILL }) => {
+  return await axiosPrivate.get(
+    `order/getExManifest?VOYAGEKEY=${VOYAGEKEY}&CONTAINER_ID=${CONTAINER_ID}&HOUSE_BILL=${HOUSE_BILL}`
+  );
+};
+
+export const getToBillEx = async arrayPackage => {
+  return await axiosPrivate.post(`order/getToBillEx`, { arrayPackage });
+};
+
+export const invoicePublishEx = async args => {
+  return await axiosPrivate.post(`order/publishInvoiceEx`, args);
+};
+
+export const saveExOrder = async (
+  arrayPackage = [],
+  paymentInfoHeader = {},
+  paymentInfoDtl = []
+) => {
+  return await axiosPrivate.post(`order/saveExOrder`, {
+    arrayPackage: arrayPackage,
+    paymentInfoHeader: paymentInfoHeader,
+    paymentInfoDtl: paymentInfoDtl
+  });
 };

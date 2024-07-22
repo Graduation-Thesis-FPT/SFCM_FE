@@ -22,6 +22,13 @@ export function SelectSearch({
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
+  React.useEffect(() => {
+    if (!data.length) {
+      setValue("");
+      return;
+    }
+  }, [data]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -53,7 +60,7 @@ export function SelectSearch({
         >
           <CommandInput placeholder={labelSearch} className="h-9" />
           <CommandList>
-            <CommandEmpty>Không tìm thấy dữ liệu</CommandEmpty>
+            <CommandEmpty>Không tìm có dữ liệu</CommandEmpty>
             <CommandGroup>
               {data.map(item => (
                 <CommandItem

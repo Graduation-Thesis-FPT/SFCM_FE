@@ -391,7 +391,7 @@ export function ImportOrder() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Chọn khách hàng" />
+                <SelectValue placeholder="Chọn dịch vụ đính kèm" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -418,16 +418,12 @@ export function ImportOrder() {
       <Section.Content>
         <Section.Table>
           <AgGrid
-            contextMenu={true}
             setRowData={data => {
               setRowData(data);
             }}
             ref={gridRef}
             rowData={rowData}
             colDefs={colDefs}
-            onDeleteRow={selectedRows => {
-              handleDeleteRows(selectedRows);
-            }}
           />
         </Section.Table>
       </Section.Content>

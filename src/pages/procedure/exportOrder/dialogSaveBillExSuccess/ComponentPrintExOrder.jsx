@@ -2,8 +2,8 @@ import moment from "moment";
 import { forwardRef } from "react";
 import { useSelector } from "react-redux";
 
-export const ComponentPrintInOrder = forwardRef(
-  ({ data = {}, CNTRNO = "", selectedCustomer = {} }, ref) => {
+export const ComponentPrintExOrder = forwardRef(
+  ({ data = {}, selectedCustomer = {}, packageFilter = {} }, ref) => {
     const user = useSelector(state => state.userSlice.user);
     return (
       <div ref={ref} className="hidden-to-print space-y-3 p-5">
@@ -18,7 +18,7 @@ export const ComponentPrintInOrder = forwardRef(
           </span>
         </div>
         <div className="text-center font-bold">
-          <div>LỆNH NHẬP HÀNG TỪ CONTAINER VÀO KHO</div>
+          <div>LỆNH XUẤT HÀNG RA KHO</div>
           <div>{/* <i>Kính gửi:....................</i> */}</div>
         </div>
         <div className="text-sm">
@@ -28,12 +28,11 @@ export const ComponentPrintInOrder = forwardRef(
           </span>
         </div>
         <div className="text-sm">
-          Đề nghị đội giám sát kho bãi cho chúng tôi được rút hàng vào kho các container hàng chung
-          chủ sau đây vào kho SFCM
+          Đề nghị đội giám sát kho bãi cho chúng tôi được rút hàng ra kho
         </div>
         <div className="flex gap-10 text-sm font-bold">
           <div>MÃ LỆNH: {data?.neworder?.DE_ORDER_NO ?? "...................."}</div>
-          <div>SỐ CONT: {CNTRNO ?? "...................."}</div>
+          <div>SỐ CONT: {packageFilter?.CONTAINER_ID ?? "...................."}</div>
           <div>TỔNG SỐ KHỐI: {data.neworder?.TOTAL_CBM ?? "...................."}</div>
           <div>
             HẠN LỆNH:{" "}
@@ -66,7 +65,7 @@ export const ComponentPrintInOrder = forwardRef(
         </table>
         <div className="flex justify-between text-center text-sm">
           <span>
-            <div>Chúng tôi hoàn toàn chịu trách nhiệm về hàng hóa sau khi đã nhập kho</div>
+            <div>Chúng tôi hoàn toàn chịu trách nhiệm về hàng hóa sau khi đã xuất kho</div>
             <div className="mt-3 font-bold">Hải quan giám sát kho bãi</div>
           </span>
           <span>
