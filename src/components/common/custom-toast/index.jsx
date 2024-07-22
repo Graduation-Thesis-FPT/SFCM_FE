@@ -41,6 +41,13 @@ export const useCustomToast = () => {
   };
 
   const warning = (mess, duration) => {
+    if (typeof mess !== "string") {
+      mess =
+        ERROR_MESSAGE[mess?.response?.data?.message] ||
+        mess?.response?.data?.message ||
+        mess.message ||
+        "Lỗi không xác định";
+    }
     toast({
       variant: "warning",
       title: <Warning message={mess} />,

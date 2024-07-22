@@ -92,7 +92,6 @@ export function ForkLift() {
 
   const handleSelectedJob = job => {
     if (job.PALLET_NO === selectedJob.PALLET_NO) {
-      removePalletBlinkClass();
       setSelectedJob({});
       return;
     }
@@ -101,7 +100,7 @@ export function ForkLift() {
         scrollToElement(res.data.metadata?.matchedCell?.ROWGUID);
       })
       .catch(err => {
-        removePalletBlinkClass();
+        toast.warning(err);
       });
     setSelectedJob(job);
   };
@@ -113,6 +112,10 @@ export function ForkLift() {
       element.classList.add("pallet-blink");
     }
   };
+
+  useEffect(() => {
+    removePalletBlinkClass();
+  }, [selectedJob]);
 
   const removePalletBlinkClass = () => {
     const elements = document.querySelectorAll(".pallet-blink");
