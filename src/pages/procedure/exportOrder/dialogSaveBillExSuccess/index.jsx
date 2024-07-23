@@ -33,7 +33,7 @@ export function DialogSaveBillExSuccess({
     setIsPrintInvoice(true);
     viewInvoice(dataBillAfterSave.neworder.DE_ORDER_NO)
       .then(res => {
-        let base64Data = res.data.metadata.content.dataBillAfterSave;
+        let base64Data = res.data.metadata.content.data;
         const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
         window.open(url, "_blank");
