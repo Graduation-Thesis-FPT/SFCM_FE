@@ -1,3 +1,4 @@
+import { Sidebar } from "@/components/common/menu/Sidebar";
 import { Avatar } from "@/components/common/ui/avartar";
 import {
   DropdownMenu,
@@ -8,7 +9,6 @@ import {
   DropdownMenuTrigger
 } from "@/components/common/ui/dropdown-menu";
 import { useToggle } from "@/hooks/useToggle";
-import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
 import { cn, getFirstLetterOfLastWord } from "@/lib/utils";
 import { setMenuIsCollapse } from "@/redux/slice/menuIsCollapseSlice";
@@ -47,7 +47,7 @@ export function MainLayout() {
           isCollapse ? "w-[92px]" : "w-64"
         )}
       >
-        <MenuWeb
+        <Sidebar
           menu={menu}
           handleScale={() => {
             dispacth(setMenuIsCollapse(!isCollapse));

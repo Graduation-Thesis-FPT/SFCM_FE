@@ -203,3 +203,15 @@ export class bill_info extends CommonColumns {
   VAT = { field: "VAT", headerName: "VAT (%)" };
   VAT_PRICE = { field: "VAT_PRICE", headerName: "Tiền VAT" };
 }
+
+export class bs_order_tracking extends CommonColumns{
+  DE_ORDER_NO= { field: "DE_ORDER_NO", headerName: "Mã đơn hàng" };
+  CONTAINER_ID = { field: "CONTAINER_ID", headerName: "Số container" };
+  PACKAGE_ID = { field: "PACKAGE_ID", headerName: "Số kiện hàng" };
+  INV_ID = { field: "INV_ID", headerName: "Số hóa đơn" };
+  INV_DRAFT_ID = { field: "INV_DRAFT_ID", headerName: "Số hóa đơn tạm" };
+  ISSUE_DATE = { field: "ISSUE_DATE", headerName: "Ngày làm lệnh" };
+  EXP_DATE = { field: "EXP_DATE", headerName: "Ngày hết hạn lệnh" };
+  TOTAL_CBM = { field: "TOTAL_CBM", headerName: "Tổng khối lượng (m³)" };
+  NOTE = { field: "NOTE", headerName: "Ghi chú" };
+}

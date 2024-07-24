@@ -28,3 +28,6 @@ export * from "./procedure/exportOrder";
 export * from "./warehouseOperation/importTally";
 export * from "./warehouseOperation/exportTally";
 export * from "./warehouseOperation/forkLift";
+
+//order-tracking
+export * from "./customer-order/order"
