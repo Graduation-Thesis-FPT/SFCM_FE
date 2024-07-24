@@ -26,10 +26,16 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
-const formSchema = z.object({
-  PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
-  CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
-});
+
+const formSchema = z
+  .object({
+    PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
+    CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
+  })
+  .refine(data => data.PASSWORD === data.CONFIRM_PASSWORD, {
+    message: "Mật khẩu xác nhận không khớp!",
+    path: ["CONFIRM_PASSWORD"]
+  });
 
 export function FirstLogin() {
   const location = useLocation();
@@ -48,12 +54,6 @@ export function FirstLogin() {
 
   function onSubmit(values) {
     setBtnLoading(true);
-    if (values.PASSWORD !== values.CONFIRM_PASSWORD) {
-      form.setError("CONFIRM_PASSWORD", { message: "Mật khẩu nhập lại chưa trùng khớp!" });
-      toast.error("Mật khẩu nhập lại chưa trùng khớp!");
-      return;
-    }
-
     const userInfo = { USER_NAME: USER_NAME, PASSWORD: values.PASSWORD };
 
     changeDefaultPassword(ROWGUID, userInfo)
