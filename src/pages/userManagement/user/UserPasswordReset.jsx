@@ -9,11 +9,14 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
+import { useToggle } from "@/hooks/useToggle";
 import React from "react";
 
 export const UserPasswordReset = ({ detail = {}, openDialog, setOpenDialog }) => {
   const toast = useCustomToast();
+  const [loading, setLoading] = useToggle();
   const handleResetPassword = () => {
+    setLoading(true);
     const DEFAULT_PASSWORD = import.meta.env.VITE_DEFAULT_PASSWORD;
     if (!DEFAULT_PASSWORD || !detail.ROWGUID) {
       toast.error("Lỗi hệ thống, vui lòng thử lại sau!");
@@ -21,6 +24,7 @@ export const UserPasswordReset = ({ detail = {}, openDialog, setOpenDialog }) =>
     }
     resetPasswordById({ id: detail.ROWGUID, data: { DEFAULT_PASSWORD } })
       .then(res => {
+        setLoading(false);
         toast.success(res);
         setOpenDialog(false);
       })
@@ -62,6 +66,7 @@ export const UserPasswordReset = ({ detail = {}, openDialog, setOpenDialog }) =>
             }}
             type="button"
             variant="blue"
+            loading={loading}
           >
             Khôi phục
           </Button>

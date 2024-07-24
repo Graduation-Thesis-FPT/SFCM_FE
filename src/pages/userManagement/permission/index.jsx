@@ -10,8 +10,7 @@ import { getAllRole } from "@/apis/role.api";
 export function Permission() {
   const gridRef = useRef(null);
   const [detailData, setDetailData] = useState({});
-  const { data: roles, revalidate } = useFetchData({ service: getAllRole });
-  let rowData = roles ?? [];
+  const { data: roles, revalidate, loading } = useFetchData({ service: getAllRole });
 
   const colDefs = [
     {
@@ -69,9 +68,10 @@ export function Permission() {
         <Section.Content>
           {/* <SearchInput /> */}
           <AgGrid
+            loading={loading}
             ref={gridRef}
             className="h-full"
-            rowData={rowData}
+            rowData={roles}
             colDefs={colDefs}
             setRowData={data => {
               setRowData(data);

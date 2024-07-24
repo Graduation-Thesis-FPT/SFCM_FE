@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
+import { RoleSelect } from "@/components/user-management/RoleSelect";
 import { actionGrantPermission } from "@/constants";
 import { regexPattern } from "@/constants/regexPattern";
 import useFetchData from "@/hooks/useRefetchData";
@@ -29,7 +30,6 @@ import moment from "moment";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { UserPasswordReset } from "./UserPasswordReset";
-import { RoleSelect } from "@/components/user-management/RoleSelect";
 
 const formSchema = z.object({
   ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
@@ -76,6 +76,7 @@ const formSchema = z.object({
 export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   const toast = useCustomToast();
   const [openDialog, setOpenDialog] = useToggle();
+  const [btnLoading, setBtnLoading] = useToggle();
   const { data: user } = useFetchData({
     service: findUserById,
     params: { id: detail.ROWGUID },
@@ -99,9 +100,11 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   });
 
   function onSubmit(values) {
+    setBtnLoading(true);
     let { USER_NAME, ...rest } = values;
     updateUser({ id: detail.ROWGUID, data: rest })
       .then(updateRes => {
+        setBtnLoading(false);
         form.reset();
         onOpenChange();
         revalidate();
@@ -287,6 +290,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
                     type="submit"
                     className="h-[36px] w-[126px]"
                     variant="blue"
+                    loading={btnLoading}
                   >
                     Lưu thông tin
                   </Button>
