@@ -171,8 +171,13 @@ export function ExportOrder() {
     if (!packageFilter.CUSTOMER_CODE) {
       return toast.warning("Vui lòng chọn khách hàng!");
     }
+    const packageListReq = packageList.map(item => ({
+      ...item,
+      CUSTOMER_CODE: packageFilter.CUSTOMER_CODE
+    }));
+
     dispatch(setGlobalLoading(true));
-    getToBillEx(packageList)
+    getToBillEx(packageListReq)
       .then(res => {
         setBillInfoEx(res.data.metadata);
         toast.success(res);

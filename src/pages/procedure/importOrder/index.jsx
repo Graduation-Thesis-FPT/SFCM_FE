@@ -233,8 +233,9 @@ export function ImportOrder() {
     if (!CUSTOMER_CODE) {
       return toast.warning("Vui lòng chọn khách hàng!");
     }
+    const arrayPackage = rowData.map(item => ({ ...item, CUSTOMER_CODE }));
     let temp = ATTACHSRV_CODE === "" ? [] : [ATTACHSRV_CODE];
-    getToBillIn(rowData, [...temp])
+    getToBillIn(arrayPackage, [...temp])
       .then(res => {
         setBillInfoList(res.data.metadata);
       })
