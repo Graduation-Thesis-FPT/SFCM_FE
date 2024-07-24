@@ -55,18 +55,16 @@ export function FirstLogin() {
   function onSubmit(values) {
     setBtnLoading(true);
     const userInfo = { USER_NAME: USER_NAME, PASSWORD: values.PASSWORD };
-
     changeDefaultPassword(ROWGUID, userInfo)
       .then(res => {
-        setBtnLoading(false);
         userGlobal.store(res.data.metadata);
         navigate("/");
         toast.success(res);
       })
       .catch(err => {
         toast.error(err);
-        setBtnLoading(false);
       });
+    setBtnLoading(false);
   }
 
   useEffect(() => {
