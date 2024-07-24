@@ -112,6 +112,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
       })
       .catch(err => {
         toast.error(err);
+        setBtnLoading(false);
       });
   }
 

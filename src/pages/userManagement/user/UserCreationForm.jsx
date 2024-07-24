@@ -93,6 +93,7 @@ export function UserCreationForm({ revalidate }) {
       })
       .catch(err => {
         toast.error(err);
+        setLoading(false);
       });
   }
 

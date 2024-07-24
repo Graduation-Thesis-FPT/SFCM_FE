@@ -30,6 +30,7 @@ import { getRefreshToken, useCustomStore } from "@/lib/auth";
 import { regexPattern } from "@/constants/regexPattern";
 import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { Password } from "@/components/common/ui/password";
 
 const formSchema = z.object({
   USER_NAME: z
@@ -76,6 +77,7 @@ export function Login() {
         navigate("/");
       })
       .catch(err => {
+        dispacth(setGlobalLoading(false));
         toast.error(err);
       });
     return;
@@ -139,27 +141,12 @@ export function Login() {
                   <FormItem className="space-y-2">
                     <FormLabel className="text-base">Mật khẩu</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Input
-                          className="shadow-md focus-visible:ring-offset-0"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Nhập mật khẩu"
-                          {...field}
-                          autoComplete="on"
-                        />
-                        <button
-                          onClick={() => {
-                            setShowPassword(!showPassword);
-                          }}
-                          className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
-                        >
-                          {showPassword ? (
-                            <Eye className="size-4 bg-white" />
-                          ) : (
-                            <EyeOff className="size-4 bg-white" />
-                          )}
-                        </button>
-                      </div>
+                      <Password
+                        {...field}
+                        placeholder="Nhập mật khẩu "
+                        className="shadow-md focus-visible:ring-offset-0"
+                        autoComplete="current-password"
+                      />
                     </FormControl>
                     <div className="flex flex-row gap-1">
                       <FormDescription className="flex text-xs font-light">

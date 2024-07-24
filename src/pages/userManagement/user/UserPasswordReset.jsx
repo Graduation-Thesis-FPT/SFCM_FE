@@ -30,6 +30,7 @@ export const UserPasswordReset = ({ detail = {}, openDialog, setOpenDialog }) =>
       })
       .catch(err => {
         toast.error(err);
+        setLoading(false);
       });
   };
   return (
