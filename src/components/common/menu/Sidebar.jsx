@@ -13,7 +13,7 @@ import * as icon from "lucide-react";
 import React, { Fragment, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-export const CategorizedMenu = ({menu, title, isCollapse}) => {
+export const CategorizedMenu = ({ menu, title, isCollapse, handleScale }) => {
   let { pathname } = useLocation();
   let mainPath = pathname.split("/")[1];
   const [accordionValue, setAccordionValue] = useState(mainPath);
@@ -101,8 +101,18 @@ export function Sidebar({ handleScale, isCollapse, menu }) {
       </div>
 
       <ScrollArea className="w-full flex-1 px-[24px] pt-[24px]">
-        <CategorizedMenu menu={mainMenu} title="Mục chính" isCollapse={isCollapse} />
-        <CategorizedMenu menu={toolMenu} title="Công cụ" isCollapse={isCollapse} />
+        <CategorizedMenu
+          menu={mainMenu}
+          title="Mục chính"
+          isCollapse={isCollapse}
+          handleScale={handleScale}
+        />
+        <CategorizedMenu
+          menu={toolMenu}
+          title="Công cụ"
+          isCollapse={isCollapse}
+          handleScale={handleScale}
+        />
       </ScrollArea>
 
       <div className="flex h-16 items-center justify-center border-t px-6">

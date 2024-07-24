@@ -1,5 +1,6 @@
 import { getCustomerOrders } from "@/apis/customer-order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { bs_order_tracking } from "@/components/common/aggridreact/dbColumns";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
@@ -67,7 +68,8 @@ export function Order() {
     {
       headerName: BS_ORDER_TRACKING.ISSUE_DATE.headerName,
       field: BS_ORDER_TRACKING.ISSUE_DATE.field,
-      flex: 1
+      flex: 1,
+      cellRenderer: DateTimeByTextRender
     },
     {
       headerName: "Chi tiết",
