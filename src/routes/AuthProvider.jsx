@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
   if (!user.userInfo) {
     return <>{children}</>;
   }
-  if (menuLoading && !(pathname === "/login" || pathname === "/change-default-password")) {
+  if (menuLoading) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-3">
         <img src={logoNoText} alt="logo" className="aspect-auto size-20 animate-pulse" />
