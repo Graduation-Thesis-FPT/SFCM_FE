@@ -11,6 +11,7 @@ import {
   FormItem,
   FormLabel
 } from "@/components/common/ui/form";
+import { Password } from "@/components/common/ui/password";
 import {
   Tooltip,
   TooltipContent,
