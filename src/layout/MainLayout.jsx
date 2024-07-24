@@ -21,6 +21,7 @@ import {
   LogOutIcon,
   MessageCircle
 } from "lucide-react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -38,6 +39,11 @@ export function MainLayout() {
     userGlobal.remove();
     window.location.href = "/login";
   };
+  useEffect(() => {
+    if (pathname === "/" && menu.length > 0) {
+      navigate(`/${menu[0]?.MENU_CODE}/${menu[0]?.child[0]?.MENU_CODE}`);
+    }
+  }, [menu]);
 
   return (
     <div className="flex h-screen min-w-0 flex-row gap-2 bg-gray-50 duration-200">

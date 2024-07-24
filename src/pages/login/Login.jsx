@@ -28,6 +28,8 @@ import { useCustomToast } from "@/components/common/custom-toast";
 import { login } from "@/apis/access.api";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
 import { regexPattern } from "@/constants/regexPattern";
+import { useDispatch, useSelector } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 const formSchema = z.object({
   USER_NAME: z
@@ -43,9 +45,11 @@ const formSchema = z.object({
 
 export function Login() {
   const navigate = useNavigate();
+  const dispacth = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const toast = useCustomToast();
   const userGlobal = useCustomStore();
+  const globalLoading = useSelector(state => state.globalLoadingSlice.globalLoading);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,8 +57,10 @@ export function Login() {
   });
 
   function onSubmit(values) {
+    dispacth(setGlobalLoading(true));
     login(values)
       .then(res => {
+        dispacth(setGlobalLoading(false));
         if (res.data.metadata.changeDefaultPassword) {
           navigate("/change-default-password", {
             state: {
@@ -177,7 +183,13 @@ export function Login() {
           <div className="flex w-full items-center justify-end">
             <ForgotPassword />
           </div>
-          <Button variant="blue" type="submit" form="loginForm" className="w-full">
+          <Button
+            loading={globalLoading}
+            variant="blue"
+            type="submit"
+            form="loginForm"
+            className="w-full"
+          >
             Đăng nhập
           </Button>
         </div>

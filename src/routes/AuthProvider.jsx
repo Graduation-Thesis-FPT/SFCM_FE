@@ -41,6 +41,9 @@ export function AuthProvider({ children }) {
       console.log("menu", menu);
     }
   }, [menu]);
+  if (!user.userInfo) {
+    return <>{children}</>;
+  }
   if (menuLoading && !(pathname === "/login" || pathname === "/change-default-password")) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center gap-3">
