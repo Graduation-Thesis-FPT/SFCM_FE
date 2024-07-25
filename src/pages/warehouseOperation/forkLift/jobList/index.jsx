@@ -13,7 +13,7 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
           selectedJobStatus === "I" ? "bg-green-100" : "bg-orange-100"
         )}
       >
-        <p className="text-16 text-gray-900">
+        <p className="text-14 text-gray-900">
           {selectedJobStatus === "I" ? "Nhập hàng" : "Xuất hàng"}
         </p>
       </div>
