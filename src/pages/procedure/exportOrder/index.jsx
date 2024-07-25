@@ -30,6 +30,7 @@ import { DialogBillInfoEx } from "./dialogBillInfoEx";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { DialogSaveBillExSuccess } from "./dialogSaveBillExSuccess";
+import { MultipleSelect } from "@/components/common/multiple-select";
 
 const DT_VESSEL_VISIT = new dt_vessel_visit();
 const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
@@ -132,8 +133,8 @@ export function ExportOrder() {
   }, [vesselInfo]);
 
   const [packageFilter, setPackageFilter] = useState({
+    selectedAttachSrvList: [],
     CUSTOMER_CODE: "",
-    ATTACHSRV_CODE: "",
     CONTAINER_ID: "",
     HOUSE_BILL: "",
     EXP_DATE: addDays(new Date(), 2)
@@ -171,13 +172,13 @@ export function ExportOrder() {
     if (!packageFilter.CUSTOMER_CODE) {
       return toast.warning("Vui lòng chọn khách hàng!");
     }
+    dispatch(setGlobalLoading(true));
     const packageListReq = packageList.map(item => ({
       ...item,
-      CUSTOMER_CODE: packageFilter.CUSTOMER_CODE
+      CUSTOMER_CODE: item.CUSTOMER_CODE
     }));
-
-    dispatch(setGlobalLoading(true));
-    getToBillEx(packageListReq)
+    const servicesList = packageFilter?.selectedAttachSrvList?.map(item => item.value);
+    getToBillEx(packageListReq, servicesList)
       .then(res => {
         setBillInfoEx(res.data.metadata);
         toast.success(res);
@@ -232,8 +233,8 @@ export function ExportOrder() {
     setOpenDialogSaveBillExSuccess(false);
     setPackageList([]);
     setPackageFilter({
+      selectedAttachSrvList: [],
       CUSTOMER_CODE: "",
-      ATTACHSRV_CODE: "",
       CONTAINER_ID: "",
       HOUSE_BILL: "",
       EXP_DATE: addDays(new Date(), 2)
@@ -270,7 +271,7 @@ export function ExportOrder() {
             </div>
           ))}
         </span>
-        <span className="grid grid-cols-6 items-end gap-3">
+        <span className="grid grid-cols-7 items-end gap-3">
           <div>
             <Label htmlFor="CONTAINER_ID">Số Container</Label>
             <SelectSearch
@@ -346,29 +347,26 @@ export function ExportOrder() {
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label htmlFor="ATTACHSRV_CODE">Dịch vụ đính kèm</Label>
-            <Select
-              disabled={packageList.length === 0}
-              id="ATTACHSRV_CODE"
-              value={packageFilter.ATTACHSRV_CODE}
-              onValueChange={value => {
-                setPackageFilter({ ...packageFilter, ATTACHSRV_CODE: value });
+          <div className="col-span-2">
+            <Label htmlFor="selectedAttachSrvList">Dịch vụ đính kèm</Label>
+            <MultipleSelect
+              id="selectedAttachSrvList"
+              onChange={value => {
+                setPackageFilter({ ...packageFilter, selectedAttachSrvList: value });
               }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn dịch vụ đính kèm" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {configAttachSrvList?.map(item => (
-                    <SelectItem key={item.ROWGUID} value={item.ROWGUID}>
-                      {item.ATTACH_SERVICE_CODE} - {item.METHOD_NAME}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+              value={packageFilter.selectedAttachSrvList}
+              options={configAttachSrvList?.map(item => ({
+                label: item.METHOD_NAME,
+                value: item.ROWGUID
+              }))}
+              placeholder="Chọn dịch vụ đính kèm"
+              hidePlaceholderWhenSelected
+              emptyIndicator={
+                <p className="text-center text-12 leading-10 text-gray-600 dark:text-gray-400">
+                  Không có dữ liệu
+                </p>
+              }
+            />
           </div>
           <div className="flex justify-end">
             <Button
