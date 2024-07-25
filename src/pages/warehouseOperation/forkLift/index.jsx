@@ -1,7 +1,9 @@
 import {
   changePalletPosition,
+  exportPallet,
   getAllPalletPositionByWarehouseCode,
-  getPalletByStatus,
+  getListJobImport,
+  getListJobExport,
   inputPalletToCell
 } from "@/apis/pallet.api";
 import { getAllWarehouse } from "@/apis/warehouse.api";
@@ -40,27 +42,49 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
 import { socket } from "@/config/socket";
 import { suggestCellByWarehouseCode } from "@/apis/cell.api";
+import { Download, Upload } from "lucide-react";
+
+const scrollToElement = cellID => {
+  const element = document.getElementById(cellID);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+    element.classList.add("pallet-blink");
+  }
+};
+
+const removePalletBlinkClass = () => {
+  const elements = document.querySelectorAll(".pallet-blink");
+  elements?.forEach(element => {
+    element.classList.remove("pallet-blink");
+  });
+};
 
 export function ForkLift() {
-  const { data: warehouseList } = useFetchData({ service: getAllWarehouse });
   const toast = useCustomToast();
   const cellRef = useRef(null);
   const dispacth = useDispatch();
   const menuIsCollapse = useSelector(state => state.menuIsCollapseSlice.menuIsCollapse);
 
+  const [warehouseList, setWarehouseList] = useState([]);
+
   const [openDialogChangePosition, setOpenDialogChangePosition] = useState(false);
-  const selectedWarehouseCode = useRef("");
   const [warehouseData, setWarehouseData] = useState([]);
   const [selectedCell, setSelectedCell] = useState({});
   const [jobList, setJobList] = useState([]);
   const [selectedJob, setSelectedJob] = useState({});
   const [dataChangePosition, setDataChangePosition] = useState({});
 
-  const handleSelectedWarehouse = value => {
-    selectedWarehouseCode.current = value;
-    getAllPalletPositionByWarehouseCode(value)
+  const selectedJobStatusRef = useRef("I");
+  const [selectedJobStatus, setSelectedJobStatus] = useState("I");
+  const selectedWarehouseCodeRef = useRef("");
+  const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
+
+  const handleSelectedWarehouse = newWarehouseCode => {
+    setSelectedJob({});
+    setSelectedWarehouseCode(newWarehouseCode);
+    selectedWarehouseCodeRef.current = newWarehouseCode;
+    getAllPalletPositionByWarehouseCode(newWarehouseCode)
       .then(res => {
-        toast.success(res);
         setWarehouseData(res.data.metadata);
       })
       .catch(err => {
@@ -69,6 +93,9 @@ export function ForkLift() {
   };
 
   const handleSelectedCell = cell => {
+    if (selectedJobStatusRef.current === "S") {
+      return;
+    }
     if (!cell.PALLET_NO && selectedCell.PALLET_NO) {
       setDataChangePosition({
         oldPALLET_NO: selectedCell.PALLET_NO,
@@ -95,36 +122,45 @@ export function ForkLift() {
       setSelectedJob({});
       return;
     }
-    suggestCellByWarehouseCode(selectedWarehouseCode.current, job)
+    setSelectedJob(job);
+    if (selectedJobStatusRef.current === "S") {
+      if (job.WAREHOUSE_CODE === selectedWarehouseCodeRef.current) {
+        setTimeout(() => {
+          scrollToElement(job.CELL_ID);
+        }, 100);
+        return;
+      }
+      setSelectedWarehouseCode(job.WAREHOUSE_CODE);
+      selectedWarehouseCodeRef.current = job.WAREHOUSE_CODE;
+      getAllPalletPositionByWarehouseCode(job.WAREHOUSE_CODE)
+        .then(res => {
+          setWarehouseData(res.data.metadata);
+        })
+        .then(() => {
+          setTimeout(() => {
+            scrollToElement(job.CELL_ID);
+          }, 100);
+        })
+        .catch(err => {
+          toast.error(err);
+        });
+      return;
+    }
+
+    suggestCellByWarehouseCode(selectedWarehouseCodeRef.current, job)
       .then(res => {
         scrollToElement(res.data.metadata?.matchedCell?.ROWGUID);
       })
       .catch(err => {
         toast.warning(err);
       });
-    setSelectedJob(job);
-  };
-
-  const scrollToElement = cellID => {
-    const element = document.getElementById(cellID);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-      element.classList.add("pallet-blink");
-    }
   };
 
   useEffect(() => {
     removePalletBlinkClass();
   }, [selectedJob]);
 
-  const removePalletBlinkClass = () => {
-    const elements = document.querySelectorAll(".pallet-blink");
-    elements?.forEach(element => {
-      element.classList.remove("pallet-blink");
-    });
-  };
-
-  const handleInputPallet = () => {
+  const handleImportPallet = () => {
     if (!selectedCell.ROWGUID) {
       toast.warning("Vui lòng chọn ô cần chuyển hàng");
       return;
@@ -137,16 +173,44 @@ export function ForkLift() {
     const obj = {
       CELL_ID: selectedCell.ROWGUID,
       PALLET_NO: selectedJob.PALLET_NO,
-      WAREHOUSE_CODE: selectedWarehouseCode.current
+      WAREHOUSE_CODE: selectedWarehouseCodeRef.current
     };
     inputPalletToCell(obj)
       .then(res => {
         toast.success(res);
         setSelectedCell({});
         setSelectedJob({});
-        getAllCellByWarehouseCode(selectedWarehouseCode.current);
-        getJob("I");
+        // getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
+        // getJob("I");
         socket.emit("inputPalletToCellSuccess");
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
+      });
+  };
+
+  const handleExportPallet = () => {
+    if (!selectedJob.PALLET_NO) {
+      toast.warning("Vui lòng chọn pallet cần xuất");
+      return;
+    }
+    dispacth(setGlobalLoading(true));
+    const dataReq = {
+      PALLET_NO: selectedJob.PALLET_NO,
+      CELL_ID: selectedJob.CELL_ID,
+      WAREHOUSE_CODE: selectedWarehouseCodeRef.current
+    };
+    exportPallet(dataReq)
+      .then(res => {
+        socket.emit("inputPalletToCellSuccess");
+        toast.success(res);
+        setSelectedCell({});
+        setSelectedJob({});
+        getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
+        getJob(selectedJobStatusRef.current);
       })
       .catch(err => {
         toast.error(err);
@@ -162,7 +226,7 @@ export function ForkLift() {
     const obj = {
       CELL_ID: dataChangePosition.newCellId,
       PALLET_NO: dataChangePosition.oldPALLET_NO,
-      WAREHOUSE_CODE: selectedWarehouseCode.current
+      WAREHOUSE_CODE: selectedWarehouseCodeRef.current
     };
     changePalletPosition(obj)
       .then(res => {
@@ -171,7 +235,7 @@ export function ForkLift() {
         toast.success(res);
         setSelectedCell({});
         setSelectedJob({});
-        getAllCellByWarehouseCode(selectedWarehouseCode.current);
+        getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
         getJob("I");
       })
       .catch(err => {
@@ -182,9 +246,13 @@ export function ForkLift() {
       });
   };
 
-  useEffect(() => {
-    getJob("I");
-  }, []);
+  const handleSelectedJobStatus = value => {
+    setSelectedCell({});
+    setSelectedJob({});
+    setSelectedJobStatus(value);
+    selectedJobStatusRef.current = value;
+    getJob(value);
+  };
 
   const getAllCellByWarehouseCode = warehouseCode => {
     getAllPalletPositionByWarehouseCode(warehouseCode)
@@ -196,16 +264,51 @@ export function ForkLift() {
       });
   };
 
+  useEffect(() => {
+    getJob(selectedJobStatusRef.current);
+    getWarehouse();
+  }, []);
+
+  const getWarehouse = () => {
+    getAllWarehouse()
+      .then(res => {
+        setWarehouseList(res.data.metadata);
+        setSelectedWarehouseCode(res.data?.metadata[0]?.WAREHOUSE_CODE);
+        selectedWarehouseCodeRef.current = res.data?.metadata[0]?.WAREHOUSE_CODE;
+      })
+      .then(() => {
+        getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
+      })
+      .catch(err => {
+        toast.error(err);
+      });
+  };
+
   const getJob = status => {
-    getPalletByStatus(status)
+    //get import job
+    if (status === "I") {
+      getListJobImport(status)
+        .then(res => {
+          setJobList(res.data.metadata);
+        })
+        .catch(err => {
+          setJobList([]);
+          toast.error(err);
+        });
+      return;
+    }
+    //get export job
+    getListJobExport()
       .then(res => {
         setJobList(res.data.metadata);
       })
       .catch(err => {
-        toast.catch(err);
+        setJobList([]);
+        toast.error(err);
       });
   };
 
+  //socket
   useEffect(() => {
     socket.connect();
     return () => {
@@ -216,11 +319,11 @@ export function ForkLift() {
   useEffect(() => {
     if (socket) {
       socket.on("receiveCompleteJobQuantityCheck", message => {
-        getJob("I");
+        getJob(selectedJobStatusRef.current);
       });
       socket.on("receiveInputPalletToCellSuccess", message => {
-        getJob("I");
-        getAllCellByWarehouseCode(selectedWarehouseCode.current);
+        getJob(selectedJobStatusRef.current);
+        getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
       });
       return () => {
         socket.off("receiveCompleteJobQuantityCheck");
@@ -232,26 +335,51 @@ export function ForkLift() {
   return (
     <Section>
       <Section.Header className="flex items-end justify-between">
-        <span>
-          <Label>Mã kho</Label>
-          <Select onValueChange={handleSelectedWarehouse} value={selectedWarehouseCode.current}>
-            <SelectTrigger className="min-w-56">
-              <SelectValue placeholder="Mã kho" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {warehouseList?.map(warehouse => (
-                  <SelectItem key={warehouse.WAREHOUSE_CODE} value={warehouse.WAREHOUSE_CODE}>
-                    {warehouse.WAREHOUSE_CODE} - {warehouse.WAREHOUSE_NAME}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        <span className="flex gap-4">
+          <span>
+            <Label>Mã kho</Label>
+            <Select onValueChange={handleSelectedWarehouse} value={selectedWarehouseCode}>
+              <SelectTrigger className="min-w-56">
+                <SelectValue placeholder="Mã kho" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {warehouseList?.map(warehouse => (
+                    <SelectItem key={warehouse.WAREHOUSE_CODE} value={warehouse.WAREHOUSE_CODE}>
+                      {warehouse.WAREHOUSE_CODE} - {warehouse.WAREHOUSE_NAME}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </span>
+          <span>
+            <Label>Hướng</Label>
+            <Select onValueChange={handleSelectedJobStatus} defaultValue={selectedJobStatus}>
+              <SelectTrigger className="min-w-32">
+                <SelectValue placeholder="Chọn" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="I">Nhập kho</SelectItem>
+                  <SelectItem value="S">Xuất kho</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </span>
         </span>
-        <Button variant="blue" onClick={handleInputPallet}>
-          Chuyển hàng
-        </Button>
+
+        {selectedJobStatus === "S" ? (
+          <Button variant="blue" onClick={handleExportPallet}>
+            <Upload className="mr-2 size-4" />
+            Xuất hàng
+          </Button>
+        ) : (
+          <Button variant="blue" onClick={handleImportPallet}>
+            <Download className="mr-2 size-4" />
+            Nhập hàng
+          </Button>
+        )}
       </Section.Header>
       <ResizablePanelGroup
         direction="horizontal"
@@ -271,7 +399,12 @@ export function ForkLift() {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={25} className="max-w-[50%]">
-          <JobList jobList={jobList} selectedJob={selectedJob} onSelectedJob={handleSelectedJob} />
+          <JobList
+            selectedJobStatus={selectedJobStatus}
+            jobList={jobList}
+            selectedJob={selectedJob}
+            onSelectedJob={handleSelectedJob}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
       <Dialog

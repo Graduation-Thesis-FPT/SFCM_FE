@@ -1,14 +1,24 @@
 import { cn } from "@/lib/utils";
 
-export function JobList({ jobList = [], onSelectedJob, selectedJob = {} }) {
+export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selectedJobStatus = "" }) {
   const handleSelectedJob = job => {
     onSelectedJob(job);
   };
   return (
     <div className="relative h-full bg-gray-50 p-4">
       <div className="text-center font-bold">Danh sách công việc</div>
+      <div
+        className={cn(
+          "m-auto mt-2 flex w-fit rounded-sm border bg-slate-100 px-6 py-1 text-center",
+          selectedJobStatus === "I" ? "bg-green-100" : "bg-orange-100"
+        )}
+      >
+        <p className="text-14 text-gray-900">
+          {selectedJobStatus === "I" ? "Nhập hàng" : "Xuất hàng"}
+        </p>
+      </div>
       {jobList.length === 0 ? (
-        <div className="absolute-center text-sm opacity-50">Không có công việc</div>
+        <div className="absolute-center text-center text-sm opacity-50">Không có công việc</div>
       ) : (
         <span className="text-sm">
           {jobList.map(job => (
