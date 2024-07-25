@@ -42,7 +42,7 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { cn } from "@/lib/utils";
 import { socket } from "@/config/socket";
 import { suggestCellByWarehouseCode } from "@/apis/cell.api";
-import { set } from "date-fns";
+import { Download, Upload } from "lucide-react";
 
 const scrollToElement = cellID => {
   const element = document.getElementById(cellID);
@@ -371,10 +371,12 @@ export function ForkLift() {
 
         {selectedJobStatus === "S" ? (
           <Button variant="blue" onClick={handleExportPallet}>
+            <Upload className="mr-2 size-4" />
             Xuất hàng
           </Button>
         ) : (
           <Button variant="blue" onClick={handleImportPallet}>
+            <Download className="mr-2 size-4" />
             Nhập hàng
           </Button>
         )}
@@ -397,7 +399,12 @@ export function ForkLift() {
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={25} className="max-w-[50%]">
-          <JobList jobList={jobList} selectedJob={selectedJob} onSelectedJob={handleSelectedJob} />
+          <JobList
+            selectedJobStatus={selectedJobStatus}
+            jobList={jobList}
+            selectedJob={selectedJob}
+            onSelectedJob={handleSelectedJob}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
       <Dialog
