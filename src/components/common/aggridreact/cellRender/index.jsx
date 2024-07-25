@@ -308,6 +308,40 @@ export function ConsigneeRender(params, customerList) {
   );
 }
 
+export function CntrSztpRender(params) {
+  let cntrSztpList = [
+    { label: "20", value: "20" },
+    { label: "40", value: "40" },
+    { label: "45", value: "45" }
+  ];
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue(cntrSztpList[0]?.value);
+    }
+  }, []);
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {cntrSztpList.map(item => (
+            <SelectItem key={item?.value} value={item?.value}>
+              {item?.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function DateTimePickerRender(params) {
   const handleDateChange = e => {
     if (!e.value) {

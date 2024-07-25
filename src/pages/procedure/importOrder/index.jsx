@@ -30,11 +30,9 @@ import { getAllCustomer } from "@/apis/customer.api";
 import { DialogBillInfo } from "./dialogBillInfo";
 import { DialogSaveBillSuccess } from "./dialogSaveBillSuccess";
 import { getConfigAttachSrvByMethodCode } from "@/apis/config-attach-srv.api";
-import { useNavigate } from "react-router-dom";
+import { MultipleSelect } from "@/components/common/multiple-select";
 
 export function ImportOrder() {
-  const navigate = useNavigate();
-
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
@@ -47,7 +45,7 @@ export function ImportOrder() {
 
   const [customerList, setCustomerList] = useState([]);
 
-  const [ATTACHSRV_CODE, setATTACHSRV_CODE] = useState("");
+  const [selectedAttachSrvList, setSelectedAttachSrvList] = useState([]);
   const [CUSTOMER_CODE, setCUSTOMER_CODE] = useState("");
   const [BILLOFLADING, setBILLOFLADING] = useState("");
   const [CNTRNO, setCNTRNO] = useState("");
@@ -234,8 +232,8 @@ export function ImportOrder() {
       return toast.warning("Vui lòng chọn khách hàng!");
     }
     const arrayPackage = rowData.map(item => ({ ...item, CUSTOMER_CODE }));
-    let temp = ATTACHSRV_CODE === "" ? [] : [ATTACHSRV_CODE];
-    getToBillIn(arrayPackage, [...temp])
+    const servicesList = selectedAttachSrvList.map(item => item.value);
+    getToBillIn(arrayPackage, servicesList)
       .then(res => {
         setBillInfoList(res.data.metadata);
       })
@@ -259,7 +257,7 @@ export function ImportOrder() {
     setBILLOFLADING("");
     setCNTRNO("");
     setCUSTOMER_CODE("");
-    setATTACHSRV_CODE("");
+    setSelectedAttachSrvList([]);
     setBillInfoList([]);
     setDataBillAfterSave({});
   };
@@ -290,7 +288,7 @@ export function ImportOrder() {
             </div>
           ))}
         </span>
-        <span className="grid grid-cols-6 items-end gap-3">
+        <span className="grid grid-cols-7 items-end gap-3">
           <div>
             <Label htmlFor="BILLOFLADING">{DT_CNTR_MNF_LD.BILLOFLADING.headerName} *</Label>
             <Input
@@ -381,29 +379,24 @@ export function ImportOrder() {
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label htmlFor="ATTACHSRV_CODE">Dịch vụ đính kèm</Label>
-            <Select
-              disabled={rowData.length === 0}
-              id="ATTACHSRV_CODE"
-              value={ATTACHSRV_CODE}
-              onValueChange={value => {
-                setATTACHSRV_CODE(value);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn dịch vụ đính kèm" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {configAttachSrvList.map(item => (
-                    <SelectItem key={item.ROWGUID} value={item.ROWGUID}>
-                      {item.ATTACH_SERVICE_CODE} - {item.METHOD_NAME}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="col-span-2">
+            <Label htmlFor="selectedAttachSrvList">Dịch vụ đính kèm</Label>
+            <MultipleSelect
+              id="selectedAttachSrvList"
+              onChange={setSelectedAttachSrvList}
+              value={selectedAttachSrvList}
+              options={configAttachSrvList?.map(item => ({
+                label: item.METHOD_NAME,
+                value: item.ROWGUID
+              }))}
+              placeholder="Chọn dịch vụ đính kèm"
+              hidePlaceholderWhenSelected
+              emptyIndicator={
+                <p className="text-center text-12 leading-10 text-gray-600 dark:text-gray-400">
+                  Không có dữ liệu
+                </p>
+              }
+            />
           </div>
           <div className="flex justify-end">
             <Button

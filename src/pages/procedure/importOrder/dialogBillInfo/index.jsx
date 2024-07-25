@@ -35,6 +35,7 @@ export function DialogBillInfo({
   EXP_DATE = "",
   rowData = []
 }) {
+  console.log("🚀 ~ billInfoList:", billInfoList);
   const dispatch = useDispatch();
   const gridRef = useRef(null);
   const BILL_INFO = new bill_info();
@@ -45,8 +46,8 @@ export function DialogBillInfo({
 
   const colDefs = [
     {
-      headerName: BILL_INFO.METHOD_CODE.headerName,
-      field: BILL_INFO.METHOD_CODE.field,
+      headerName: BILL_INFO.TRF_CODE.headerName,
+      field: BILL_INFO.TRF_CODE.field,
       flex: 1
     },
     {

@@ -47,8 +47,8 @@ export const getExManifest = async ({ VOYAGEKEY, CONTAINER_ID, HOUSE_BILL }) => 
   );
 };
 
-export const getToBillEx = async arrayPackage => {
-  return await axiosPrivate.post(`order/getToBillEx`, { arrayPackage });
+export const getToBillEx = async (arrayPackage, services) => {
+  return await axiosPrivate.post(`order/getToBillEx`, { arrayPackage, services });
 };
 
 export const invoicePublishEx = async args => {

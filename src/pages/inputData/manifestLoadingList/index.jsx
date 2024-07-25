@@ -27,9 +27,9 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { Input } from "@/components/common/ui/input";
 import { getAllItemType } from "@/apis/item-type.api";
 import {
+  CntrSztpRender,
   ConsigneeRender,
-  ItemTypeCodeRender,
-  StatusOfGoodsRender
+  ItemTypeCodeRender
 } from "@/components/common/aggridreact/cellRender";
 import { VesselInfoSheet } from "./vesselInfoSheet";
 import {
@@ -111,8 +111,7 @@ export function ManifestLoadingList() {
       headerName: DT_CNTR_MNF_LD.CNTRSZTP.headerName,
       field: DT_CNTR_MNF_LD.CNTRSZTP.field,
       flex: 1,
-      filter: true,
-      editable: true
+      cellRenderer: CntrSztpRender
     },
     {
       headerName: DT_CNTR_MNF_LD.SEALNO.headerName,
@@ -125,16 +124,12 @@ export function ManifestLoadingList() {
       headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
       field: DT_CNTR_MNF_LD.CONSIGNEE.field,
       flex: 1,
-      filter: true,
-      editable: true,
       cellRenderer: params => ConsigneeRender(params, customerList)
     },
     {
       headerName: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.headerName,
       field: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.field,
       flex: 1,
-      filter: true,
-      editable: true,
       cellRenderer: params => ItemTypeCodeRender(params, itemType)
     },
     {
