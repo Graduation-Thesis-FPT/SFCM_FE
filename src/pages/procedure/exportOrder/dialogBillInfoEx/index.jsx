@@ -68,7 +68,7 @@ export function DialogBillInfoEx({
       headerName: BILL_INFO.UNIT_RATE.headerName,
       field: BILL_INFO.UNIT_RATE.field,
       flex: 1,
-      valueFormatter: params => {
+      cellRenderer: params => {
         return Number(params.value).toLocaleString("it-IT", {
           currency: "VND"
         });
@@ -94,7 +94,7 @@ export function DialogBillInfoEx({
       headerName: BILL_INFO.VAT_PRICE.headerName,
       field: BILL_INFO.VAT_PRICE.field,
       flex: 1,
-      valueFormatter: params => {
+      cellRenderer: params => {
         return Number(params.value).toLocaleString("it-IT", {
           currency: "VND"
         });
@@ -106,7 +106,7 @@ export function DialogBillInfoEx({
       headerName: BILL_INFO.AMOUNT.headerName,
       field: BILL_INFO.AMOUNT.field,
       flex: 1,
-      valueFormatter: params => {
+      cellRenderer: params => {
         return Number(params.value).toLocaleString("it-IT", {
           currency: "VND"
         });
@@ -137,9 +137,9 @@ export function DialogBillInfoEx({
       cusTaxCode: selectedCustomer.TAX_CODE,
       cusAddr: selectedCustomer.ADDRESS,
       cusName: selectedCustomer.CUSTOMER_NAME,
-      sum_amount: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
-      vat_amount: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
-      total_amount: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0),
+      sum_amount: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
+      vat_amount: billInfoEx?.reduce((a, b) => a + Number(Number(b[BILL_INFO.VAT_PRICE.field])), 0),
+      total_amount: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0),
       paymentMethod: HTTT,
       datas: [...datasTemp]
     };
@@ -164,12 +164,12 @@ export function DialogBillInfoEx({
           INV_NO: invoiceInfo.inv,
           ACC_CD: HTTT,
           INV_DATE: invoiceInfo.invoiceDate,
-          AMOUNT: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
-          VAT: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0),
-          TAMOUNT: billInfoEx?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0)
+          AMOUNT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
+          VAT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0),
+          TAMOUNT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
         };
 
-        const paymentInfoDtl = packageList.map(item => {
+        const paymentInfoDtl = billInfoEx.map(item => {
           return {
             QTY: item.QTY,
             UNIT_RATE: item.UNIT_RATE,
@@ -231,15 +231,21 @@ export function DialogBillInfoEx({
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
                   <div>{BILL_INFO.AMOUNT.headerName}</div>
                   <div className="text-end">
-                    {formatVnd(billInfoEx.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0))}
+                    {formatVnd(
+                      billInfoEx.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0)
+                    )}
                   </div>
                   <div>{BILL_INFO.VAT_PRICE.headerName}</div>
                   <div className="text-end">
-                    {formatVnd(billInfoEx?.reduce((a, b) => a + b[BILL_INFO.VAT_PRICE.field], 0))}
+                    {formatVnd(
+                      billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0)
+                    )}
                   </div>
                   <div>{BILL_INFO.TAMOUNT.headerName}</div>
                   <div className="text-end">
-                    {formatVnd(billInfoEx?.reduce((a, b) => a + b[BILL_INFO.TAMOUNT.field], 0))}
+                    {formatVnd(
+                      billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
+                    )}
                   </div>
                 </div>
               </span>
