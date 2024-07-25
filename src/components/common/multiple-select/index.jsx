@@ -312,7 +312,7 @@ export const MultipleSelect = React.forwardRef(
                   className={cn(
                     "data-[disabled]:bg-muted-foreground data-[disabled]:text-muted data-[disabled]:hover:bg-muted-foreground",
                     "data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground",
-                    "bg-gray-400",
+                    "rounded-md bg-gray-400",
                     badgeClassName
                   )}
                   data-fixed={option.fixed}
