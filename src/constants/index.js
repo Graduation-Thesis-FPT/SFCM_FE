@@ -38,10 +38,7 @@ export const ERROR_MESSAGE = {
   METHOD_CODE_NOT_EXIST: "Mã phương thức không tồn tại",
 
   //Itemtype
-  ITEM_TYPE_EXIST: "Loại hàng đã tồn tại",
-
-  //Unit Code
-  UNIT_CODE_EXIST: "Mã đơn vị đã tồn tại"
+  ITEM_TYPE_EXIST: "Loại hàng đã tồn tại"
 };
 
 export const SUCCESS_MESSAGE = {
@@ -137,8 +134,27 @@ export const SUCCESS_MESSAGE = {
   GET_TARIFF_SUCCESS: "Lấy biểu cước thành công",
   SAVE_TARIFF_SUCCESS: "Lưu biểu cước thành công",
 
+  // TARIFF Discount
+  DELETE_TARIFF_DISCOUNT_SUCCESS: "Xóa chiết khấu biểu cước thành công",
+  GET_TARIFF_DISCOUNT_SUCCESS: "Lấy chiết khấu biểu cước thành công",
+  SAVE_TARIFF_DISCOUNT_SUCCESS: "Lưu chiết khấu biểu cước thành công",
+
   //config-attach-srv
-  UPDATE_CONFIG_ATTACH_SRV_SUCCESS: "Cập nhật dịch vụ đính kèm thành công"
+  UPDATE_CONFIG_ATTACH_SRV_SUCCESS: "Lưu cấu hình dịch vụ đính kèm thành công",
+
+  //job-quantity-check
+  SAVE_JOB_QUANTITY_CHECK_SUCCESS: "Lưu kiểm tra số lượng công việc thành công",
+  COMPLETE_JOB_QUANTITY_CHECK_SUCCESS: "Hoàn thành kiểm tra số lượng công việc thành công",
+
+  // pallet
+  UPDATE_PALLET_SUCCESS: "Lưu thông tin pallet thành công",
+  GET_PALLET_SUCCESS: "Lấy thông tin pallet thành công",
+
+  //order
+  SAVE_ORDER_SUCCESS: "Lưu thông tin đơn hàng thành công",
+
+  //Misa
+  PUBLISH_INVOICE_SUCCESS: "Xuất hóa đơn thành công"
 };
 
 export const REASON_PHRASES = {
