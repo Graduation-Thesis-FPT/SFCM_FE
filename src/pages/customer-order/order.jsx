@@ -5,9 +5,10 @@ import { bs_order_tracking } from "@/components/common/aggridreact/dbColumns";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
+import { Button } from "@/components/common/ui/button";
 import { actionGrantPermission } from "@/constants";
 import useFetchData from "@/hooks/useRefetchData";
-import { ArrowRightToLine, SquarePen } from "lucide-react";
+import { ArrowRightToLine } from "lucide-react";
 import { useRef } from "react";
 
 export function Order() {
@@ -36,23 +37,24 @@ export function Order() {
       field: "ORDER_TYPE",
       flex: 1,
       cellRenderer: params => {
-        if (params.data.CONTAINER_ID !== null) {
-          return (
+        if (!!params.data.CONTAINER_ID) {
+          return !!params.data.PACKAGE_ID ? (
+            <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
+              Xuất
+              <ArrowRightToLine className="ml-1" size={16} />
+            </Badge>
+          ) : (
             <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
               <ArrowRightToLine className="mr-1" size={16} />
               Nhập
             </Badge>
           );
         }
-        if (params.data.PACKAGE_ID !== null) {
-          return (
-            <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
-              Xuất
-              <ArrowRightToLine className="ml-1" size={16} />
-            </Badge>
-          );
-        }
-        return "";
+        return (
+          <Badge className="rounded-sm border-transparent bg-orange-100 text-orange-800 hover:bg-orange-200">
+            Không xác định
+          </Badge>
+        );
       }
     },
     {
@@ -60,11 +62,7 @@ export function Order() {
       field: BS_ORDER_TRACKING.TOTAL_CBM.field,
       flex: 0.5
     },
-    {
-      headerName: BS_ORDER_TRACKING.INV_ID.headerName,
-      field: BS_ORDER_TRACKING.INV_ID.field,
-      flex: 1
-    },
+    
     {
       headerName: BS_ORDER_TRACKING.ISSUE_DATE.headerName,
       field: BS_ORDER_TRACKING.ISSUE_DATE.field,
@@ -72,19 +70,27 @@ export function Order() {
       cellRenderer: DateTimeByTextRender
     },
     {
-      headerName: "Chi tiết",
+      headerName: BS_ORDER_TRACKING.INV_ID.headerName,
+      field: BS_ORDER_TRACKING.INV_ID.field,
+      flex: 1
+    },
+    {
+      headerName: "",
       field: "ORDER_DETAIL",
       flex: 0.5,
       cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
         return (
-          <SquarePen
+          <Button
+            variant="link"
+            size="xs"
             onClick={() => {
-              console.log(params.data);
+              // setDetailData(params.data);
             }}
-            size={16}
-            className="cursor-pointer text-blue-500 hover:text-blue-800"
-          />
+            className="text-xs text-blue-700 hover:text-blue-700/80"
+          >
+            Xem chi tiết
+          </Button>
         );
       }
     }
@@ -95,15 +101,13 @@ export function Order() {
       <Section.Header title="Danh sách đơn hàng"></Section.Header>
       <Section.Content>
         <Section.Table>
-          <GrantPermission action={actionGrantPermission.VIEW}>
-            <AgGrid
-              contextMenu={true}
-              ref={gridRef}
-              colDefs={colDefs}
-              loading={loading}
-              rowData={orders}
-            />
-          </GrantPermission>
+          <AgGrid
+            contextMenu={true}
+            ref={gridRef}
+            colDefs={colDefs}
+            loading={loading}
+            rowData={orders}
+          />
         </Section.Table>
       </Section.Content>
     </Section>

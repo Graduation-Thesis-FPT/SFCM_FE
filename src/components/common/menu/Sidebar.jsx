@@ -51,8 +51,8 @@ export const CategorizedMenu = ({ menu, title, isCollapse, handleScale }) => {
               >
                 {!isCollapse ? (
                   <div className="flex items-center gap-2 text-14">
-                    <Icon size={16} className="flex-1" />
-                    {item.MENU_NAME}
+                    <Icon size={16}  />
+                    <p className="flex-1 line-clamp-1">{item.MENU_NAME}</p>
                   </div>
                 ) : (
                   <Icon size={16} />
@@ -69,7 +69,7 @@ export const CategorizedMenu = ({ menu, title, isCollapse, handleScale }) => {
                         to={`/${item.MENU_CODE}/${child.MENU_CODE}`}
                         className={`flex items-center gap-3 rounded-md px-3 py-1.5 transition-all ${isMenuSelected ? "text-blue-700" : "text-muted-foreground"}  hover:bg-muted hover:text-blue-700`}
                       >
-                        {child.MENU_NAME}
+                        <p className="line-clamp-1">{child.MENU_NAME}</p>
                       </Link>
                     );
                   })}
