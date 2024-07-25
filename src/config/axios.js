@@ -8,12 +8,13 @@ import {
 } from "@/lib/auth";
 import { setUser } from "@/redux/slice/userSlice";
 import { store } from "@/redux/store";
-import axios from "axios";
+import Axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { setupCache, buildWebStorage } from "axios-cache-interceptor";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3050";
 
-export default axios.create({
+const axios = Axios.create({
   baseURL: BASE_URL + "/api/v1",
   headers: { "Content-Type": "application/json" },
   withCredentials: false
@@ -23,6 +24,10 @@ export const axiosPrivate = axios.create({
   baseURL: BASE_URL + "/api/v1",
   headers: { "Content-Type": "application/json" },
   withCredentials: true
+});
+export const axiosCache = setupCache(axiosPrivate, {
+  ttl: 0,
+  storage: buildWebStorage(sessionStorage, "axios-cache:")
 });
 
 axiosPrivate.interceptors.request.use(
@@ -71,3 +76,5 @@ axiosPrivate.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export default axios;

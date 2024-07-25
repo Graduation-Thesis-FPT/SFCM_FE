@@ -12,4 +12,4 @@ const refreshToken = async () => {
   return await axiosPrivate.post(`auth/refresh-token`);
 };
 
-export { login, changeDefaultPassword, refreshToken, changePassword };
+export { changeDefaultPassword, changePassword, login, refreshToken };

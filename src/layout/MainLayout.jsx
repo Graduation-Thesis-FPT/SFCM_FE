@@ -37,6 +37,7 @@ export function MainLayout() {
 
   const handleLogout = () => {
     userGlobal.remove();
+    sessionStorage.clear();
     window.location.href = "/login";
   };
   useEffect(() => {
