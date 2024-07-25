@@ -169,7 +169,7 @@ export function DialogBillInfoEx({
           TAMOUNT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
         };
 
-        const paymentInfoDtl = packageList.map(item => {
+        const paymentInfoDtl = billInfoEx.map(item => {
           return {
             QTY: item.QTY,
             UNIT_RATE: item.UNIT_RATE,
