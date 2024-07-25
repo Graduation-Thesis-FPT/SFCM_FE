@@ -46,8 +46,8 @@ export function DialogBillInfoEx({
 
   const colDefs = [
     {
-      headerName: BILL_INFO.METHOD_CODE.headerName,
-      field: BILL_INFO.METHOD_CODE.field,
+      headerName: BILL_INFO.TRF_CODE.headerName,
+      field: BILL_INFO.TRF_CODE.field,
       flex: 1
     },
     {
