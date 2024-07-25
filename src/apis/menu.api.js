@@ -1,5 +1,9 @@
-import { axiosPrivate } from "@/config/axios";
+import { axiosCache, axiosPrivate } from "@/config/axios";
 
-export const getMenuByRoleCode = async ROLE_CODE => {
-  return await axiosPrivate.get(`menu?roleCode=${ROLE_CODE}`);
-};
+export const getMenuByRoleCode = async () =>
+  await axiosCache.get(`menu`, {
+    cache: {
+      ttl: 60 * 60 * 1000,
+      interpretHeader: false
+    }
+  });

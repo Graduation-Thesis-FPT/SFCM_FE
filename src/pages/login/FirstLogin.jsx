@@ -1,10 +1,8 @@
+import { changeDefaultPassword } from "@/apis/access.api";
+import background from "@/assets/image/background-login.png";
+import logo from "@/assets/image/Logo_128x128.svg";
+import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Input } from "@/components/common/ui/input";
 import {
   Form,
   FormControl,
@@ -13,30 +11,36 @@ import {
   FormItem,
   FormLabel
 } from "@/components/common/ui/form";
+import { Password } from "@/components/common/ui/password";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
-import background from "@/assets/image/background-login.png";
-import logo from "@/assets/image/Logo_128x128.svg";
-import { Eye, EyeOff, Info } from "lucide-react";
-import { useCustomToast } from "@/components/common/custom-toast";
-import { changeDefaultPassword } from "@/apis/access.api";
+import { useToggle } from "@/hooks/useToggle";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
-import { useDispatch } from "react-redux";
-const formSchema = z.object({
-  PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
-  CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
-});
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Info } from "lucide-react";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
+import { z } from "zod";
+
+const formSchema = z
+  .object({
+    PASSWORD: z.string().min(5, "Vui lòng nhập mật khẩu!"),
+    CONFIRM_PASSWORD: z.string().min(5, "Vui lòng nhập lại mật khẩu tối thiểu 5 ký tự!")
+  })
+  .refine(data => data.PASSWORD === data.CONFIRM_PASSWORD, {
+    message: "Mật khẩu xác nhận không khớp!",
+    path: ["CONFIRM_PASSWORD"]
+  });
 
 export function FirstLogin() {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [btnLoading, setBtnLoading] = useToggle();
   const toast = useCustomToast();
   const userGlobal = useCustomStore();
 
@@ -49,14 +53,8 @@ export function FirstLogin() {
   });
 
   function onSubmit(values) {
-    if (values.PASSWORD !== values.CONFIRM_PASSWORD) {
-      form.setError("CONFIRM_PASSWORD", { message: "Mật khẩu nhập lại chưa trùng khớp!" });
-      toast.error("Mật khẩu nhập lại chưa trùng khớp!");
-      return;
-    }
-
+    setBtnLoading(true);
     const userInfo = { USER_NAME: USER_NAME, PASSWORD: values.PASSWORD };
-
     changeDefaultPassword(ROWGUID, userInfo)
       .then(res => {
         userGlobal.store(res.data.metadata);
@@ -66,6 +64,7 @@ export function FirstLogin() {
       .catch(err => {
         toast.error(err);
       });
+    setBtnLoading(false);
   }
 
   useEffect(() => {
@@ -96,26 +95,12 @@ export function FirstLogin() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-base font-bold">Mật khẩu mới</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        className="shadow-md focus-visible:ring-offset-0"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Nhập mật khẩu mới"
-                        {...field}
-                      />
-                      <span
-                        onClick={() => {
-                          setShowPassword(!showPassword);
-                        }}
-                        className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
-                      >
-                        {showPassword ? (
-                          <Eye size={16} className="bg-white" />
-                        ) : (
-                          <EyeOff size={16} className="bg-white" />
-                        )}
-                      </span>
-                    </div>
+                    <Password
+                      {...field}
+                      placeholder="Nhập mật khẩu mới"
+                      className="shadow-md focus-visible:ring-offset-0"
+                      autoComplete="current-password"
+                    />
                   </FormControl>
                   <FormDescription className="flex text-xs font-light">
                     Nhập mật khẩu của bạn
@@ -142,26 +127,12 @@ export function FirstLogin() {
                   <FormItem className="space-y-2">
                     <FormLabel className="text-base font-bold">Nhập lại mật khẩu</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Input
-                          className="shadow-md focus-visible:ring-offset-0"
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Nhập lại mật khẩu"
-                          {...field}
-                        />
-                        <span
-                          onClick={() => {
-                            setShowConfirmPassword(!showConfirmPassword);
-                          }}
-                          className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
-                        >
-                          {showConfirmPassword ? (
-                            <Eye size={16} className="bg-white" />
-                          ) : (
-                            <EyeOff size={16} className="bg-white" />
-                          )}
-                        </span>
-                      </div>
+                      <Password
+                        {...field}
+                        placeholder="Nhập lại mật khẩu"
+                        className="shadow-md focus-visible:ring-offset-0"
+                        autoComplete="current-password"
+                      />
                     </FormControl>
                     <FormDescription className="flex text-xs font-light">
                       {form.formState.errors.CONFIRM_PASSWORD?.message ? (
@@ -186,7 +157,7 @@ export function FirstLogin() {
                 );
               }}
             />
-            <Button variant="blue" type="submit" className="w-full">
+            <Button loading={btnLoading} variant="blue" type="submit" className="w-full">
               Lưu thay đổi
             </Button>
           </form>

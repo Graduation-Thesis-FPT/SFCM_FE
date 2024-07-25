@@ -8,6 +8,7 @@ const useFetchData = ({ service, params = {}, dependencies = [], shouldFetch = t
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await service(params);
       setData(response.data.metadata);

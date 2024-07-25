@@ -10,10 +10,12 @@ import {
 import { Button } from "@/components/common/ui/button";
 import { Checkbox } from "@/components/common/ui/checkbox";
 import useFetchData from "@/hooks/useRefetchData";
+import { useToggle } from "@/hooks/useToggle";
 import { useEffect, useState } from "react";
 
 export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) {
   const toast = useCustomToast();
+  const [btnLoading, setBtnLoading] = useToggle();
   const { data: permissions } = useFetchData({
     service: getAllPermissionByRoleCode,
     params: { ROLE_CODE: detailData.ROLE_CODE },
@@ -37,6 +39,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
   };
 
   const handlerUpdatePermission = () => {
+    setBtnLoading(true);
     let data = [];
     permissionData.forEach(parent => {
       parent.child.forEach(child => {
@@ -54,11 +57,13 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
     updatePermission({ data: data })
       .then(res => {
         toast.success(res);
+        setBtnLoading(false);
         onOpenChange();
         revalidate();
       })
       .catch(err => {
         toast.error(err.message);
+        setBtnLoading(false);
       });
   };
 
@@ -147,6 +152,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
           Hủy
         </Button>
         <Button
+          loading={btnLoading}
           onClick={() => {
             handlerUpdatePermission();
           }}

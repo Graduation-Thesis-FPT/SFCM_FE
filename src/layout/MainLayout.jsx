@@ -1,3 +1,4 @@
+import { Sidebar } from "@/components/common/menu/Sidebar";
 import { Avatar } from "@/components/common/ui/avartar";
 import {
   DropdownMenu,
@@ -8,7 +9,6 @@ import {
   DropdownMenuTrigger
 } from "@/components/common/ui/dropdown-menu";
 import { useToggle } from "@/hooks/useToggle";
-import MenuWeb from "@/layout/menu/MenuWeb";
 import { useCustomStore } from "@/lib/auth";
 import { cn, getFirstLetterOfLastWord } from "@/lib/utils";
 import { setMenuIsCollapse } from "@/redux/slice/menuIsCollapseSlice";
@@ -21,6 +21,7 @@ import {
   LogOutIcon,
   MessageCircle
 } from "lucide-react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -36,8 +37,14 @@ export function MainLayout() {
 
   const handleLogout = () => {
     userGlobal.remove();
+    sessionStorage.clear();
     window.location.href = "/login";
   };
+  useEffect(() => {
+    if (pathname === "/" && menu.length > 0) {
+      navigate(`/${menu[0]?.MENU_CODE}/${menu[0]?.child[0]?.MENU_CODE}`);
+    }
+  }, [menu]);
 
   return (
     <div className="flex h-screen min-w-0 flex-row gap-2 bg-gray-50 duration-200">
@@ -47,7 +54,7 @@ export function MainLayout() {
           isCollapse ? "w-[92px]" : "w-64"
         )}
       >
-        <MenuWeb
+        <Sidebar
           menu={menu}
           handleScale={() => {
             dispacth(setMenuIsCollapse(!isCollapse));

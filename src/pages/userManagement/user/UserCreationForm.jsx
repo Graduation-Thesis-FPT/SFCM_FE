@@ -61,6 +61,7 @@ const formSchema = z.object({
 export function UserCreationForm({ revalidate }) {
   const toast = useCustomToast();
   const [open, setOpen] = useToggle();
+  const [loading, setLoading] = useToggle();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -80,9 +81,11 @@ export function UserCreationForm({ revalidate }) {
   };
 
   function onSubmit(values) {
+    setLoading(true);
     const dataReq = removeEmptyValues(values);
     createAccount({ data: dataReq })
       .then(resCreate => {
+        setLoading(false);
         toast.success(resCreate);
         form.reset();
         setOpen(false);
@@ -90,6 +93,7 @@ export function UserCreationForm({ revalidate }) {
       })
       .catch(err => {
         toast.error(err);
+        setLoading(false);
       });
   }
 
@@ -231,7 +235,13 @@ export function UserCreationForm({ revalidate }) {
           >
             Hủy
           </Button>
-          <Button form="creat-user" type="submit" className="h-[36px] w-[126px]" variant="blue">
+          <Button
+            loading={loading}
+            form="creat-user"
+            type="submit"
+            className="h-[36px] w-[126px]"
+            variant="blue"
+          >
             Tạo mới
           </Button>
         </CustomSheet.Footer>

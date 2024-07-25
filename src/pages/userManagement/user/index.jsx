@@ -14,9 +14,7 @@ import { UserUpdateForm } from "./UserUpdateForm";
 export function User() {
   const gridRef = useRef(null);
   const [detailData, setDetailData] = useState({});
-  const { data: users, revalidate } = useFetchData({ service: getAllUser });
-  let rowData = users ?? [];
-
+  const { data: users, revalidate, loading } = useFetchData({ service: getAllUser });
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -91,8 +89,9 @@ export function User() {
       </Section.Header>
       <Section.Content>
         <AgGrid
+          loading={loading}
           ref={gridRef}
-          rowData={rowData}
+          rowData={users}
           colDefs={colDefs}
           setRowData={data => {
             setRowData(data);

@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:pointer-events-none disabled:opacity-50",
@@ -33,7 +34,8 @@ const buttonVariants = cva(
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
         //custom
-        tool: "w-[36px] h-[32px]"
+        tool: "w-[36px] h-[32px]",
+        xs: "h-6 rounded-md px-2",
       }
     },
     defaultVariants: {
@@ -43,9 +45,42 @@ const buttonVariants = cva(
   }
 );
 
-const Button = React.forwardRef(({ className, variant, size, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
-  return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+const Button = React.forwardRef(({ className, variant, size, asChild = false, loading, children, ...props }, ref) => {
+  if (asChild) {
+    return (
+      <Slot ref={ref} {...props}>
+        <>
+          {React.Children.map(children, child => {
+            return React.cloneElement(child, {
+              className: cn(buttonVariants({ variant, size }), className),
+              children: (
+                <>
+                  {loading && (
+                    <Loader2 className={cn("h-4 w-4 animate-spin", children && "mr-2")} />
+                  )}
+                  {child.props.children}
+                </>
+              )
+            });
+          })}
+        </>
+      </Slot>
+    );
+  }
+
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      disabled={loading}
+      ref={ref}
+      {...props}
+    >
+      <>
+        {loading && <Loader2 className={cn("h-4 w-4 animate-spin", children && "mr-2")} />}
+        {children}
+      </>
+    </button>
+  );
 });
 Button.displayName = "Button";
 

@@ -28,6 +28,9 @@ import { useCustomToast } from "@/components/common/custom-toast";
 import { login } from "@/apis/access.api";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
 import { regexPattern } from "@/constants/regexPattern";
+import { useDispatch, useSelector } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { Password } from "@/components/common/ui/password";
 
 const formSchema = z.object({
   USER_NAME: z
@@ -43,9 +46,11 @@ const formSchema = z.object({
 
 export function Login() {
   const navigate = useNavigate();
+  const dispacth = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const toast = useCustomToast();
   const userGlobal = useCustomStore();
+  const globalLoading = useSelector(state => state.globalLoadingSlice.globalLoading);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,8 +58,10 @@ export function Login() {
   });
 
   function onSubmit(values) {
+    dispacth(setGlobalLoading(true));
     login(values)
       .then(res => {
+        dispacth(setGlobalLoading(false));
         if (res.data.metadata.changeDefaultPassword) {
           navigate("/change-default-password", {
             state: {
@@ -70,6 +77,7 @@ export function Login() {
         navigate("/");
       })
       .catch(err => {
+        dispacth(setGlobalLoading(false));
         toast.error(err);
       });
     return;
@@ -133,27 +141,12 @@ export function Login() {
                   <FormItem className="space-y-2">
                     <FormLabel className="text-base">Mật khẩu</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Input
-                          className="shadow-md focus-visible:ring-offset-0"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Nhập mật khẩu"
-                          {...field}
-                          autoComplete="on"
-                        />
-                        <button
-                          onClick={() => {
-                            setShowPassword(!showPassword);
-                          }}
-                          className="absolute inset-y-0 end-0 mr-2 flex cursor-pointer items-center"
-                        >
-                          {showPassword ? (
-                            <Eye className="size-4 bg-white" />
-                          ) : (
-                            <EyeOff className="size-4 bg-white" />
-                          )}
-                        </button>
-                      </div>
+                      <Password
+                        {...field}
+                        placeholder="Nhập mật khẩu "
+                        className="shadow-md focus-visible:ring-offset-0"
+                        autoComplete="current-password"
+                      />
                     </FormControl>
                     <div className="flex flex-row gap-1">
                       <FormDescription className="flex text-xs font-light">
@@ -177,7 +170,13 @@ export function Login() {
           <div className="flex w-full items-center justify-end">
             <ForgotPassword />
           </div>
-          <Button variant="blue" type="submit" form="loginForm" className="w-full">
+          <Button
+            loading={globalLoading}
+            variant="blue"
+            type="submit"
+            form="loginForm"
+            className="w-full"
+          >
             Đăng nhập
           </Button>
         </div>
