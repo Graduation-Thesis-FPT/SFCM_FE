@@ -139,8 +139,8 @@ export function MainLayout() {
           )}
         >
           {globalLoading && (
-            <div className="absolute left-1/2 top-1/2 z-50">
-              <Loader2 className="size-28 animate-spin text-gray-500" />
+            <div className="absolute left-1/2 top-1/2 z-50 translate-x-1/2">
+              <Loader2 strokeWidth={1} className="size-20 animate-spin text-blue-600" />
             </div>
           )}
 

@@ -1,8 +1,7 @@
+import { ImportOrderStatus } from "@/constants/order-status";
 import React from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../common/ui/resizable";
-import { ImportOrderStatus } from "@/constants/order-status";
 import { OrderList } from "./OrderList";
-import { SearchInput } from "../common/search";
 
 export function ImportOrderTracking() {
   return (

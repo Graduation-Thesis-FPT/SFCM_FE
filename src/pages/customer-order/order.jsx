@@ -1,20 +1,28 @@
 import { getCustomerOrders } from "@/apis/customer-order.api";
+import { viewInvoice } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { bs_order_tracking } from "@/components/common/aggridreact/dbColumns";
-import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
-import { actionGrantPermission } from "@/constants";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/common/ui/tooltip";
 import useFetchData from "@/hooks/useRefetchData";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { ArrowRightToLine } from "lucide-react";
 import { useRef } from "react";
+import { useDispatch } from "react-redux";
 
 export function Order() {
   const gridRef = useRef(null);
   const BS_ORDER_TRACKING = new bs_order_tracking();
   const { data: orders, loading } = useFetchData({ service: getCustomerOrders });
+  const dispatch = useDispatch();
 
   const colDefs = [
     {
@@ -62,7 +70,7 @@ export function Order() {
       field: BS_ORDER_TRACKING.TOTAL_CBM.field,
       flex: 0.5
     },
-    
+
     {
       headerName: BS_ORDER_TRACKING.ISSUE_DATE.headerName,
       field: BS_ORDER_TRACKING.ISSUE_DATE.field,
@@ -72,7 +80,26 @@ export function Order() {
     {
       headerName: BS_ORDER_TRACKING.INV_ID.headerName,
       field: BS_ORDER_TRACKING.INV_ID.field,
-      flex: 1
+      flex: 1,
+      cellRenderer: params => {
+        return (
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger
+                onClick={() => {
+                  handleViewInvoice(params.data.DE_ORDER_NO);
+                }}
+                className="text-xs text-gray-500 hover:text-gray-800 hover:underline"
+              >
+                {params.data.INV_ID}
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p className="text-12">Xem hoá đơn</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
     },
     {
       headerName: "",
@@ -95,6 +122,23 @@ export function Order() {
       }
     }
   ];
+
+  function handleViewInvoice(deliveryOrderNO) {
+    dispatch(setGlobalLoading(true));
+    viewInvoice(deliveryOrderNO)
+      .then(res => {
+        let base64Data = res.data.metadata.content.data;
+        const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  }
 
   return (
     <Section>

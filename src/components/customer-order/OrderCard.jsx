@@ -7,7 +7,7 @@ import { Container } from "lucide-react";
 import { Button } from "../common/ui/button";
 import { ExportOrderStatus, ImportOrderStatus } from "@/constants/order-status";
 
-export function OrderCard({ className, order, status }) {
+export function OrderCard({ order, status }) {
   const getColor = status => {
     switch (status) {
       case ImportOrderStatus.isConfirmed:
@@ -15,11 +15,11 @@ export function OrderCard({ className, order, status }) {
       case ImportOrderStatus.isChecked:
         return "border-violet-100 bg-violet-50";
       case ImportOrderStatus.isStored:
-        return "border-violet-100 bg-blue-50";
+        return "border-blue-100 bg-blue-50";
       case ExportOrderStatus.isConfirmed:
         return "border-green-100 bg-green-50";
       case ExportOrderStatus.isReleased:
-        return "border-violet-100 bg-blue-50";
+        return "border-blue-100 bg-blue-50";
       default:
         return "border-red-100 bg-red-50";
     }
@@ -59,7 +59,7 @@ export function OrderCard({ className, order, status }) {
             <span>-</span>
             <span>26/7/2024</span>
           </p>
-          <Button variant="blue" size="xs" className="text-[8px] text-white">
+          <Button variant="blue" size="xs" className="text-[10px] text-white">
             Xem hoá đơn
           </Button>
         </div>
