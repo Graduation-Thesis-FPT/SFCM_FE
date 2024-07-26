@@ -180,8 +180,8 @@ export function ForkLift() {
         toast.success(res);
         setSelectedCell({});
         setSelectedJob({});
-        // getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
-        // getJob("I");
+        getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
+        getJob("I");
         socket.emit("inputPalletToCellSuccess");
       })
       .catch(err => {
@@ -221,8 +221,8 @@ export function ForkLift() {
   };
 
   const handleChangePalletPosition = () => {
+    setOpenDialogChangePosition(false);
     dispacth(setGlobalLoading(true));
-
     const obj = {
       CELL_ID: dataChangePosition.newCellId,
       PALLET_NO: dataChangePosition.oldPALLET_NO,
@@ -230,7 +230,6 @@ export function ForkLift() {
     };
     changePalletPosition(obj)
       .then(res => {
-        setOpenDialogChangePosition(false);
         socket.emit("inputPalletToCellSuccess");
         toast.success(res);
         setSelectedCell({});
