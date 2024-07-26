@@ -34,10 +34,12 @@ export function removeLastAsterisk(str) {
 }
 
 export function formatVnd(value) {
-  return Number(value).toLocaleString("it-IT", {
-    style: "currency",
-    currency: "VND"
-  });
+  return Number(value)
+    .toLocaleString("it-IT", {
+      style: "currency",
+      currency: "VND"
+    })
+    .replace(/\./g, " ");
 }
 
 export const exportToExcel = (exportData, fileName) => {
