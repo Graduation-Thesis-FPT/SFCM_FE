@@ -67,9 +67,9 @@ export class bs_customer extends CommonColumns {
   CUSTOMER_TYPE_CODE = { field: "CUSTOMER_TYPE_CODE", headerName: "Mã loại khách hàng *" };
   CUSTOMER_CODE = { field: "CUSTOMER_CODE", headerName: "Mã khách hàng *" };
   CUSTOMER_NAME = { field: "CUSTOMER_NAME", headerName: "Tên khách hàng *" };
-  ADDRESS = { field: "ADDRESS", headerName: "Địa chỉ" };
+  ADDRESS = { field: "ADDRESS", headerName: "Địa chỉ *" };
   TAX_CODE = { field: "TAX_CODE", headerName: "Mã số thuế *" };
-  EMAIL = { field: "EMAIL", headerName: "Email" };
+  EMAIL = { field: "EMAIL", headerName: "Email *" };
   IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Hoạt động *" };
 }
 
@@ -204,8 +204,8 @@ export class bill_info extends CommonColumns {
   VAT_PRICE = { field: "VAT_PRICE", headerName: "Tiền VAT" };
 }
 
-export class bs_order_tracking extends CommonColumns{
-  DE_ORDER_NO= { field: "DE_ORDER_NO", headerName: "Mã đơn hàng" };
+export class bs_order_tracking extends CommonColumns {
+  DE_ORDER_NO = { field: "DE_ORDER_NO", headerName: "Mã đơn hàng" };
   CONTAINER_ID = { field: "CONTAINER_ID", headerName: "Số container" };
   PACKAGE_ID = { field: "PACKAGE_ID", headerName: "Số kiện hàng" };
   INV_ID = { field: "INV_ID", headerName: "Số hóa đơn" };

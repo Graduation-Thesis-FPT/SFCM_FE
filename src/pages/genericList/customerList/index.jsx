@@ -3,7 +3,6 @@ import { createAndUpdateCustomer, deleteCustomer, getAllCustomer } from "@/apis/
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   CustomerTypeRender,
-  DateTimeByTextRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
 import { bs_customer } from "@/components/common/aggridreact/dbColumns";
@@ -12,18 +11,24 @@ import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import useFetchData from "@/hooks/useRefetchData";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { checkCustomerList } from "@/lib/validation/generic-list/checkCustomerList";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+
+const BS_CUSTOMER = new bs_customer();
 
 export function CustomerList() {
+  const dispatch = useDispatch();
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const BS_CUSTOMER = new bs_customer();
-  const [allCustomerType, setAllCustomerType] = useState([]);
+  const { data: allCustomerType } = useFetchData({ service: getAllCustomerType });
 
   const colDefs = [
     {
@@ -47,8 +52,6 @@ export function CustomerList() {
       headerName: BS_CUSTOMER.CUSTOMER_TYPE_CODE.headerName,
       field: BS_CUSTOMER.CUSTOMER_TYPE_CODE.field,
       flex: 1,
-      filter: true,
-      editable: true,
       cellRenderer: params => CustomerTypeRender(params, allCustomerType)
     },
     {
@@ -59,6 +62,8 @@ export function CustomerList() {
       editable: true
     },
     {
+      headerClass: "number-header",
+      cellClass: "text-end",
       headerName: BS_CUSTOMER.TAX_CODE.headerName,
       field: BS_CUSTOMER.TAX_CODE.field,
       flex: 1,
@@ -68,7 +73,6 @@ export function CustomerList() {
     {
       headerName: BS_CUSTOMER.EMAIL.headerName,
       field: BS_CUSTOMER.EMAIL.field,
-      cellDataType: "email",
       flex: 1,
       filter: true,
       editable: true
@@ -95,19 +99,24 @@ export function CustomerList() {
     }
   ];
 
-  const [searchData, setSearchData] = useState("");
-
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
 
   const handleSaveRows = () => {
-    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.warning("Không có dữ liệu thay đổi");
+    const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      return toast.warning("Không có dữ liệu thay đổi");
+    }
+
+    const { isValid, mess } = checkCustomerList(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
       return;
     }
+
+    dispatch(setGlobalLoading(true));
     createAndUpdateCustomer(insertAndUpdateData)
       .then(res => {
         toast.success(res);
@@ -115,16 +124,19 @@ export function CustomerList() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
   const handleDeleteRows = selectedRows => {
+    dispatch(setGlobalLoading(true));
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
       selectedRows,
       rowData,
       "CUSTOMER_CODE"
     );
-
     deleteCustomer(deleteIdList)
       .then(res => {
         toast.success(res);
@@ -132,6 +144,9 @@ export function CustomerList() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
@@ -145,56 +160,37 @@ export function CustomerList() {
       });
   };
 
-  useEffect(() => {
-    getAllCustomerType()
-      .then(res => {
-        setAllCustomerType(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  }, []);
-
   return (
     <Section>
-      <Section.Header title="Danh sách loại khách hàng"></Section.Header>
+      <Section.Header title="Danh sách khách hàng"></Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <SearchInput
-            handleSearch={value => {
-              setSearchData(value);
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
+        <Section.Table>
+          <AgGrid
+            showCountRowSelected={true}
+            contextMenu={true}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getRowData();
             }}
           />
-          <LayoutTool>
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
-
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData?.filter(item => {
-            if (searchData === "") return item;
-            return item.CUSTOMER_TYPE_CODE?.toLowerCase().includes(searchData.toLowerCase());
-          })}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getRowData();
-          }}
-        />
+        </Section.Table>
       </Section.Content>
     </Section>
   );

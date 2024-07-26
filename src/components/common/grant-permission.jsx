@@ -2,7 +2,7 @@ import { grantPermission } from "@/apis/permission";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export function GrantPermission({ action, children, ...props }) {
+export function GrantPermission({ action, children, disableWhenUnAuth, ...props }) {
   const pathname = useLocation().pathname;
   const MENU_CODE = pathname.split("/")[2];
   const [isShow, setIsShow] = React.useState(false);
@@ -18,6 +18,9 @@ export function GrantPermission({ action, children, ...props }) {
   }, [pathname]);
 
   if (!isShow) {
+    if (disableWhenUnAuth) {
+      return <span className="pointer-events-none opacity-30">{children}</span>;
+    }
     return null;
   }
 
