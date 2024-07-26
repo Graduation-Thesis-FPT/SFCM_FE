@@ -146,7 +146,7 @@ export function DialogBillInfo({
           INV_NO: invoiceInfo.inv,
           ACC_CD: HTTT,
           INV_DATE: invoiceInfo.invoiceDate,
-          AMOUNT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+          AMOUNT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
           VAT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0),
           TAMOUNT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
         };
