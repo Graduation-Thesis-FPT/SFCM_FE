@@ -170,7 +170,7 @@ const AgGrid = forwardRef(
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent ref={contextRef} className="w-64">
-          <GrantPermission action={actionGrantPermission.DELETE}>
+          <GrantPermission action={actionGrantPermission.DELETE} disableWhenUnAuth>
             <ContextMenuItem
               className={cn(
                 "font-medium focus:text-red-500",

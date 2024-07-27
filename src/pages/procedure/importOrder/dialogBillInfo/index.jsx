@@ -35,7 +35,6 @@ export function DialogBillInfo({
   EXP_DATE = "",
   rowData = []
 }) {
-  console.log("🚀 ~ billInfoList:", billInfoList);
   const dispatch = useDispatch();
   const gridRef = useRef(null);
   const BILL_INFO = new bill_info();
@@ -46,8 +45,8 @@ export function DialogBillInfo({
 
   const colDefs = [
     {
-      headerName: BILL_INFO.TRF_CODE.headerName,
-      field: BILL_INFO.TRF_CODE.field,
+      headerName: BILL_INFO.TRF_DESC.headerName,
+      field: BILL_INFO.TRF_DESC.field,
       flex: 1
     },
     {
@@ -60,26 +59,24 @@ export function DialogBillInfo({
       cellClass: "text-end",
       headerName: BILL_INFO.QTY.headerName,
       field: BILL_INFO.QTY.field,
-      flex: 1
-    },
-    {
-      headerClass: "number-header",
-      cellClass: "text-end",
-      headerName: BILL_INFO.UNIT_RATE.headerName,
-      field: BILL_INFO.UNIT_RATE.field,
       flex: 1,
-      cellRenderer: params => {
-        return Number(params.value).toLocaleString("it-IT", {
-          currency: "VND"
-        });
-      }
+      cellRenderer: params => Number(params.value)
     },
     {
       headerClass: "number-header",
       cellClass: "text-end",
       headerName: BILL_INFO.AMT_CBM.headerName,
       field: BILL_INFO.AMT_CBM.field,
-      flex: 1
+      flex: 1,
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
+    },
+    {
+      headerClass: "number-header",
+      cellClass: "text-end",
+      headerName: `${BILL_INFO.UNIT_RATE.headerName} (VND)`,
+      field: BILL_INFO.UNIT_RATE.field,
+      flex: 1,
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
       headerClass: "number-header",
@@ -91,32 +88,18 @@ export function DialogBillInfo({
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: BILL_INFO.VAT_PRICE.headerName,
+      headerName: `${BILL_INFO.VAT_PRICE.headerName} (VND)`,
       field: BILL_INFO.VAT_PRICE.field,
       flex: 1,
-      cellRenderer: params => {
-        return Number(params.value).toLocaleString("it-IT", {
-          currency: "VND"
-        });
-      }
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: BILL_INFO.AMOUNT.headerName,
+      headerName: `${BILL_INFO.AMOUNT.headerName} (VND)`,
       field: BILL_INFO.AMOUNT.field,
       flex: 1,
-      cellRenderer: params => {
-        return Number(params.value).toLocaleString("it-IT", {
-          currency: "VND"
-        });
-      }
-    },
-
-    {
-      headerName: BILL_INFO.TRF_DESC.headerName,
-      field: BILL_INFO.TRF_DESC.field,
-      flex: 1
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
     }
   ];
 
@@ -163,7 +146,7 @@ export function DialogBillInfo({
           INV_NO: invoiceInfo.inv,
           ACC_CD: HTTT,
           INV_DATE: invoiceInfo.invoiceDate,
-          AMOUNT: billInfoList?.reduce((a, b) => a + b[BILL_INFO.AMOUNT.field], 0),
+          AMOUNT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
           VAT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0),
           TAMOUNT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
         };

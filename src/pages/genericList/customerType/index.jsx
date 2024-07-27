@@ -13,17 +13,24 @@ import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow"
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { useDispatch } from "react-redux";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { checkCustomerType } from "@/lib/validation/generic-list/checkCustomerType";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+
+const BS_CUSTOMER_TYPE = new bs_customer_type();
 
 export function CustomerType() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
+  const dispatch = useDispatch();
   const [rowData, setRowData] = useState([]);
-  const BS_CUSTOMER_TYPE = new bs_customer_type();
 
   const colDefs = [
     {
@@ -41,7 +48,8 @@ export function CustomerType() {
       field: BS_CUSTOMER_TYPE.CUSTOMER_TYPE_CODE.field,
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: OnlyEditWithInsertCell,
+      onCellValueChanged: UpperCase
     },
     {
       headerName: BS_CUSTOMER_TYPE.CUSTOMER_TYPE_NAME.headerName,
@@ -58,19 +66,24 @@ export function CustomerType() {
     }
   ];
 
-  const [searchData, setSearchData] = useState("");
-
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
 
   const handleSaveRows = () => {
-    const { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
-    if (insertAndUpdateData.insert.length === 0 && insertAndUpdateData.update.length === 0) {
-      toast.warning("Không có dữ liệu thay đổi");
+    const { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      return toast.warning("Không có dữ liệu thay đổi");
+    }
+
+    const { isValid, mess } = checkCustomerType(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
       return;
     }
+
+    dispatch(setGlobalLoading(true));
     createAndUpdateCustomerType(insertAndUpdateData)
       .then(res => {
         toast.success(res);
@@ -78,10 +91,15 @@ export function CustomerType() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
   const handleDeleteRows = selectedRows => {
+    dispatch(setGlobalLoading(true));
+
     const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
       selectedRows,
       rowData,
@@ -95,6 +113,9 @@ export function CustomerType() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
@@ -112,45 +133,33 @@ export function CustomerType() {
     <Section>
       <Section.Header title="Danh sách loại khách hàng"></Section.Header>
       <Section.Content>
-        <span className="flex justify-between">
-          <SearchInput
-            handleSearch={value => {
-              setSearchData(value);
+        <LayoutTool>
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
+        <Section.Table>
+          <AgGrid
+            showCountRowSelected={true}
+            contextMenu={true}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteRows(selectedRows);
+            }}
+            setRowData={data => {
+              setRowData(data);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getRowData();
             }}
           />
-          <span>
-            <div className="mb-2 text-xs font-medium">Công cụ</div>
-            <div className="flex h-[42px] items-center gap-x-3 rounded-md bg-gray-100 px-6">
-              <GrantPermission action={actionGrantPermission.CREATE}>
-                <BtnAddRow onAddRow={handleAddRow} />
-              </GrantPermission>
-              <GrantPermission action={actionGrantPermission.UPDATE}>
-                <BtnSave onClick={handleSaveRows} />
-              </GrantPermission>
-            </div>
-          </span>
-        </span>
-
-        <AgGrid
-          contextMenu={true}
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          className="h-[50vh]"
-          rowData={rowData?.filter(item => {
-            if (searchData === "") return item;
-            return item.CUSTOMER_TYPE_CODE?.toLowerCase().includes(searchData.toLowerCase());
-          })}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteRows(selectedRows);
-          }}
-          onGridReady={() => {
-            gridRef.current.api.showLoadingOverlay();
-            getRowData();
-          }}
-        />
+        </Section.Table>
       </Section.Content>
     </Section>
   );

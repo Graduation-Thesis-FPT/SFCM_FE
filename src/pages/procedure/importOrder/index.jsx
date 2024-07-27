@@ -410,6 +410,7 @@ export function ImportOrder() {
         </span>
       </Section.Header>
       <Section.Content>
+        <span className="-mb-2 text-lg font-bold">Danh sách hàng hóa</span>
         <Section.Table>
           <AgGrid
             setRowData={data => {
