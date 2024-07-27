@@ -1,6 +1,19 @@
+import logoNoText from "@/assets/image/logo-menu-notext.svg";
+import { Loader2 } from "lucide-react";
 import React from "react";
+import { useSelector } from "react-redux";
 
 export function ErrorPage() {
+  const dataRoutes = useSelector(state => state.menuSlice.menu);
+  if (!dataRoutes) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center gap-3">
+        <img src={logoNoText} alt="logo" className="aspect-auto size-20 animate-pulse" />
+        <Loader2 size={32} className="animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
   return (
     <main>
       <div className="flex flex-col items-center py-40 text-zinc-900 dark:text-zinc-50">
