@@ -19,7 +19,7 @@ export function OrderList({
         <p className="text-18 mb-6 flex-none px-6 font-medium text-blue-950">{title}</p>
         <div className="flex flex-1 flex-col gap-4 overflow-auto px-6">
           {Array.from({ length: 3 }).map((_, index) => (
-            <Skeleton key={index} className="h-24 w-32" />
+            <Skeleton key={index} className="h-24 w-64" />
           ))}
         </div>
       </div>

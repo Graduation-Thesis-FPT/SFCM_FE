@@ -8,3 +8,8 @@ export const ExportOrderStatus = {
   isConfirmed: "isConfirmed",
   isReleased: "isReleased"
 };
+
+export const OrderStatus = {
+  Import: "NK",
+  Export: "XK"
+};
