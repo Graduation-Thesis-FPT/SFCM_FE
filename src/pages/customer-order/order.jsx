@@ -38,14 +38,12 @@ export function Order() {
     {
       headerName: BS_ORDER_TRACKING.DE_ORDER_NO.headerName,
       field: BS_ORDER_TRACKING.DE_ORDER_NO.field,
-      flex: 1,
-      filter: true
+      flex: 1
     },
     {
       headerName: "Loại lệnh",
       field: "ORDER_TYPE",
       flex: 1,
-      filter: true,
       cellRenderer: params => {
         if (!!params.data.CONTAINER_ID) {
           return !!params.data.PACKAGE_ID ? (
@@ -70,8 +68,7 @@ export function Order() {
     {
       headerName: BS_ORDER_TRACKING.TOTAL_CBM.headerName,
       field: BS_ORDER_TRACKING.TOTAL_CBM.field,
-      flex: 0.5,
-      filter: true
+      flex: 0.5
     },
 
     {
@@ -84,7 +81,6 @@ export function Order() {
       headerName: BS_ORDER_TRACKING.INV_ID.headerName,
       field: BS_ORDER_TRACKING.INV_ID.field,
       flex: 1,
-      filter: true,
       cellRenderer: params => {
         return (
           <TooltipProvider>
@@ -109,7 +105,6 @@ export function Order() {
       headerName: "",
       field: "ORDER_DETAIL",
       flex: 0.5,
-      filter: true,
       cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
         return (

@@ -33,7 +33,7 @@ L10n.load({
 });
 
 export function DateTimeByTextRender(params) {
-  return params.value ? `${moment(params.value).format("DD/MM/YYYY HH:mm")}`: "";
+  return params.value ? moment(params.value).format("DD/MM/YYYY HH:mm") : "";
 }
 
 export function OnlyEditWithInsertCell(params) {
