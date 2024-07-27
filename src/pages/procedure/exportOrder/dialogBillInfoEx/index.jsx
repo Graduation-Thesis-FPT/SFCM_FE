@@ -157,7 +157,7 @@ export function DialogBillInfoEx({
             EXP_DATE: packageFilter.EXP_DATE,
             CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE,
             DE_ORDER_NO: invoiceInfo.fkey,
-            PACKAGE_ID: packageFilter.HOUSE_BILL
+            PACKAGE_ID: item.ROWGUID
           };
         });
 
