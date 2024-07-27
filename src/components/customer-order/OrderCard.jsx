@@ -6,6 +6,8 @@ import { Badge } from "../common/ui/badge";
 import { Container } from "lucide-react";
 import { Button } from "../common/ui/button";
 import { ExportOrderStatus, ImportOrderStatus } from "@/constants/order-status";
+import { DateTimeByTextRender } from "../common/aggridreact/cellRender";
+import moment from "moment";
 
 export function OrderCard({ order, status }) {
   const getColor = status => {
@@ -30,7 +32,7 @@ export function OrderCard({ order, status }) {
         <div className="flex flex-row items-center justify-between gap-2">
           <p className="flex flex-row gap-1 text-13">
             <span className="line-clamp-1 font-light">Mã:</span>
-            <span className="font-medium text-blue-950">NK093r4u4f</span>
+            <span className="font-medium text-blue-950">{order.DE_ORDER_NO}</span>
           </p>
           <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
             Nhập
@@ -42,11 +44,11 @@ export function OrderCard({ order, status }) {
           <div className="flex flex-1 flex-col gap-1">
             <p className="flex flex-row gap-1 text-13">
               <span className="line-clamp-1 font-light">Mã Container:</span>
-              <span className="font-medium text-blue-950">CONT5656562</span>
+              <span className="font-medium text-blue-950">{order.CONTAINER_ID}</span>
             </p>
             <p className="flex flex-row gap-1 text-13">
               <span className="line-clamp-1 font-light">Tổng khối lượng:</span>
-              <span className="font-medium text-blue-950">20</span>
+              <span className="font-medium text-blue-950">{order.TOTAL_CBM}</span>
               <span className="font-light">
                 m<sup>3</sup>
               </span>
@@ -55,9 +57,9 @@ export function OrderCard({ order, status }) {
         </div>
         <div className="mt-3 flex flex-row items-center justify-between gap-2">
           <p className="flex flex-row gap-1 text-12 font-extralight text-gray-700">
-            <span>20/7/2024</span>
+            <span>{moment(order.ISSUE_DATE).format("DD/MM/YYYY")}</span>
             <span>-</span>
-            <span>26/7/2024</span>
+            <span>{moment(order.EXP_DATE).format("DD/MM/YYYY")}</span>
           </p>
           <Button variant="blue" size="xs" className="text-[10px] text-white">
             Xem hoá đơn
