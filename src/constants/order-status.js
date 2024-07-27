@@ -6,5 +6,10 @@ export const ImportOrderStatus = {
 
 export const ExportOrderStatus = {
   isConfirmed: "isConfirmed",
-  isReleased: "isChecked"
+  isReleased: "isReleased"
+};
+
+export const OrderStatus = {
+  Import: "NK",
+  Export: "XK"
 };

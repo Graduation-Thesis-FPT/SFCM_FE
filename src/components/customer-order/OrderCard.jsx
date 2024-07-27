@@ -1,13 +1,25 @@
-import React from "react";
-import { Card, CardContent } from "../common/ui/card";
+import { ExportOrderStatus, ImportOrderStatus, OrderStatus } from "@/constants/order-status";
+import { useToggle } from "@/hooks/useToggle";
 import { cn } from "@/lib/utils";
-import { Separator } from "../common/ui/separator";
+import { ArrowRightToLine, Container, PackageOpen, Printer } from "lucide-react";
+import moment from "moment";
+import React from "react";
 import { Badge } from "../common/ui/badge";
-import { Container } from "lucide-react";
 import { Button } from "../common/ui/button";
-import { ExportOrderStatus, ImportOrderStatus } from "@/constants/order-status";
+import { Card, CardContent } from "../common/ui/card";
+import { Separator } from "../common/ui/separator";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { viewInvoice } from "@/apis/order.api";
 
-export function OrderCard({ className, order, status }) {
+export function OrderCard({ order, status }) {
+  const [expandContainerId, _c, toggleExpandContainerId] = useToggle();
+  const [expandPackageId, _p, toggleExpandPackageId] = useToggle();
+  const dispatch = useDispatch();
+  const today = new Date();
+  const checkOverEpireDate = date => {
+    return new Date(date) < today;
+  };
   const getColor = status => {
     switch (status) {
       case ImportOrderStatus.isConfirmed:
@@ -15,52 +27,121 @@ export function OrderCard({ className, order, status }) {
       case ImportOrderStatus.isChecked:
         return "border-violet-100 bg-violet-50";
       case ImportOrderStatus.isStored:
-        return "border-violet-100 bg-blue-50";
+        return "border-blue-100 bg-blue-50";
       case ExportOrderStatus.isConfirmed:
         return "border-green-100 bg-green-50";
       case ExportOrderStatus.isReleased:
-        return "border-violet-100 bg-blue-50";
+        return "border-blue-100 bg-blue-50";
       default:
         return "border-red-100 bg-red-50";
     }
   };
+  const getType = status => {
+    if (order.DE_ORDER_NO.includes("XK")) {
+      return OrderStatus.Export;
+    } else if (order.DE_ORDER_NO.includes("NK")) {
+      return OrderStatus.Import;
+    }
+  };
+  const handleViewInvoice = deliveryOrderNO => {
+    dispatch(setGlobalLoading(true));
+    viewInvoice(deliveryOrderNO)
+      .then(res => {
+        let base64Data = res.data.metadata.content.data;
+        const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
   return (
-    <Card className={cn(getColor(status), "min-w-fit")}>
+    <Card className={cn(getColor(status), "min-w-fit")} onClick={() => console.log(order)}>
       <CardContent className="flex flex-col gap-2 px-4 py-2">
         <div className="flex flex-row items-center justify-between gap-2">
           <p className="flex flex-row gap-1 text-13">
             <span className="line-clamp-1 font-light">Mã:</span>
-            <span className="font-medium text-blue-950">NK093r4u4f</span>
+            <span className="font-medium text-blue-950">{order.DE_ORDER_NO || "N/A"}</span>
           </p>
-          <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
-            Nhập
-          </Badge>
+          {getType(status) === OrderStatus.Import ? (
+            <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
+              <ArrowRightToLine className="mr-1" size={16} />
+              Nhập
+            </Badge>
+          ) : (
+            <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
+              Xuất
+              <ArrowRightToLine className="ml-1" size={16} />
+            </Badge>
+          )}
         </div>
         <Separator orientation="horizontal" />
         <div className="flex flex-row gap-2">
-          <Container strokeWidth={1} size={40} className="text-blue-600 " />
+          {getType(status) === OrderStatus.Import ? (
+            <Container strokeWidth={1} size={40} className="text-blue-600 " />
+          ) : (
+            <PackageOpen strokeWidth={1} size={40} className="text-blue-600  " />
+          )}
           <div className="flex flex-1 flex-col gap-1">
-            <p className="flex flex-row gap-1 text-13">
-              <span className="line-clamp-1 font-light">Mã Container:</span>
-              <span className="font-medium text-blue-950">CONT5656562</span>
-            </p>
+            <div className="flex flex-row gap-0.5 text-13">
+              <p className="font-light">Mã container:</p>
+              <p
+                className={`flex-1 cursor-pointer  font-medium text-blue-950 ${expandContainerId ? "" : "line-clamp-1"}`}
+                onClick={() => toggleExpandContainerId()}
+              >
+                {order.CONTAINER_ID || "N/A"}
+              </p>
+            </div>
+            {getType(status) === OrderStatus.Export && (
+              <div className="flex flex-row gap-0.5 text-13">
+                <p className="font-light">Mã lô hàng:</p>
+                <p
+                  className={`flex-1 cursor-pointer  font-medium text-blue-950 ${expandPackageId ? "" : "line-clamp-1"}`}
+                  onClick={() => toggleExpandPackageId()}
+                >
+                  {order.PACKAGE_ID || "N/A"}
+                </p>
+              </div>
+            )}
             <p className="flex flex-row gap-1 text-13">
               <span className="line-clamp-1 font-light">Tổng khối lượng:</span>
-              <span className="font-medium text-blue-950">20</span>
+              <span className="font-medium text-blue-950">{order.TOTAL_CBM || "N/A"}</span>
               <span className="font-light">
                 m<sup>3</sup>
               </span>
             </p>
           </div>
         </div>
-        <div className="mt-3 flex flex-row items-center justify-between gap-2">
+        <div className="mt-2 flex flex-row items-center justify-between gap-2">
           <p className="flex flex-row gap-1 text-12 font-extralight text-gray-700">
-            <span>20/7/2024</span>
+            <span>{moment(order.ISSUE_DATE).format("DD/MM/YYYY")}</span>
             <span>-</span>
-            <span>26/7/2024</span>
+            <span className={checkOverEpireDate(order.EXP_DATE) ? "text-red-500" : ""}>
+              {moment(order.EXP_DATE).format("DD/MM/YYYY")}
+            </span>
           </p>
-          <Button variant="blue" size="xs" className="text-[8px] text-white">
-            Xem hoá đơn
+          <Button variant="blue" size="xs" className="text-[10px] text-white">
+            Xem chi tiết
+          </Button>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="flex flex-row items-center justify-between gap-2">
+          <div className="flex flex-1 flex-row gap-0.5 text-12">
+            <p className="text-nowrap font-light">Số hoá đơn:</p>
+            <p className="font-medium text-blue-950">{order.INV_ID || "N/A"}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="xs"
+            className="text-xs"
+            onClick={() => handleViewInvoice(order.DE_ORDER_NO)}
+          >
+            <Printer size={16} className="mr-1 text-blue-950" />
+            In hoá đơn
           </Button>
         </div>
       </CardContent>
