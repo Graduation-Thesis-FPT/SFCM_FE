@@ -279,7 +279,7 @@ export function ExportOrder() {
               id="CONTAINER_ID"
               className="w-full min-w-0"
               labelSelect="Chọn số container"
-              data={containerList?.map(item => ({ value: item.ROWGUID, label: item.CNTRNO }))}
+              data={containerList?.map(item => ({ value: item.CONTAINER_ID, label: item.CNTRNO }))}
               onSelect={value => {
                 setPackageFilter({ ...packageFilter, CONTAINER_ID: value });
               }}
