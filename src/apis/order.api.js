@@ -1,4 +1,4 @@
-import { axiosPrivate } from "@/config/axios";
+import { axiosCache, axiosPrivate } from "@/config/axios";
 
 export const getContList = async (data = {}) => {
   return await axiosPrivate.get(
@@ -33,7 +33,12 @@ export const invoicePublishIn = async args => {
 };
 
 export const viewInvoice = async fkey => {
-  return await axiosPrivate.get(`order/viewInvoice?fkey=${fkey}`);
+  return await axiosCache.get(`order/viewInvoice?fkey=${fkey}`, {
+    cache: {
+      ttl: 60 * 60 * 1000,
+      interpretHeader: false
+    }
+  });
 };
 
 //export order
