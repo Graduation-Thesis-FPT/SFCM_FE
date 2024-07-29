@@ -156,6 +156,7 @@ export function ExportOrder() {
       CONTAINER_ID: packageFilter.CONTAINER_ID,
       HOUSE_BILL: packageFilter.HOUSE_BILL
     };
+
     getExManifest(params)
       .then(res => {
         toast.success(res);
@@ -278,7 +279,7 @@ export function ExportOrder() {
               id="CONTAINER_ID"
               className="w-full min-w-0"
               labelSelect="Chọn số container"
-              data={containerList?.map(item => ({ value: item.CNTRNO, label: item.CNTRNO }))}
+              data={containerList?.map(item => ({ value: item.ROWGUID, label: item.CNTRNO }))}
               onSelect={value => {
                 setPackageFilter({ ...packageFilter, CONTAINER_ID: value });
               }}
