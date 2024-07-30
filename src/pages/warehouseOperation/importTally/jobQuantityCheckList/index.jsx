@@ -39,7 +39,13 @@ export function JobQuantityCheckList({
     if (key !== "NOTE") {
       newValue = Number(newValue);
     }
-    const index = jobQuantityCheckList.findIndex(data => data.ROWGUID === item.ROWGUID);
+    const index = jobQuantityCheckList.findIndex(data => {
+      if (data.ROWGUID) {
+        return data.ROWGUID === item.ROWGUID;
+      } else {
+        return data.key === item.key;
+      }
+    });
     let newList = [...jobQuantityCheckList];
     newList[index][key] = newValue;
     newList[index].status ? null : (newList[index].status = "update");
