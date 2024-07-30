@@ -240,6 +240,7 @@ export function ImportTally() {
             id="CONTAINER_ID"
             className="w-full"
             labelSelect="Chọn container kiểm đếm"
+            value={filter.CONTAINER_ID}
             data={importTallyContainerList?.map(item => {
               return { value: item.CONTAINER_ID, label: item.CNTRNO };
             })}
