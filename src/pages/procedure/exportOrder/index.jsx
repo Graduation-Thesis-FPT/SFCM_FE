@@ -126,6 +126,14 @@ export function ExportOrder() {
     getExContainerByVoyagekey(vesselInfo.VOYAGEKEY)
       .then(res => {
         setContainerList(res.data.metadata);
+        setPackageList([]);
+        setPackageFilter({
+          selectedAttachSrvList: [],
+          CUSTOMER_CODE: "",
+          CONTAINER_ID: "",
+          HOUSE_BILL: "",
+          EXP_DATE: addDays(new Date(), 2)
+        });
       })
       .catch(err => {
         toast.error(err);
@@ -140,21 +148,24 @@ export function ExportOrder() {
     EXP_DATE: addDays(new Date(), 2)
   });
 
-  const handleEnterPackageFilter = e => {
+  const handleEnterPackageFilter = newHouseBill => {
+    setPackageFilter({ ...packageFilter, HOUSE_BILL: newHouseBill });
+
     if (!vesselInfo.VOYAGEKEY) {
       return toast.warning("Vui lòng chọn tàu chuyến!");
     }
     if (!packageFilter.CONTAINER_ID) {
       return toast.warning("Vui lòng chọn số container!");
     }
-    if (!packageFilter.HOUSE_BILL) {
-      return toast.warning("Vui lòng nhập số House Bill!");
+    if (!newHouseBill) {
+      setPackageList([]);
+      return;
     }
 
     const params = {
       VOYAGEKEY: vesselInfo.VOYAGEKEY,
       CONTAINER_ID: packageFilter.CONTAINER_ID,
-      HOUSE_BILL: packageFilter.HOUSE_BILL
+      HOUSE_BILL: newHouseBill
     };
 
     getExManifest(params)
@@ -279,37 +290,41 @@ export function ExportOrder() {
               id="CONTAINER_ID"
               className="w-full min-w-0"
               labelSelect="Chọn số container"
-              data={containerList?.map(item => ({ value: item.CONTAINER_ID, label: item.CNTRNO }))}
+              value={packageFilter.CONTAINER_ID}
+              data={containerList
+                ?.map(item => ({ value: item.CONTAINER_ID, label: item.CNTRNO }))
+                ?.reduce((a, b) => {
+                  if (!a.find(item => item.value === b.value)) {
+                    a.push(b);
+                  }
+                  return a;
+                }, [])}
               onSelect={value => {
-                setPackageFilter({ ...packageFilter, CONTAINER_ID: value });
+                setPackageList([]);
+                setPackageFilter({
+                  selectedAttachSrvList: [],
+                  CUSTOMER_CODE: "",
+                  CONTAINER_ID: value,
+                  HOUSE_BILL: "",
+                  EXP_DATE: addDays(new Date(), 2)
+                });
               }}
             />
           </div>
           <div>
-            <Label htmlFor="HOUSE_BILL">{DT_PACKAGE_MNF_LD.HOUSE_BILL.headerName}</Label>
-            <Input
-              id="HOUSE_BILL"
-              placeholder="Nhập số House Bill"
-              value={packageFilter.HOUSE_BILL}
-              onChange={e => {
-                if (!vesselInfo.VOYAGEKEY) {
-                  return null;
-                }
-                setPackageFilter({ ...packageFilter, HOUSE_BILL: e.target.value?.trim() });
-              }}
-              onFocus={() => {
-                if (!vesselInfo.VOYAGEKEY) {
-                  return toast.warning("Vui lòng chọn tàu chuyến!");
-                }
-              }}
-              onKeyPress={e => {
-                if (e.key === "Enter") {
-                  document.getElementById("HOUSE_BILL")?.blur();
-                  return;
-                }
-              }}
-              onBlur={handleEnterPackageFilter}
-            />
+            <div>
+              <Label htmlFor="HOUSE_BILL">{DT_PACKAGE_MNF_LD.HOUSE_BILL.headerName}</Label>
+              <SelectSearch
+                id="HOUSE_BILL"
+                className="w-full min-w-0"
+                labelSelect="Chọn số House Bill"
+                value={packageFilter.HOUSE_BILL}
+                data={containerList
+                  ?.filter(item => item.CONTAINER_ID === packageFilter.CONTAINER_ID)
+                  ?.map(item => ({ value: item.HOUSE_BILL, label: item.HOUSE_BILL }))}
+                onSelect={handleEnterPackageFilter}
+              />
+            </div>
           </div>
           <div>
             <Label htmlFor="EXP_DATE">Hạn lệnh</Label>

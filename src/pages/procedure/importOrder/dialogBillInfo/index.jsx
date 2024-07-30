@@ -65,14 +65,6 @@ export function DialogBillInfo({
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: BILL_INFO.AMT_CBM.headerName,
-      field: BILL_INFO.AMT_CBM.field,
-      flex: 1,
-      cellRenderer: params => formatVnd(params.value).replace("VND", "")
-    },
-    {
-      headerClass: "number-header",
-      cellClass: "text-end",
       headerName: `${BILL_INFO.UNIT_RATE.headerName} (VND)`,
       field: BILL_INFO.UNIT_RATE.field,
       flex: 1,
@@ -88,16 +80,16 @@ export function DialogBillInfo({
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.VAT_PRICE.headerName} (VND)`,
-      field: BILL_INFO.VAT_PRICE.field,
+      headerName: `${BILL_INFO.AMOUNT.headerName} (VND)`,
+      field: BILL_INFO.AMOUNT.field,
       flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.AMOUNT.headerName} (VND)`,
-      field: BILL_INFO.AMOUNT.field,
+      headerName: `${BILL_INFO.TAMOUNT.headerName} (VND)`,
+      field: BILL_INFO.TAMOUNT.field,
       flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     }

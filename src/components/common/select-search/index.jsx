@@ -17,17 +17,17 @@ export function SelectSearch({
   labelSelect = "Chọn",
   labelSearch = "Tìm kiếm",
   className,
-  onSelect
+  onSelect,
+  value = ""
 }) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
-  React.useEffect(() => {
-    if (!data.length) {
-      setValue("");
-      return;
-    }
-  }, [data]);
+  // React.useEffect(() => {
+  //   if (!data.length) {
+  //     onSelect("");
+  //     return;
+  //   }
+  // }, [data]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -67,7 +67,6 @@ export function SelectSearch({
                   key={item.value}
                   value={item.value}
                   onSelect={currentValue => {
-                    setValue(currentValue === value ? "" : currentValue);
                     setOpen(false);
                     onSelect(currentValue === value ? "" : currentValue);
                   }}

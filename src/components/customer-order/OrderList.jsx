@@ -25,7 +25,7 @@ export function OrderList({
       </div>
     );
   }
-  return orders.length === 0 ? (
+  return orders?.length === 0 ? (
     <div className="flex h-full flex-col pb-2">
       <p className="text-18 mb-6 flex-none px-6 font-medium text-blue-950">{title}</p>
       <div className="flex flex-1 flex-col gap-4 overflow-auto px-6">
@@ -36,7 +36,7 @@ export function OrderList({
     <div className="flex h-full flex-col pb-2">
       <p className="text-18 mb-6 flex-none px-6 font-medium text-blue-950">{title}</p>
       <div className="flex flex-1 flex-col gap-4 overflow-auto px-6">
-        {orders.map(order => (
+        {orders?.map(order => (
           <OrderCard key={order.DE_ORDER_NO} order={order} status={status} />
         ))}
       </div>

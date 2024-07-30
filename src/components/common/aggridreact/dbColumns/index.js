@@ -193,7 +193,8 @@ export class bill_info extends CommonColumns {
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
   ITEM_TYPE_CODE = { field: "ITEM_TYPE_CODE", headerName: "Mã loại hàng" };
   METHOD_CODE = { field: "METHOD_CODE", headerName: "Mã phương án" };
-  QTY = { field: "QTY", headerName: "Số lượng" };
+  METHOD_NAME = { field: "METHOD_NAME", headerName: "Tên phương án" };
+  QTY = { field: "QTY", headerName: "Tổng số khối (m³)" };
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID" };
   TAMOUNT = { field: "TAMOUNT", headerName: "Tổng tiền" };
   TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước" };
