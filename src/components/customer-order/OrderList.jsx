@@ -1,8 +1,7 @@
 import { ImportOrderStatus } from "@/constants/order-status";
-import { OrderCard } from "./OrderCard";
 import useFetchData from "@/hooks/useRefetchData";
-import { getImportedOrders } from "@/apis/customer-order.api";
 import { Skeleton } from "../common/ui/skeleton";
+import { OrderCard } from "./OrderCard";
 
 export function OrderList({
   status = ImportOrderStatus.isConfirmed,

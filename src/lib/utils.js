@@ -1,3 +1,4 @@
+import { OrderStatus } from "@/constants/order-status";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as XLSX from "xlsx";
@@ -50,5 +51,13 @@ export const exportToExcel = (exportData, fileName) => {
     XLSX.writeFile(wb, fileName !== "" ? fileName : "SFCM.xlsx");
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getType = (order) => {
+  if (order?.DE_ORDER_NO?.includes("XK")) {
+    return OrderStatus.Export;
+  } else if (order?.DE_ORDER_NO?.includes("NK")) {
+    return OrderStatus.Import;
   }
 };

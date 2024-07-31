@@ -35,7 +35,7 @@ export const invoicePublishIn = async args => {
 export const viewInvoice = async fkey => {
   return await axiosCache.get(`order/viewInvoice?fkey=${fkey}`, {
     cache: {
-      ttl: 60 * 60 * 1000,
+      ttl: 7 * 24 * 60 * 60 * 1000,
       interpretHeader: false
     }
   });
