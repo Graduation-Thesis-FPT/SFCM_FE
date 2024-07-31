@@ -173,7 +173,6 @@ export class job_quantity_check extends CommonColumns {
   START_DATE = { field: "START_DATE", headerName: "Ngày bắt đầu" };
   FINISH_DATE = { field: "FINISH_DATE", headerName: "Ngày kết thúc" };
   JOB_STATUS = { field: "JOB_STATUS", headerName: "Trạng thái" };
-  NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
 
 export class dt_pallet_stock extends CommonColumns {

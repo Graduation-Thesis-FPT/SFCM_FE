@@ -30,8 +30,8 @@ export function JobQuantityCheckList({
       headerName: DT_PALLET_STOCK.PALLET_WIDTH.headerName
     },
     {
-      field: JOB_QUANTITY_CHECK.NOTE.field,
-      headerName: JOB_QUANTITY_CHECK.NOTE.headerName
+      field: DT_PALLET_STOCK.NOTE.field,
+      headerName: DT_PALLET_STOCK.NOTE.headerName
     }
   ];
 

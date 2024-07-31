@@ -146,7 +146,8 @@ export function ImportTally() {
       PALLET_LENGTH: 0,
       PALLET_WIDTH: 0,
       PALLET_HEIGHT: 0,
-      HOUSE_BILL: selectedPackage.HOUSE_BILL
+      HOUSE_BILL: selectedPackage.HOUSE_BILL,
+      NOTE: ""
     };
     setJobQuantityCheckList([newRow, ...jobQuantityCheckList]);
   };
