@@ -11,20 +11,17 @@ const getCustomerOrders = async () =>
 
 const getImportedOrders = async ({ status }) =>
   await axiosCache.get(`customer-order/import-orders?status=${status}`, {
-    id: `customer-order-import-orders-${status}`,
-    cache: {
-      ttl: 5 * 60 * 1000,
-      interpretHeader: false
-    }
+    id: `customer-order-import-orders-${status}`
   });
 
 const getExportedOrders = async ({ status }) =>
   await axiosCache.get(`customer-order/export-orders?status=${status}`, {
-    id: `customer-order-export-orders-${status}`,
-    cache: {
-      ttl: 5 * 60 * 1000,
-      interpretHeader: false
-    }
+    id: `customer-order-export-orders-${status}`
   });
 
-export { getCustomerOrders, getImportedOrders, getExportedOrders };
+const getOrderByOrderNo = async ({ orderNo }) =>
+  await axiosCache.get(`customer-order/order/${orderNo}`, {
+    id: `customer-order-${orderNo}`
+  });
+
+export { getCustomerOrders, getImportedOrders, getExportedOrders, getOrderByOrderNo };

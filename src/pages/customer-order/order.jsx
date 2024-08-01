@@ -1,8 +1,9 @@
-import { getCustomerOrders } from "@/apis/customer-order.api";
+import { getCustomerOrders, getOrderByOrderNo } from "@/apis/customer-order.api";
 import { viewInvoice } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { bs_order_tracking } from "@/components/common/aggridreact/dbColumns";
+import { useCustomToast } from "@/components/common/custom-toast";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
@@ -12,14 +13,21 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
+import { OrderDetail } from "@/components/customer-order";
 import useFetchData from "@/hooks/useRefetchData";
+import { useToggle } from "@/hooks/useToggle";
+import { getType } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { ArrowRightToLine } from "lucide-react";
+import { ArrowRightToLine, Printer } from "lucide-react";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
+import { useReactToPrint } from "react-to-print";
 
 export function Order() {
   const gridRef = useRef(null);
+  const toast = useCustomToast();
+  const orderDetailRef = useRef();
+  const [order, setOrder] = useToggle();
   const BS_ORDER_TRACKING = new bs_order_tracking();
   const { data: orders, loading } = useFetchData({ service: getCustomerOrders });
   const dispatch = useDispatch();
@@ -44,7 +52,7 @@ export function Order() {
     {
       headerName: "Loại lệnh",
       field: "ORDER_TYPE",
-      flex: 1,
+      flex: 0.5,
       filter: true,
       cellRenderer: params => {
         if (!!params.data.CONTAINER_ID) {
@@ -114,19 +122,24 @@ export function Order() {
       cellRenderer: params => {
         return (
           <Button
-            variant="link"
+            variant="ghost"
             size="xs"
-            onClick={() => {
-              // setDetailData(params.data);
+            className="text-xs"
+            onClick={async () => {
+              await handleGetOrder(params.data.DE_ORDER_NO);
+              handlePrint();
             }}
-            className="text-xs text-blue-700 hover:text-blue-700/80"
           >
-            Xem chi tiết
+            <Printer size={16} className="mr-1 text-blue-950" />
+            In phiếu
           </Button>
         );
       }
     }
   ];
+  const handlePrint = useReactToPrint({
+    content: () => orderDetailRef.current
+  });
 
   function handleViewInvoice(deliveryOrderNO) {
     dispatch(setGlobalLoading(true));
@@ -136,6 +149,21 @@ export function Order() {
         const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
         window.open(url, "_blank");
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  }
+
+  async function handleGetOrder(orderNo) {
+    console.log(orderNo);
+    dispatch(setGlobalLoading(true));
+    await getOrderByOrderNo({ orderNo: orderNo })
+      .then(async res => {
+        await setOrder(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
@@ -159,6 +187,7 @@ export function Order() {
           />
         </Section.Table>
       </Section.Content>
+      <OrderDetail ref={orderDetailRef} data={order} status={getType(order)} />
     </Section>
   );
 }
