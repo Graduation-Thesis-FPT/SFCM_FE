@@ -31,49 +31,63 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { UserPasswordReset } from "./UserPasswordReset";
 
-const formSchema = z.object({
-  ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
-  USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
-    message: "Không được chứa khoảng trắng!"
-  }),
-  BIRTHDAY: z
-    .string()
+export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
+  const formSchema = z
+    .object({
+      ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
+      USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
+        message: "Không được chứa khoảng trắng!"
+      }),
+      BIRTHDAY: z
+        .string()
+        .refine(
+          dateString => {
+            const date = moment(dateString);
+            const today = moment();
+            const age = today.diff(date, "years");
+            return dateString === "" || (date.isBefore(today, "day") && age >= 18);
+          },
+          {
+            message:
+              "Ngày sinh không hợp lệ. Bạn phải trên 18 tuổi và ngày sinh không thể là hôm nay."
+          }
+        )
+        .optional(),
+      FULLNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPECIAL_CHAR, {
+        message: "Không chứa ký tự đặc biệt!"
+      }),
+      TELEPHONE: z.string().refine(data => data === "" || data.length === 10, {
+        message: "Số điện thoại bao gồm 11 số!"
+      }),
+
+      EMAIL: z
+        .string()
+        .trim()
+        .refine(data => data === "" || z.string().email().safeParse(data).success, {
+          message: "Email không hợp lệ. Vd:abc@gmail.com"
+        }),
+      ADDRESS: z
+        .string()
+        .trim()
+        .refine(data => data === "" || data.length <= 500, {
+          message: "Địa chỉ không được quá 500 ký tự!"
+        }),
+      REMARK: z.string().trim().optional(),
+      IS_ACTIVE: z.boolean()
+    })
     .refine(
-      dateString => {
-        const date = moment(dateString);
-        const today = moment();
-        const age = today.diff(date, "years");
-        return dateString === "" || (date.isBefore(today, "day") && age >= 18);
+      data => {
+        const originalUser = form.getValues("__originalUser");
+        if (originalUser && originalUser.ROLE_CODE === "customer") {
+          return data.ROLE_CODE === "customer";
+        }
+        return true;
       },
       {
-        message: "Ngày sinh không hợp lệ. Bạn phải trên 18 tuổi và ngày sinh không thể là hôm nay."
+        message: "Không thể thay đổi vai trò của tài khoản khách hàng",
+        path: ["ROLE_CODE"]
       }
-    )
-    .optional(),
-  FULLNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPECIAL_CHAR, {
-    message: "Không chứa ký tự đặc biệt!"
-  }),
-  TELEPHONE: z.string().refine(data => data === "" || data.length === 10, {
-    message: "Số điện thoại bao gồm 11 số!"
-  }),
-
-  EMAIL: z
-    .string()
-    .trim()
-    .refine(data => data === "" || z.string().email().safeParse(data).success, {
-      message: "Email không hợp lệ. Vd:abc@gmail.com"
-    }),
-  ADDRESS: z
-    .string()
-    .trim()
-    .refine(data => data === "" || data.length <= 500, {
-      message: "Địa chỉ không được quá 500 ký tự!"
-    }),
-  REMARK: z.string().trim().optional(),
-  IS_ACTIVE: z.boolean()
-});
-
-export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
+    );
   const toast = useCustomToast();
   const [openDialog, setOpenDialog] = useToggle();
   const [btnLoading, setBtnLoading] = useToggle();
@@ -95,13 +109,25 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
       EMAIL: user?.EMAIL || "",
       ADDRESS: user?.ADDRESS || "",
       REMARK: user?.REMARK || "",
-      IS_ACTIVE: user?.IS_ACTIVE || false
+      IS_ACTIVE: user?.IS_ACTIVE || false,
+      __originalUser: user
     }
   });
 
   function onSubmit(values) {
+    if (user.ROLE_CODE !== values.ROLE_CODE) {
+      if (user.ROLE_CODE === "customer") {
+        toast.error("Khách hàng không thể thay đổi chức vụ!");
+        return;
+      }
+      if (values.ROLE_CODE === "customer") {
+        toast.error("Không thể thay đổi vai trò thành khách hàng");
+        return;
+      }
+    }
+
     setBtnLoading(true);
-    let { USER_NAME, ...rest } = values;
+    let { USER_NAME, EMAIL, __originalUser, ...rest } = values;
     updateUser({ id: detail.ROWGUID, data: rest })
       .then(updateRes => {
         setBtnLoading(false);
@@ -191,7 +217,12 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input type="text" placeholder="Nhập email" {...field} />
+                            <Input
+                              type="text"
+                              placeholder="Nhập email"
+                              disabled={user.ROLE_CODE === "customer"}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage>{form.formState.errors.EMAIL?.message}</FormMessage>
                         </FormItem>

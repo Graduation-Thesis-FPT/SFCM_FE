@@ -21,7 +21,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
+  ROLE_CODE: z
+    .string()
+    .min(1, "Chọn chức vụ!")
+    .refine(value => value !== "customer", {
+      message: "Không cho phép tạo tài khoản với vai trò khách hàng!"
+    }),
   USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
     message: "Không được chứa khoảng trắng!"
   }),
@@ -81,6 +86,10 @@ export function UserCreationForm({ revalidate }) {
   };
 
   function onSubmit(values) {
+    if (values.ROLE_CODE === "customer") {
+      toast.error("Không thể tạo tài khoản với vai trò khách hàng");
+      return;
+    }
     setLoading(true);
     const dataReq = removeEmptyValues(values);
     createAccount({ data: dataReq })
