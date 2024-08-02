@@ -260,9 +260,9 @@ export function ExportOrder() {
   return (
     <Section>
       <Section.Header className="space-y-4">
-        <span className="grid grid-cols-3 gap-3">
+        <div className="flex gap-3">
           {vesselFilter.map(item => (
-            <div key={item.field}>
+            <div className="w-full" key={item.field}>
               <Label htmlFor={item.field}>{item.name}</Label>
               <Input
                 onClick={() => {
@@ -276,14 +276,14 @@ export function ExportOrder() {
                     : ""
                 }
                 readOnly
-                className="hover:cursor-pointer"
+                className="hover:cursor-pointer "
                 id={item.field}
                 placeholder="Chọn tàu chuyến"
               />
             </div>
           ))}
-        </span>
-        <span className="grid grid-cols-7 items-end gap-3">
+        </div>
+        <span className="flex flex-row flex-wrap items-end gap-3">
           <div>
             <Label htmlFor="CONTAINER_ID">Số Container</Label>
             <SelectSearch
@@ -349,7 +349,7 @@ export function ExportOrder() {
                 setPackageFilter({ ...packageFilter, CUSTOMER_CODE: value });
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="min-w-48 max-w-48">
                 <SelectValue placeholder="Chọn khách hàng" />
               </SelectTrigger>
               <SelectContent>
@@ -384,7 +384,7 @@ export function ExportOrder() {
               }
             />
           </div>
-          <div className="flex justify-end">
+          <div className="flex h-9 items-center">
             <Button
               onClick={handleGetToBillEx}
               disabled={packageList.length > 0 ? false : true}

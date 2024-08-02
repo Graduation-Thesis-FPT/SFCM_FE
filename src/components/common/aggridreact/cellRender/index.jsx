@@ -204,7 +204,7 @@ export function CustomerTypeRender(params, customerType) {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {customerType.map(item => (
+          {customerType?.map(item => (
             <SelectItem key={item?.CUSTOMER_TYPE_CODE} value={item?.CUSTOMER_TYPE_CODE}>
               {item?.CUSTOMER_TYPE_CODE} - {item?.CUSTOMER_TYPE_NAME}
             </SelectItem>

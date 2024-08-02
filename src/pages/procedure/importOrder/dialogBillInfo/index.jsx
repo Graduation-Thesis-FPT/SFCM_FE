@@ -184,48 +184,48 @@ export function DialogBillInfo({
       <DialogContent className="max-w-[80%]">
         <DialogHeader>
           <DialogTitle className="text-sm font-normal">
-            <span className="grid grid-cols-3 gap-x-8 gap-y-8">
-              <span className="space-y-2">
-                <div className="text-16 font-semibold">Thông tin thanh toán</div>
+            <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+              <div className="space-y-2 min-w-fit">
+                <p className="text-16 font-semibold">Thông tin thanh toán</p>
                 <Separator />
-                <span className="bold2nd grid grid-cols-2 gap-y-2">
-                  <div>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</div>
-                  <div>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</div>
-                  <div>{BS_CUSTOMER.ADDRESS.headerName}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</div>
-                  <div>{BS_CUSTOMER.EMAIL.headerName}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</div>
-                </span>
-              </span>
+                <div className="bold2nd grid grid-cols-2 gap-y-2 gap-x-2">
+                  <p>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</p>
+                  <p>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</p>
+                  <p>{BS_CUSTOMER.ADDRESS.headerName}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</p>
+                  <p>{BS_CUSTOMER.EMAIL.headerName}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</p>
+                </div>
+              </div>
 
-              <span className="space-y-2">
+              <div className="space-y-2 min-w-fit">
                 <div className="text-16 font-semibold">Tổng tiền thanh toán</div>
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
-                  <div>{BILL_INFO.AMOUNT.headerName}</div>
-                  <div className="text-end">
+                  <p>{BILL_INFO.AMOUNT.headerName}</p>
+                  <p className="text-end">
                     {formatVnd(
                       billInfoList.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0)
                     )}
-                  </div>
-                  <div>{BILL_INFO.VAT_PRICE.headerName}</div>
-                  <div className="text-end">
+                  </p>
+                  <p>{BILL_INFO.VAT_PRICE.headerName}</p>
+                  <p className="text-end">
                     {formatVnd(
                       billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0)
                     )}
-                  </div>
-                  <div>{BILL_INFO.TAMOUNT.headerName}</div>
-                  <div className="text-end">
+                  </p>
+                  <p>{BILL_INFO.TAMOUNT.headerName}</p>
+                  <p className="text-end">
                     {formatVnd(
                       billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
                     )}
-                  </div>
+                  </p>
                 </div>
-              </span>
+              </div>
 
-              <span className="space-y-2">
+              <div className="space-y-2">
                 <div className="text-16 font-semibold">Hình thức thanh toán</div>
                 <Separator />
                 <div>
@@ -236,7 +236,7 @@ export function DialogBillInfo({
                       setHTTT(value);
                     }}
                   >
-                    <SelectTrigger className="min-w-72">
+                    <SelectTrigger className="">
                       <SelectValue placeholder="Chọn hình thức thanh toán" />
                     </SelectTrigger>
                     <SelectContent>
@@ -249,13 +249,13 @@ export function DialogBillInfo({
                   </Select>
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-end">
                   <Button onClick={handleSaveInOrder} variant="blue" disabled={isSaveInOrder}>
                     {isSaveInOrder && <Loader2 className="mr-2 animate-spin" />}
                     Xác nhận thanh toán
                   </Button>
                 </div>
-              </span>
+              </div>
 
               <span className="col-span-3">
                 <AgGrid
@@ -267,7 +267,7 @@ export function DialogBillInfo({
                   pagination={false}
                 />
               </span>
-            </span>
+            </div>
           </DialogTitle>
           <DialogDescription className="hidden" />
         </DialogHeader>

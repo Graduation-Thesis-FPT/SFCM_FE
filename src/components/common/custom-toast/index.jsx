@@ -5,7 +5,8 @@ import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "@/constants";
 const Succsess = ({ message }) => {
   return (
     <span className="flex items-center">
-      <CircleCheckBig size={16} className="mr-2" /> {message}
+      <CircleCheckBig size={16} className="mr-2" />
+      <p className="flex-1">{message}</p>
     </span>
   );
 };
@@ -13,7 +14,8 @@ const Succsess = ({ message }) => {
 const Error = ({ message }) => {
   return (
     <span className="flex items-center">
-      <CircleX size={16} className="mr-2" /> {message}
+      <CircleX size={16} className="mr-2" />
+      <p className="flex-1">{message}</p>
     </span>
   );
 };
@@ -21,7 +23,8 @@ const Error = ({ message }) => {
 const Warning = ({ message }) => {
   return (
     <span className="flex items-center">
-      <CircleAlert size={16} className="mr-2" /> {message}
+      <CircleAlert size={16} className="mr-2" />
+      <p className="flex-1">{message}</p>
     </span>
   );
 };

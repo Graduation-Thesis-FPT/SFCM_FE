@@ -234,8 +234,8 @@ export function ImportTally() {
 
   return (
     <Section>
-      <Section.Header className="grid grid-cols-4 gap-3">
-        <span>
+      <Section.Header className="flex flex-row gap-3">
+        <div className="w-1/4 min-w-fit">
           <Label htmlFor="CONTAINER_ID">Container kiểm đếm</Label>
           <SelectSearch
             id="CONTAINER_ID"
@@ -247,8 +247,8 @@ export function ImportTally() {
             })}
             onSelect={handleChangeFilter}
           />
-        </span>
-        <span>
+        </div>
+        <div className="w-1/4 min-w-fit">
           <Label htmlFor="ISSUE_DATE">{DELIVER_ORDER.ISSUE_DATE.headerName}</Label>
           <Input
             value={filter.ISSUE_DATE ? moment(filter.ISSUE_DATE).format("DD/MM/YYYY HH:mm") : ""}
@@ -257,8 +257,8 @@ export function ImportTally() {
             id="ISSUE_DATE"
             placeholder="Chọn container kiểm đếm"
           />
-        </span>
-        <span>
+        </div>
+        <div className="w-1/4 min-w-fit">
           <Label htmlFor="EXP_DATE">{DELIVER_ORDER.EXP_DATE.headerName}</Label>
           <Input
             value={filter.EXP_DATE ? moment(filter.EXP_DATE).format("DD/MM/YYYY HH:mm") : ""}
@@ -267,7 +267,7 @@ export function ImportTally() {
             id="TRF_NAME"
             placeholder="Chọn container kiểm đếm"
           />
-        </span>
+        </div>
       </Section.Header>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel>
@@ -291,12 +291,12 @@ export function ImportTally() {
                       handleSelectPackage(item);
                     }}
                   >
-                    <span>
+                    <div>
                       <div>Số Housebill: {item?.HOUSE_BILL}</div>
                       <div>Số tờ khai: {item?.DECLARE_NO}</div>
                       <div>Số Seal: {item?.SEALNO}</div>
                       <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
-                    </span>
+                    </div>
                     <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
                   </div>
                 ))}

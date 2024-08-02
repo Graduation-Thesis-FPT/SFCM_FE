@@ -292,7 +292,7 @@ export const MultipleSelect = React.forwardRef(
       >
         <div
           className={cn(
-            "h-9 overflow-auto rounded-md border border-input text-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring focus-within:ring-offset-0",
+            "h-9 overflow-auto rounded-md border border-input text-14 ring-offset-background focus-within:ring-1 focus-within:ring-ring focus-within:ring-offset-0",
             {
               "px-3 py-[6px]": selected.length !== 0,
               "cursor-text": !disabled && selected.length !== 0
@@ -364,7 +364,7 @@ export const MultipleSelect = React.forwardRef(
               }}
               placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? "" : placeholder}
               className={cn(
-                "flex-1 bg-transparent outline-none placeholder:text-muted-foreground",
+                "flex-1 bg-transparent outline-none placeholder:text-muted-foreground placeholder:text-13",
                 {
                   "w-full": hidePlaceholderWhenSelected,
                   "px-3 pt-2": selected.length === 0,

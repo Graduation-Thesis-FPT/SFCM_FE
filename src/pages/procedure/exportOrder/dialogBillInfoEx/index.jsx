@@ -210,70 +210,68 @@ export function DialogBillInfoEx({
       <DialogContent className="max-w-[80%]">
         <DialogHeader>
           <DialogTitle className="text-sm font-normal">
-            <span className="grid grid-cols-3 gap-x-8 gap-y-8">
-              <span className="space-y-2">
-                <div className="text-16 font-semibold">Thông tin thanh toán</div>
-                <Separator />
-                <span className="bold2nd grid grid-cols-2 gap-y-2">
-                  <div>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</div>
-                  <div>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</div>
-                  <div>{BS_CUSTOMER.ADDRESS.headerName}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</div>
-                  <div>{BS_CUSTOMER.EMAIL.headerName}</div>
-                  <div>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</div>
-                </span>
-              </span>
-
-              <span className="space-y-2">
-                <div className="text-16 font-semibold">Tổng tiền thanh toán</div>
+            <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+              <div className="space-y-2">
+                <p className="text-16 font-semibold">Thông tin thanh toán</p>
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
-                  <div>{BILL_INFO.AMOUNT.headerName}</div>
-                  <div className="text-end">
+                  <p>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</p>
+                  <p>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</p>
+                  <p>{BS_CUSTOMER.ADDRESS.headerName}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</p>
+                  <p>{BS_CUSTOMER.EMAIL.headerName}</p>
+                  <p>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-16 font-semibold">Tổng tiền thanh toán</p>
+                <Separator />
+                <div className="bold2nd grid grid-cols-2 gap-y-2">
+                  <p>{BILL_INFO.AMOUNT.headerName}</p>
+                  <p className="text-end">
                     {formatVnd(
                       billInfoEx.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0)
                     )}
-                  </div>
-                  <div>{BILL_INFO.VAT_PRICE.headerName}</div>
-                  <div className="text-end">
+                  </p>
+                  <p>{BILL_INFO.VAT_PRICE.headerName}</p>
+                  <p className="text-end">
                     {formatVnd(
                       billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0)
                     )}
-                  </div>
-                  <div>{BILL_INFO.TAMOUNT.headerName}</div>
-                  <div className="text-end">
+                  </p>
+                  <p>{BILL_INFO.TAMOUNT.headerName}</p>
+                  <p className="text-end">
                     {formatVnd(
                       billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
                     )}
-                  </div>
+                  </p>
                 </div>
-              </span>
+              </div>
 
-              <span className="space-y-2">
+              <div className="space-y-2">
                 <div className="text-16 font-semibold">Hình thức thanh toán</div>
                 <Separator />
-                <div>
-                  <Select
-                    id="HTTT"
-                    value={HTTT}
-                    onValueChange={value => {
-                      setHTTT(value);
-                    }}
-                  >
-                    <SelectTrigger className="min-w-72">
-                      <SelectValue placeholder="Chọn hình thức thanh toán" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="TM">Tiền mặt</SelectItem>
-                        <SelectItem value="CK">Chuyển khoản</SelectItem>
-                        <SelectItem value="TM/CK">Tiền mặt và chuyển khoản</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select
+                  id="HTTT"
+                  value={HTTT}
+                  onValueChange={value => {
+                    setHTTT(value);
+                  }}
+                >
+                  <SelectTrigger className="min-w-full">
+                    <SelectValue placeholder="Chọn hình thức thanh toán" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="TM">Tiền mặt</SelectItem>
+                      <SelectItem value="CK">Chuyển khoản</SelectItem>
+                      <SelectItem value="TM/CK">Tiền mặt và chuyển khoản</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
 
                 <div className="flex justify-center">
                   <Button onClick={handleSaveExOrder} variant="blue" disabled={isSaveExOrder}>
@@ -281,9 +279,9 @@ export function DialogBillInfoEx({
                     Xác nhận thanh toán
                   </Button>
                 </div>
-              </span>
+              </div>
 
-              <span className="col-span-3">
+              <div className="col-span-3">
                 <AgGrid
                   ref={gridRef}
                   rowSelection={"none"}
@@ -292,8 +290,8 @@ export function DialogBillInfoEx({
                   colDefs={colDefs}
                   pagination={false}
                 />
-              </span>
-            </span>
+              </div>
+            </div>
           </DialogTitle>
           <DialogDescription className="hidden" />
         </DialogHeader>
