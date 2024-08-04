@@ -12,7 +12,7 @@ export const SearchInput = forwardRef(
   ) => {
     const inputRef = useRef(null);
     return (
-      <div className={cn("", className)}>
+      <div className={cn("flex flex-col", className)}>
         <Label>{title}</Label>
         <div className="relative flex">
           <Search className="absolute left-2 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
@@ -21,7 +21,7 @@ export const SearchInput = forwardRef(
             type="search"
             placeholder={placeHolderText}
             {...props}
-            className="mr-4 h-[36px] min-w-80 max-w-80 pl-8 text-xs font-normal text-black"
+            className="mr-4 h-[36px] max-w-80 min-w-20 pl-8 text-xs font-normal text-black"
           />
           <Button
             className="h-[36px] text-xs"

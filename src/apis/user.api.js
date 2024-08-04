@@ -10,11 +10,11 @@ const getAllUser = async () =>
   });
 const findUserById = async ({ id }) =>
   await axiosCache.get(`user/${id}`, {
-    id: `find-user-by-id-${id}`,
-    cache: {
-      ttl: 60 * 60 * 1000,
-      interpretHeader: false
-    }
+    id: `find-user-by-id-${id}`
+    // cache: {
+    //   ttl: 60 * 60 * 1000,
+    //   interpretHeader: false
+    // }
   });
 const createAccount = async ({ data }) =>
   await axiosCache.post(`user`, data, {

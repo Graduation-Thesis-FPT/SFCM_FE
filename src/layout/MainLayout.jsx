@@ -51,7 +51,7 @@ export function MainLayout() {
       <div
         className={cn(
           "h-full rounded-r-md bg-white transition-all ease-linear",
-          isCollapse ? "w-[92px]" : "w-64"
+          isCollapse ? "w-[92px]" : "w-64 min-w-64"
         )}
       >
         <Sidebar
@@ -63,7 +63,7 @@ export function MainLayout() {
           isCollapse={isCollapse}
         />
       </div>
-      <div className="flex h-full flex-1 flex-col gap-1.5">
+      <div className="flex h-full flex-1 min-w-0 flex-col gap-1.5">
         <header className="flex max-h-16 min-h-16 flex-row items-center justify-between rounded-md bg-white px-6 shadow-sm">
           <h1 className="text-xl font-bold text-blue-800">
             {menu?.map(item =>

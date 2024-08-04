@@ -214,7 +214,7 @@ export function WarehouseDesign() {
     <Section>
       <Section.Header title="Danh sách các dãy (block)" />
       <Section.Content>
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-1">
           {displayType === "table" ? (
             <SearchInput handleSearch={value => handleSearch(value)} />
           ) : (
