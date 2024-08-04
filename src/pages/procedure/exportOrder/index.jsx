@@ -288,7 +288,7 @@ export function ExportOrder() {
             <Label htmlFor="CONTAINER_ID">Số Container</Label>
             <SelectSearch
               id="CONTAINER_ID"
-              className="w-full min-w-0"
+              className="w-full min-w-44"
               labelSelect="Chọn số container"
               value={packageFilter.CONTAINER_ID}
               data={containerList
@@ -316,7 +316,7 @@ export function ExportOrder() {
               <Label htmlFor="HOUSE_BILL">{DT_PACKAGE_MNF_LD.HOUSE_BILL.headerName}</Label>
               <SelectSearch
                 id="HOUSE_BILL"
-                className="w-full min-w-0"
+                className="w-full min-w-44"
                 labelSelect="Chọn số House Bill"
                 value={packageFilter.HOUSE_BILL}
                 data={containerList

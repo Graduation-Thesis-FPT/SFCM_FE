@@ -46,7 +46,7 @@ export function SelectSearch({
               {data.find(item => item.value === value)?.label}
             </p>
           ) : (
-            <p className="flex-1 text-[13px] text-muted-foreground">{labelSelect}</p>
+            <p className="flex-1 text-[13px] text-muted-foreground text-start">{labelSelect}</p>
           )}
           <ChevronsUpDown className="flex-none h-4 w-4 opacity-50" />
         </Button>
