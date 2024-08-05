@@ -1,12 +1,25 @@
-import { getCustomerOrders, getOrderByOrderNo } from "@/apis/customer-order.api";
+import {
+  getCustomerOrders,
+  getCustomerOrdersByFilter,
+  getOrderByOrderNo
+} from "@/apis/customer-order.api";
 import { viewInvoice } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { bs_order_tracking } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
+import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/common/ui/form";
 import {
   Tooltip,
   TooltipContent,
@@ -15,21 +28,49 @@ import {
 } from "@/components/common/ui/tooltip";
 import { OrderDetail } from "@/components/customer-order";
 import useFetchData from "@/hooks/useRefetchData";
+import { useSetData } from "@/hooks/useSetData";
 import { useToggle } from "@/hooks/useToggle";
 import { getType } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { ArrowRightToLine, Printer } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addDays } from "date-fns";
+import { ArrowRightToLine, Printer, Search } from "lucide-react";
+import moment from "moment";
 import { useRef } from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
+import { z } from "zod";
 
+const formSchema = z
+  .object({
+    from_date: z.date({
+      required_error: "Vui lòng chọn khoảng thời gian!"
+    }),
+    to_date: z.date({
+      required_error: "Vui lòng chọn khoảng thời gian!"
+    })
+  })
+  .refine(data => data.from_date <= data.to_date, {
+    message: "Ngày bắt đầu không được lớn hơn ngày kết thúc!",
+    path: ["to_date"]
+  });
 export function Order() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const orderDetailRef = useRef();
   const [order, setOrder] = useToggle();
   const BS_ORDER_TRACKING = new bs_order_tracking();
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      from_date: addDays(new Date(), -30),
+      to_date: addDays(new Date(), 30)
+    }
+  });
   const { data: orders, loading } = useFetchData({ service: getCustomerOrders });
+
+  const [rowData, setRowData] = useSetData(orders);
   const dispatch = useDispatch();
 
   const colDefs = [
@@ -141,7 +182,7 @@ export function Order() {
     content: () => orderDetailRef.current
   });
 
-  function handleViewInvoice(deliveryOrderNO) {
+  const handleViewInvoice = deliveryOrderNO => {
     dispatch(setGlobalLoading(true));
     viewInvoice(deliveryOrderNO)
       .then(res => {
@@ -156,10 +197,9 @@ export function Order() {
       .finally(() => {
         dispatch(setGlobalLoading(false));
       });
-  }
+  };
 
-  async function handleGetOrder(orderNo) {
-    console.log(orderNo);
+  const handleGetOrder = async orderNo => {
     dispatch(setGlobalLoading(true));
     await getOrderByOrderNo({ orderNo: orderNo })
       .then(async res => {
@@ -171,19 +211,70 @@ export function Order() {
       .finally(() => {
         dispatch(setGlobalLoading(false));
       });
-  }
+  };
+  const onSubmit = () => {
+    dispatch(setGlobalLoading(true));
+    getCustomerOrdersByFilter({
+      from_date: moment(form.getValues("from_date")).startOf("day").format("Y-MM-DD HH:mm:ss"),
+      to_date: moment(form.getValues("to_date")).endOf("day").format("Y-MM-DD HH:mm:ss")
+    })
+      .then(res => {
+        setRowData(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
 
   return (
     <Section>
-      <Section.Header title="Danh sách đơn hàng"></Section.Header>
+      <Section.Header title="Danh sách đơn hàng" />
+
       <Section.Content>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex items-end justify-start gap-2"
+          >
+            <FormField
+              control={form.control}
+              name="from_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tìm kiếm theo ngày</FormLabel>
+                  <FormControl>
+                    <DatePickerWithRangeInForm
+                      date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
+                      onSelected={value => {
+                        form.setValue("from_date", value?.from, { shouldValidate: true });
+                        form.setValue("to_date", value?.to, { shouldValidate: true });
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors?.from_date?.message ||
+                      form.formState.errors?.to_date?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+
+            <Button className="h-[36px] text-xs" type="submit">
+              Tìm kiếm
+              <Search className="ml-2 size-4" />
+            </Button>
+          </form>
+        </Form>
         <Section.Table>
           <AgGrid
             contextMenu={true}
             ref={gridRef}
             colDefs={colDefs}
             loading={loading}
-            rowData={orders}
+            rowData={rowData}
           />
         </Section.Table>
       </Section.Content>

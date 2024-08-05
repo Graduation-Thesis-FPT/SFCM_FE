@@ -9,6 +9,9 @@ const getCustomerOrders = async () =>
     }
   });
 
+const getCustomerOrdersByFilter = async ({ from_date, to_date }) =>
+  await axiosCache.get(`customer-order?from=${from_date}&to=${to_date}`);
+
 const getImportedOrders = async ({ status }) =>
   await axiosCache.get(`customer-order/import-orders?status=${status}`, {
     id: `customer-order-import-orders-${status}`
@@ -24,4 +27,10 @@ const getOrderByOrderNo = async ({ orderNo }) =>
     id: `customer-order-${orderNo}`
   });
 
-export { getCustomerOrders, getImportedOrders, getExportedOrders, getOrderByOrderNo };
+export {
+  getCustomerOrders,
+  getImportedOrders,
+  getExportedOrders,
+  getOrderByOrderNo,
+  getCustomerOrdersByFilter
+};
