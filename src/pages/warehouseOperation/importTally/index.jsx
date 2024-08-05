@@ -206,6 +206,7 @@ export function ImportTally() {
       .then(res => {
         toast.success(res);
         getJobQuantityCheckByPACKAGE_ID();
+        getImportTallyContainerInfo(filter.CONTAINER_ID);
         socket.emit("completeJobQuantityCheck");
       })
       .catch(err => {
@@ -213,6 +214,16 @@ export function ImportTally() {
       })
       .finally(() => {
         dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const getImportTallyContainerInfo = async CONTAINER_ID => {
+    getImportTallyContainerInfoByCONTAINER_ID(CONTAINER_ID)
+      .then(res => {
+        setImportTallyPackageList(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
       });
   };
 
@@ -297,7 +308,15 @@ export function ImportTally() {
                       <div>Số Seal: {item?.SEALNO}</div>
                       <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
                     </div>
-                    <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
+                    <div className="flex flex-col justify-between text-center">
+                      <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
+                      {item?.JOB_STATUS === "C" && (
+                        <div className="flex flex-col items-center justify-center font-bold text-green-600">
+                          <CheckCircle />
+                          <div>Hoàn thành kiểm đếm</div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
