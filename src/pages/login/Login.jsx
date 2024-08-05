@@ -36,7 +36,7 @@ const formSchema = z.object({
   USER_NAME: z
     .string()
     .min(1, { message: "Vui lòng nhập tài khoản!" }) // Non-empty
-    .max(20, { message: "Tài khoản không được vượt quá 20 ký tự!" }) // Max length 20
+    .max(100, { message: "Tài khoản không được vượt quá 100 ký tự!" }) // Max length 20
     .regex(regexPattern.NO_SPACE, { message: "Tài khoản không được chứa khoảng trắng!" }), // No spaces
   PASSWORD: z
     .string()

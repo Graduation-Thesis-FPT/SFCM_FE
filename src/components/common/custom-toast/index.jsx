@@ -48,7 +48,8 @@ export const useCustomToast = () => {
       mess =
         ERROR_MESSAGE[mess?.response?.data?.message] ||
         mess?.response?.data?.message ||
-        "Thao tác không thành công. Vui lòng thử lại!";
+        mess.message ||
+        "Thao tác không thành công. Vui lòng thử lại sau!";
     }
     toast({
       variant: "warning",
@@ -62,7 +63,8 @@ export const useCustomToast = () => {
       mess =
         ERROR_MESSAGE[mess?.response?.data?.message] ||
         mess?.response?.data?.message ||
-        "Thao tác không thành công. Vui lòng thử lại!";
+        mess.message ||
+        "Thao tác không thành công. Vui lòng thử lại sau!";
     }
     toast({
       variant: "error",

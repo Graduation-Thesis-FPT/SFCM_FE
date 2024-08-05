@@ -23,7 +23,7 @@ import { Separator } from "@/components/common/ui/separator";
 import { socket } from "@/config/socket";
 import { formatVnd, removeLastAsterisk } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
 const BILL_INFO = new bill_info();
@@ -185,21 +185,29 @@ export function DialogBillInfoEx({
 
         saveExOrder(reqData, paymentInfoHeader, paymentInfoDtl)
           .then(res => {
+            socket.emit("saveExOrderSuccess");
             toast.success(res);
-            // socket.emit("saveInOrderSuccess");
             onSaveExOrderSuccess(res.data.metadata);
           })
           .catch(err => {
             toast.error(err);
+          })
+          .finally(() => {
+            setIsSaveExOrder(false);
           });
       })
       .catch(err => {
         toast.error(err);
-      })
-      .finally(() => {
         setIsSaveExOrder(false);
       });
   };
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   if (!selectedCustomer.CUSTOMER_NAME || !packageList.length) {
     return null;

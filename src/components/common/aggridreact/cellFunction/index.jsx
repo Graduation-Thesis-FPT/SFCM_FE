@@ -1,6 +1,6 @@
 export const UpperCase = params => {
   let newValue = params?.newValue?.trim()?.toUpperCase();
-  if (newValue !== params.oldValue) {
+  if (params.newValue !== params.oldValue) {
     params.node.setDataValue(params.column, newValue);
   }
 };

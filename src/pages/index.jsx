@@ -28,7 +28,9 @@ export * from "./procedure/exportOrder";
 export * from "./warehouseOperation/importTally";
 export * from "./warehouseOperation/exportTally";
 export * from "./warehouseOperation/forkLift";
+//report
+export * from "./report/inExOrder";
 
 //customer-order
-export * from "./customer-order/order"
-export * from "./customer-order/order-tracking"
+export * from "./customer-order/order";
+export * from "./customer-order/order-tracking";

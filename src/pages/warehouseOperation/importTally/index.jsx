@@ -388,6 +388,7 @@ export function ImportTally() {
                 </span>
 
                 <JobQuantityCheckList
+                  selectedPackage={selectedPackage}
                   isCompleteJobQuantityCheck={isCompleteJobQuantityCheck}
                   jobQuantityCheckList={jobQuantityCheckList}
                   onChangeJobQuantityCheckList={newList => {

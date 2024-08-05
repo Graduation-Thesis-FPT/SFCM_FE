@@ -23,7 +23,7 @@ import { Separator } from "@/components/common/ui/separator";
 import { socket } from "@/config/socket";
 import { formatVnd, removeLastAsterisk } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
 export function DialogBillInfo({
@@ -165,15 +165,23 @@ export function DialogBillInfo({
           })
           .catch(err => {
             toast.error(err);
+          })
+          .finally(() => {
+            setIsSaveInOrder(false);
           });
       })
       .catch(err => {
         toast.error(err);
-      })
-      .finally(() => {
         setIsSaveInOrder(false);
       });
   };
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
     return null;
@@ -185,10 +193,10 @@ export function DialogBillInfo({
         <DialogHeader>
           <DialogTitle className="text-sm font-normal">
             <div className="grid grid-cols-3 gap-x-8 gap-y-8">
-              <div className="space-y-2 min-w-fit">
+              <div className="min-w-fit space-y-2">
                 <p className="text-16 font-semibold">Thông tin thanh toán</p>
                 <Separator />
-                <div className="bold2nd grid grid-cols-2 gap-y-2 gap-x-2">
+                <div className="bold2nd grid grid-cols-2 gap-x-2 gap-y-2">
                   <p>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</p>
                   <p>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</p>
                   <p>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</p>
@@ -200,7 +208,7 @@ export function DialogBillInfo({
                 </div>
               </div>
 
-              <div className="space-y-2 min-w-fit">
+              <div className="min-w-fit space-y-2">
                 <div className="text-16 font-semibold">Tổng tiền thanh toán</div>
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">

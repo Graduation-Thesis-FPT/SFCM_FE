@@ -8,7 +8,8 @@ import { PrintPallet } from "./PrintPallet";
 export function JobQuantityCheckList({
   jobQuantityCheckList = [],
   onChangeJobQuantityCheckList,
-  isCompleteJobQuantityCheck
+  isCompleteJobQuantityCheck,
+  selectedPackage = {}
 }) {
   const JOB_QUANTITY_CHECK = new job_quantity_check();
   const DT_PALLET_STOCK = new dt_pallet_stock();
@@ -71,7 +72,11 @@ export function JobQuantityCheckList({
           <span className="flex justify-between text-sm">
             <div>STT: {item.SEQ}</div>
             <div className="font-bold">{item.PALLET_NO}</div>
-            <div>{isCompleteJobQuantityCheck() && <PrintPallet data={item || {}} />}</div>
+            <div>
+              {isCompleteJobQuantityCheck() && (
+                <PrintPallet selectedPackage={selectedPackage} data={item || {}} />
+              )}
+            </div>
           </span>
           <div className="grid grid-cols-4 gap-x-4 gap-y-2">
             {colDefs.map((col, index) => (

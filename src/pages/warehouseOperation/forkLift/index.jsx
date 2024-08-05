@@ -324,9 +324,13 @@ export function ForkLift() {
         getJob(selectedJobStatusRef.current);
         getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
       });
+      socket.on("receiveSaveExOrderSuccess", message => {
+        getJob(selectedJobStatusRef.current);
+      });
       return () => {
         socket.off("receiveCompleteJobQuantityCheck");
         socket.off("receiveInputPalletToCellSuccess");
+        socket.off("receiveSaveExOrderSuccess");
       };
     }
   }, []);

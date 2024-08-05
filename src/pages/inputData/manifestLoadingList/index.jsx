@@ -40,6 +40,7 @@ import {
 import { getAllCustomer } from "@/apis/customer.api";
 import { GrantPermission } from "@/components/common/grant-permission";
 import moment from "moment";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 const formSchema = z.object({
   VOYAGEKEY: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
@@ -98,14 +99,16 @@ export function ManifestLoadingList() {
       field: DT_CNTR_MNF_LD.BILLOFLADING.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      onCellValueChanged: UpperCase
     },
     {
       headerName: DT_CNTR_MNF_LD.CNTRNO.headerName,
       field: DT_CNTR_MNF_LD.CNTRNO.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: true,
+      onCellValueChanged: UpperCase
     },
     {
       headerName: DT_CNTR_MNF_LD.CNTRSZTP.headerName,

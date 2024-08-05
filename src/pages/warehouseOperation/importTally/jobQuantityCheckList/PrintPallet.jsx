@@ -6,12 +6,13 @@ import {
 } from "@/components/common/ui/tooltip";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { Printer } from "lucide-react";
+import moment from "moment";
 import QRCode from "qrcode.react";
 import { forwardRef, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 
-export function PrintPallet({ data = {} }) {
+export function PrintPallet({ data = {}, selectedPackage = {} }) {
   const printRef = useRef(null);
   const dispatch = useDispatch();
   const handlePrint = useReactToPrint({
@@ -32,12 +33,12 @@ export function PrintPallet({ data = {} }) {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <ComponentPrint ref={printRef} data={data || {}} />
+      <ComponentPrint ref={printRef} selectedPackage={selectedPackage} data={data || {}} />
     </div>
   );
 }
 
-const ComponentPrint = forwardRef(({ data = {} }, ref) => {
+const ComponentPrint = forwardRef(({ data = {}, selectedPackage = {} }, ref) => {
   const baseURL = `${window.location.origin}/warehouse-operation/export-tally`;
 
   const createURLWithParams = (baseUrl, params) => {
@@ -48,12 +49,32 @@ const ComponentPrint = forwardRef(({ data = {} }, ref) => {
 
   return (
     <div ref={ref} className="hidden-to-print space-y-2 p-5">
-      <div className="flex justify-between">
-        <div>STT: {data?.SEQ}</div>
+      <div className="flex items-end justify-between">
+        <div className="text-12">STT: {data?.SEQ}</div>
         <div className="font-bold">{data?.PALLET_NO}</div>
-        <div>SL: {data?.ESTIMATED_CARGO_PIECE}</div>
+        <div className="text-12">
+          SL: {data?.ESTIMATED_CARGO_PIECE}/{data?.ACTUAL_CARGO_PIECE}
+        </div>
       </div>
-      <div className="flex flex-col">
+      <div className="grid grid-cols-2 gap-2 text-12">
+        <div>
+          Mã tàu: <b>{selectedPackage?.VOYAGEKEY}</b>
+        </div>
+        <div>
+          Ngày kiểm đếm: <b>{moment(data?.START_DATE)?.format("DD/MM/Y")}</b>
+        </div>
+        <div>
+          Số cont: <b>{selectedPackage?.CNTRNO}</b>
+        </div>
+        <div></div>
+        <div>
+          Loại hàng: <b>{selectedPackage?.ITEM_TYPE_NAME}</b>
+        </div>
+        <div>
+          Ghi chú: <b>{data?.NOTE}</b>
+        </div>
+      </div>
+      {/* <div className="flex flex-col">
         <QRCode
           value={createURLWithParams(baseURL, data)}
           size={258}
@@ -66,7 +87,7 @@ const ComponentPrint = forwardRef(({ data = {} }, ref) => {
           </div>
           {data?.NOTE && <div>Ghi chú: {data?.NOTE}</div>}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 });

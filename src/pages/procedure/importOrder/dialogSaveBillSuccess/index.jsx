@@ -45,6 +45,9 @@ export function DialogSaveBillSuccess({
         window.open(url, "_blank");
       })
       .catch(err => {
+        if (err?.message?.includes("Cannot")) {
+          return toast.error("Không thể xem hóa đơn. Vui lòng thử lại sau!");
+        }
         toast.error(err);
       })
       .finally(() => {

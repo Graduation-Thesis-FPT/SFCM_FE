@@ -39,12 +39,18 @@ export function DialogSaveBillExSuccess({
     setIsPrintInvoice(true);
     viewInvoice(dataBillAfterSave.neworder.DE_ORDER_NO)
       .then(res => {
+        if (!res.data.metadata.success) {
+          throw new Error(res.data.metadata.error);
+        }
         let base64Data = res.data.metadata.content.data;
         const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
         window.open(url, "_blank");
       })
       .catch(err => {
+        if (err?.message?.includes("Cannot")) {
+          return toast.error("Không thể xem hóa đơn. Vui lòng thử lại sau!");
+        }
         toast.error(err);
       })
       .finally(() => {
