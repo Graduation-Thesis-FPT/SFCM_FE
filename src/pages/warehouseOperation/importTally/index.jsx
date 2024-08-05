@@ -303,13 +303,23 @@ export function ImportTally() {
                     }}
                   >
                     <div>
-                      <div>Số Housebill: {item?.HOUSE_BILL}</div>
-                      <div>Số tờ khai: {item?.DECLARE_NO}</div>
-                      <div>Số Seal: {item?.SEALNO}</div>
-                      <div>Loại hàng: {item?.PACKAGE_UNIT_NAME}</div>
+                      <div>
+                        Số Housebill: <b>{item?.HOUSE_BILL}</b>
+                      </div>
+                      <div>
+                        Số tờ khai: <b>{item?.DECLARE_NO}</b>
+                      </div>
+                      <div>
+                        Số Seal: <b>{item?.SEALNO}</b>
+                      </div>
+                      <div>
+                        Loại hàng: <b>{item?.ITEM_TYPE_NAME}</b>
+                      </div>
                     </div>
                     <div className="flex flex-col justify-between text-center">
-                      <div>Tổng số lượng: {item?.CARGO_PIECE}</div>
+                      <div>
+                        Tổng số lượng: <b>{item?.CARGO_PIECE}</b>
+                      </div>
                       {item?.JOB_STATUS === "C" && (
                         <div className="flex flex-col items-center justify-center font-bold text-green-600">
                           <CheckCircle />
@@ -335,15 +345,15 @@ export function ImportTally() {
               <div className="flex h-full min-h-0 flex-col">
                 <span className="mx-auto flex w-[95%] justify-between pt-4 text-sm">
                   <div className="flex flex-col justify-between">
-                    <div>
+                    <span>
                       Số lượng hàng chưa kiểm đếm:{" "}
-                      <span className="font-bold">
+                      <b>
                         {calculateEstimatedCargoPiece()}/{selectedPackage.CARGO_PIECE}
-                      </span>
-                    </div>
-                    <div>
-                      Số Housebill: <span className="font-bold">{selectedPackage.HOUSE_BILL}</span>
-                    </div>
+                      </b>
+                    </span>
+                    <span>
+                      Số Housebill: <b>{selectedPackage.HOUSE_BILL}</b>
+                    </span>
                   </div>
 
                   <div>

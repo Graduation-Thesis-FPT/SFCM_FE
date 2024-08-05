@@ -180,9 +180,9 @@ export class dt_pallet_stock extends CommonColumns {
   JOB_QUANTITY_ID = { field: "JOB_QUANTITY_ID", headerName: "Mã kiểm đếm *" };
   CELL_ID = { field: "CELL_ID", headerName: "Mã ô" };
   PALLET_STATUS = { field: "PALLET_STATUS", headerName: "Trạng thái pallet" };
-  PALLET_LENGTH = { field: "PALLET_LENGTH", headerName: "Chiều dài (m)" };
-  PALLET_WIDTH = { field: "PALLET_WIDTH", headerName: "Chiều rộng (m)" };
-  PALLET_HEIGHT = { field: "PALLET_HEIGHT", headerName: "Chiều cao (m)" };
+  PALLET_LENGTH = { field: "PALLET_LENGTH", headerName: "Chiều dài (m) *" };
+  PALLET_WIDTH = { field: "PALLET_WIDTH", headerName: "Chiều rộng (m) *" };
+  PALLET_HEIGHT = { field: "PALLET_HEIGHT", headerName: "Chiều cao (m) *" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
 

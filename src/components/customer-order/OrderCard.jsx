@@ -41,9 +41,11 @@ export function OrderCard({ order, status }) {
         return "border-red-100 bg-red-50";
     }
   };
-  
+
   const handlePrint = useReactToPrint({
-    content: () => orderDetailRef.current
+    content: () => orderDetailRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
   });
 
   const handleViewInvoice = async deliveryOrderNO => {

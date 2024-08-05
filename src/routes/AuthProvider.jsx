@@ -38,7 +38,6 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (menu) {
       dispatch(setMenu(menu));
-      console.log("menu", menu);
     }
   }, [menu]);
   if (!user.userInfo) {

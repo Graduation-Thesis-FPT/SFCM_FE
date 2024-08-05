@@ -22,12 +22,12 @@ export function JobQuantityCheckList({
       headerName: DT_PALLET_STOCK.PALLET_LENGTH.headerName
     },
     {
-      field: DT_PALLET_STOCK.PALLET_HEIGHT.field,
-      headerName: DT_PALLET_STOCK.PALLET_HEIGHT.headerName
-    },
-    {
       field: DT_PALLET_STOCK.PALLET_WIDTH.field,
       headerName: DT_PALLET_STOCK.PALLET_WIDTH.headerName
+    },
+    {
+      field: DT_PALLET_STOCK.PALLET_HEIGHT.field,
+      headerName: DT_PALLET_STOCK.PALLET_HEIGHT.headerName
     },
     {
       field: DT_PALLET_STOCK.NOTE.field,
@@ -71,7 +71,7 @@ export function JobQuantityCheckList({
           <span className="flex justify-between text-sm">
             <div>STT: {item.SEQ}</div>
             <div className="font-bold">{item.PALLET_NO}</div>
-            <div>{isCompleteJobQuantityCheck() && <PrintPallet />}</div>
+            <div>{isCompleteJobQuantityCheck() && <PrintPallet data={item || {}} />}</div>
           </span>
           <div className="grid grid-cols-4 gap-x-4 gap-y-2">
             {colDefs.map((col, index) => (

@@ -14,6 +14,8 @@ import { useReactToPrint } from "react-to-print";
 import { useRef, useState } from "react";
 import { viewInvoice } from "@/apis/order.api";
 import { useCustomToast } from "@/components/common/custom-toast";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function DialogSaveBillSuccess({
   open = false,
@@ -25,9 +27,12 @@ export function DialogSaveBillSuccess({
   const toast = useCustomToast();
   const printRef = useRef(null);
   const [isPrintInvoice, setIsPrintInvoice] = useState(false);
+  const dispatch = useDispatch();
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current
+    content: () => printRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
   });
 
   const handleInvoicePublish = () => {

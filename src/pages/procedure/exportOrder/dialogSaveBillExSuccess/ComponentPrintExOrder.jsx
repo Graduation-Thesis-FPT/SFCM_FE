@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { useSelector } from "react-redux";
 
 export const ComponentPrintExOrder = forwardRef(
-  ({ data = {}, selectedCustomer = {}, packageFilter = {} }, ref) => {
+  ({ data = {}, selectedCustomer = {}, packageFilter = {}, selectedContainer = {} }, ref) => {
     const user = useSelector(state => state.userSlice.user);
     return (
       <div ref={ref} className="hidden-to-print space-y-3 p-5">
@@ -32,7 +32,7 @@ export const ComponentPrintExOrder = forwardRef(
         </div>
         <div className="flex gap-10 text-sm font-bold">
           <div>MÃ LỆNH: {data?.neworder?.DE_ORDER_NO ?? "...................."}</div>
-          <div>SỐ CONT: {packageFilter?.CONTAINER_ID ?? "...................."}</div>
+          <div>SỐ CONT: {selectedContainer?.CNTRNO ?? "...................."}</div>
           <div>TỔNG SỐ KHỐI: {data.neworder?.TOTAL_CBM ?? "...................."}</div>
           <div>
             HẠN LỆNH:{" "}

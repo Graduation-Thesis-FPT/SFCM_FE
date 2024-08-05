@@ -427,6 +427,7 @@ export function ExportOrder() {
           customer => packageFilter.CUSTOMER_CODE === customer.CUSTOMER_CODE
         )}
         packageFilter={packageFilter}
+        containerList={containerList}
         dataBillAfterSave={dataBillAfterSave}
         open={openDialogSaveBillExSuccess}
         onOpenChange={() => {

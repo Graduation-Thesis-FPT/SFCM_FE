@@ -13,20 +13,26 @@ import { useRef, useState } from "react";
 import { viewInvoice } from "@/apis/order.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { ComponentPrintExOrder } from "./ComponentPrintExOrder";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { useDispatch } from "react-redux";
 
 export function DialogSaveBillExSuccess({
   open = false,
   dataBillAfterSave = {},
   selectedCustomer = {},
   packageFilter = {},
+  containerList = [],
   onMakeNewExOrder
 }) {
   const toast = useCustomToast();
   const printRef = useRef(null);
   const [isPrintInvoice, setIsPrintInvoice] = useState(false);
+  const dispatch = useDispatch();
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current
+    content: () => printRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
   });
 
   const handleInvoicePublish = () => {
@@ -82,6 +88,9 @@ export function DialogSaveBillExSuccess({
                 Hóa đơn điện tử
               </Button>
               <ComponentPrintExOrder
+                selectedContainer={containerList.find(
+                  item => item.CONTAINER_ID === packageFilter.CONTAINER_ID
+                )}
                 packageFilter={packageFilter}
                 ref={printRef}
                 data={dataBillAfterSave}

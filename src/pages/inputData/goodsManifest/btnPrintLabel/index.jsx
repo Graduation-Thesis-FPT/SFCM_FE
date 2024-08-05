@@ -18,15 +18,20 @@ import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { ComponentPrintLabel } from "./ComponentPrintLabel";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function BtnPrintLabel({ isLoading = false, gridRef, vesselInfo = {}, containerInfo = {} }) {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState([]);
   const printRef = useRef(null);
   const toast = useCustomToast();
+  const dispatch = useDispatch();
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current
+    content: () => printRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
   });
 
   const handleOpenDialog = () => {

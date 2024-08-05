@@ -179,7 +179,9 @@ export function Order() {
     }
   ];
   const handlePrint = useReactToPrint({
-    content: () => orderDetailRef.current
+    content: () => orderDetailRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
   });
 
   const handleViewInvoice = deliveryOrderNO => {

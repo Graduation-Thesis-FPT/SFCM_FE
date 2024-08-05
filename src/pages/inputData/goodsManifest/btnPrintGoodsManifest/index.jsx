@@ -11,6 +11,8 @@ import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { ComponentPrintGoodsMnf } from "./ComponentPrintGoodsMnf";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { useDispatch } from "react-redux";
 
 export function BtnPrintGoodsManifest({
   rowData = [],
@@ -21,9 +23,12 @@ export function BtnPrintGoodsManifest({
   const [open, setOpen] = useState(false);
   const printRef = useRef(null);
   const toast = useCustomToast();
+  const dispatch = useDispatch();
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current
+    content: () => printRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
   });
 
   const handleOpenDialog = () => {
