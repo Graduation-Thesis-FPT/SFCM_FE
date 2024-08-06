@@ -18,6 +18,14 @@ export const getReportInExOrder = async ({
     }
   });
 
-export const getReportRevenue = async () => {
-  return await axiosPrivate.get(`inv-vat`);
+export const getReportRevenue = async ({ from, to, isInEx = "", INV_NO = "", PAYER = "" }) => {
+  return await axiosPrivate.get(`inv-vat`, {
+    params: {
+      from: moment(from).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
+      to: moment(to).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+      isInEx: isInEx === "all" ? "" : isInEx,
+      PAYER: PAYER === "all" ? "" : PAYER,
+      INV_NO
+    }
+  });
 };

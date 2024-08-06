@@ -30,6 +30,7 @@ export * from "./warehouseOperation/exportTally";
 export * from "./warehouseOperation/forkLift";
 //report
 export * from "./report/inExOrder";
+export * from "./report/revenue";
 
 //customer-order
 export * from "./customer-order/order";

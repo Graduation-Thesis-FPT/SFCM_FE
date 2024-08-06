@@ -1,6 +1,6 @@
 import { getAllCustomer } from "@/apis/customer.api";
 import { viewInvoice } from "@/apis/order.api";
-import { getReportInExOrder } from "@/apis/report.api";
+import { getReportRevenue } from "@/apis/report.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
@@ -20,12 +20,13 @@ import {
   SelectValue
 } from "@/components/common/ui/select";
 import useFetchData from "@/hooks/useRefetchData";
+import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { addDays } from "date-fns";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
-export function InExOrder() {
+export function Revenue() {
   const gridRef = useRef();
   const toast = useCustomToast();
   const dispatch = useDispatch();
@@ -37,58 +38,134 @@ export function InExOrder() {
     from: addDays(new Date(), -30),
     to: addDays(new Date(), 30),
     isInEx: "all",
-    CUSTOMER_CODE: "all",
-    CNTRNO: ""
+    PAYER: "all",
+    INV_NO: ""
   });
 
   const [rowData, setRowData] = useState([]);
-
+  const pinnedBottomRowData = useMemo(() => {
+    return [
+      {
+        ACC_CD: "BOTTOM (ACC_CD)"
+      }
+    ];
+  }, []);
   const colDefs = [
     {
-      cellClass: "text-gray-600 bg-gray-50 text-center",
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200";
+        }
+        return "text-gray-600 bg-gray-50 text-center";
+      },
       width: 60,
       comparator: (valueA, valueB, nodeA, nodeB, isDescending) => {
         return nodeA.rowIndex - nodeB.rowIndex;
       },
       valueFormatter: params => {
+        if (params.node.rowPinned) {
+          return "";
+        }
         return Number(params.node.id) + 1;
       }
     },
     {
-      headerName: "Số container",
-      field: "CNTRNO",
-      flex: 1,
-      filter: true
-    },
-    {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200";
+        }
+      },
       headerName: "Mã hóa đơn",
-      field: "INV_ID",
+      field: "INV_NO",
       flex: 1,
       filter: true
     },
     {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200";
+        }
+      },
       headerName: "Mã đơn hàng",
       field: "DE_ORDER_NO",
       flex: 1,
       filter: true
     },
     {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200";
+        }
+      },
       headerName: "Tên khách hàng",
       field: "CUSTOMER_NAME",
       flex: 1,
       filter: true
     },
     {
-      headerName: "Hạn lệnh",
-      field: "ISSUE_DATE",
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200";
+        }
+      },
+      headerName: "Hình thức thanh toán",
+      field: "ACC_CD",
       flex: 1,
-      cellRenderer: DateTimeByTextRender
+      cellRenderer: params => {
+        if (params.node.rowPinned) {
+          return "";
+        }
+        return params.value === "TM/CK"
+          ? "Tiền mặt/Chuyển khoản"
+          : params.value === "TM"
+            ? "Tiền mặt"
+            : "Chuyển khoản";
+      }
     },
     {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200 text-end font-bold ";
+        }
+      },
+      headerName: "Ngày hoàn thành",
+      field: "INV_DATE",
+      flex: 1,
+      colSpan: params => (params.node.rowPinned ? 2 : 1),
+      cellRenderer: params => {
+        if (params.node.rowPinned) {
+          let allTAMOUNT = rowData.reduce((a, b) => {
+            return a + b.TAMOUNT;
+          }, 0);
+          return `Tổng: ${formatVnd(allTAMOUNT)}`.replace("VND", "");
+        }
+        return DateTimeByTextRender(params);
+      }
+    },
+    {
+      cellClass: "text-end",
+      headerClass: "number-header",
+      headerName: "Tổng tiền (VND)",
+      field: "TAMOUNT",
+      flex: 1,
+      cellRenderer: params => {
+        return formatVnd(params.value).replace("VND", "");
+      }
+    },
+    {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200 text-end font-bold";
+        }
+        return "text-center";
+      },
       flex: 0.6,
       minWidth: 100,
-      cellClass: "text-center",
       cellRenderer: params => {
+        if (params.node.rowPinned) {
+          let sl = rowData.length;
+          return `SL: ${sl}`;
+        }
         return (
           <Button
             variant="link"
@@ -129,7 +206,7 @@ export function InExOrder() {
 
   const getRowData = () => {
     dispatch(setGlobalLoading(true));
-    getReportInExOrder(filter)
+    getReportRevenue(filter)
       .then(res => {
         if (!res.data.metadata.length) {
           setRowData([]);
@@ -153,14 +230,14 @@ export function InExOrder() {
       <Section.Header>
         <div className="grid grid-cols-5 items-end gap-3">
           <div>
-            <Label htmlFor="CNTRNO">Số container</Label>
+            <Label htmlFor="INV_NO">Mã hóa đơn</Label>
             <Input
-              id="CNTRNO"
-              placeholder="Nhập số container"
-              value={filter.CNTRNO}
-              maxLength={11}
+              id="INV_NO"
+              placeholder="Nhập mã hóa đơn"
+              value={filter.INV_NO}
+              maxLength={50}
               onChange={e => {
-                setFilter({ ...filter, CNTRNO: e.target.value?.trim()?.toUpperCase() });
+                setFilter({ ...filter, INV_NO: e.target.value?.trim()?.toUpperCase() });
               }}
               onKeyPress={e => {
                 if (e.key === "Enter") {
@@ -170,12 +247,12 @@ export function InExOrder() {
             />
           </div>
           <div>
-            <Label htmlFor="CUSTOMER_CODE">Khách hàng *</Label>
+            <Label htmlFor="PAYER">Khách hàng *</Label>
             <Select
-              id="CUSTOMER_CODE"
-              value={filter.CUSTOMER_CODE}
+              id="PAYER"
+              value={filter.PAYER}
               onValueChange={value => {
-                setFilter({ ...filter, CUSTOMER_CODE: value });
+                setFilter({ ...filter, PAYER: value });
               }}
             >
               <SelectTrigger className="w-full">
@@ -219,7 +296,7 @@ export function InExOrder() {
             </Select>
           </div>
           <div>
-            <Label htmlFor="from-to">Hạn lệnh *</Label>
+            <Label htmlFor="from-to">Ngày hoàn thành *</Label>
             <DatePickerWithRangeInForm
               className="w-full"
               id="from-to"
@@ -248,6 +325,7 @@ export function InExOrder() {
             ref={gridRef}
             rowData={rowData}
             colDefs={colDefs}
+            pinnedBottomRowData={pinnedBottomRowData}
             onGridReady={() => {
               gridRef.current.api.showLoadingOverlay();
               getRowData();
