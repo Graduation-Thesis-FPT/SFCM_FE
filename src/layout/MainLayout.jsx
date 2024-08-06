@@ -63,7 +63,7 @@ export function MainLayout() {
           isCollapse={isCollapse}
         />
       </div>
-      <div className="flex h-full flex-1 min-w-0 flex-col gap-1.5">
+      <div className="flex h-full min-w-0 flex-1 flex-col gap-1.5">
         <header className="flex max-h-16 min-h-16 flex-row items-center justify-between rounded-md bg-white px-6 shadow-sm">
           <h1 className="text-xl font-bold text-blue-800">
             {menu?.map(item =>
@@ -78,10 +78,10 @@ export function MainLayout() {
           {/* <MenuMobile /> */}
           <div className="flex items-center">
             {/* TODO: Notification and Message  */}
-            <div className="flex min-h-9 items-center gap-4 rounded-md bg-gray-50 px-3 shadow-md">
+            {/* <div className="flex min-h-9 items-center gap-4 rounded-md bg-gray-50 px-3 shadow-md">
               <Bell size={20} />
               <MessageCircle size={20} />
-            </div>
+            </div> */}
             <div className="mx-3 space-y-1 text-center">
               <div className="text-sm font-bold text-gray-900">{user?.userInfo?.FULLNAME}</div>
               <div className="text-xs font-normal text-gray-600">{user?.userInfo?.ROLE_NAME}</div>
