@@ -53,7 +53,7 @@ export function DialogBillInfoEx({
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: BILL_INFO.QTY.headerName,
+      headerName: "Số ngày lưu kho",
       field: BILL_INFO.QTY.field,
       flex: 1,
       cellRenderer: params => {
@@ -215,9 +215,9 @@ export function DialogBillInfoEx({
                   <p>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</p>
                   <p>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</p>
                   <p>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</p>
-                  <p>{BS_CUSTOMER.ADDRESS.headerName}</p>
+                  <p>{removeLastAsterisk(BS_CUSTOMER.ADDRESS.headerName)}</p>
                   <p>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</p>
-                  <p>{BS_CUSTOMER.EMAIL.headerName}</p>
+                  <p>{removeLastAsterisk(BS_CUSTOMER.EMAIL.headerName)}</p>
                   <p>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</p>
                 </div>
               </div>
