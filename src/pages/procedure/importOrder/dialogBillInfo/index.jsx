@@ -266,7 +266,7 @@ export function DialogBillInfo({
                   </Select>
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex justify-center">
                   <Button onClick={handleSaveInOrder} variant="blue" disabled={isSaveInOrder}>
                     {isSaveInOrder && <Loader2 className="mr-2 animate-spin" />}
                     Xác nhận thanh toán
