@@ -187,7 +187,7 @@ export function ExportOrder() {
     dispatch(setGlobalLoading(true));
     const packageListReq = packageList.map(item => ({
       ...item,
-      CUSTOMER_CODE: item.CUSTOMER_CODE
+      CUSTOMER_CODE: packageFilter.CUSTOMER_CODE
     }));
     const servicesList = packageFilter?.selectedAttachSrvList?.map(item => item.value);
     getToBillEx(packageListReq, servicesList)
