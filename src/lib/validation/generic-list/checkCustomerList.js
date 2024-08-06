@@ -20,28 +20,35 @@ export const checkCustomerList = gridRef => {
         invalid_type_error: `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_CODE.headerName)} không được để trống.`
       })
       .trim()
-      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_CODE.headerName)} không được để trống.`),
+      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_CODE.headerName)} không được để trống.`)
+      .max(50, `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_CODE.headerName)} không được quá 50 ký tự.`),
     CUSTOMER_NAME: z
       .string({
         required_error: `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_NAME.headerName)} không được để trống.`,
         invalid_type_error: `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_NAME.headerName)} không được để trống.`
       })
       .trim()
-      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_NAME.headerName)} không được để trống.`),
+      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_NAME.headerName)} không được để trống.`)
+      .max(
+        255,
+        `${rmLastAstAddBrk(BS_CUSTOMER.CUSTOMER_NAME.headerName)} không được quá 255 ký tự.`
+      ),
     ADDRESS: z
       .string({
         required_error: `${rmLastAstAddBrk(BS_CUSTOMER.ADDRESS.headerName)} không được để trống.`,
         invalid_type_error: `${rmLastAstAddBrk(BS_CUSTOMER.ADDRESS.headerName)} không được để trống.`
       })
       .trim()
-      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.ADDRESS.headerName)} không được để trống.`),
+      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.ADDRESS.headerName)} không được để trống.`)
+      .max(255, `${rmLastAstAddBrk(BS_CUSTOMER.ADDRESS.headerName)} không được quá 255 ký tự.`),
     TAX_CODE: z
       .string({
         required_error: `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được để trống.`,
         invalid_type_error: `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được để trống.`
       })
       .trim()
-      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được để trống.`),
+      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được để trống.`)
+      .max(50, `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được quá 50 ký tự.`),
     EMAIL: z
       .string({
         required_error: `${rmLastAstAddBrk(BS_CUSTOMER.EMAIL.headerName)} không được để trống.`,
@@ -49,6 +56,7 @@ export const checkCustomerList = gridRef => {
       })
       .trim()
       .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.EMAIL.headerName)} không được để trống.`)
+      .max(255, `${rmLastAstAddBrk(BS_CUSTOMER.EMAIL.headerName)} không được quá 255 ký tự.`)
       .email(`${rmLastAstAddBrk(BS_CUSTOMER.EMAIL.headerName)} không đúng định dạng.`),
     IS_ACTIVE: z.boolean()
   });
