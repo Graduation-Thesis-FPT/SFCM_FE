@@ -216,7 +216,7 @@ export function WarehouseDesign() {
       <Section.Content>
         <div className="flex justify-between gap-1">
           {displayType === "table" ? (
-            <SearchInput handleSearch={value => handleSearch(value)} />
+            <div></div>
           ) : (
             <span className="flex gap-x-3">
               <span>

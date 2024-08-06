@@ -110,11 +110,6 @@ export function ItemType() {
       <Section.Header title="Danh mục loại hàng hóa"></Section.Header>
       <Section.Content>
         <span className="flex justify-between">
-          <SearchInput
-            handleSearch={value => {
-              setSearchData(value);
-            }}
-          />
           <LayoutTool>
             <GrantPermission action={actionGrantPermission.CREATE}>
               <BtnAddRow onAddRow={handleAddRow} />
