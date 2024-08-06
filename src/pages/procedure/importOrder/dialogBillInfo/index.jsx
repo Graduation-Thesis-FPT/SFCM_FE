@@ -49,18 +49,19 @@ export function DialogBillInfo({
       field: BILL_INFO.TRF_DESC.field,
       flex: 1
     },
-    {
-      headerName: BILL_INFO.ITEM_TYPE_CODE.headerName,
-      field: BILL_INFO.ITEM_TYPE_CODE.field,
-      flex: 1
-    },
+
     {
       headerClass: "number-header",
       cellClass: "text-end",
       headerName: BILL_INFO.QTY.headerName,
       field: BILL_INFO.QTY.field,
       flex: 1,
-      cellRenderer: params => Number(params.value)
+      cellRenderer: params => {
+        if (!params.value) {
+          return "";
+        }
+        return Number(params.value);
+      }
     },
     {
       headerClass: "number-header",
@@ -76,6 +77,14 @@ export function DialogBillInfo({
       headerName: BILL_INFO.VAT.headerName,
       field: BILL_INFO.VAT.field,
       flex: 1
+    },
+    {
+      headerClass: "number-header",
+      cellClass: "text-end",
+      headerName: `${BILL_INFO.VAT_PRICE.headerName} (VND)`,
+      field: BILL_INFO.VAT_PRICE.field,
+      flex: 1,
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
       headerClass: "number-header",
