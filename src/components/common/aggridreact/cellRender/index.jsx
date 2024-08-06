@@ -33,7 +33,7 @@ L10n.load({
 });
 
 export function DateTimeByTextRender(params) {
-  return params.value ? `${moment(params.value).format("DD/MM/YYYY HH:mm")}`: "";
+  return params.value ? `${moment(params.value).format("DD/MM/YYYY HH:mm")}` : "";
 }
 
 export function OnlyEditWithInsertCell(params) {
@@ -54,7 +54,7 @@ export function IsInOutRender(params) {
       value={params.value}
     >
       <SelectTrigger
-        className={`${params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK" ? null : "pointer-events-none"} border-none bg-white/0 focus:ring-0`}
+        className={`${params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK" && params.data.METHOD_CODE !== "LK" ? null : "pointer-events-none"} border-none bg-white/0 focus:ring-0`}
       >
         <SelectValue />
       </SelectTrigger>

@@ -36,7 +36,9 @@ export function MethodList() {
     },
     {
       cellClass: params => {
-        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+        return params.data.METHOD_CODE !== "NK" &&
+          params.data.METHOD_CODE !== "XK" &&
+          params.data.METHOD_CODE !== "LK"
           ? null
           : "bg-gray-100";
       },
@@ -48,7 +50,9 @@ export function MethodList() {
     },
     {
       cellClass: params => {
-        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+        return params.data.METHOD_CODE !== "NK" &&
+          params.data.METHOD_CODE !== "XK" &&
+          params.data.METHOD_CODE !== "LK"
           ? null
           : "bg-gray-100";
       },
@@ -56,11 +60,16 @@ export function MethodList() {
       field: BS_METHOD.METHOD_NAME.field,
       flex: 1,
       filter: true,
-      editable: params => params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+      editable: params =>
+        params.data.METHOD_CODE !== "NK" &&
+        params.data.METHOD_CODE !== "XK" &&
+        params.data.METHOD_CODE !== "LK"
     },
     {
       cellClass: params => {
-        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+        return params.data.METHOD_CODE !== "NK" &&
+          params.data.METHOD_CODE !== "XK" &&
+          params.data.METHOD_CODE !== "LK"
           ? null
           : "bg-gray-100";
       },
@@ -71,7 +80,9 @@ export function MethodList() {
     },
     {
       cellClass: params => {
-        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+        return params.data.METHOD_CODE !== "NK" &&
+          params.data.METHOD_CODE !== "XK" &&
+          params.data.METHOD_CODE !== "LK"
           ? null
           : "bg-gray-100";
       },
@@ -83,13 +94,18 @@ export function MethodList() {
         display: "flex"
       },
       flex: 1,
-      editable: params => params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK",
+      editable: params =>
+        params.data.METHOD_CODE !== "NK" &&
+        params.data.METHOD_CODE !== "XK" &&
+        params.data.METHOD_CODE !== "LK",
       cellEditor: "agCheckboxCellEditor",
       cellRenderer: "agCheckboxCellRenderer"
     },
     {
       cellClass: params => {
-        return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK"
+        return params.data.METHOD_CODE !== "NK" &&
+          params.data.METHOD_CODE !== "XK" &&
+          params.data.METHOD_CODE !== "LK"
           ? null
           : "bg-gray-100";
       },
@@ -99,8 +115,6 @@ export function MethodList() {
       cellRenderer: DateTimeByTextRender
     }
   ];
-
-  const [searchData, setSearchData] = useState("");
 
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
