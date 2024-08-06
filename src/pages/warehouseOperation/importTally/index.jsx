@@ -68,7 +68,9 @@ export function ImportTally() {
       setJobQuantityCheckList([]);
       return;
     }
-
+    setImportTallyPackageList([]);
+    setSelectedPackage({});
+    setJobQuantityCheckList([]);
     dispatch(setGlobalLoading(true));
     const importTallyContainerInfo = importTallyContainerList?.find(
       item => item.CONTAINER_ID === value
