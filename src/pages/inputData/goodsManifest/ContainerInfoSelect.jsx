@@ -64,13 +64,6 @@ export function ContainerInfoSelect({
       filter: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.STATUSOFGOOD.headerName,
-      field: DT_CNTR_MNF_LD.STATUSOFGOOD.field,
-      flex: 1,
-      filter: true,
-      cellRenderer: StatusOfGoodsByTextRender
-    },
-    {
       headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
       field: DT_CNTR_MNF_LD.CONSIGNEE.field,
       flex: 1,

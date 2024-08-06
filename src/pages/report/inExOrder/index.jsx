@@ -79,7 +79,7 @@ export function InExOrder() {
       filter: true
     },
     {
-      headerName: "Hạn lệnh",
+      headerName: "Ngày làm lệnh",
       field: "ISSUE_DATE",
       flex: 1,
       cellRenderer: DateTimeByTextRender
@@ -219,7 +219,7 @@ export function InExOrder() {
             </Select>
           </div>
           <div>
-            <Label htmlFor="from-to">Hạn lệnh *</Label>
+            <Label htmlFor="from-to">Ngày làm lệnh *</Label>
             <DatePickerWithRangeInForm
               className="w-full"
               id="from-to"
