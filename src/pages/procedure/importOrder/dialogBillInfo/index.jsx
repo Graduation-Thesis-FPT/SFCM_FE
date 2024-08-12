@@ -113,7 +113,8 @@ export function DialogBillInfo({
         UnitRate: item.UNIT_RATE,
         Amount: item.AMOUNT,
         Vat: item.VAT_PRICE,
-        VatRate: item.VAT
+        VatRate: item.VAT,
+        QTY: item.QTY
       };
     });
     let args = {
