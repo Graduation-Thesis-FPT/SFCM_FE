@@ -14,13 +14,18 @@ import { Label } from "@/components/common/ui/label";
 import useFetchData from "@/hooks/useRefetchData";
 import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { Dialog } from "@radix-ui/react-dialog";
 import { addDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { DialogCancelInvoice } from "./DialogCancelInvoice";
 
 const DELIVER_ORDER = new deliver_order();
+const initFilter = {
+  from: addDays(new Date(), -30),
+  to: addDays(new Date(), 30),
+  CUSTOMER_CODE: "",
+  PAYMENT_STATUS: "all"
+};
 
 export function CancelInvoice() {
   const { data: customerList, loading: loadingCustomerList } = useFetchData({
@@ -107,6 +112,8 @@ export function CancelInvoice() {
   const [openDialog, setOpenDialog] = useState(false);
   const [rowData, setRowData] = useState([]);
 
+  const [filter, setFilter] = useState(initFilter);
+
   const [cancelInvoiceData, setCancelInvoiceData] = useState({});
 
   const getRowData = () => {
@@ -118,15 +125,6 @@ export function CancelInvoice() {
         toast.error(err);
       });
   };
-
-  const initFilter = {
-    from: addDays(new Date(), -30),
-    to: addDays(new Date(), 30),
-    CUSTOMER_CODE: "",
-    PAYMENT_STATUS: "all"
-  };
-
-  const [filter, setFilter] = useState(initFilter);
 
   useEffect(() => {
     dispatch(setGlobalLoading(true));
