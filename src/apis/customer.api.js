@@ -2,13 +2,6 @@ import { axiosCache, axiosPrivate } from "@/config/axios";
 
 export const getAllCustomer = async () => {
   return axiosPrivate.get(`customer`);
-  // return await axiosCache.get(`customer`,{
-  //   id: "get-all-customer",
-  //   cache: {
-  //     ttl: 60 * 60 * 1000,
-  //     interpretHeader: false
-  //   }
-  // });
 };
 
 export const createAndUpdateCustomer = async data => {

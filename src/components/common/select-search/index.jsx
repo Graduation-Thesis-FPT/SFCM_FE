@@ -37,18 +37,20 @@ export function SelectSearch({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "flex h-9 min-w-40 w-full gap-1 flex-row justify-between text-14 font-normal focus-visible:ring-1 focus-visible:ring-offset-0",
+            "flex h-9 w-full min-w-40 flex-row justify-between gap-1 text-13 font-normal focus-visible:ring-1 focus-visible:ring-offset-0",
             className
           )}
         >
           {value ? (
-            <p className="flex-1 text-[13px] text-muted-foreground text-start">
+            <p className="line-clamp-1 flex-1 text-ellipsis text-start text-13">
               {data.find(item => item.value === value)?.label}
             </p>
           ) : (
-            <p className="flex-1 text-[13px] text-muted-foreground text-start">{labelSelect}</p>
+            <p className="line-clamp-1 flex-1 text-ellipsis text-start text-13 text-muted-foreground">
+              {labelSelect}
+            </p>
           )}
-          <ChevronsUpDown className="flex-none h-4 w-4 opacity-50" />
+          <ChevronsUpDown className="h-4 w-4 flex-none opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0">

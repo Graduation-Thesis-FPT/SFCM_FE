@@ -23,12 +23,14 @@ export function DatePickerWithRangeInForm({ className, onSelected, date }) {
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
               date.to ? (
-                <>
+                <div className="line-clamp-1 flex-1 text-ellipsis">
                   {format(date.from, "LLL dd, y", { locale: vi })} -{" "}
                   {format(date.to, "LLL dd, y", { locale: vi })}
-                </>
+                </div>
               ) : (
-                format(date.from, "LLL dd, y", { locale: vi })
+                <div className="line-clamp-1 flex-1 text-ellipsis">
+                  {format(date.from, "LLL dd, y", { locale: vi })}
+                </div>
               )
             ) : (
               <span>Chọn ngày</span>

@@ -1,4 +1,5 @@
-import { axiosCache, axiosPrivate } from "@/config/axios";
+import { axiosPrivate } from "@/config/axios";
+import moment from "moment";
 
 export const getContList = async (data = {}) => {
   return await axiosPrivate.get(
@@ -33,12 +34,7 @@ export const invoicePublishIn = async args => {
 };
 
 export const viewInvoice = async fkey => {
-  return await axiosCache.get(`order/viewInvoice?fkey=${fkey}`, {
-    cache: {
-      ttl: 7 * 24 * 60 * 60 * 1000,
-      interpretHeader: false
-    }
-  });
+  return await axiosPrivate.get(`order/viewInvoice?fkey=${fkey}`);
 };
 
 //export order
@@ -69,5 +65,28 @@ export const saveExOrder = async (
     arrayPackage: arrayPackage,
     paymentInfoHeader: paymentInfoHeader,
     paymentInfoDtl: paymentInfoDtl
+  });
+};
+
+export const getCancelInvoice = async ({ from, to }) => {
+  return await axiosPrivate.get(`order/getCancelInvoice`, {
+    params: {
+      from: moment(from).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
+      to: moment(to).endOf("day").format("YYYY-MM-DD HH:mm:ss")
+    }
+  });
+};
+
+export const cancelInvoice = async ({
+  fkey = "",
+  reason = "",
+  cancelDate = new Date(),
+  invNo = ""
+}) => {
+  return await axiosPrivate.post(`order/cancel`, {
+    fkey,
+    reason,
+    cancelDate: moment(cancelDate).format("YYYY-MM-DD HH:mm:ss"),
+    invNo
   });
 };
