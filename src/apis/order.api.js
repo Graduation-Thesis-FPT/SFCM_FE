@@ -68,11 +68,22 @@ export const saveExOrder = async (
   });
 };
 
-export const getCancelInvoice = async ({ from, to }) => {
+export const getCancelInvoice = async ({
+  from,
+  to,
+  CUSTOMER_CODE = "",
+  PAYMENT_STATUS = "",
+  ORDER_TYPE = "",
+  DE_ORDER_NO = ""
+}) => {
   return await axiosPrivate.get(`order/getCancelInvoice`, {
     params: {
       from: moment(from).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
-      to: moment(to).endOf("day").format("YYYY-MM-DD HH:mm:ss")
+      to: moment(to).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+      CUSTOMER_CODE: CUSTOMER_CODE === "all" ? "" : CUSTOMER_CODE,
+      PAYMENT_STATUS: PAYMENT_STATUS === "all" ? "" : PAYMENT_STATUS,
+      ORDER_TYPE: ORDER_TYPE === "all" ? "" : ORDER_TYPE,
+      DE_ORDER_NO: DE_ORDER_NO === "all" ? "" : DE_ORDER_NO
     }
   });
 };

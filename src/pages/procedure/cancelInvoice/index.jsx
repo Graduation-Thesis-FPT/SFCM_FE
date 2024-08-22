@@ -18,11 +18,22 @@ import { addDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { DialogCancelInvoice } from "./DialogCancelInvoice";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/common/ui/select";
+import { Input } from "@/components/common/ui/input";
 
 const DELIVER_ORDER = new deliver_order();
 const initFilter = {
   from: addDays(new Date(), -30),
   to: addDays(new Date(), 30),
+  ORDER_TYPE: "all",
+  DE_ORDER_NO: "",
   CUSTOMER_CODE: "",
   PAYMENT_STATUS: "all"
 };
@@ -65,7 +76,7 @@ export function CancelInvoice() {
       filter: true
     },
     {
-      headerName: "INV_DATE",
+      headerName: "Ngày làm lệnh",
       field: "INV_DATE",
       flex: 1,
       cellRenderer: DateTimeByTextRender
@@ -83,7 +94,16 @@ export function CancelInvoice() {
     {
       headerName: "Trạng thái thanh toán",
       field: "PAYMENT_STATUS",
-      flex: 1
+      flex: 1,
+      cellRenderer: params => {
+        if (params.value === "Y") {
+          return "Đã thanh toán";
+        } else if (params.value === "C") {
+          return "Đã hủy";
+        } else {
+          return null;
+        }
+      }
     },
     {
       field: "#",
@@ -92,6 +112,9 @@ export function CancelInvoice() {
       flex: 0.5,
       cellStyle: { alignContent: "center", textAlign: "center" },
       cellRenderer: params => {
+        if (params.data.PAYMENT_STATUS === "C") {
+          return null;
+        }
         return (
           <Button
             variant="link"
@@ -144,13 +167,13 @@ export function CancelInvoice() {
     <Section>
       <Section.Header className="grid grid-cols-5 items-end gap-3">
         <div>
-          <Label htmlFor="from-to">Ngày làm lệnh *</Label>
-          <DatePickerWithRangeInForm
-            className="w-full"
-            id="from-to"
-            date={{ from: filter.from, to: filter.to }}
-            onSelected={value => {
-              setFilter({ ...filter, from: value?.from, to: value?.to });
+          <Label htmlFor="DE_ORDER_NO">Mã đơn hàng</Label>
+          <Input
+            className="hover:cursor-pointer"
+            id="DE_ORDER_NO"
+            placeholder="Nhập mã đơn hàng"
+            onBlur={e => {
+              setFilter({ ...filter, DE_ORDER_NO: e.target.value });
             }}
           />
         </div>
@@ -169,6 +192,59 @@ export function CancelInvoice() {
             })}
             onSelect={value => {
               setFilter({ ...filter, CUSTOMER_CODE: value });
+            }}
+          />
+        </div>
+        <div>
+          <Label htmlFor="PAYMENT_STATUS">Trạng thái lệnh *</Label>
+          <Select
+            id="PAYMENT_STATUS"
+            value={filter.PAYMENT_STATUS}
+            onValueChange={value => {
+              setFilter({ ...filter, PAYMENT_STATUS: value });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn trạng thái lệnh" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="Y">Đã thanh toán</SelectItem>
+                <SelectItem value="C">Đã hủy</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="ORDER_TYPE">Loại lệnh *</Label>
+          <Select
+            id="ORDER_TYPE"
+            value={filter.ORDER_TYPE}
+            onValueChange={value => {
+              setFilter({ ...filter, ORDER_TYPE: value });
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Chọn loại lệnh" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="NK">Lệnh xuất</SelectItem>
+                <SelectItem value="XK">Lệnh nhập</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="from-to">Ngày làm lệnh *</Label>
+          <DatePickerWithRangeInForm
+            className="w-full"
+            id="from-to"
+            date={{ from: filter.from, to: filter.to }}
+            onSelected={value => {
+              setFilter({ ...filter, from: value?.from, to: value?.to });
             }}
           />
         </div>

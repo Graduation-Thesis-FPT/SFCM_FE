@@ -32,22 +32,27 @@ export const axiosCache = setupCache(axiosPrivate, {
 
 axiosPrivate.interceptors.request.use(
   async config => {
-    const token = getAccessToken();
-    const rtoken = getRefreshToken();
-    const decodedRToken = jwtDecode(rtoken);
-    if (decodedRToken.exp < Date.now() / 1000) {
+    try {
+      const token = getAccessToken();
+      const rtoken = getRefreshToken();
+      const decodedRToken = jwtDecode(rtoken);
+      if (decodedRToken.exp < Date.now() / 1000) {
+        removeRefreshAndAccessToken();
+        window.location.href = "/login";
+        return;
+      }
+      const pathname = window.location.pathname;
+      const menuCode = pathname.split("/")[2];
+
+      config.headers["token"] = token;
+      config.headers["rtoken"] = rtoken;
+      config.headers["menu-code"] = menuCode;
+
+      return config;
+    } catch (error) {
       removeRefreshAndAccessToken();
       window.location.href = "/login";
-      return;
     }
-    const pathname = window.location.pathname;
-    const menuCode = pathname.split("/")[2];
-
-    config.headers["token"] = token;
-    config.headers["rtoken"] = rtoken;
-    config.headers["menu-code"] = menuCode;
-
-    return config;
   },
   error => {
     return Promise.reject(error);
