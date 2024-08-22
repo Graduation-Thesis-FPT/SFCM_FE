@@ -268,9 +268,13 @@ export function GoodsManifest() {
       toast.warning("Vui lòng chọn container");
       return;
     }
+    console.log("🚀 ~ finalRowData ~ rowDataFileUpload:", rowDataFileUpload);
+
     const finalRowData = rowDataFileUpload?.map(item => {
       return {
         ...item,
+        CARGO_PIECE: Number(item?.CARGO_PIECE),
+        CBM: Number(item?.CBM),
         HOUSE_BILL: item.HOUSE_BILL?.toString(),
         DECLARE_NO: item.DECLARE_NO?.toString(),
         NOTE: item.NOTE?.toString()

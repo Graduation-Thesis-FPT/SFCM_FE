@@ -10,6 +10,7 @@ import moment from "moment";
 import React, { useRef, useState } from "react";
 import { UserCreationForm } from "./UserCreationForm";
 import { UserUpdateForm } from "./UserUpdateForm";
+import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 
 export function User() {
   const gridRef = useRef(null);
@@ -87,16 +88,19 @@ export function User() {
           <UserCreationForm revalidate={revalidate} />
         </GrantPermission>
       </Section.Header>
+
       <Section.Content>
-        <AgGrid
-          loading={loading}
-          ref={gridRef}
-          rowData={users}
-          colDefs={colDefs}
-          setRowData={data => {
-            setRowData(data);
-          }}
-        />
+        <Section.Table>
+          <AgGrid
+            loading={loading}
+            ref={gridRef}
+            rowData={users}
+            colDefs={colDefs}
+            setRowData={data => {
+              setRowData(data);
+            }}
+          />
+        </Section.Table>
       </Section.Content>
       <UserUpdateForm
         detail={detailData}

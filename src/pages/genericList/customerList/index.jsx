@@ -20,6 +20,8 @@ import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { checkCustomerList } from "@/lib/validation/generic-list/checkCustomerList";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { BtnDownExcelCustomerSample } from "./btnDownExcelCustomerSample";
+import { BtnImportExcel } from "./btnImportExcel";
 
 const BS_CUSTOMER = new bs_customer();
 
@@ -78,6 +80,13 @@ export function CustomerList() {
       editable: true
     },
     {
+      headerName: BS_CUSTOMER.ADDRESS.headerName,
+      field: BS_CUSTOMER.ADDRESS.field,
+      flex: 1,
+      filter: true,
+      editable: true
+    },
+    {
       headerName: BS_CUSTOMER.IS_ACTIVE.headerName,
       field: BS_CUSTOMER.IS_ACTIVE.field,
       headerClass: "center-header",
@@ -89,13 +98,6 @@ export function CustomerList() {
       editable: true,
       cellEditor: "agCheckboxCellEditor",
       cellRenderer: "agCheckboxCellRenderer"
-    },
-    {
-      headerName: BS_CUSTOMER.ADDRESS.headerName,
-      field: BS_CUSTOMER.ADDRESS.field,
-      flex: 1,
-      filter: true,
-      editable: true
     }
   ];
 
@@ -160,11 +162,35 @@ export function CustomerList() {
       });
   };
 
+  const handleFileUpload = rowDataFileUpload => {
+    if (!rowDataFileUpload?.length) {
+      toast.error("File excel không có dữ liệu");
+      return;
+    }
+    const finalRowData = rowDataFileUpload?.map(item => {
+      return {
+        ...item,
+        ADDRESS: item.ADDRESS?.toString()?.trim(),
+        CUSTOMER_CODE: item.CUSTOMER_CODE?.toString()?.trim(),
+        CUSTOMER_NAME: item.CUSTOMER_NAME?.toString()?.trim(),
+        CUSTOMER_TYPE_CODE: item.CUSTOMER_TYPE_CODE?.toString()?.trim(),
+        EMAIL: item.EMAIL?.toString()?.trim(),
+        TAX_CODE: item.TAX_CODE?.toString()?.trim(),
+        IS_ACTIVE: item?.IS_ACTIVE === "Không" ? false : true
+      };
+    });
+    toast.success("Nhập file thành công");
+    setRowData(finalRowData);
+  };
+
   return (
     <Section>
       <Section.Header title="Danh sách khách hàng"></Section.Header>
       <Section.Content>
         <LayoutTool>
+          <BtnDownExcelCustomerSample gridRef={gridRef} cusType={allCustomerType} />
+          <BtnImportExcel gridRef={gridRef} onFileUpload={handleFileUpload} />
+
           <GrantPermission action={actionGrantPermission.CREATE}>
             <BtnAddRow onAddRow={handleAddRow} />
           </GrantPermission>

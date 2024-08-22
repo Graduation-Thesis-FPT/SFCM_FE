@@ -41,11 +41,14 @@ export const RoleSelect = ({ form }) => {
 
               <SelectContent>
                 {roles ? (
-                  roles.map(role => (
-                    <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
-                      {role.ROLE_NAME}
-                    </SelectItem>
-                  ))
+                  roles.map(role => {
+                    if (role.ROLE_CODE === "customer") return null;
+                    return (
+                      <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
+                        {role.ROLE_NAME}
+                      </SelectItem>
+                    );
+                  })
                 ) : (
                   <LoadingSpinner />
                 )}

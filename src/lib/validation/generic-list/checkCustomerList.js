@@ -2,6 +2,7 @@ import { bs_customer } from "@/components/common/aggridreact/dbColumns";
 import { z } from "zod";
 import { rmLastAstAddBrk } from "@/lib/utils";
 import { handleResult } from "..";
+import { regexPattern } from "@/constants/regexPattern";
 
 const BS_CUSTOMER = new bs_customer();
 
@@ -47,8 +48,9 @@ export const checkCustomerList = gridRef => {
         invalid_type_error: `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được để trống.`
       })
       .trim()
-      .min(1, `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được để trống.`)
-      .max(50, `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} không được quá 50 ký tự.`),
+      .regex(regexPattern.TAX_CODE, {
+        message: `${rmLastAstAddBrk(BS_CUSTOMER.TAX_CODE.headerName)} phải là 10 chữ số hoặc 10 chữ số theo sau là dấu gạch nối và 3 chữ số.`
+      }),
     EMAIL: z
       .string({
         required_error: `${rmLastAstAddBrk(BS_CUSTOMER.EMAIL.headerName)} không được để trống.`,
