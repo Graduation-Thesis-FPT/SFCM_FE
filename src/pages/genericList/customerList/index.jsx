@@ -22,6 +22,7 @@ import { checkCustomerList } from "@/lib/validation/generic-list/checkCustomerLi
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 import { BtnDownExcelCustomerSample } from "./btnDownExcelCustomerSample";
 import { BtnImportExcel } from "./btnImportExcel";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 const BS_CUSTOMER = new bs_customer();
 
@@ -48,6 +49,7 @@ export function CustomerList() {
       field: BS_CUSTOMER.CUSTOMER_CODE.field,
       flex: 1,
       filter: true,
+      onCellValueChanged: UpperCase,
       editable: OnlyEditWithInsertCell
     },
     {

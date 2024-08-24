@@ -44,6 +44,7 @@ import {
 } from "@/apis/discount-tariff.api";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 import { checkDiscountTariff } from "@/lib/validation/checkDiscountTariff";
+import { formatVnd } from "@/lib/utils";
 
 export function DiscountTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
@@ -110,33 +111,35 @@ export function DiscountTariff() {
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
-      headerName: TRF_DISCOUNT.AMT_CBM.headerName,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      headerName: `${TRF_DISCOUNT.AMT_CBM.headerName} (VND)`,
       field: TRF_DISCOUNT.AMT_CBM.field,
       flex: 1,
       filter: true,
       editable: true,
-      cellDataType: "number"
+      cellDataType: "number",
+      cellEditorParams: {
+        min: 0,
+        max: 1000000000
+      },
+      valueFormatter: params => {
+        return formatVnd(params?.value ?? 0).replace("VND", "");
+      }
     },
     {
-      headerName: TRF_DISCOUNT.VAT.headerName,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      headerName: `${TRF_DISCOUNT.VAT.headerName} (%)`,
       field: TRF_DISCOUNT.VAT.field,
       flex: 1,
       filter: true,
       editable: true,
-      cellDataType: "number"
-    },
-    {
-      headerName: TRF_DISCOUNT.INCLUDE_VAT.headerName,
-      field: TRF_DISCOUNT.INCLUDE_VAT.field,
-      headerClass: "center-header",
-      cellStyle: {
-        justifyContent: "center",
-        display: "flex"
-      },
-      flex: 1,
-      editable: true,
-      cellEditor: "agCheckboxCellEditor",
-      cellRenderer: "agCheckboxCellRenderer"
+      cellDataType: "number",
+      cellEditorParams: {
+        min: 0,
+        max: 100
+      }
     }
   ];
 

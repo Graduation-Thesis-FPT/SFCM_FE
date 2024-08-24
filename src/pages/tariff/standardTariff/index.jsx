@@ -40,9 +40,9 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import useFetchData from "@/hooks/useRefetchData";
 import { deleteTariffTemp, getAllTariffTemp } from "@/apis/tariff-temp.api";
 import { Button } from "@/components/common/ui/button";
-import { checkTariffCode } from "@/lib/validation/checkTariffCode";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 import { checkStandardTariff } from "@/lib/validation/checkStandradTariff";
+import { formatVnd } from "@/lib/utils";
 
 export function StandardTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
@@ -99,33 +99,35 @@ export function StandardTariff() {
       cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
     },
     {
-      headerName: TRF_STD.AMT_CBM.headerName,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      headerName: `${TRF_STD.AMT_CBM.headerName} (VND)`,
       field: TRF_STD.AMT_CBM.field,
       flex: 1,
       filter: true,
       editable: true,
-      cellDataType: "number"
+      cellDataType: "number",
+      cellEditorParams: {
+        min: 0,
+        max: 1000000000
+      },
+      valueFormatter: params => {
+        return formatVnd(params?.value ?? 0).replace("VND", "");
+      }
     },
     {
-      headerName: TRF_STD.VAT.headerName,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      headerName: `${TRF_STD.VAT.headerName} (%)`,
       field: TRF_STD.VAT.field,
       flex: 1,
       filter: true,
       editable: true,
-      cellDataType: "number"
-    },
-    {
-      headerName: TRF_STD.INCLUDE_VAT.headerName,
-      field: TRF_STD.INCLUDE_VAT.field,
-      headerClass: "center-header",
-      cellStyle: {
-        justifyContent: "center",
-        display: "flex"
-      },
-      flex: 1,
-      editable: true,
-      cellEditor: "agCheckboxCellEditor",
-      cellRenderer: "agCheckboxCellRenderer"
+      cellDataType: "number",
+      cellEditorParams: {
+        min: 0,
+        max: 100
+      }
     }
   ];
 

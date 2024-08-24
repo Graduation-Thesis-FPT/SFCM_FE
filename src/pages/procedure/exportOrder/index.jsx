@@ -174,6 +174,7 @@ export function ExportOrder() {
         setPackageList(res.data.metadata);
       })
       .catch(err => {
+        setPackageList([]);
         toast.error(err);
       });
   };

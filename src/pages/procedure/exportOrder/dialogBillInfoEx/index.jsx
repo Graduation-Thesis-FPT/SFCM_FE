@@ -92,11 +92,7 @@ export function DialogBillInfoEx({
       headerName: `${BILL_INFO.AMOUNT.headerName} (VND)`,
       field: BILL_INFO.AMOUNT.field,
       flex: 1,
-      cellRenderer: params => {
-        return Number(params.value).toLocaleString("it-IT", {
-          currency: "VND"
-        });
-      }
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
       headerClass: "number-header",

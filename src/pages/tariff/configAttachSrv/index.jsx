@@ -150,11 +150,14 @@ export function ConfigAttachSrv() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {methodList.map(item => (
-                  <SelectItem key={item?.METHOD_CODE} value={item?.METHOD_CODE}>
-                    {item?.METHOD_CODE} - {item?.METHOD_NAME}
-                  </SelectItem>
-                ))}
+                {methodList.map(item => {
+                  if (item.METHOD_CODE === "LK") return null;
+                  return (
+                    <SelectItem key={item?.METHOD_CODE} value={item?.METHOD_CODE}>
+                      {item?.METHOD_CODE} - {item?.METHOD_NAME}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             </SelectContent>
           </Select>

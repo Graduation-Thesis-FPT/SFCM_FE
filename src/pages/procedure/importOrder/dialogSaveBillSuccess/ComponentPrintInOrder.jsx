@@ -34,7 +34,7 @@ export const ComponentPrintInOrder = forwardRef(
         <div className="flex gap-10 text-sm font-bold">
           <div>MÃ LỆNH: {data?.neworder?.DE_ORDER_NO ?? "...................."}</div>
           <div>SỐ CONT: {CNTRNO ?? "...................."}</div>
-          <div>TỔNG SỐ KHỐI: {data.neworder?.TOTAL_CBM ?? "...................."}</div>
+          <div>TỔNG SỐ KHỐI: {data.neworder?.TOTAL_CBM.toFixed(3) ?? "...................."}</div>
           <div>
             HẠN LỆNH:{" "}
             {data?.neworder?.EXP_DATE
@@ -48,6 +48,8 @@ export const ComponentPrintInOrder = forwardRef(
               <th>STT</th>
               <th>Số House Bill</th>
               <th>Loại hàng</th>
+              <th>Đơn vị</th>
+              <th>Số lượng</th>
               <th>Số khối</th>
               <th>Ghi chú</th>
             </tr>
@@ -58,7 +60,9 @@ export const ComponentPrintInOrder = forwardRef(
                 <td>{index + 1}</td>
                 <td>{row.HOUSE_BILL}</td>
                 <td>{row.ITEM_TYPE_NAME}</td>
-                <td>{row.CBM}</td>
+                <td>{row.PACKAGE_UNIT_CODE}</td>
+                <td>{row.PK_CARGO_PIECE}</td>
+                <td>{row.PK_CBM}</td>
                 <td>{row.PK_NOTE}</td>
               </tr>
             ))}

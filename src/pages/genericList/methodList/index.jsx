@@ -2,7 +2,6 @@ import { createAndUpdateMethod, deleteMethod, getAllMethod } from "@/apis/method
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,
-  IsInOutRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
 import { bs_method } from "@/components/common/aggridreact/dbColumns";
@@ -11,11 +10,11 @@ import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 export function MethodList() {
   const gridRef = useRef(null);
@@ -46,6 +45,7 @@ export function MethodList() {
       field: BS_METHOD.METHOD_CODE.field,
       flex: 1,
       filter: true,
+      onCellValueChanged: UpperCase,
       editable: OnlyEditWithInsertCell
     },
     {
@@ -65,19 +65,19 @@ export function MethodList() {
         params.data.METHOD_CODE !== "XK" &&
         params.data.METHOD_CODE !== "LK"
     },
-    {
-      cellClass: params => {
-        return params.data.METHOD_CODE !== "NK" &&
-          params.data.METHOD_CODE !== "XK" &&
-          params.data.METHOD_CODE !== "LK"
-          ? null
-          : "bg-gray-100";
-      },
-      headerName: BS_METHOD.IS_IN_OUT.headerName,
-      field: BS_METHOD.IS_IN_OUT.field,
-      flex: 1,
-      cellRenderer: IsInOutRender
-    },
+    // {
+    //   cellClass: params => {
+    //     return params.data.METHOD_CODE !== "NK" &&
+    //       params.data.METHOD_CODE !== "XK" &&
+    //       params.data.METHOD_CODE !== "LK"
+    //       ? null
+    //       : "bg-gray-100";
+    //   },
+    //   headerName: BS_METHOD.IS_IN_OUT.headerName,
+    //   field: BS_METHOD.IS_IN_OUT.field,
+    //   flex: 1,
+    //   cellRenderer: IsInOutRender
+    // },
     {
       cellClass: params => {
         return params.data.METHOD_CODE !== "NK" &&
@@ -127,6 +127,17 @@ export function MethodList() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
+
+    if (insertAndUpdateData.insert.length > 0) {
+      insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
+        return { ...item, IS_IN_OUT: "I" };
+      });
+    }
+    if (insertAndUpdateData.update.length > 0) {
+      insertAndUpdateData.update = insertAndUpdateData.update.map(item => {
+        return { ...item, IS_IN_OUT: "I" };
+      });
+    }
     createAndUpdateMethod(insertAndUpdateData)
       .then(res => {
         toast.success(res);
@@ -155,7 +166,7 @@ export function MethodList() {
   };
 
   const getRowData = () => {
-    const idsToMove = ["NK", "XK"];
+    const idsToMove = ["NK", "XK", "LK"];
     getAllMethod()
       .then(res => {
         res.data.metadata.sort((a, b) => {
@@ -192,9 +203,13 @@ export function MethodList() {
         <Section.Table>
           <AgGrid
             isRowSelectable={params => {
-              return params.data.METHOD_CODE !== "NK" && params.data.METHOD_CODE !== "XK";
+              return (
+                params.data.METHOD_CODE !== "NK" &&
+                params.data.METHOD_CODE !== "XK" &&
+                params.data.METHOD_CODE !== "LK"
+              );
             }}
-            showCountRowSelected={true}
+            // showCountRowSelected={true}
             contextMenu={true}
             setRowData={data => {
               setRowData(data);

@@ -50,11 +50,13 @@ export const checkDiscountTariff = gridRef => {
       })
       .min(0, `${rmLastAstAddBrk(TRF_DIS.AMT_CBM.headerName)} phải lớn hơn hoặc bằng 0.`),
     VAT: z
-      .number()
+      .number({
+        required_error: `${rmLastAstAddBrk(TRF_DIS.AMT_CBM.headerName)} không được để trống.`,
+        invalid_type_error: `${rmLastAstAddBrk(TRF_DIS.AMT_CBM.headerName)} không được để trống.`
+      })
       .min(0, `${rmLastAstAddBrk(TRF_DIS.VAT.headerName)} phải lớn hơn hoặc bằng 0.`)
       .nullable()
-      .optional(),
-    INCLUDE_VAT: z.boolean()
+      .optional()
   });
 
   const arrSchema = z.array(tariffCodeSchema);

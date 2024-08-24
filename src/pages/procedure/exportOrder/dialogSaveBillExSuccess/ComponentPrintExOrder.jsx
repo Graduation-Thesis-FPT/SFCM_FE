@@ -47,6 +47,8 @@ export const ComponentPrintExOrder = forwardRef(
               <th>STT</th>
               <th>Số House Bill</th>
               <th>Loại hàng</th>
+              <th>Đơn vị</th>
+              <th>Số lượng</th>
               <th>Số khối</th>
               <th>Ghi chú</th>
             </tr>
@@ -57,7 +59,9 @@ export const ComponentPrintExOrder = forwardRef(
                 <td>{index + 1}</td>
                 <td>{row.HOUSE_BILL}</td>
                 <td>{row.ITEM_TYPE_NAME}</td>
-                <td>{row.CBM}</td>
+                <td>{row.PACKAGE_UNIT_CODE}</td>
+                <td>{row.PK_CARGO_PIECE}</td>
+                <td>{row.PK_CBM}</td>
                 <td>{row.PK_NOTE}</td>
               </tr>
             ))}

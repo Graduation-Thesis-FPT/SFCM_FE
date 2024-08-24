@@ -36,6 +36,8 @@ import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
 import moment from "moment";
 import { getAllPackageUnit } from "@/apis/pakage-unit.api";
 import { BtnImportExcel } from "./btnImportExcel";
+import { Copy, X } from "lucide-react";
+import { removeLastAsterisk } from "@/lib/utils";
 
 const DT_VESSEL_VISIT = new dt_vessel_visit();
 const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
@@ -164,10 +166,9 @@ export function GoodsManifest() {
   ];
 
   const handleSelectVesselInfo = vessel => {
-    vessel.ETA = moment(vessel.ETA).format("DD/MM/YYYY HH:mm");
     setContainerInfo({});
     setRowData([]);
-    setVesselInfo(vessel);
+    setVesselInfo({ ...vessel, ETA: moment(vessel.ETA).format("DD/MM/YYYY HH:mm") });
     setOpenVesselInfoSelect(false);
     setOpenContainerInfoSelect(true);
   };
@@ -309,6 +310,24 @@ export function GoodsManifest() {
       });
   };
 
+  const handleCopyToClipboard = async field => {
+    try {
+      if (!containerInfo.CNTRNO || !containerInfo.BILLOFLADING) {
+        toast.warning("Vui lòng chọn container");
+        return;
+      }
+      if (field === DT_CNTR_MNF_LD.CNTRNO.field) {
+        await navigator.clipboard.writeText(containerInfo.CNTRNO);
+        toast.success("Copy số container thành công");
+      } else if (field === DT_CNTR_MNF_LD.BILLOFLADING.field) {
+        await navigator.clipboard.writeText(containerInfo.BILLOFLADING);
+        toast.success("Copy số vận đơn thành công");
+      }
+    } catch (error) {
+      toast.error("Copy thất bại. Vui lòng thử lại");
+    }
+  };
+
   return (
     <Section>
       <Section.Header className="space-y-4">
@@ -332,7 +351,18 @@ export function GoodsManifest() {
         <span className="grid grid-cols-6 gap-3">
           {containerFilter.map(item => (
             <div key={item.field}>
-              <Label htmlFor={item.field}>{item.name}</Label>
+              <Label className="flex">
+                {removeLastAsterisk(item.name)}
+                {(item.field === DT_CNTR_MNF_LD.CNTRNO.field ||
+                  item.field === DT_CNTR_MNF_LD.BILLOFLADING.field) && (
+                  <Copy
+                    onClick={() => {
+                      handleCopyToClipboard(item.field);
+                    }}
+                    className="ml-3 size-3 hover:cursor-pointer hover:text-black/70"
+                  />
+                )}
+              </Label>
               <Input
                 onClick={() => {
                   if (!vesselInfo.VOYAGEKEY) {

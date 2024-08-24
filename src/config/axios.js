@@ -64,9 +64,7 @@ axiosPrivate.interceptors.response.use(
   async error => {
     const prevRequest = error?.config;
     if (
-      (error?.response?.status === 500 ||
-        error?.response?.status === 403 ||
-        error?.response?.status === 401) &&
+      (error?.response?.status === 403 || error?.response?.status === 401) &&
       !prevRequest?.sent
     ) {
       prevRequest.sent = true;
