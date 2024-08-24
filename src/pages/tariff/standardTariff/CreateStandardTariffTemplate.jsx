@@ -71,7 +71,7 @@ export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
           setOpen(true);
         }}
         variant="blue"
-        className="h-[36px] px-[16px] py-[8px] text-xs"
+        className="h-[36px] px-[16px] py-[8px]"
       >
         <PlusCircle className="mr-2 size-4" />
         Tạo mẫu biểu cước
