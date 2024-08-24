@@ -14,7 +14,7 @@ import { Input } from "@/components/common/ui/input";
 import { Textarea } from "@/components/common/ui/textarea";
 import { regexPattern } from "@/constants/regexPattern";
 import useFetchData from "@/hooks/useRefetchData";
-import { getFirstLetterOfLastWord } from "@/lib/utils";
+import { bgAvatar, cn, getFirstLetterOfLastWord } from "@/lib/utils";
 import { setUser } from "@/redux/slice/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { z } from "zod";
 import ChangePassword from "./ChangePassword";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function ProfilePage() {
   const toast = useCustomToast();
@@ -83,6 +84,7 @@ export function ProfilePage() {
   });
 
   function onSubmit(values) {
+    dispatch(setGlobalLoading(true));
     let { USER_NAME, ROLE_CODE, IS_ACTIVE, ...rest } = values;
     updateUser({ id: userGlobal.userInfo?.ROWGUID, data: rest })
       .then(updateRes => {
@@ -93,8 +95,12 @@ export function ProfilePage() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   }
+
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-row gap-4">
@@ -103,7 +109,10 @@ export function ProfilePage() {
           radius="full"
           size="64"
           fallback="S"
-          className="h-16 w-16 cursor-pointer items-center justify-center bg-blue-500 text-white"
+          className={cn(
+            bgAvatar(user?.ROLE_CODE),
+            "h-16 w-16 cursor-pointer items-center justify-center text-white"
+          )}
         >
           {getFirstLetterOfLastWord(user?.FULLNAME)}
         </Avatar>

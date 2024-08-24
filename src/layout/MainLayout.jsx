@@ -10,7 +10,7 @@ import {
 } from "@/components/common/ui/dropdown-menu";
 import { useToggle } from "@/hooks/useToggle";
 import { useCustomStore } from "@/lib/auth";
-import { cn, getFirstLetterOfLastWord } from "@/lib/utils";
+import { bgAvatar, cn, getFirstLetterOfLastWord } from "@/lib/utils";
 import { setMenuIsCollapse } from "@/redux/slice/menuIsCollapseSlice";
 import {
   Bell,
@@ -94,7 +94,10 @@ export function MainLayout() {
                     radius="full"
                     size="32"
                     fallback="S"
-                    className="h-8 w-8 cursor-pointer items-center justify-center bg-blue-500 text-white"
+                    className={cn(
+                      bgAvatar(user?.userInfo?.ROLE_CODE),
+                      "h-8 w-8 cursor-pointer items-center justify-center text-white"
+                    )}
                   >
                     {getFirstLetterOfLastWord(user?.userInfo?.FULLNAME)}
                   </Avatar>

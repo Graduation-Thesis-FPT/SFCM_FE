@@ -54,10 +54,27 @@ export const exportToExcel = (exportData, fileName) => {
   }
 };
 
-export const getType = (order) => {
+export const getType = order => {
   if (order?.DE_ORDER_NO?.includes("XK")) {
     return OrderStatus.Export;
   } else if (order?.DE_ORDER_NO?.includes("NK")) {
     return OrderStatus.Import;
+  }
+};
+
+export const bgAvatar = ROLE_CODE => {
+  switch (ROLE_CODE) {
+    case "admin":
+      return `bg-red-500`;
+    case "procedure-staff":
+      return `bg-teal-500`;
+    case "tally-operator":
+      return `bg-orange-500`;
+    case "warehouse-operator":
+      return `bg-amber-900`;
+    case "customer":
+      return `bg-pink-500`;
+    default:
+      return `bg-slate-500`;
   }
 };
