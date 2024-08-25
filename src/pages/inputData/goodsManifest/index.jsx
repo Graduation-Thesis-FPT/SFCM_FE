@@ -118,7 +118,6 @@ export function GoodsManifest() {
       field: DT_PACKAGE_MNF_LD.ITEM_TYPE_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => ItemTypeCodeRender(params, itemType)
     },
     {
@@ -126,7 +125,6 @@ export function GoodsManifest() {
       field: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.field,
       flex: 1,
       filter: true,
-      editable: true,
       cellRenderer: params => PackageUnitCodeRender(params, unit)
     },
     {
