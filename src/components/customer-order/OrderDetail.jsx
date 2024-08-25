@@ -30,7 +30,7 @@ export const OrderDetail = forwardRef(({ data = {}, status }, ref) => {
       </div>
       <div className="text-sm">
         {status === OrderStatus.Import &&
-          "Đề nghị đội giám sát kho bãi cho chúng tôi được rút hàng vào kho các container hàng chungvchủ sau đây vào kho SFCM"}
+          "Đề nghị đội giám sát kho bãi cho chúng tôi được rút hàng vào kho các container hàng chung chủ sau đây vào kho SFCM"}
         {status === OrderStatus.Export &&
           "Đề nghị đội giám sát kho bãi cho chúng tôi được rút hàng ra kho"}
       </div>

@@ -5,7 +5,7 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
     onSelectedJob(job);
   };
   return (
-    <div className="relative h-full bg-gray-50 p-4">
+    <div className="relative flex h-full flex-col bg-gray-50 p-4">
       <div className="text-center font-bold">Danh sách công việc</div>
       <div
         className={cn(
@@ -20,7 +20,7 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
       {jobList.length === 0 ? (
         <div className="absolute-center text-center text-sm opacity-50">Không có công việc</div>
       ) : (
-        <span className="text-sm">
+        <div className="h-full overflow-hidden overflow-y-auto text-sm">
           {jobList.map(job => (
             <div
               key={job.PALLET_NO}
@@ -39,7 +39,7 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
               </div>
             </div>
           ))}
-        </span>
+        </div>
       )}
     </div>
   );

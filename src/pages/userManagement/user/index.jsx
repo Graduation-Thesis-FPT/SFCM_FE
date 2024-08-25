@@ -11,9 +11,11 @@ import React, { useRef, useState } from "react";
 import { UserCreationForm } from "./UserCreationForm";
 import { UserUpdateForm } from "./UserUpdateForm";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
+import { useSelector } from "react-redux";
 
 export function User() {
   const gridRef = useRef(null);
+  const currentUser = useSelector(state => state.userSlice.user.userInfo);
   const [detailData, setDetailData] = useState({});
   const { data: users, revalidate, loading } = useFetchData({ service: getAllUser });
   const colDefs = [
@@ -34,8 +36,15 @@ export function User() {
       filter: true
     },
     { field: "FULLNAME", headerName: "Họ và tên", flex: 1, filter: true },
-    { field: "TELEPHONE", headerName: "Số điện thoại", flex: 1, filter: true },
     { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1 },
+    {
+      headerClass: "number-header",
+      cellClass: "text-end",
+      field: "TELEPHONE",
+      headerName: "Số điện thoại",
+      flex: 1,
+      filter: true
+    },
     {
       field: "IS_ACTIVE",
       minWidth: 150,
@@ -66,10 +75,16 @@ export function User() {
     },
     {
       field: "#",
-      headerName: "Xem",
+      headerName: "",
       flex: 0.5,
-      cellStyle: { alignContent: "space-evenly" },
+      headerClass: "center-header",
+      cellStyle: {
+        justifyContent: "center",
+        alignItems: "center",
+        display: "flex"
+      },
       cellRenderer: params => {
+        if (params.data.ROWGUID === currentUser.ROWGUID) return null;
         return (
           <SquarePen
             onClick={() => setDetailData(params.data)}

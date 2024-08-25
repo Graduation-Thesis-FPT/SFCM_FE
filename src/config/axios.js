@@ -76,6 +76,14 @@ axiosPrivate.interceptors.response.use(
 
       return axiosPrivate(prevRequest);
     }
+    if (
+      error?.response?.status === 400 &&
+      error?.response?.data?.message === "Tài khoản đã bị khóa"
+    ) {
+      removeRefreshAndAccessToken();
+      window.location.href = "/login";
+      return;
+    }
     return Promise.reject(error);
   }
 );
