@@ -1,5 +1,6 @@
 import { OrderStatus } from "@/constants/order-status";
 import { clsx } from "clsx";
+import { el } from "date-fns/locale";
 import { twMerge } from "tailwind-merge";
 import * as XLSX from "xlsx";
 
@@ -88,6 +89,8 @@ export const changeMessage = mess => {
     return "Lỗi máy chủ. Vui lòng thử lại sau!";
   } else if (mess.includes("Request failed with status code 404")) {
     return "Không tìm thấy dữ liệu. Vui lòng thử lại sau!";
+  } else if (mess.includes("Cannot read properties")) {
+    return "Hóa đơn không tồn tại hoặc đang chờ phê duyệt từ phần mềm kế toán. Vui lòng thử lại sau!";
   } else if (mess.includes("Error")) {
     return "Đã xảy ra lỗi. Vui lòng thử lại sau!";
   } else if (mess.includes("Request")) {

@@ -271,13 +271,7 @@ export function Order() {
           </form>
         </Form>
         <Section.Table>
-          <AgGrid
-            contextMenu={true}
-            ref={gridRef}
-            colDefs={colDefs}
-            loading={loading}
-            rowData={rowData}
-          />
+          <AgGrid ref={gridRef} colDefs={colDefs} loading={loading} rowData={rowData} />
         </Section.Table>
       </Section.Content>
       <OrderDetail ref={orderDetailRef} data={order} status={getType(order)} />

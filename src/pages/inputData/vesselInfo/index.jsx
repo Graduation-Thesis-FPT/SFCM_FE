@@ -1,16 +1,4 @@
 import { Section } from "@/components/common/section";
-import { Button } from "@/components/common/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/common/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { useRef, useState } from "react";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { addDays } from "date-fns";
@@ -28,29 +16,21 @@ import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { DateTimePickerRender } from "@/components/common/aggridreact/cellRender";
+import { Label } from "@/components/common/ui/label";
 
-const formSchema = z.object({
-  from_date: z.date({
-    required_error: "Vui lòng chọn khoảng thời gian ngày tàu đến!"
-  }),
-  to_date: z.date({
-    required_error: "Vui lòng chọn khoảng thời gian ngày tàu đến!"
-  })
-});
+const DT_VESSEL_VISIT = new dt_vessel_visit();
+const initFilterData = {
+  from_date: addDays(new Date(), -30),
+  to_date: addDays(new Date(), 30)
+};
 
 export function VesselInfo() {
-  const [rowData, setRowData] = useState([]);
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const dispatch = useDispatch();
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      from_date: addDays(new Date(), -30),
-      to_date: addDays(new Date(), 30)
-    }
-  });
-  const DT_VESSEL_VISIT = new dt_vessel_visit();
+
+  const [filter, setFilter] = useState(initFilterData);
+  const [rowData, setRowData] = useState([]);
 
   const colDefs = [
     {
@@ -99,23 +79,6 @@ export function VesselInfo() {
     }
   ];
 
-  const getRowData = () => {
-    getVesselByFilter(form.getValues("from_date"), form.getValues("to_date"))
-      .then(res => {
-        setRowData(
-          res.data.metadata?.map(rowData => {
-            return {
-              ...rowData,
-              ETA: rowData.ETA ? new Date(rowData.ETA) : null
-            };
-          })
-        );
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
   const handleAddRow = () => {
     const newRow = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRow);
@@ -161,9 +124,35 @@ export function VesselInfo() {
       });
   };
 
-  const onSubmit = () => {
-    dispatch(setGlobalLoading(true));
-    getVesselByFilter(form.getValues("from_date"), form.getValues("to_date"))
+  const handleSelectedDate = value => {
+    setFilter({
+      from_date: value?.from,
+      to_date: value?.to
+    });
+    if (value?.from && value?.to) {
+      dispatch(setGlobalLoading(true));
+      getVesselByFilter(value.from, value.to)
+        .then(res => {
+          setRowData(
+            res.data.metadata?.map(rowData => {
+              return {
+                ...rowData,
+                ETA: rowData.ETA ? new Date(rowData.ETA) : null
+              };
+            })
+          );
+        })
+        .catch(err => {
+          toast.error(err);
+        })
+        .finally(() => {
+          dispatch(setGlobalLoading(false));
+        });
+    }
+  };
+
+  const getRowData = () => {
+    getVesselByFilter(filter.from_date, filter.to_date)
       .then(res => {
         setRowData(
           res.data.metadata?.map(rowData => {
@@ -176,45 +165,19 @@ export function VesselInfo() {
       })
       .catch(err => {
         toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
       });
   };
 
   return (
     <Section>
       <Section.Header>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-end justify-between">
-            <FormField
-              control={form.control}
-              name="from_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ngày tàu đến</FormLabel>
-                  <FormControl>
-                    <DatePickerWithRangeInForm
-                      date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
-                      onSelected={value => {
-                        form.setValue("from_date", value?.from);
-                        form.setValue("to_date", value?.to);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors?.from_date?.message ||
-                      form.formState.errors?.to_date?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-
-            <Button variant="blue" type="submit">
-              Nạp dữ liệu
-            </Button>
-          </form>
-        </Form>
+        <div>
+          <Label>Ngày tàu đến</Label>
+          <DatePickerWithRangeInForm
+            date={{ from: filter.from_date, to: filter.to_date }}
+            onSelected={handleSelectedDate}
+          />
+        </div>
       </Section.Header>
       <Section.Content>
         <LayoutTool>
@@ -238,6 +201,10 @@ export function VesselInfo() {
             colDefs={colDefs}
             onDeleteRow={selectedRows => {
               handleDeleteRows(selectedRows);
+            }}
+            onGridReady={() => {
+              gridRef.current.api.showLoadingOverlay();
+              getRowData();
             }}
           />
         </Section.Table>
