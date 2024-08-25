@@ -56,12 +56,7 @@ export const ComponentPrintGoodsMnf = forwardRef(
         <div className="flex gap-10 text-sm font-bold">
           <div>TÊN TÀU: {vesselInfo?.VESSEL_NAME ?? "...................."}</div>
           <div>CHUYẾN: {vesselInfo?.INBOUND_VOYAGE ?? "...................."}</div>
-          <div>
-            NGÀY CẬP CẢNG:{" "}
-            {vesselInfo.ETA
-              ? moment(vesselInfo.ETA).format("DD/MM/Y HH:mm")
-              : "...................."}
-          </div>
+          <div>NGÀY CẬP CẢNG: {vesselInfo.ETA ? vesselInfo.ETA : "...................."}</div>
         </div>
         <table className="goods-manifest-table-print">
           <thead>
