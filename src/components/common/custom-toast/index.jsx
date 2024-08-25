@@ -1,6 +1,8 @@
 import { CircleAlert, CircleCheckBig, CircleX } from "lucide-react";
 import { useToast } from "../ui/use-toast";
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "@/constants";
+import { ca, de, el } from "date-fns/locale";
+import { changeMessage } from "@/lib/utils";
 
 const Succsess = ({ message }) => {
   return (
@@ -51,6 +53,7 @@ export const useCustomToast = () => {
         mess.message ||
         "Thao tác không thành công. Vui lòng thử lại sau!";
     }
+    mess = changeMessage(mess);
     toast({
       variant: "warning",
       title: <Warning message={mess} />,
@@ -66,6 +69,7 @@ export const useCustomToast = () => {
         mess.message ||
         "Thao tác không thành công. Vui lòng thử lại sau!";
     }
+    mess = changeMessage(mess);
     toast({
       variant: "error",
       title: <Error message={mess} />,

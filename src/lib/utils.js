@@ -78,3 +78,21 @@ export const bgAvatar = ROLE_CODE => {
       return `bg-slate-500`;
   }
 };
+
+export const changeMessage = mess => {
+  if (mess.includes("Network Error")) {
+    return "Lỗi kết nối mạng!";
+  } else if (mess.includes("Maximum call")) {
+    return "Dữ liệu quá lớn. Vui lòng kiểm tra lại dữ liệu!";
+  } else if (mess.includes("Request failed with status code 500")) {
+    return "Lỗi máy chủ. Vui lòng thử lại sau!";
+  } else if (mess.includes("Request failed with status code 404")) {
+    return "Không tìm thấy dữ liệu. Vui lòng thử lại sau!";
+  } else if (mess.includes("Error")) {
+    return "Đã xảy ra lỗi. Vui lòng thử lại sau!";
+  } else if (mess.includes("Request")) {
+    return "Yêu cầu không hợp lệ. Vui lòng thử lại sau!";
+  } else {
+    return mess;
+  }
+};

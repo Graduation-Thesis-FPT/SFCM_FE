@@ -1,22 +1,24 @@
 import { createWarehouse, deleteWarehouse, getAllWarehouse } from "@/apis/warehouse.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { OnlyEditWithInsertCell } from "@/components/common/aggridreact/cellRender";
+import {
+  DateTimeByTextRender,
+  OnlyEditWithInsertCell
+} from "@/components/common/aggridreact/cellRender";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
-import { Button } from "@/components/common/ui/button";
 import { actionGrantPermission } from "@/constants";
 import useFetchData from "@/hooks/useRefetchData";
 import { useSetData } from "@/hooks/useSetData";
-import { fnAddRowsVer2, fnDeleteRows } from "@/lib/fnTable";
+import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { DetailWarehouse } from "./DetailWarehouse";
-import { FormCreateWarehouse } from "./FormCreateWarehouse";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 export function WarehouseList() {
   const dispatch = useDispatch();
@@ -35,55 +37,33 @@ export function WarehouseList() {
       },
       valueFormatter: params => {
         return Number(params.node.id) + 1;
-      },
-      editable: OnlyEditWithInsertCell
+      }
     },
     {
       headerName: "Mã kho *",
       field: "WAREHOUSE_CODE",
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: OnlyEditWithInsertCell,
+      onCellValueChanged: UpperCase
     },
     {
       headerName: "Tên kho *",
       field: "WAREHOUSE_NAME",
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: true
     },
     {
-      headerName: "Diện tích (m2) *",
-      field: "ACREAGE",
-      cellDataType: "number",
-      cellEditorParams: {
-        min: 0,
-        max: 10000
-      },
+      headerName: "Ngày cập nhật",
+      field: "UPDATE_DATE",
       flex: 1,
-      editable: OnlyEditWithInsertCell
-    },
-    {
-      flex: 0.6,
-      minWidth: 100,
-      cellRenderer: params => {
-        if (params.data.status === "insert") return null;
-        return (
-          <Button
-            variant="link"
-            onClick={() => {
-              setDetailData(params.data);
-            }}
-            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
-          >
-            Xem
-          </Button>
-        );
-      }
+      cellRenderer: DateTimeByTextRender
     }
   ];
 
   const handleDeleteData = deteleData => {
+    dispatch(setGlobalLoading(true));
     let { deleteIdList } = fnDeleteRows(deteleData, rowData, "WAREHOUSE_CODE");
     deleteWarehouse({ data: deleteIdList })
       .then(res => {
@@ -92,6 +72,9 @@ export function WarehouseList() {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
       });
   };
 
@@ -99,13 +82,15 @@ export function WarehouseList() {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
-  const handleSaveRows = () => {
-    dispatch(setGlobalLoading(true));
-    const newData = rowData
-      .filter(item => item.status === "insert")
-      .map(({ key, status, ...rest }) => rest);
 
-    createWarehouse({ data: { insert: newData, update: [] } })
+  const handleSaveRows = () => {
+    let { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      return toast.warning("Không có dữ liệu thay đổi");
+    }
+    dispatch(setGlobalLoading(true));
+
+    createWarehouse(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         revalidate();
@@ -120,12 +105,7 @@ export function WarehouseList() {
 
   return (
     <Section>
-      <Section.Header title="Danh sách các kho">
-        <GrantPermission action={actionGrantPermission.CREATE}>
-          <FormCreateWarehouse revalidate={revalidate} />
-        </GrantPermission>
-      </Section.Header>
-
+      <Section.Header title="Danh sách các kho"></Section.Header>
       <Section.Content>
         <LayoutTool>
           <GrantPermission action={actionGrantPermission.CREATE}>
@@ -135,18 +115,21 @@ export function WarehouseList() {
             <BtnSave onClick={handleSaveRows} />
           </GrantPermission>
         </LayoutTool>
-        <AgGrid
-          contextMenu
-          setRowData={data => {
-            setRowData(data);
-          }}
-          ref={gridRef}
-          rowData={rowData}
-          colDefs={colDefs}
-          onDeleteRow={selectedRows => {
-            handleDeleteData(selectedRows);
-          }}
-        />
+        <Section.Table>
+          <AgGrid
+            showCountRowSelected={true}
+            contextMenu
+            setRowData={data => {
+              setRowData(data);
+            }}
+            ref={gridRef}
+            rowData={rowData}
+            colDefs={colDefs}
+            onDeleteRow={selectedRows => {
+              handleDeleteData(selectedRows);
+            }}
+          />
+        </Section.Table>
       </Section.Content>
 
       <DetailWarehouse

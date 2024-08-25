@@ -1,7 +1,6 @@
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
-import { SearchInput } from "@/components/common/search";
 import { Section } from "@/components/common/section";
 import {
   Select,
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
-import { fnAddRows, fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useEffect, useRef, useState } from "react";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { actionGrantPermission } from "@/constants";
@@ -28,6 +27,7 @@ import {
 import { DisplayCell } from "./displayCell";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { Label } from "@/components/common/ui/label";
+import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 export function WarehouseDesign() {
   const gridRef = useRef(null);
@@ -65,7 +65,8 @@ export function WarehouseDesign() {
       field: BS_BLOCK.BLOCK_CODE.field,
       flex: 1,
       filter: true,
-      editable: OnlyEditWithInsertCell
+      editable: OnlyEditWithInsertCell,
+      onCellValueChanged: UpperCase
     },
     {
       headerName: BS_BLOCK.BLOCK_NAME.headerName,
@@ -81,7 +82,7 @@ export function WarehouseDesign() {
       flex: 1,
       cellEditorParams: {
         min: 0,
-        max: 1000
+        max: 100
       },
       editable: true
     },
@@ -91,7 +92,7 @@ export function WarehouseDesign() {
       cellDataType: "number",
       cellEditorParams: {
         min: 0,
-        max: 1000
+        max: 10000
       },
       flex: 1,
       editable: true
@@ -106,7 +107,7 @@ export function WarehouseDesign() {
           cellDataType: "number",
           cellEditorParams: {
             min: 0,
-            max: 1000
+            max: 10000
           },
           headerClass: " center-header",
           cellStyle: { textAlign: "center" },
@@ -143,16 +144,17 @@ export function WarehouseDesign() {
     }
   ];
 
-  const handleSearch = value => {};
-
   const handleAddRow = () => {
     let newRowData = fnAddRowsVer2(rowData, colDefs);
     setRowData(newRowData);
   };
 
   const handleSaveRows = () => {
+    let { insertAndUpdateData, isContinue } = fnFilterInsertAndUpdateData(rowData);
+    if (!isContinue) {
+      return toast.warning("Không có dữ liệu thay đổi");
+    }
     dispatch(setGlobalLoading(true));
-    let { insertAndUpdateData } = fnFilterInsertAndUpdateData(rowData);
     createBlock(insertAndUpdateData)
       .then(res => {
         toast.success(res);
@@ -310,23 +312,25 @@ export function WarehouseDesign() {
           </span>
         </div>
         {displayType === "table" ? (
-          <AgGrid
-            contextMenu={true}
-            setRowData={data => {
-              setRowData(data);
-            }}
-            ref={gridRef}
-            className="h-[50vh]"
-            rowData={rowData}
-            colDefs={colDefs}
-            onDeleteRow={selectedRows => {
-              handleDeleteRows(selectedRows);
-            }}
-            onGridReady={() => {
-              gridRef.current.api.showLoadingOverlay();
-              getRowData();
-            }}
-          />
+          <Section.Table>
+            <AgGrid
+              showCountRowSelected={true}
+              contextMenu={true}
+              setRowData={data => {
+                setRowData(data);
+              }}
+              ref={gridRef}
+              rowData={rowData}
+              colDefs={colDefs}
+              onDeleteRow={selectedRows => {
+                handleDeleteRows(selectedRows);
+              }}
+              onGridReady={() => {
+                gridRef.current.api.showLoadingOverlay();
+                getRowData();
+              }}
+            />
+          </Section.Table>
         ) : (
           <DisplayCell blockList={rowData} warehouses={warehouses} filterData={filterData} />
         )}
