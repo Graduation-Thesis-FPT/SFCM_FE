@@ -32,10 +32,20 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
                 "my-2 rounded-md border p-2 shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
               )}
             >
-              <div>Mã pallet: {job.PALLET_NO}</div>
-              <div>Số lượng: {job.ESTIMATED_CARGO_PIECE}</div>
-              <div>
-                Kích thước: {job.PALLET_LENGTH}x{job.PALLET_WIDTH}x{job.PALLET_HEIGHT} (m)
+              <div className="mb-2 text-center font-bold">{job.PALLET_NO}</div>
+
+              <div className="flex justify-between gap-x-1">
+                <div className="w-1/2 space-y-1">
+                  <div>Tên tàu: {job.VESSEL_NAME}</div>
+                  <div>Chuyến nhập: {job.INBOUND_VOYAGE}</div>
+                  <div>Số container: {job.CNTRNO}</div>
+                </div>
+                <div className="flex w-1/2 flex-col items-end  space-y-1 align-bottom">
+                  <div>Số lượng: {job.ESTIMATED_CARGO_PIECE}</div>
+                  <div>
+                    Kích thước: {job.PALLET_LENGTH}x{job.PALLET_WIDTH}x{job.PALLET_HEIGHT} (m)
+                  </div>
+                </div>
               </div>
             </div>
           ))}

@@ -2,7 +2,6 @@ import { z } from "zod";
 import { rmLastAstAddBrk } from "@/lib/utils";
 import { handleResult } from "..";
 import { dt_package_mnf_ld } from "@/components/common/aggridreact/dbColumns";
-import { regexPattern } from "@/constants/regexPattern";
 
 const DT_PACKAGE_MNF_LD = new dt_package_mnf_ld();
 
