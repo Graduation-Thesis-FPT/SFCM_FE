@@ -27,6 +27,7 @@ import {
   SelectValue
 } from "@/components/common/ui/select";
 import { Input } from "@/components/common/ui/input";
+import { Badge } from "@/components/common/ui/badge";
 
 const DELIVER_ORDER = new deliver_order();
 const initFilter = {
@@ -94,15 +95,21 @@ export function CancelInvoice() {
     {
       headerName: "Trạng thái thanh toán",
       field: "PAYMENT_STATUS",
-      flex: 1,
+      minWidth: 180,
+      maxWidth: 180,
       cellRenderer: params => {
         if (params.value === "Y") {
-          return "Đã thanh toán";
-        } else if (params.value === "C") {
-          return "Đã hủy";
-        } else {
-          return null;
+          return (
+            <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+              Đã thanh toán
+            </Badge>
+          );
         }
+        return (
+          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+            Đã hủy
+          </Badge>
+        );
       }
     },
     {

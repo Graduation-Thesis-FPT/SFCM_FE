@@ -38,6 +38,8 @@ import { getAllPackageUnit } from "@/apis/pakage-unit.api";
 import { BtnImportExcel } from "./btnImportExcel";
 import { Copy, X } from "lucide-react";
 import { removeLastAsterisk } from "@/lib/utils";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { checkGoodsManifest } from "@/lib/validation/input-data/checkGoodsManifest";
 
 const DT_VESSEL_VISIT = new dt_vessel_visit();
 const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
@@ -135,6 +137,10 @@ export function GoodsManifest() {
       flex: 1,
       filter: true,
       editable: true,
+      cellEditorParams: {
+        min: 0,
+        max: 1000
+      },
       cellDataType: "number"
     },
     {
@@ -145,6 +151,10 @@ export function GoodsManifest() {
       flex: 1,
       filter: true,
       editable: true,
+      cellEditorParams: {
+        min: 0,
+        max: 1000
+      },
       cellDataType: "number"
     },
     {
@@ -213,6 +223,12 @@ export function GoodsManifest() {
       return;
     }
 
+    const { isValid, mess } = checkGoodsManifest(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
@@ -267,8 +283,6 @@ export function GoodsManifest() {
       toast.warning("Vui lòng chọn container");
       return;
     }
-    console.log("🚀 ~ finalRowData ~ rowDataFileUpload:", rowDataFileUpload);
-
     const finalRowData = rowDataFileUpload?.map(item => {
       return {
         ...item,
@@ -308,18 +322,16 @@ export function GoodsManifest() {
       });
   };
 
-  const handleCopyToClipboard = async field => {
+  const handleCopyToClipboard = field => {
     try {
-      if (!containerInfo.CNTRNO || !containerInfo.BILLOFLADING) {
-        toast.warning("Vui lòng chọn container");
-        return;
-      }
-      if (field === DT_CNTR_MNF_LD.CNTRNO.field) {
-        await navigator.clipboard.writeText(containerInfo.CNTRNO);
+      if (field === DT_CNTR_MNF_LD.CNTRNO.field && containerInfo.CNTRNO) {
+        navigator.clipboard.writeText(containerInfo?.CNTRNO);
         toast.success("Copy số container thành công");
-      } else if (field === DT_CNTR_MNF_LD.BILLOFLADING.field) {
-        await navigator.clipboard.writeText(containerInfo.BILLOFLADING);
+      } else if (field === DT_CNTR_MNF_LD.BILLOFLADING.field && containerInfo.BILLOFLADING) {
+        navigator.clipboard.writeText(containerInfo?.BILLOFLADING);
         toast.success("Copy số vận đơn thành công");
+      } else {
+        toast.error("Không có dữ liệu để copy");
       }
     } catch (error) {
       console.log(error);

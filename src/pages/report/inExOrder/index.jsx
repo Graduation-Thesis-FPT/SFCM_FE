@@ -8,6 +8,7 @@ import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutToo
 import { useCustomToast } from "@/components/common/custom-toast";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { Section } from "@/components/common/section";
+import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
@@ -22,6 +23,7 @@ import {
 import useFetchData from "@/hooks/useRefetchData";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { addDays } from "date-fns";
+import moment from "moment";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -85,6 +87,26 @@ export function InExOrder() {
       cellRenderer: DateTimeByTextRender
     },
     {
+      headerName: "Trạng thái",
+      field: "IS_VALID",
+      minWidth: 150,
+      maxWidth: 150,
+      cellRenderer: params => {
+        if (params.value) {
+          return (
+            <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+              Đã thanh toán
+            </Badge>
+          );
+        }
+        return (
+          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+            Đã hủy
+          </Badge>
+        );
+      }
+    },
+    {
       flex: 0.6,
       minWidth: 100,
       cellClass: "text-center",
@@ -93,6 +115,12 @@ export function InExOrder() {
           <Button
             variant="link"
             onClick={() => {
+              if (params.data.IS_VALID === false) {
+                toast.warning(
+                  `Hóa đơn này đã bị hủy với lý do: ${params.data.CANCEL_REMARK}. Lúc ${moment(params.data.CANCLE_DATE).format("DD/MM/YYYY HH:mm")}`
+                );
+                return;
+              }
               handleViewInvoice(params.data.DE_ORDER_NO);
             }}
             className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
