@@ -41,6 +41,8 @@ import { getAllCustomer } from "@/apis/customer.api";
 import { GrantPermission } from "@/components/common/grant-permission";
 import moment from "moment";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
+import { checkManifestLoadingList } from "@/lib/validation/input-data/checkManifestLoadingList";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 
 const formSchema = z.object({
   VOYAGEKEY: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
@@ -50,6 +52,7 @@ const formSchema = z.object({
 });
 
 const DT_VESSEL_VISIT = new dt_vessel_visit();
+const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
 
 const formField = [
   { name: DT_VESSEL_VISIT.VESSEL_NAME.field, label: DT_VESSEL_VISIT.VESSEL_NAME.headerName },
@@ -81,7 +84,6 @@ export function ManifestLoadingList() {
       ETA: ""
     }
   });
-  const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
 
   const colDefs = [
     {
@@ -159,6 +161,13 @@ export function ManifestLoadingList() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
+
+    const { isValid, mess } = checkManifestLoadingList(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {

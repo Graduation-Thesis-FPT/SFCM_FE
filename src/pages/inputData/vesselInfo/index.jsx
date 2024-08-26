@@ -17,6 +17,8 @@ import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { DateTimePickerRender } from "@/components/common/aggridreact/cellRender";
 import { Label } from "@/components/common/ui/label";
+import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import { checkVessel } from "@/lib/validation/input-data/checkVessel";
 
 const DT_VESSEL_VISIT = new dt_vessel_visit();
 const initFilterData = {
@@ -90,6 +92,13 @@ export function VesselInfo() {
       toast.warning("Không có dữ liệu thay đổi");
       return;
     }
+
+    const { isValid, mess } = checkVessel(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
+
     dispatch(setGlobalLoading(true));
     createAndUpdateVessel(insertAndUpdateData)
       .then(res => {
