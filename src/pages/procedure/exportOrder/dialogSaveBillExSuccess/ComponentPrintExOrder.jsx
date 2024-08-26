@@ -2,6 +2,7 @@ import moment from "moment";
 import { forwardRef } from "react";
 import { useSelector } from "react-redux";
 import logo from "@/assets/image/Logo_64x64.svg";
+import { Separator } from "@/components/common/ui/separator";
 
 export const ComponentPrintExOrder = forwardRef(
   ({ data = {}, selectedCustomer = {}, packageFilter = {}, selectedContainer = {} }, ref) => {
@@ -29,7 +30,7 @@ export const ComponentPrintExOrder = forwardRef(
         </div>
         <div className="text-center font-bold">
           <div>LỆNH XUẤT HÀNG RA KHO</div>
-          <div>{/* <i>Kính gửi:....................</i> */}</div>
+          <div>**********</div>
         </div>
         <div className="text-sm">
           Cảng Quốc Tế SFCM đại diện cho đại lý giao nhận:{" "}
@@ -40,17 +41,35 @@ export const ComponentPrintExOrder = forwardRef(
         <div className="text-sm">
           Đề nghị đội giám sát kho bãi cho chúng tôi được rút hàng ra kho
         </div>
-        <div className="flex gap-10 text-sm font-bold">
-          <div>MÃ LỆNH: {data?.neworder?.DE_ORDER_NO ?? "...................."}</div>
-          <div>SỐ CONT: {selectedContainer?.CNTRNO ?? "...................."}</div>
-          <div>TỔNG SỐ KHỐI: {data.neworder?.TOTAL_CBM ?? "...................."}</div>
-          <div>
-            HẠN LỆNH:{" "}
-            {data?.neworder?.EXP_DATE
-              ? moment(data.neworder.EXP_DATE).format("DD/MM/Y HH:mm")
-              : "...................."}
+        <div className="gap-10 text-sm font-bold">
+          <div className="flex justify-between">
+            <div className="space-y-2">
+              <div>Tên tàu: {data?.neworderDtl[0]?.VESSEL_NAME ?? "...................."}</div>
+              <div>
+                Chuyến nhập: {data?.neworderDtl[0]?.INBOUND_VOYAGE ?? "...................."}
+              </div>
+            </div>
+            <div className="flex items-end justify-end">
+              Số container: {selectedContainer?.CNTRNO ?? "...................."}
+            </div>
+          </div>
+          <Separator className="my-2" />
+          <div className="flex justify-between">
+            <div className="space-y-2">
+              <div>Mã lệnh: {data?.neworder?.DE_ORDER_NO ?? "...................."}</div>
+              <div>
+                Tổng số khối: {data?.neworder?.TOTAL_CBM.toFixed(3) ?? "...................."}
+              </div>
+            </div>
+            <div className="flex items-end justify-end">
+              Hạn lệnh:{" "}
+              {data?.neworder?.EXP_DATE
+                ? moment(data.neworder.EXP_DATE).format("DD/MM/Y HH:mm")
+                : "...................."}
+            </div>
           </div>
         </div>
+
         <table className="goods-manifest-table-print">
           <thead>
             <tr>
