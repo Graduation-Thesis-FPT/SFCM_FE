@@ -1,0 +1,13 @@
+sfcmversion: "3.8"
+
+services:
+  SCFM:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 2024:2024
+        #    volumes:
+        #      - /root/gtos-backend:/app
+    restart: always
+
