@@ -1,15 +1,21 @@
 import { OrderStatus } from "@/constants/order-status";
 import moment from "moment";
 import React, { forwardRef } from "react";
+import logo from "@/assets/image/Logo_64x64.svg";
 
 export const OrderDetail = forwardRef(({ data = {}, status }, ref) => {
   return (
     <div ref={ref} className="hidden-to-print space-y-3 p-5">
       <div className="flex justify-between text-sm">
-        <span>
-          <div>Cảng quốc tế SFCM</div>
-          <div>Kho SFCM</div>
-        </span>
+        <div className="flex flex-col items-center">
+          <div className="text-center">
+            <div>Cảng quốc tế SFCM</div>
+            <div>Kho SFCM</div>
+          </div>
+          <div>
+            <img src={logo} className="size-[64px]" />
+          </div>
+        </div>
         <span className="text-center font-bold">
           <div>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
           <div>ĐỘC LẬP - TỰ DO - HẠNH PHÚC</div>

@@ -69,7 +69,7 @@ export function JobQuantityCheckList({
             item.status === "update" && "bg-yellow-50"
           )}
         >
-          <span className="flex justify-between text-sm">
+          <span className="mb-2 flex justify-between text-sm">
             <div>STT: {item.SEQ}</div>
             <div className="font-bold">{item.PALLET_NO}</div>
             <div>

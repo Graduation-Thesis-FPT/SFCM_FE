@@ -46,6 +46,8 @@ export function ImportTally() {
   const toast = useCustomToast();
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({
+    VESSEL_NAME: "",
+    INBOUND_VOYAGE: "",
     CONTAINER_ID: "",
     CNTRNO: "",
     ISSUE_DATE: "",
@@ -58,6 +60,8 @@ export function ImportTally() {
   const handleChangeFilter = value => {
     if (!value) {
       setFilter({
+        VESSEL_NAME: "",
+        INBOUND_VOYAGE: "",
         CONTAINER_ID: "",
         CNTRNO: "",
         ISSUE_DATE: "",
@@ -78,6 +82,8 @@ export function ImportTally() {
 
     setFilter({
       CONTAINER_ID: value,
+      VESSEL_NAME: importTallyContainerInfo?.VESSEL_NAME,
+      INBOUND_VOYAGE: importTallyContainerInfo?.INBOUND_VOYAGE,
       CNTRNO: importTallyContainerInfo?.CNTRNO,
       ISSUE_DATE: importTallyContainerInfo?.ISSUE_DATE,
       EXP_DATE: importTallyContainerInfo?.EXP_DATE
@@ -247,12 +253,12 @@ export function ImportTally() {
 
   return (
     <Section>
-      <Section.Header className="flex flex-row gap-3">
-        <div className="w-1/4 min-w-fit">
-          <Label htmlFor="CONTAINER_ID">Container kiểm đếm</Label>
+      <Section.Header className="grid grid-cols-3 gap-3 md:grid-cols-5">
+        <div>
+          <Label htmlFor="VESSEL">Container kiểm đếm</Label>
           <SelectSearch
             id="CONTAINER_ID"
-            className="w-full"
+            className="min-w-10"
             labelSelect="Chọn container kiểm đếm"
             value={filter.CONTAINER_ID}
             data={importTallyContainerList?.map(item => {
@@ -261,7 +267,27 @@ export function ImportTally() {
             onSelect={handleChangeFilter}
           />
         </div>
-        <div className="w-1/4 min-w-fit">
+        <div>
+          <Label htmlFor="VESSEL_NAME">Tên tàu</Label>
+          <Input
+            value={filter.VESSEL_NAME ?? ""}
+            readOnly
+            className="hover:cursor-not-allowed"
+            id="VESSEL_NAME"
+            placeholder="Chọn container kiểm đếm"
+          />
+        </div>
+        <div>
+          <Label htmlFor="INBOUND_VOYAGE">Chuyến nhập</Label>
+          <Input
+            value={filter.INBOUND_VOYAGE ?? ""}
+            readOnly
+            className="hover:cursor-not-allowed"
+            id="INBOUND_VOYAGE"
+            placeholder="Chọn container kiểm đếm"
+          />
+        </div>
+        <div>
           <Label htmlFor="ISSUE_DATE">{DELIVER_ORDER.ISSUE_DATE.headerName}</Label>
           <Input
             value={filter.ISSUE_DATE ? moment(filter.ISSUE_DATE).format("DD/MM/YYYY HH:mm") : ""}
@@ -271,7 +297,7 @@ export function ImportTally() {
             placeholder="Chọn container kiểm đếm"
           />
         </div>
-        <div className="w-1/4 min-w-fit">
+        <div>
           <Label htmlFor="EXP_DATE">{DELIVER_ORDER.EXP_DATE.headerName}</Label>
           <Input
             value={filter.EXP_DATE ? moment(filter.EXP_DATE).format("DD/MM/YYYY HH:mm") : ""}
@@ -304,27 +330,37 @@ export function ImportTally() {
                       handleSelectPackage(item);
                     }}
                   >
-                    <div>
+                    <div className="w-2/3 space-y-2">
                       <div>
                         Số Housebill: <b>{item?.HOUSE_BILL}</b>
+                      </div>
+                      <div>
+                        Chủ hàng: <b>{item?.CONSIGNEE}</b>
                       </div>
                       <div>
                         Số tờ khai: <b>{item?.DECLARE_NO}</b>
                       </div>
                       <div>
+                        Loại hàng: <b>{item?.ITEM_TYPE_NAME}</b>
+                      </div>
+                      <div>
                         Số Seal: <b>{item?.SEALNO}</b>
                       </div>
                       <div>
-                        Loại hàng: <b>{item?.ITEM_TYPE_NAME}</b>
+                        Ghi chú: <b>{item?.NOTE}</b>
                       </div>
                     </div>
                     <div className="flex flex-col justify-between text-center">
                       <div>
-                        Tổng số lượng: <b>{item?.CARGO_PIECE}</b>
+                        Tổng số lượng
+                        <div className="font-bold">
+                          {item?.CARGO_PIECE} ({item?.PACKAGE_UNIT_CODE} - {item?.PACKAGE_UNIT_NAME}
+                          )
+                        </div>
                       </div>
                       {item?.JOB_STATUS === "C" && (
                         <div className="flex flex-col items-center justify-center font-bold text-green-600">
-                          <CheckCircle />
+                          <CheckCircle className="size-10" />
                           <div>Hoàn thành kiểm đếm</div>
                         </div>
                       )}

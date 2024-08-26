@@ -41,7 +41,7 @@ export function PrintPallet({ data = {}, selectedPackage = {} }) {
 
 const ComponentPrint = forwardRef(({ data = {}, selectedPackage = {} }, ref) => {
   return (
-    <div ref={ref} className="space-y-2 px-5 py-7">
+    <div ref={ref} className="hidden-to-print space-y-2 px-5 py-7">
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-center text-12">
           <div className="text-center">

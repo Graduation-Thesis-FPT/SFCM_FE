@@ -1,6 +1,7 @@
 import moment from "moment";
 import { forwardRef } from "react";
 import { useSelector } from "react-redux";
+import logo from "@/assets/image/Logo_64x64.svg";
 
 export const ComponentPrintExOrder = forwardRef(
   ({ data = {}, selectedCustomer = {}, packageFilter = {}, selectedContainer = {} }, ref) => {
@@ -8,10 +9,19 @@ export const ComponentPrintExOrder = forwardRef(
     return (
       <div ref={ref} className="hidden-to-print space-y-3 p-5">
         <div className="flex justify-between text-sm">
-          <span>
+          <div className="flex flex-col items-center">
+            <div className="text-center">
+              <div>Cảng quốc tế SFCM</div>
+              <div>Kho SFCM</div>
+            </div>
+            <div>
+              <img src={logo} className="size-[64px]" />
+            </div>
+          </div>
+          {/* <span>
             <div>Cảng quốc tế SFCM</div>
             <div>Kho SFCM</div>
-          </span>
+          </span> */}
           <span className="text-center font-bold">
             <div>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
             <div>ĐỘC LẬP - TỰ DO - HẠNH PHÚC</div>

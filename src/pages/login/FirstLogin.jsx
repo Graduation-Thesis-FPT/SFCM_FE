@@ -80,7 +80,7 @@ export function FirstLogin() {
 
   return (
     <div className="grid h-screen grid-cols-8">
-      <div className="col-span-3 place-content-center px-[48px]">
+      <div className="col-span-8 place-content-center px-[48px] md:col-span-3">
         <img className="m-auto mb-[42px]" src={logo} />
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -163,8 +163,12 @@ export function FirstLogin() {
           </form>
         </Form>
       </div>
-
-      <img className="col-span-5 h-screen w-full object-cover" src={background} />
+      <img
+        loading="lazy"
+        alt="backgound-login"
+        className="hidden h-screen w-full object-cover md:col-span-5 md:flex"
+        src={background}
+      />
     </div>
   );
 }
