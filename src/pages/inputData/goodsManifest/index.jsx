@@ -322,6 +322,7 @@ export function GoodsManifest() {
         toast.success("Copy số vận đơn thành công");
       }
     } catch (error) {
+      console.log(error);
       toast.error("Copy thất bại. Vui lòng thử lại");
     }
   };
