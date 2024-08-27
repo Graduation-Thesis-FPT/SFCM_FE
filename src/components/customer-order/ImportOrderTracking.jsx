@@ -30,6 +30,14 @@ export function ImportOrderTracking() {
           service={getImportedOrders}
         />
       </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel>
+        <OrderList
+          title="Đã huỷ"
+          status={ImportOrderStatus.isCanceled}
+          service={getImportedOrders}
+        />
+      </ResizablePanel>
     </ResizablePanelGroup>
   );
 }

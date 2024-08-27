@@ -37,6 +37,10 @@ export function OrderCard({ order, status }) {
         return "border-green-100 bg-green-50";
       case ExportOrderStatus.isReleased:
         return "border-blue-100 bg-blue-50";
+      case ExportOrderStatus.isCanceled:
+        return "border-red-100 bg-red-50";
+      case ImportOrderStatus.isCanceled:
+        return "border-red-100 bg-red-50";
       default:
         return "border-red-100 bg-red-50";
     }
