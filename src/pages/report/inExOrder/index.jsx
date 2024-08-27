@@ -1,6 +1,6 @@
 import { getAllCustomer } from "@/apis/customer.api";
 import { viewInvoice } from "@/apis/order.api";
-import { getReportInExOrder } from "@/apis/report.api";
+import { getReportInExOrder, viewOrderDtl } from "@/apis/report.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
@@ -20,14 +20,21 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
+import { OrderDetail } from "@/components/customer-order";
+import { OrderStatus } from "@/constants/order-status";
 import useFetchData from "@/hooks/useRefetchData";
+import { useToggle } from "@/hooks/useToggle";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { addDays } from "date-fns";
 import moment from "moment";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useReactToPrint } from "react-to-print";
 
 export function InExOrder() {
+  const [order, setOrder] = useToggle();
+  const orderDetailRef = useRef();
+
   const gridRef = useRef();
   const toast = useCustomToast();
   const dispatch = useDispatch();
@@ -40,7 +47,7 @@ export function InExOrder() {
     to: addDays(new Date(), 30),
     isInEx: "all",
     CUSTOMER_CODE: "all",
-    CNTRNO: ""
+    DE_ORDER_NO: ""
   });
 
   const [rowData, setRowData] = useState([]);
@@ -57,20 +64,14 @@ export function InExOrder() {
       }
     },
     {
-      headerName: "Số container",
-      field: "CNTRNO",
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: "Mã hóa đơn",
-      field: "INV_ID",
-      flex: 1,
-      filter: true
-    },
-    {
       headerName: "Mã đơn hàng",
       field: "DE_ORDER_NO",
+      flex: 1,
+      filter: true
+    },
+    {
+      headerName: "Số container",
+      field: "CNTRNO",
       flex: 1,
       filter: true
     },
@@ -106,31 +107,67 @@ export function InExOrder() {
         );
       }
     },
+
     {
-      flex: 0.6,
-      minWidth: 100,
+      flex: 1.5,
       cellClass: "text-center",
       cellRenderer: params => {
         return (
-          <Button
-            variant="link"
-            onClick={() => {
-              if (params.data.IS_VALID === false) {
-                toast.warning(
-                  `Hóa đơn này đã bị hủy với lý do: ${params.data.CANCEL_REMARK}. Lúc ${moment(params.data.CANCLE_DATE).format("DD/MM/YYYY HH:mm")}`
-                );
-                return;
-              }
-              handleViewInvoice(params.data.DE_ORDER_NO);
-            }}
-            className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
-          >
-            Hóa đơn
-          </Button>
+          <>
+            <Button
+              variant="link"
+              onClick={() => {
+                handleViewOrderDtl(params.data.DE_ORDER_NO);
+              }}
+              className="cursor-pointer text-sm font-medium"
+            >
+              Xem lệnh
+            </Button>
+            <Button
+              variant="link"
+              onClick={() => {
+                if (params.data.IS_VALID === false) {
+                  toast.warning(
+                    `Hóa đơn này đã bị hủy với lý do: ${params.data.CANCEL_REMARK}. Lúc ${moment(params.data.CANCLE_DATE).format("DD/MM/YYYY HH:mm")}`
+                  );
+                  return;
+                }
+                handleViewInvoice(params.data.DE_ORDER_NO);
+              }}
+              className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
+            >
+              Hóa đơn
+            </Button>
+          </>
         );
       }
     }
   ];
+
+  const handlePrint = useReactToPrint({
+    content: () => orderDetailRef.current,
+    onBeforePrint: () => dispatch(setGlobalLoading(true)),
+    onAfterPrint: () => dispatch(setGlobalLoading(false))
+  });
+
+  const handleGetOrder = async fkey => {
+    dispatch(setGlobalLoading(true));
+    await viewOrderDtl(fkey)
+      .then(async res => {
+        await setOrder(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
+
+  const handleViewOrderDtl = async fkey => {
+    await handleGetOrder(fkey);
+    handlePrint();
+  };
 
   const handleViewInvoice = async fkey => {
     dispatch(setGlobalLoading(true));
@@ -181,14 +218,14 @@ export function InExOrder() {
       <Section.Header>
         <div className="grid grid-cols-5 items-end gap-3">
           <div>
-            <Label htmlFor="CNTRNO">Số container</Label>
+            <Label htmlFor="DE_ORDER_NO">Mã đơn hàng</Label>
             <Input
-              id="CNTRNO"
-              placeholder="Nhập số container"
-              value={filter.CNTRNO}
+              id="DE_ORDER_NO"
+              placeholder="Nhập mã hóa đơn"
+              value={filter.DE_ORDER_NO}
               maxLength={11}
               onChange={e => {
-                setFilter({ ...filter, CNTRNO: e.target.value?.trim()?.toUpperCase() });
+                setFilter({ ...filter, DE_ORDER_NO: e.target.value?.trim()?.toUpperCase() });
               }}
               onKeyPress={e => {
                 if (e.key === "Enter") {
@@ -283,6 +320,15 @@ export function InExOrder() {
           />
         </Section.Table>
       </Section.Content>
+      <OrderDetail ref={orderDetailRef} data={order} status={getType(order)} />
     </Section>
   );
 }
+
+export const getType = order => {
+  if (order?.DE_ORDER_NO?.includes("XK")) {
+    return OrderStatus.Export;
+  } else if (order?.DE_ORDER_NO?.includes("NK")) {
+    return OrderStatus.Import;
+  }
+};

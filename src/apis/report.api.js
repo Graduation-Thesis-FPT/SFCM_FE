@@ -6,7 +6,7 @@ export const getReportInExOrder = async ({
   to,
   isInEx = "",
   CUSTOMER_CODE = "",
-  CNTRNO = ""
+  DE_ORDER_NO = ""
 }) =>
   await axiosPrivate.get(`order/getReportInExOrder`, {
     params: {
@@ -14,7 +14,7 @@ export const getReportInExOrder = async ({
       to: moment(to).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
       isInEx: isInEx === "all" ? "" : isInEx,
       CUSTOMER_CODE: CUSTOMER_CODE === "all" ? "" : CUSTOMER_CODE,
-      CNTRNO
+      DE_ORDER_NO
     }
   });
 
@@ -28,4 +28,9 @@ export const getReportRevenue = async ({ from, to, isInEx = "", INV_NO = "", PAY
       INV_NO
     }
   });
+};
+
+export const viewOrderDtl = async fkey => {
+  return await axiosPrivate.get(`order/viewOrderDtl/${fkey}`);
+  f;
 };
