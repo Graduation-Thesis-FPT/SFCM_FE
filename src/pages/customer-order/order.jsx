@@ -155,6 +155,26 @@ export function Order() {
       }
     },
     {
+      headerName: "Trạng thái",
+      field: "IS_VALID",
+      minWidth: 150,
+      maxWidth: 150,
+      cellRenderer: params => {
+        if (params.value) {
+          return (
+            <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+              Đã thanh toán
+            </Badge>
+          );
+        }
+        return (
+          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+            Đã hủy
+          </Badge>
+        );
+      }
+    },
+    {
       headerName: "",
       field: "ORDER_DETAIL",
       flex: 0.5,
@@ -230,7 +250,6 @@ export function Order() {
         dispatch(setGlobalLoading(false));
       });
   };
-
   return (
     <Section>
       <Section.Header title="Danh sách đơn hàng" />

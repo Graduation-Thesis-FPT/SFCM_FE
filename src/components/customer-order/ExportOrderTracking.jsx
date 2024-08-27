@@ -22,6 +22,14 @@ export function ExportOrderTracking() {
           service={getExportedOrders}
         />
       </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel>
+        <OrderList
+          title="Đã huỷ"
+          status={ExportOrderStatus.isCanceled}
+          service={getExportedOrders}
+        />
+      </ResizablePanel>
     </ResizablePanelGroup>
   );
 }
