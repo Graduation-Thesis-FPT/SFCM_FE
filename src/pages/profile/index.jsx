@@ -31,9 +31,9 @@ export function ProfilePage() {
   const dispatch = useDispatch();
   const { data: user, revalidate } = useFetchData({
     service: findUserById,
-    params: { id: userGlobal.userInfo?.ROWGUID },
-    dependencies: [userGlobal.userInfo?.ROWGUID],
-    shouldFetch: !!userGlobal.userInfo?.ROWGUID
+    params: { id: userGlobal.userInfo?.USERNAME },
+    dependencies: [userGlobal.userInfo?.USERNAME],
+    shouldFetch: !!userGlobal.userInfo?.USERNAME
   });
 
   const formSchema = z.object({
@@ -86,7 +86,7 @@ export function ProfilePage() {
   function onSubmit(values) {
     dispatch(setGlobalLoading(true));
     let { USERNAME, ROLE_ID, IS_ACTIVE, ...rest } = values;
-    updateUser({ id: userGlobal.userInfo?.ROWGUID, data: rest })
+    updateUser({ id: userGlobal.userInfo?.USERNAME, data: rest })
       .then(updateRes => {
         form.reset();
         revalidate();

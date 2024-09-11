@@ -7,12 +7,10 @@ import { setMenu } from "@/redux/slice/menuSlice";
 import { Loader2 } from "lucide-react";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 
 export function AuthProvider({ children }) {
   const dispatch = useDispatch();
   const user = useSelector(state => state.userSlice.user);
-  let { pathname } = useLocation();
   const rToken = getRefreshToken();
   const userGlobal = useCustomStore();
   const {
@@ -24,7 +22,6 @@ export function AuthProvider({ children }) {
     dependencies: [user],
     shouldFetch: !!user.userInfo
   });
-  console.log("menu", menu);
   useEffect(() => {
     if (!user.accessToken && rToken) {
       refreshToken()
