@@ -58,8 +58,8 @@ export function TariffCode() {
       editable: true
     },
     {
-      headerName: TRF_CODES.UPDATE_DATE.headerName,
-      field: TRF_CODES.UPDATE_DATE.field,
+      headerName: TRF_CODES.UPDATED_AT.headerName,
+      field: TRF_CODES.UPDATED_AT.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }

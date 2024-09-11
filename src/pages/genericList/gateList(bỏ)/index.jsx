@@ -62,8 +62,8 @@
 //       cellRenderer: IsInOutGateRender
 //     },
 //     {
-//       headerName: BS_GATE.UPDATE_DATE.headerName,
-//       field: BS_GATE.UPDATE_DATE.field,
+//       headerName: BS_GATE.UPDATED_AT.headerName,
+//       field: BS_GATE.UPDATED_AT.field,
 //       flex: 1,
 //       cellRenderer: DateTimeByTextRender
 //     }

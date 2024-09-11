@@ -73,8 +73,8 @@
 //       cellRenderer: params => WarehouseCodeRender(params, warehouses)
 //     },
 //     {
-//       headerName: BS_EQUIPMENT.UPDATE_DATE.headerName,
-//       field: BS_EQUIPMENT.UPDATE_DATE.field,
+//       headerName: BS_EQUIPMENT.UPDATED_AT.headerName,
+//       field: BS_EQUIPMENT.UPDATED_AT.field,
 //       flex: 1,
 //       filter: true,
 //       cellRenderer: DateTimeByTextRender

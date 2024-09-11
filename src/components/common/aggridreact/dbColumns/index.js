@@ -1,8 +1,8 @@
 class CommonColumns {
   CREATE_BY = { field: "CREATE_BY", headerName: "Người tạo" };
-  CREATE_DATE = { field: "CREATE_DATE", headerName: "Ngày tạo" };
+  CREATED_AT = { field: "CREATED_AT", headerName: "Ngày tạo" };
   UPDATE_BY = { field: "UPDATE_BY", headerName: "Người cập nhật" };
-  UPDATE_DATE = { field: "UPDATE_DATE", headerName: "Ngày cập nhật" };
+  UPDATED_AT = { field: "UPDATED_AT", headerName: "Ngày cập nhật" };
 }
 
 export class bs_warehouse extends CommonColumns {

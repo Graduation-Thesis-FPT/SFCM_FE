@@ -59,8 +59,8 @@ export function CustomerType() {
       editable: true
     },
     {
-      headerName: BS_CUSTOMER_TYPE.UPDATE_DATE.headerName,
-      field: BS_CUSTOMER_TYPE.UPDATE_DATE.field,
+      headerName: BS_CUSTOMER_TYPE.UPDATED_AT.headerName,
+      field: BS_CUSTOMER_TYPE.UPDATED_AT.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }

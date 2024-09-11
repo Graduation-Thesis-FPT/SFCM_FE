@@ -53,8 +53,8 @@ export function ItemType() {
       onCellValueChanged: UpperCase
     },
     {
-      headerName: BS_ITEM_TYPE.UPDATE_DATE.headerName,
-      field: BS_ITEM_TYPE.UPDATE_DATE.field,
+      headerName: BS_ITEM_TYPE.UPDATED_AT.headerName,
+      field: BS_ITEM_TYPE.UPDATED_AT.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }

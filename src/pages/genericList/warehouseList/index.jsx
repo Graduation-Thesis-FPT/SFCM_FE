@@ -56,7 +56,7 @@ export function WarehouseList() {
     },
     {
       headerName: "Ngày cập nhật",
-      field: "UPDATE_DATE",
+      field: "UPDATED_AT",
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }

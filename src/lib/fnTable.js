@@ -16,7 +16,7 @@ const fnAddRowsVer2 = (rowData, colDefs) => {
   colDefs
     .filter(
       col =>
-        col.field && !["CREATE_BY", "UPDATE_BY", "UPDATE_DATE", "CREATE_DATE"].includes(col.field)
+        col.field && !["CREATE_BY", "UPDATE_BY", "UPDATED_AT", "CREATED_AT"].includes(col.field)
     )
     .forEach(col => {
       if (col.cellEditor === "agCheckboxCellEditor") {
@@ -65,7 +65,7 @@ function fnFilterInsertAndUpdateData(listData) {
     );
   const updateData = listData
     .filter(item => item.status === "update")
-    .map(({ status, CREATE_BY, CREATE_DATE, UPDATE_BY, UPDATE_DATE, ...rest }) => rest)
+    .map(({ status, CREATE_BY, CREATED_AT, UPDATE_BY, UPDATED_AT, ...rest }) => rest)
     .map(item =>
       Object.fromEntries(
         Object.entries(item).map(([key, value]) => [key, value === null ? "" : value])
