@@ -10,14 +10,16 @@ import moment from "moment";
 import React, { useRef, useState } from "react";
 import { UserCreationForm } from "./UserCreationForm";
 import { UserUpdateForm } from "./UserUpdateForm";
-import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useSelector } from "react-redux";
 
 export function User() {
+  const { data: users, revalidate, loading } = useFetchData({ service: getAllUser });
+
   const gridRef = useRef(null);
   const currentUser = useSelector(state => state.userSlice.user.userInfo);
+
   const [detailData, setDetailData] = useState({});
-  const { data: users, revalidate, loading } = useFetchData({ service: getAllUser });
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",

@@ -27,7 +27,7 @@ const formSchema = z.object({
     .refine(value => value !== "customer", {
       message: "Không cho phép tạo tài khoản với vai trò khách hàng!"
     }),
-  USERNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
+  USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
     message: "Không được chứa khoảng trắng!"
   }),
   BIRTHDAY: z.string().refine(
@@ -41,11 +41,15 @@ const formSchema = z.object({
       message: "Ngày sinh không hợp lệ. Bạn phải trên 18 tuổi và ngày sinh không thể là hôm nay."
     }
   ),
-  FULLNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPECIAL_CHAR, {
-    message: "Không chứa ký tự đặc biệt!"
-  }),
+  FULLNAME: z
+    .string()
+    .trim()
+    .min(6, "Họ và tên tối thiểu 6 ký tự")
+    .regex(regexPattern.NO_SPECIAL_CHAR, {
+      message: "Họ và tên không được chứa ký tự đặc biệt!"
+    }),
   TELEPHONE: z.string().refine(data => data === "" || data.length === 10, {
-    message: "Số điện thoại bao gồm 11 số!"
+    message: "Số điện thoại bao gồm 11 số"
   }),
 
   EMAIL: z
@@ -72,7 +76,7 @@ export function UserCreationForm({ revalidate }) {
     defaultValues: {
       ROLE_ID: "",
       FULLNAME: "",
-      USERNAME: "",
+      USER_NAME: "",
       BIRTHDAY: "",
       TELEPHONE: "",
       EMAIL: "",
@@ -132,7 +136,7 @@ export function UserCreationForm({ revalidate }) {
               <div className="grid grid-cols-2 gap-x-4">
                 <FormField
                   control={form.control}
-                  name="USERNAME"
+                  name="USER_NAME"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -141,7 +145,7 @@ export function UserCreationForm({ revalidate }) {
                       <FormControl>
                         <Input type="text" placeholder="Nhập tài khoản" {...field} />
                       </FormControl>
-                      <FormMessage>{form.formState.errors.USERNAME?.message}</FormMessage>
+                      <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -153,7 +157,9 @@ export function UserCreationForm({ revalidate }) {
                   name="FULLNAME"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Họ và tên</FormLabel>
+                      <FormLabel>
+                        Họ và tên <span className="text-red">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input type="text" placeholder="Nhập họ và tên" {...field} />
                       </FormControl>
