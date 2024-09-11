@@ -14,7 +14,7 @@ export default function Router() {
   const dataRoutes = useSelector(state => state.menuSlice.menu);
   const location = useLocation();
   const pathChild = location.pathname.split("/")[2];
-  
+
   return (
     <Routes>
       <Route element={<PrivateRoute />}>
@@ -22,24 +22,16 @@ export default function Router() {
           {dataRoutes?.map(parent => {
             return (
               <Route
-                key={parent.ROWGUID}
-                path={parent.MENU_CODE}
-                element={
-                  !pathChild && (
-                    <Navigate to={`/${parent.MENU_CODE}/${parent.child[0].MENU_CODE}`} />
-                  )
-                }
+                key={parent.ID}
+                path={parent.ID}
+                element={!pathChild && <Navigate to={`/${parent.ID}/${parent.child[0].ID}`} />}
               >
                 {parent?.child?.map(child => {
-                  const Component = Comp[child.VIEW_PAGE];
+                  const Component = Comp[child.PAGE_COMPONENT];
                   if (!Component) {
-                    return (
-                      <Route key={child.ROWGUID} path={child.MENU_CODE} element={<Developing />} />
-                    );
+                    return <Route key={child.ID} path={child.ID} element={<Developing />} />;
                   }
-                  return (
-                    <Route key={child.ROWGUID} path={child.MENU_CODE} element={<Component />} />
-                  );
+                  return <Route key={child.ID} path={child.ID} element={<Component />} />;
                 })}
               </Route>
             );

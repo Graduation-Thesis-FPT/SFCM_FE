@@ -74,7 +74,7 @@ export function ProfilePage() {
     values: {
       ROLE_CODE: user?.ROLE_CODE || "",
       FULLNAME: user?.FULLNAME || "",
-      USER_NAME: user?.USER_NAME || "",
+      USERNAME: user?.USERNAME || "",
       BIRTHDAY: user?.BIRTHDAY ? moment(user?.BIRTHDAY).format("YYYY-MM-DD") : "",
       TELEPHONE: user?.TELEPHONE || "",
       EMAIL: user?.EMAIL || "",
@@ -85,7 +85,7 @@ export function ProfilePage() {
 
   function onSubmit(values) {
     dispatch(setGlobalLoading(true));
-    let { USER_NAME, ROLE_CODE, IS_ACTIVE, ...rest } = values;
+    let { USERNAME, ROLE_CODE, IS_ACTIVE, ...rest } = values;
     updateUser({ id: userGlobal.userInfo?.ROWGUID, data: rest })
       .then(updateRes => {
         form.reset();

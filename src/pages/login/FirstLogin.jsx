@@ -44,8 +44,7 @@ export function FirstLogin() {
   const toast = useCustomToast();
   const userGlobal = useCustomStore();
 
-  const ROWGUID = location?.state?.ROWGUID;
-  const USER_NAME = location?.state?.USER_NAME;
+  const USERNAME = location?.state?.USERNAME;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -54,8 +53,8 @@ export function FirstLogin() {
 
   function onSubmit(values) {
     setBtnLoading(true);
-    const userInfo = { USER_NAME: USER_NAME, PASSWORD: values.PASSWORD };
-    changeDefaultPassword(ROWGUID, userInfo)
+    const userInfo = { USERNAME: USERNAME, PASSWORD: values.PASSWORD };
+    changeDefaultPassword(USERNAME, userInfo)
       .then(res => {
         userGlobal.store(res.data.metadata);
         navigate("/");
@@ -68,7 +67,7 @@ export function FirstLogin() {
   }
 
   useEffect(() => {
-    if (!ROWGUID) {
+    if (!USERNAME) {
       navigate("/login");
     }
   }, []);

@@ -30,7 +30,7 @@ export function User() {
       }
     },
     {
-      field: "USER_NAME",
+      field: "USERNAME",
       headerName: "Tài khoản",
       flex: 1,
       filter: true
@@ -84,7 +84,7 @@ export function User() {
         display: "flex"
       },
       cellRenderer: params => {
-        if (params.data.ROWGUID === currentUser.ROWGUID) return null;
+        if (params.data.USERNAME === currentUser.USERNAME) return null;
         return (
           <SquarePen
             onClick={() => setDetailData(params.data)}

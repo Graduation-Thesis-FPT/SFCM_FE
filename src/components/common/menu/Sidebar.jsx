@@ -38,8 +38,8 @@ export const CategorizedMenu = ({ menu, title, isCollapse, handleScale }) => {
           return (
             <AccordionItem
               className="border-hidden"
-              value={item.MENU_CODE}
-              key={item.MENU_CODE + index}
+              value={item.ID}
+              key={item.ID + index}
               onClick={() => {
                 if (isCollapse) {
                   handleScale();
@@ -47,12 +47,12 @@ export const CategorizedMenu = ({ menu, title, isCollapse, handleScale }) => {
               }}
             >
               <AccordionTrigger
-                className={`py-2.5 hover:text-blue-800 ${isParentSelected === item.MENU_CODE ? "text-blue-700" : "text-gray-500"}`}
+                className={`py-2.5 hover:text-blue-800 ${isParentSelected === item.ID ? "text-blue-700" : "text-gray-500"}`}
               >
                 {!isCollapse ? (
                   <div className="flex items-center gap-2 text-14">
-                    <Icon size={16}  />
-                    <p className="flex-1 line-clamp-1">{item.MENU_NAME}</p>
+                    <Icon size={16} />
+                    <p className="line-clamp-1 flex-1">{item.MENU_NAME}</p>
                   </div>
                 ) : (
                   <Icon size={16} />
@@ -62,11 +62,11 @@ export const CategorizedMenu = ({ menu, title, isCollapse, handleScale }) => {
               <AccordionContent>
                 <nav className="ml-3 grid items-start border-l-2 border-l-gray-300 pl-2 text-13 font-medium">
                   {item?.child?.map((child, index) => {
-                    let isMenuSelected = pathname === `/${item.MENU_CODE}/${child.MENU_CODE}`;
+                    let isMenuSelected = pathname === `/${item.ID}/${child.ID}`;
                     return (
                       <Link
-                        key={child.MENU_CODE + index}
-                        to={`/${item.MENU_CODE}/${child.MENU_CODE}`}
+                        key={child.ID + index}
+                        to={`/${item.ID}/${child.ID}`}
                         className={`flex items-center gap-3 rounded-md px-3 py-1.5 transition-all ${isMenuSelected ? "text-blue-700" : "text-muted-foreground"}  hover:bg-muted hover:text-blue-700`}
                       >
                         <p className="line-clamp-1">{child.MENU_NAME}</p>

@@ -27,7 +27,7 @@ const formSchema = z.object({
     .refine(value => value !== "customer", {
       message: "Không cho phép tạo tài khoản với vai trò khách hàng!"
     }),
-  USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
+  USERNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
     message: "Không được chứa khoảng trắng!"
   }),
   BIRTHDAY: z.string().refine(
@@ -72,7 +72,7 @@ export function UserCreationForm({ revalidate }) {
     defaultValues: {
       ROLE_CODE: "",
       FULLNAME: "",
-      USER_NAME: "",
+      USERNAME: "",
       BIRTHDAY: "",
       TELEPHONE: "",
       EMAIL: "",
@@ -132,7 +132,7 @@ export function UserCreationForm({ revalidate }) {
               <div className="grid grid-cols-2 gap-x-4">
                 <FormField
                   control={form.control}
-                  name="USER_NAME"
+                  name="USERNAME"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -141,7 +141,7 @@ export function UserCreationForm({ revalidate }) {
                       <FormControl>
                         <Input type="text" placeholder="Nhập tài khoản" {...field} />
                       </FormControl>
-                      <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
+                      <FormMessage>{form.formState.errors.USERNAME?.message}</FormMessage>
                     </FormItem>
                   )}
                 />

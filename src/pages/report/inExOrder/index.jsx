@@ -252,7 +252,7 @@ export function InExOrder() {
                   {customerList?.map(
                     customer =>
                       customer.IS_ACTIVE && (
-                        <SelectItem key={customer.USER_NAME} value={customer.CUSTOMER_CODE}>
+                        <SelectItem key={customer.USERNAME} value={customer.CUSTOMER_CODE}>
                           {customer.CUSTOMER_CODE} - {customer.CUSTOMER_NAME}
                         </SelectItem>
                       )

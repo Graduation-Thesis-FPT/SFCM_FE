@@ -42,7 +42,7 @@ export function MainLayout() {
   };
   useEffect(() => {
     if (pathname === "/" && menu.length > 0) {
-      navigate(`/${menu[0]?.MENU_CODE}/${menu[0]?.child[0]?.MENU_CODE}`);
+      navigate(`/${menu[0]?.ID}/${menu[0]?.child[0]?.ID}`);
     }
   }, [menu]);
 
@@ -68,7 +68,7 @@ export function MainLayout() {
           <h1 className="text-xl font-bold text-blue-800">
             {menu?.map(item =>
               item?.child?.map(child => {
-                let isMenuSelected = pathname === `/${item.MENU_CODE}/${child.MENU_CODE}`;
+                let isMenuSelected = pathname === `/${item.ID}/${child.ID}`;
                 if (isMenuSelected) {
                   return child.MENU_NAME;
                 }

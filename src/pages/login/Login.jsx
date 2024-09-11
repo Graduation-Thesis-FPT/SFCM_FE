@@ -33,7 +33,7 @@ import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { Password } from "@/components/common/ui/password";
 
 const formSchema = z.object({
-  USER_NAME: z
+  USERNAME: z
     .string()
     .min(1, { message: "Vui lòng nhập tài khoản!" }) // Non-empty
     .max(100, { message: "Tài khoản không được vượt quá 100 ký tự!" }) // Max length 20
@@ -54,7 +54,7 @@ export function Login() {
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { USER_NAME: "", PASSWORD: "" }
+    defaultValues: { USERNAME: "", PASSWORD: "" }
   });
 
   function onSubmit(values) {
@@ -65,8 +65,7 @@ export function Login() {
         if (res.data.metadata.changeDefaultPassword) {
           navigate("/change-default-password", {
             state: {
-              ROWGUID: res.data.metadata.ROWGUID,
-              USER_NAME: values.USER_NAME
+              USERNAME: values.USERNAME
             }
           });
           toast.success("Đăng nhập thành công! Vui lòng đổi mật khẩu mặc định!");
@@ -102,7 +101,7 @@ export function Login() {
               <h1 className="mb-8 text-3xl font-bold text-blue-800 lg:text-4xl">Đăng nhập</h1>
               <FormField
                 control={form.control}
-                name="USER_NAME"
+                name="USERNAME"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-base">Tài khoản</FormLabel>

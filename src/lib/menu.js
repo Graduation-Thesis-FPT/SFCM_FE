@@ -4,8 +4,8 @@ export const categorizedMenu = menu => {
   let mainMenu = [];
   let toolMenu = [];
 
-  mainMenu = menu.filter(item => MAIN_MENU.includes(item.MENU_CODE));
-  toolMenu = menu.filter(item => !MAIN_MENU.includes(item.MENU_CODE));
+  mainMenu = menu.filter(item => MAIN_MENU.includes(item.ID));
+  toolMenu = menu.filter(item => !MAIN_MENU.includes(item.ID));
 
   return { mainMenu, toolMenu };
 };
@@ -15,7 +15,7 @@ export const getRoutes = menu => {
   menu.forEach(parent => {
     if (parent?.child?.length !== 0) {
       parent.child.forEach(child => {
-        routes.push({ path: `/${parent.MENU_CODE}/${child.MENU_CODE}`, element: child.VIEW_PAGE });
+        routes.push({ path: `/${parent.ID}/${child.ID}`, element: child.PAGE_COMPONENT });
       });
     }
   });

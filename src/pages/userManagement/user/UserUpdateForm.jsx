@@ -35,7 +35,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   const formSchema = z
     .object({
       ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
-      USER_NAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
+      USERNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
         message: "Không được chứa khoảng trắng!"
       }),
       BIRTHDAY: z
@@ -93,9 +93,9 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   const [btnLoading, setBtnLoading] = useToggle();
   const { data: user, loading } = useFetchData({
     service: findUserById,
-    params: { id: detail.ROWGUID },
-    dependencies: [detail.ROWGUID],
-    shouldFetch: !!detail.ROWGUID
+    params: { id: detail.USERNAME },
+    dependencies: [detail.USERNAME],
+    shouldFetch: !!detail.USERNAME
   });
 
   const form = useForm({
@@ -103,7 +103,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
     values: {
       ROLE_CODE: user?.ROLE_CODE || "",
       FULLNAME: user?.FULLNAME || "",
-      USER_NAME: user?.USER_NAME || "",
+      USERNAME: user?.USERNAME || "",
       BIRTHDAY: user?.BIRTHDAY ? moment(user?.BIRTHDAY).format("YYYY-MM-DD") : "",
       TELEPHONE: user?.TELEPHONE || "",
       EMAIL: user?.EMAIL || "",
@@ -127,8 +127,8 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
     }
 
     setBtnLoading(true);
-    let { USER_NAME, EMAIL, __originalUser, ...rest } = values;
-    updateUser({ id: detail.ROWGUID, data: rest })
+    let { USERNAME, EMAIL, __originalUser, ...rest } = values;
+    updateUser({ id: detail.USERNAME, data: rest })
       .then(updateRes => {
         setBtnLoading(false);
         form.reset();
@@ -145,7 +145,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   return (
     <>
       <CustomSheet
-        open={!!detail.ROWGUID}
+        open={!!detail.USERNAME}
         onOpenChange={onOpenChange}
         form={form}
         title="Cập nhật thông tin người dùng"
@@ -166,7 +166,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
                   <div className="grid grid-cols-2 gap-x-4">
                     <FormField
                       control={form.control}
-                      name="USER_NAME"
+                      name="USERNAME"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
@@ -175,7 +175,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
                           <FormControl>
                             <Input type="text" placeholder="Nhập tài khoản" disabled {...field} />
                           </FormControl>
-                          <FormMessage>{form.formState.errors.USER_NAME?.message}</FormMessage>
+                          <FormMessage>{form.formState.errors.USERNAME?.message}</FormMessage>
                         </FormItem>
                       )}
                     />
