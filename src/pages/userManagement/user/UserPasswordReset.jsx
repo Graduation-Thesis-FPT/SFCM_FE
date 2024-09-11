@@ -18,11 +18,11 @@ export const UserPasswordReset = ({ detail = {}, openDialog, setOpenDialog }) =>
   const handleResetPassword = () => {
     setLoading(true);
     const DEFAULT_PASSWORD = import.meta.env.VITE_DEFAULT_PASSWORD;
-    if (!DEFAULT_PASSWORD || !detail.ROWGUID) {
+    if (!DEFAULT_PASSWORD || !detail.USERNAME) {
       toast.error("Lỗi hệ thống, vui lòng thử lại sau!");
       return;
     }
-    resetPasswordById({ id: detail.ROWGUID, data: { DEFAULT_PASSWORD } })
+    resetPasswordById({ id: detail.USERNAME, data: { DEFAULT_PASSWORD } })
       .then(res => {
         setLoading(false);
         toast.success(res);

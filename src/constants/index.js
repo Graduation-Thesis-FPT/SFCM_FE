@@ -216,8 +216,8 @@ export const REASON_PHRASES = {
 };
 
 export const actionGrantPermission = {
-  VIEW: "IS_VIEW",
-  CREATE: "IS_ADD_NEW",
-  UPDATE: "IS_MODIFY",
-  DELETE: "IS_DELETE"
+  VIEW: "CAN_VIEW",
+  CREATE: "CAN_ADD_NEW",
+  UPDATE: "CAN_MODIFY",
+  DELETE: "CAN_DELETE"
 };

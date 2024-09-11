@@ -47,10 +47,10 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
           ROWGUID: child.ROWGUID,
           ROLE_CODE: detailData.ROLE_CODE,
           MENU_CODE: child.MENU_CODE,
-          IS_VIEW: child.IS_VIEW,
-          IS_ADD_NEW: child.IS_ADD_NEW,
-          IS_MODIFY: child.IS_MODIFY,
-          IS_DELETE: child.IS_DELETE
+          CAN_VIEW: child.CAN_VIEW,
+          CAN_ADD_NEW: child.CAN_ADD_NEW,
+          CAN_MODIFY: child.CAN_MODIFY,
+          CAN_DELETE: child.CAN_DELETE
         });
       });
     });
@@ -105,37 +105,37 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.IS_VIEW}
-                          checked={permissionData[parentIndex].child[childIndex].IS_VIEW}
+                          defaultChecked={child.CAN_VIEW}
+                          checked={permissionData[parentIndex].child[childIndex].CAN_VIEW}
                           onCheckedChange={checked => {
-                            handleCheckboxChange(parentIndex, childIndex, "IS_VIEW", checked);
+                            handleCheckboxChange(parentIndex, childIndex, "CAN_VIEW", checked);
                           }}
                         />
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.IS_ADD_NEW}
-                          checked={permissionData[parentIndex].child[childIndex].IS_ADD_NEW}
+                          defaultChecked={child.CAN_ADD_NEW}
+                          checked={permissionData[parentIndex].child[childIndex].CAN_ADD_NEW}
                           onCheckedChange={checked => {
-                            handleCheckboxChange(parentIndex, childIndex, "IS_ADD_NEW", checked);
+                            handleCheckboxChange(parentIndex, childIndex, "CAN_ADD_NEW", checked);
                           }}
                         />
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.IS_MODIFY}
-                          checked={permissionData[parentIndex].child[childIndex].IS_MODIFY}
+                          defaultChecked={child.CAN_MODIFY}
+                          checked={permissionData[parentIndex].child[childIndex].CAN_MODIFY}
                           onCheckedChange={checked => {
-                            handleCheckboxChange(parentIndex, childIndex, "IS_MODIFY", checked);
+                            handleCheckboxChange(parentIndex, childIndex, "CAN_MODIFY", checked);
                           }}
                         />
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.IS_DELETE}
-                          checked={permissionData[parentIndex].child[childIndex].IS_DELETE}
+                          defaultChecked={child.CAN_DELETE}
+                          checked={permissionData[parentIndex].child[childIndex].CAN_DELETE}
                           onCheckedChange={checked => {
-                            handleCheckboxChange(parentIndex, childIndex, "IS_DELETE", checked);
+                            handleCheckboxChange(parentIndex, childIndex, "CAN_DELETE", checked);
                           }}
                         />
                       </div>
