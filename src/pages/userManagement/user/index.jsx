@@ -66,7 +66,7 @@ export function User() {
       }
     },
     {
-      field: "UPDATE_DATE",
+      field: "UPDATED_AT",
       headerName: "Ngày chỉnh sửa",
       flex: 1,
       cellRenderer: params => {

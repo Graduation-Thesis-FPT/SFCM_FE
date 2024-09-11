@@ -72,7 +72,7 @@ export function ProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     values: {
-      ROLE_CODE: user?.ROLE_CODE || "",
+      ROLE_ID: user?.ROLE_ID || "",
       FULLNAME: user?.FULLNAME || "",
       USERNAME: user?.USERNAME || "",
       BIRTHDAY: user?.BIRTHDAY ? moment(user?.BIRTHDAY).format("YYYY-MM-DD") : "",
@@ -85,7 +85,7 @@ export function ProfilePage() {
 
   function onSubmit(values) {
     dispatch(setGlobalLoading(true));
-    let { USERNAME, ROLE_CODE, IS_ACTIVE, ...rest } = values;
+    let { USERNAME, ROLE_ID, IS_ACTIVE, ...rest } = values;
     updateUser({ id: userGlobal.userInfo?.ROWGUID, data: rest })
       .then(updateRes => {
         form.reset();
@@ -110,7 +110,7 @@ export function ProfilePage() {
           size="64"
           fallback="S"
           className={cn(
-            bgAvatar(user?.ROLE_CODE),
+            bgAvatar(user?.ROLE_ID),
             "h-16 w-16 cursor-pointer items-center justify-center text-white"
           )}
         >

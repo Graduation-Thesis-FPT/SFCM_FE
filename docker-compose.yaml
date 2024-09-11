@@ -1,0 +1,37 @@
+services:
+  sfcm-fe:
+    container_name: sfcm-fe
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 2024:2024
+    restart: always
+    networks:
+      - sfcm-net
+    env_file:
+      - ./.env
+    # environment:
+    #   - VITE_BASE_URL=https://sfcm.id.vn/api
+    depends_on:
+      - sfcm-be
+  
+  sfcm-be:
+    container_name: sfcm-be
+    build:
+      context: ../SFCM_NEW_BE
+      dockerfile: Dockerfile
+    ports:
+      - 3050:3050
+    restart: always
+    networks:
+      - sfcm-net
+    env_file:
+      - ../SFCM_NEW_BE/.env
+    environment:
+      - DB_SERVER=host.docker.internal
+
+networks:
+  sfcm-net:
+    name: sfcm-net
+    external: true

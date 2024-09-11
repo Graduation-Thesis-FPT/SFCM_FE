@@ -55,8 +55,8 @@ export function PackageUnitList() {
       editable: true
     },
     {
-      headerName: BS_PACKAGE_UNIT.UPDATE_DATE.headerName,
-      field: BS_PACKAGE_UNIT.UPDATE_DATE.field,
+      headerName: BS_PACKAGE_UNIT.UPDATED_AT.headerName,
+      field: BS_PACKAGE_UNIT.UPDATED_AT.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }

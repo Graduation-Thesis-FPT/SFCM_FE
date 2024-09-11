@@ -63,8 +63,8 @@ export const getType = order => {
   }
 };
 
-export const bgAvatar = ROLE_CODE => {
-  switch (ROLE_CODE) {
+export const bgAvatar = ROLE_ID => {
+  switch (ROLE_ID) {
     case "admin":
       return `bg-red-500`;
     case "procedure-staff":

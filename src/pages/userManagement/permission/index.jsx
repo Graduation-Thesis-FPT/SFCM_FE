@@ -24,14 +24,14 @@ export function Permission() {
       }
     },
     {
-      field: "ROLE_CODE",
+      field: "ID",
       headerName: "Mã",
       flex: 1,
       filter: true
     },
-    { field: "ROLE_NAME", headerName: "Chức vụ", flex: 1, filter: true },
+    { field: "NAME", headerName: "Chức vụ", flex: 1, filter: true },
     {
-      field: "UPDATE_DATE",
+      field: "UPDATED_AT",
       headerName: "Ngày chỉnh sửa",
       flex: 1,
       cellRenderer: params => {
@@ -50,6 +50,7 @@ export function Permission() {
             variant="link"
             size="xs"
             onClick={() => {
+              console.log(params.data);
               setDetailData(params.data);
             }}
             className="text-xs text-blue-700 hover:text-blue-700/80"
@@ -80,7 +81,7 @@ export function Permission() {
         </Section.Content>
       </Section>
       <DetailPermission
-        detailData={detailData}
+        role={detailData}
         onOpenChange={() => {
           setDetailData({});
         }}

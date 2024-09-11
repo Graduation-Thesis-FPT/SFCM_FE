@@ -109,8 +109,8 @@ export function MethodList() {
           ? null
           : "bg-gray-100";
       },
-      headerName: BS_METHOD.UPDATE_DATE.headerName,
-      field: BS_METHOD.UPDATE_DATE.field,
+      headerName: BS_METHOD.UPDATED_AT.headerName,
+      field: BS_METHOD.UPDATED_AT.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }

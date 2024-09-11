@@ -1,4 +1,4 @@
-import { getAllPermissionByRoleCode, updatePermission } from "@/apis/permission";
+import { getAllPermissionByRoleId, updatePermission } from "@/apis/permission";
 import { CustomSheet } from "@/components/common/custom-sheet";
 import { useCustomToast } from "@/components/common/custom-toast";
 import {
@@ -13,14 +13,14 @@ import useFetchData from "@/hooks/useRefetchData";
 import { useToggle } from "@/hooks/useToggle";
 import { useEffect, useState } from "react";
 
-export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) {
+export function DetailPermission({ onOpenChange, role = {}, revalidate }) {
   const toast = useCustomToast();
   const [btnLoading, setBtnLoading] = useToggle();
   const { data: permissions } = useFetchData({
-    service: getAllPermissionByRoleCode,
-    params: { ROLE_CODE: detailData.ROLE_CODE },
-    dependencies: [detailData.ROLE_CODE],
-    shouldFetch: !!detailData.ROLE_CODE
+    service: getAllPermissionByRoleId,
+    params: { roleId: role.ID },
+    dependencies: [role.ID],
+    shouldFetch: !!role.ID
   });
   const [permissionData, setPermissionData] = useState(permissions ?? []);
 
@@ -28,7 +28,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
     if (permissions) {
       setPermissionData(permissions);
     }
-  }, [permissions, detailData.ROLE_CODE]);
+  }, [permissions, role.ID]);
 
   const handleCheckboxChange = (parentIndex, childIndex, field, checked) => {
     setPermissionData(prevState => {
@@ -41,16 +41,17 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
   const handlerUpdatePermission = () => {
     setBtnLoading(true);
     let data = [];
-    permissionData.forEach(parent => {
-      parent.child.forEach(child => {
+    permissionData.forEach(menu => {
+      menu.child.forEach(submenu => {
+        console.log(submenu);
         data.push({
-          ROWGUID: child.ROWGUID,
-          ROLE_CODE: detailData.ROLE_CODE,
-          MENU_CODE: child.MENU_CODE,
-          CAN_VIEW: child.CAN_VIEW,
-          CAN_ADD_NEW: child.CAN_ADD_NEW,
-          CAN_MODIFY: child.CAN_MODIFY,
-          CAN_DELETE: child.CAN_DELETE
+          ROWGUID: submenu.ROWGUID,
+          ROLE_ID: role.ID,
+          MENU_ID: submenu.MENU_ID,
+          CAN_VIEW: submenu.CAN_VIEW,
+          CAN_ADD_NEW: submenu.CAN_ADD_NEW,
+          CAN_MODIFY: submenu.CAN_MODIFY,
+          CAN_DELETE: submenu.CAN_DELETE
         });
       });
     });
@@ -68,23 +69,20 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
   };
 
   return (
-    <CustomSheet
-      open={!!detailData.ROLE_CODE}
-      onOpenChange={onOpenChange}
-      title="Phân quyền cho người dùng"
-    >
+    <CustomSheet open={!!role.ID} onOpenChange={onOpenChange} title="Phân quyền cho người dùng">
       <div className="mt-4 flex w-fit flex-row justify-center gap-2 self-center rounded-sm border bg-slate-100 px-6 py-1">
         <p className="text-16 text-gray-900">Chức vụ:</p>
-        <p className="text-16 font-semibold text-gray-900">{detailData?.ROLE_NAME}</p>
+        <p className="text-16 font-semibold text-gray-900">{role?.NAME}</p>
       </div>
       <CustomSheet.Content title="Phân quyền" className="flex flex-col overflow-hidden">
         <Accordion type="multiple" className="h-full w-full overflow-auto px-2">
-          {permissionData?.map((parent, parentIndex) => {
-            if (parent.child?.length === 0) return null;
+          {permissionData?.map((menu, parentIndex) => {
+            console.log(menu);
+            if (menu.child?.length === 0) return null;
             return (
-              <AccordionItem value={parent.MENU_CODE} className="border-none" key={parentIndex}>
+              <AccordionItem value={menu.MENU_ID} className="border-none" key={parentIndex}>
                 <AccordionTrigger className="justify-normal">
-                  <li className="mr-2 text-sm font-bold">{parent.MENU_NAME}</li>
+                  <li className="mr-2 text-sm font-bold">{menu.MENU_NAME}</li>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="grid grid-cols-6 border-b bg-blue-50 px-2 py-3 text-sm font-medium text-blue-700">
@@ -94,18 +92,18 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
                     <div className="text-center">Sửa</div>
                     <div className="text-center">Xóa</div>
                   </div>
-                  {parent.child?.map((child, childIndex) => {
+                  {menu.child?.map((submenu, childIndex) => {
                     let disabled = false;
-                    if (child.PARENT_CODE === "user-management" && child.ROLE_CODE === "admin") {
+                    if (submenu.PARENT_ID === "user-management" && submenu.ROLE_ID === "admin") {
                       disabled = true;
                     }
                     return (
-                      <div key={child.ROWGUID} className="grid grid-cols-6 border-b px-2 py-3">
-                        <div className="col-span-2">{child.MENU_NAME}</div>
+                      <div key={submenu.ROWGUID} className="grid grid-cols-6 border-b px-2 py-3">
+                        <div className="col-span-2">{submenu.MENU_NAME}</div>
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.CAN_VIEW}
+                          defaultChecked={submenu.CAN_VIEW}
                           checked={permissionData[parentIndex].child[childIndex].CAN_VIEW}
                           onCheckedChange={checked => {
                             handleCheckboxChange(parentIndex, childIndex, "CAN_VIEW", checked);
@@ -114,7 +112,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.CAN_ADD_NEW}
+                          defaultChecked={submenu.CAN_ADD_NEW}
                           checked={permissionData[parentIndex].child[childIndex].CAN_ADD_NEW}
                           onCheckedChange={checked => {
                             handleCheckboxChange(parentIndex, childIndex, "CAN_ADD_NEW", checked);
@@ -123,7 +121,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.CAN_MODIFY}
+                          defaultChecked={submenu.CAN_MODIFY}
                           checked={permissionData[parentIndex].child[childIndex].CAN_MODIFY}
                           onCheckedChange={checked => {
                             handleCheckboxChange(parentIndex, childIndex, "CAN_MODIFY", checked);
@@ -132,7 +130,7 @@ export function DetailPermission({ onOpenChange, detailData = {}, revalidate }) 
                         <Checkbox
                           disabled={disabled}
                           className="self-center justify-self-center border-blue-600 data-[state=checked]:bg-blue-600"
-                          defaultChecked={child.CAN_DELETE}
+                          defaultChecked={submenu.CAN_DELETE}
                           checked={permissionData[parentIndex].child[childIndex].CAN_DELETE}
                           onCheckedChange={checked => {
                             handleCheckboxChange(parentIndex, childIndex, "CAN_DELETE", checked);

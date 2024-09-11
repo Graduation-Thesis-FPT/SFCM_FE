@@ -23,7 +23,7 @@ export const RoleSelect = ({ form }) => {
   return (
     <FormField
       control={form.control}
-      name="ROLE_CODE"
+      name="ROLE_ID"
       render={({ field }) => (
         <FormItem>
           <FormLabel>
@@ -42,10 +42,10 @@ export const RoleSelect = ({ form }) => {
               <SelectContent>
                 {roles ? (
                   roles.map(role => {
-                    if (role.ROLE_CODE === "customer") return null;
+                    if (role.ID === "customer") return null;
                     return (
-                      <SelectItem key={role.ROLE_CODE} value={role.ROLE_CODE}>
-                        {role.ROLE_NAME}
+                      <SelectItem key={role.ID} value={role.ID}>
+                        {role.NAME}
                       </SelectItem>
                     );
                   })
@@ -55,7 +55,7 @@ export const RoleSelect = ({ form }) => {
               </SelectContent>
             </Select>
           )}
-          <FormMessage>{form.formState.errors.ROLE_CODE?.message}</FormMessage>
+          <FormMessage>{form.formState.errors.ROLE_ID?.message}</FormMessage>
         </FormItem>
       )}
     />

@@ -49,8 +49,8 @@
 //       editable: true
 //     },
 //     {
-//       headerName: BS_EQUIPMENT_TYPE.UPDATE_DATE.headerName,
-//       field: BS_EQUIPMENT_TYPE.UPDATE_DATE.field,
+//       headerName: BS_EQUIPMENT_TYPE.UPDATED_AT.headerName,
+//       field: BS_EQUIPMENT_TYPE.UPDATED_AT.field,
 //       flex: 1,
 //       cellRenderer: DateTimeByTextRender
 //     }

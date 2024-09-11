@@ -54,9 +54,9 @@ export function BtnExportExcel({ gridRef, isLoading, customExport, ...props }) {
     let fileName = "";
     menu?.forEach(item =>
       item?.child?.forEach(child => {
-        let isMenuSelected = pathname === `/${item.MENU_CODE}/${child.MENU_CODE}`;
+        let isMenuSelected = pathname === `/${item.ID}/${child.ID}`;
         if (isMenuSelected) {
-          fileName = `${child.MENU_NAME} (${moment().format("DD/MM/Y")}).xlsx`;
+          fileName = `${child.NAME} (${moment().format("DD/MM/Y")}).xlsx`;
           return;
         }
       })

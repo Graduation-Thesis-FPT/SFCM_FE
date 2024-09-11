@@ -1,7 +1,7 @@
 export const ERROR_MESSAGE = {
   INVALID_REQUEST_MISSING_TOKEN: "Yêu cầu không hợp lệ, thiếu token",
   INVALID_REQUEST: "Yêu cầu không hợp lệ",
-  MISSING_MENU_CODE: "Thiếu mã menu",
+  MISSING_MENU_ID: "Thiếu mã menu",
   YOU_DO_NOT_HAVE_PERMISSION_TO_ACCESS_THIS_PAGE: "Bạn không có quyền truy cập trang này",
   YOU_DO_NOT_HAVE_THIS_PERMISSION: "Bạn không có quyền này",
   INVALID_USER_ID: "ID người dùng không hợp lệ",
