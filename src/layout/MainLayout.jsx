@@ -70,7 +70,7 @@ export function MainLayout() {
               item?.child?.map(child => {
                 let isMenuSelected = pathname === `/${item.ID}/${child.ID}`;
                 if (isMenuSelected) {
-                  return child.MENU_NAME;
+                  return child.NAME;
                 }
               })
             )}
@@ -95,7 +95,7 @@ export function MainLayout() {
                     size="32"
                     fallback="S"
                     className={cn(
-                      bgAvatar(user?.userInfo?.ROLE_CODE),
+                      bgAvatar(user?.userInfo?.ROLE_ID),
                       "h-8 w-8 cursor-pointer items-center justify-center text-white"
                     )}
                   >

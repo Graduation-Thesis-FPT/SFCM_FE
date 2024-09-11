@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  ROLE_CODE: z
+  ROLE_ID: z
     .string()
     .min(1, "Chọn chức vụ!")
     .refine(value => value !== "customer", {
@@ -74,7 +74,7 @@ export function UserCreationForm({ revalidate }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ROLE_CODE: "",
+      ROLE_ID: "",
       FULLNAME: "",
       USER_NAME: "",
       BIRTHDAY: "",
@@ -90,7 +90,7 @@ export function UserCreationForm({ revalidate }) {
   };
 
   function onSubmit(values) {
-    if (values.ROLE_CODE === "customer") {
+    if (values.ROLE_ID === "customer") {
       toast.error("Không thể tạo tài khoản với vai trò khách hàng");
       return;
     }

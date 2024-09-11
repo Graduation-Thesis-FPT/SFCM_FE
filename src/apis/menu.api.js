@@ -1,6 +1,6 @@
 import { axiosCache } from "@/config/axios";
 
-export const getMenuByRoleCode = async () =>
+export const getMenuByRoleId = async () =>
   await axiosCache.get(`menu`, {
     id: "grant-menu",
     // cache: {

@@ -34,7 +34,7 @@ import { UserPasswordReset } from "./UserPasswordReset";
 export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   const formSchema = z
     .object({
-      ROLE_CODE: z.string().min(1, "Chọn chức vụ!"),
+      ROLE_ID: z.string().min(1, "Chọn chức vụ!"),
       USERNAME: z.string().trim().min(6, "Tối thiểu 6 ký tự!").regex(regexPattern.NO_SPACE, {
         message: "Không được chứa khoảng trắng!"
       }),
@@ -78,14 +78,14 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
     .refine(
       data => {
         const originalUser = form.getValues("__originalUser");
-        if (originalUser && originalUser.ROLE_CODE === "customer") {
-          return data.ROLE_CODE === "customer";
+        if (originalUser && originalUser.ROLE_ID === "customer") {
+          return data.ROLE_ID === "customer";
         }
         return true;
       },
       {
         message: "Không thể thay đổi vai trò của tài khoản khách hàng",
-        path: ["ROLE_CODE"]
+        path: ["ROLE_ID"]
       }
     );
   const toast = useCustomToast();
@@ -101,7 +101,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     values: {
-      ROLE_CODE: user?.ROLE_CODE || "",
+      ROLE_ID: user?.ROLE_ID || "",
       FULLNAME: user?.FULLNAME || "",
       USERNAME: user?.USERNAME || "",
       BIRTHDAY: user?.BIRTHDAY ? moment(user?.BIRTHDAY).format("YYYY-MM-DD") : "",
@@ -115,12 +115,12 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
   });
 
   function onSubmit(values) {
-    if (user.ROLE_CODE !== values.ROLE_CODE) {
-      if (user.ROLE_CODE === "customer") {
+    if (user.ROLE_ID !== values.ROLE_ID) {
+      if (user.ROLE_ID === "customer") {
         toast.error("Khách hàng không thể thay đổi chức vụ!");
         return;
       }
-      if (values.ROLE_CODE === "customer") {
+      if (values.ROLE_ID === "customer") {
         toast.error("Không thể thay đổi vai trò thành khách hàng");
         return;
       }
@@ -220,7 +220,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
                             <Input
                               type="text"
                               placeholder="Nhập email"
-                              disabled={user.ROLE_CODE === "customer"}
+                              disabled={user.ROLE_ID === "customer"}
                               {...field}
                             />
                           </FormControl>

@@ -1,5 +1,5 @@
 import { refreshToken } from "@/apis/access.api";
-import { getMenuByRoleCode } from "@/apis/menu.api";
+import { getMenuByRoleId } from "@/apis/menu.api";
 import logoNoText from "@/assets/image/logo-menu-notext.svg";
 import useFetchData from "@/hooks/useRefetchData";
 import { getRefreshToken, useCustomStore } from "@/lib/auth";
@@ -20,10 +20,11 @@ export function AuthProvider({ children }) {
     loading: menuLoading,
     revalidate
   } = useFetchData({
-    service: getMenuByRoleCode,
+    service: getMenuByRoleId,
     dependencies: [user],
     shouldFetch: !!user.userInfo
   });
+  console.log("menu", menu);
   useEffect(() => {
     if (!user.accessToken && rToken) {
       refreshToken()

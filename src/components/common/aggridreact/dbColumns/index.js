@@ -1,7 +1,7 @@
 class CommonColumns {
-  CREATE_BY = { field: "CREATE_BY", headerName: "Người tạo" };
+  CREATED_BY = { field: "CREATED_BY", headerName: "Người tạo" };
   CREATED_AT = { field: "CREATED_AT", headerName: "Ngày tạo" };
-  UPDATE_BY = { field: "UPDATE_BY", headerName: "Người cập nhật" };
+  UPDATED_BY = { field: "UPDATED_BY", headerName: "Người cập nhật" };
   UPDATED_AT = { field: "UPDATED_AT", headerName: "Ngày cập nhật" };
 }
 

@@ -4,11 +4,11 @@ import { useLocation } from "react-router-dom";
 
 export function GrantPermission({ action, children, disableWhenUnAuth, ...props }) {
   const pathname = useLocation().pathname;
-  const MENU_CODE = pathname.split("/")[2];
+  const MENU_ID = pathname.split("/")[2];
   const [isShow, setIsShow] = React.useState(false);
 
   useEffect(() => {
-    grantPermission({ menuCode: MENU_CODE })
+    grantPermission({ menuCode: MENU_ID })
       .then(res => {
         setIsShow(res.data.metadata[action]);
       })
