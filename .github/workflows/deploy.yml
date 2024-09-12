@@ -48,6 +48,7 @@ jobs:
             else
               cd SFCM_FE
               git checkout master
+              git reset --hard
               git pull
               cd ..
             fi
@@ -58,6 +59,7 @@ jobs:
             else
               cd SFCM_NEW_BE
               git checkout master
+              git reset --hard
               git pull
               cd ..
             fi
