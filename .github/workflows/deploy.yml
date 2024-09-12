@@ -33,7 +33,6 @@ jobs:
           SFCM_FE_ENV: ${{ secrets.SFCM_FE_ENV }}
           SFCM_NEW_BE_ENV: ${{ secrets.SFCM_NEW_BE_ENV }}
         run: |
-          # SSH into the VPS and run the deployment commands
           sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << EOF
             export SFCM_FE_ENV='$SFCM_FE_ENV'
             export SFCM_NEW_BE_ENV='$SFCM_NEW_BE_ENV'
@@ -78,13 +77,19 @@ jobs:
 
             # Check if SQL Server Docker container is running
             if [ "$(docker ps -q -f name=sfcm-db)" == "" ]; then
-              echo "SQL Server Docker container is not running. Starting deployment for the database..."
-              /root/capstone-new/SFCM_FE/deployment/deploy-db.sh
+              if [ "$(docker ps -a -q -f name=sfcm-db)" != "" ]; then
+                echo "SQL Server Docker container exists but is not running. Restarting container..."
+                docker start sfcm-db
+              else
+                echo "SQL Server Docker container does not exist. Starting deployment for the database..."
+                /root/capstone-new/SFCM_FE/deployment/deploy-db.sh
+              fi
             else
               echo "SQL Server Docker container is already running."
             fi
 
             # Run the deploy script
+            echo "Starting deployment for the frontend and backend..."
             /root/capstone-new/SFCM_FE/deployment/deploy.sh
 
             # Check if all required containers are running
