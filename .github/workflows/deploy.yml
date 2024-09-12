@@ -81,21 +81,8 @@ jobs:
             container_id=$(docker ps -q -f name=sfcm-db)
             echo "SQL Server Docker container ID: $container_id"
 
-            if [ -z "$container_id" ]; then
-              # Check if the container exists but is not running
-              if [ -n "$(docker ps -a -q -f name=sfcm-db)" ]; then
-                echo "SQL Server Docker container exists but is not running. Restarting container..."
-                docker start sfcm-db
-              else
-                echo "SQL Server Docker container does not exist. Starting deployment for the database..."
-                /root/capstone-new/SFCM_FE/deployment/deploy-db.sh
-              fi
-            else
-              echo "SQL Server Docker container is already running."
-            fi
-
-            echo "SQL Server Docker container status: $(docker ps --format "{{.Status}}" --filter "name=sfcm-db")"
             # Run the deploy script
+            /root/capstone-new/SFCM_FE/deployment/deploy-db.sh
             /root/capstone-new/SFCM_FE/deployment/deploy.sh
 
             # Check if all required containers are running

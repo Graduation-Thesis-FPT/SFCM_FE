@@ -1,5 +1,11 @@
 #!/bin/bash
+# If the container sfcm-db is already running, ignore the following steps
+if [ "$(docker ps -q -f name=sfcm-db)" ]; then
+  echo "SQL Server container is already running."
+  exit 0
+fi
 
+echo "SQL Server container is not running. Starting the container..."
 # Set working directory to the location of the docker-compose file
 cd /root/capstone-new/SFCM_FE
 
