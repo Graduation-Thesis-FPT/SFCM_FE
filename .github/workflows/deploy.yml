@@ -20,7 +20,7 @@ jobs:
           curl -H "Content-Type: application/json" -X POST -d '{"content":"🚀 Starting deployment..."}' $DISCORD_WEBHOOK_URL
 
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Install SSHPass
         run: sudo apt-get install -y sshpass
@@ -33,9 +33,9 @@ jobs:
           SFCM_FE_ENV: ${{ secrets.SFCM_FE_ENV }}
           SFCM_NEW_BE_ENV: ${{ secrets.SFCM_NEW_BE_ENV }}
         run: |
-          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << EOF
-            export SFCM_FE_ENV='$SFCM_FE_ENV'
-            export SFCM_NEW_BE_ENV='$SFCM_NEW_BE_ENV'
+          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP 'bash -s' <<EOF
+            export SFCM_FE_ENV="$SFCM_FE_ENV"
+            export SFCM_NEW_BE_ENV="$SFCM_NEW_BE_ENV"
             
             # Create the directory if it doesn't exist
             mkdir -p /root/capstone-new
