@@ -89,8 +89,6 @@ export const changeMessage = mess => {
     return "Lỗi máy chủ. Vui lòng thử lại sau!";
   } else if (mess.includes("Request failed with status code 404")) {
     return "Không tìm thấy dữ liệu. Vui lòng thử lại sau!";
-  } else if (mess.includes("Cannot read properties")) {
-    return "Hóa đơn không tồn tại hoặc đang chờ phê duyệt từ phần mềm kế toán. Vui lòng thử lại sau!";
   } else if (
     mess.includes("[BKAV] [200] Thất bại: Không tồn tại Hóa đơn có PartnerInvoiceStringID:")
   ) {
