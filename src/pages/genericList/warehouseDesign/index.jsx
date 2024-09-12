@@ -36,8 +36,8 @@ export function WarehouseDesign() {
   const [warehouses, setWarehouses] = useState([]);
   const [displayType, setDisplayType] = useState("table");
   const [filterData, setFilterData] = useState({
-    warehouseCode: "",
-    blockName: "all"
+    warehouseID: "",
+    blockID: "all"
   });
   const dispatch = useDispatch();
   const BS_BLOCK = new bs_block();
@@ -200,7 +200,7 @@ export function WarehouseDesign() {
         setWarehouses(res.data.metadata);
         setFilterData(prevState => ({
           ...prevState,
-          warehouseCode: res.data.metadata[0]?.ID
+          warehouseID: res.data.metadata[0]?.ID
         }));
       })
       .catch(err => {
@@ -222,11 +222,11 @@ export function WarehouseDesign() {
                 <Select
                   onValueChange={value => {
                     setFilterData({
-                      blockName: "all",
-                      warehouseCode: value
+                      blockID: "all",
+                      warehouseID: value
                     });
                   }}
-                  value={filterData.warehouseCode}
+                  value={filterData.warehouseID}
                 >
                   <SelectTrigger className="h-[36px] w-[122px]">
                     <SelectValue placeholder="Mã kho" />
@@ -249,10 +249,10 @@ export function WarehouseDesign() {
                   onValueChange={value => {
                     setFilterData(prevState => ({
                       ...prevState,
-                      blockName: value
+                      blockID: value
                     }));
                   }}
-                  value={filterData.blockName}
+                  value={filterData.blockID}
                 >
                   <SelectTrigger className="h-[36px] w-[122px]">
                     <SelectValue placeholder="Mã dãy" />
@@ -261,7 +261,7 @@ export function WarehouseDesign() {
                     <SelectGroup>
                       <SelectItem value="all">Tất cả</SelectItem>
                       {rowData
-                        .filter(block => block.ID === filterData.warehouseCode)
+                        .filter(block => block.WAREHOUSE_ID === filterData.warehouseID)
                         .sort((a, b) => a.ID.localeCompare(b.ID))
                         .map(block => (
                           <SelectItem key={block.ID} value={block.ID}>

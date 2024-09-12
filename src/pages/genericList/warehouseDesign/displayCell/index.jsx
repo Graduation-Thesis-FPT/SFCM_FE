@@ -38,7 +38,7 @@ export function DisplayCell({ filterData }) {
   const toast = useCustomToast();
 
   const getCell = () => {
-    getAllCellByWarehouseAndBlockCode(filterData.warehouseCode, filterData.blockName)
+    getAllCellByWarehouseAndBlockCode(filterData.warehouseID, filterData.blockID)
       .then(res => {
         const temp = transformData(res.data.metadata);
         setCellList(temp);
