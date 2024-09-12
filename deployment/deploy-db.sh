@@ -4,7 +4,7 @@
 cd /root/capstone-new/SFCM_FE
 
 # Deploy SQL Server using docker-compose
-docker-compose -f docker-compose.db.yaml up -d
+docker compose -f docker-compose.db.yaml up -d
 
 # Wait for the SQL Server container to start
 echo "Waiting for SQL Server to start..."

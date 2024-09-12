@@ -7,6 +7,6 @@ cd /root/capstone-new/SFCM_FE
 docker network inspect sfcm-net >/dev/null 2>&1 || docker network create sfcm-net
 
 # Deploy FE and BE using docker-compose
-docker-compose -f docker-compose.yaml up -d
+docker compose -f docker-compose.yaml up -d
 
 echo "Front-end and back-end services are now running."
