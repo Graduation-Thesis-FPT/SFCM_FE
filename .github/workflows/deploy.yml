@@ -44,7 +44,8 @@ jobs:
               git clone git@github.com:Graduation-Thesis-FPT/SFCM_FE.git
             else
               cd SFCM_FE
-              git pull origin master
+              git checkout master
+              git pull
               cd ..
             fi
 
@@ -53,7 +54,8 @@ jobs:
               git clone git@github.com:Graduation-Thesis-FPT/SFCM_NEW_BE.git
             else
               cd SFCM_NEW_BE
-              git pull origin master
+              git checkout master
+              git pull
               cd ..
             fi
 
