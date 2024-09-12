@@ -30,18 +30,14 @@ jobs:
           VPS_USER: ${{ secrets.VPS_USER }}
           VPS_IP: ${{ secrets.VPS_IP }}
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
-          SFCM_FE_ENV_B64: ${{ secrets.SFCM_FE_ENV_B64 }}
-          SFCM_NEW_BE_ENV_B64: ${{ secrets.SFCM_NEW_BE_ENV_B64 }}
+          SFCM_FE_ENV: ${{ secrets.SFCM_FE_ENV }}
+          SFCM_NEW_BE_ENV: ${{ secrets.SFCM_NEW_BE_ENV }}
         run: |
-          # Decode the base64 encoded environment variables
-          echo "SFCM_FE_ENV_B64: $SFCM_FE_ENV_B64"
-          echo "SFCM_NEW_BE_ENV_B64: $SFCM_NEW_BE_ENV_B64"
-
-          export SFCM_FE_ENV=$(echo "$SFCM_FE_ENV_B64" | base64 --decode)
-          export SFCM_NEW_BE_ENV=$(echo "$SFCM_NEW_BE_ENV_B64" | base64 --decode)
-
           # SSH into the VPS and run the deployment commands
-          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
+          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << EOF
+            export SFCM_FE_ENV='$SFCM_FE_ENV'
+            export SFCM_NEW_BE_ENV='$SFCM_NEW_BE_ENV'
+            
             # Create the directory if it doesn't exist
             mkdir -p /root/capstone-new
             cd /root/capstone-new
