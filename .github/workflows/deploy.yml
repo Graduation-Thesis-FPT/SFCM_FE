@@ -76,8 +76,12 @@ jobs:
             chmod +x /root/capstone-new/SFCM_FE/deployment/deploy.sh
 
             # Check if SQL Server Docker container is running
-            if [ "$(docker ps -q -f name=sfcm-db)" == "" ]; then
-              if [ "$(docker ps -a -q -f name=sfcm-db)" != "" ]; then
+            container_id=$(docker ps -q -f name=sfcm-db)
+            echo $container_id
+
+            if [ -z "$container_id" ]; then
+              # Check if the container exists but is not running
+              if [ -n "$(docker ps -a -q -f name=sfcm-db)" ]; then
                 echo "SQL Server Docker container exists but is not running. Restarting container..."
                 docker start sfcm-db
               else
