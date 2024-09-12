@@ -92,6 +92,7 @@ jobs:
               echo "SQL Server Docker container is already running."
             fi
 
+            echo "SQL Server Docker container status: $(docker ps --format "{{.Status}}" --filter "name=sfcm-db")"
             # Run the deploy script
             /root/capstone-new/SFCM_FE/deployment/deploy.sh
           EOF

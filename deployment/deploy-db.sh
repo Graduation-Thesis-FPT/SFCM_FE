@@ -35,18 +35,18 @@ docker cp "$GENERATE_MOCK_DATA_SCRIPT" sfcm-db:/tmp/generate-mock-data.sql
 
 # Run the script to delete the old SFCM database if it exists
 echo "Checking and deleting the existing SFCM database if it exists..."
-docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/delete-db.sql -C"
+docker exec sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/delete-db.sql -C"
 
 echo "Existing SFCM database deleted if it was present."
 
 # Create a new SFCM database
-docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -Q 'CREATE DATABASE SFCM;' -C"
+docker exec sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -Q 'CREATE DATABASE SFCM;' -C"
 
 echo "New SFCM database created successfully."
 
 # Run the SQL scripts to generate mock data
-docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/generate-tables.sql -C"
-docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/generate-triggers.sql -C"
-docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/generate-mock-data.sql -C"
+docker exec sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/generate-tables.sql -C"
+docker exec sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/generate-triggers.sql -C"
+docker exec sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -i /tmp/generate-mock-data.sql -C"
 
 echo "Mock data generated successfully."
