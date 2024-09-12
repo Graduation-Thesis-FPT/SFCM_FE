@@ -16,18 +16,18 @@ DB_PASSWORD=$(grep '^DB_PASSWORD=' /root/capstone-new/SFCM_NEW_BE/.env | cut -d 
 
 # Run the script to delete the old SFCM database if it exists
 echo "Checking and deleting the existing SFCM database if it exists..."
-docker exec -it sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/script/delete-db.sql"
+docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/script/delete-db.sql"
 
 echo "Existing SFCM database deleted if it was present."
 
 # Create a new SFCM database
-docker exec -it sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -Q 'CREATE DATABASE SFCM; GO;'"
+docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -Q 'CREATE DATABASE SFCM; GO;'"
 
 echo "New SFCM database created successfully."
 
 # Run the SQL scripts to generate mock data
-docker exec -it sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/generate-tables.sql"
-docker exec -it sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/generate-triggers.sql"
-docker exec -it sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/generate-mock-data.sql"
+docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/generate-tables.sql"
+docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/generate-triggers.sql"
+docker exec -i sfcm-db bash -c "/opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER_NAME} -P ${DB_PASSWORD} -C -i /root/capstone-new/SFCM_NEW_BE/generate-mock-data.sql"
 
 echo "Mock data generated successfully."
