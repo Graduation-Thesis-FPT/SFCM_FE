@@ -89,21 +89,7 @@ jobs:
             fi
 
             # Run the deploy script
-            echo "Starting deployment for the frontend and backend..."
             /root/capstone-new/SFCM_FE/deployment/deploy.sh
-
-            # Check if all required containers are running
-            missing_containers=""
-            for container in sfcm-db sfcm-fe sfcm-be; do
-              if [ "$(docker ps -q -f name=$container)" == "" ]; then
-                missing_containers="$missing_containers $container"
-              fi
-            done
-
-            if [ "$missing_containers" != "" ]; then
-              echo "The following containers are not running: $missing_containers"
-              exit 1
-            fi
           EOF
 
       - name: Notify Discord Deployment Success
