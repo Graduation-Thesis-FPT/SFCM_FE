@@ -17,10 +17,10 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{"content":"🚀 Deployment in progress..."}' $DISCORD_WEBHOOK_URL
+          curl -H "Content-Type: application/json" -X POST -d '{"content":"🚀 Starting deployment..."}' $DISCORD_WEBHOOK_URL
 
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install SSHPass
         run: sudo apt-get install -y sshpass
