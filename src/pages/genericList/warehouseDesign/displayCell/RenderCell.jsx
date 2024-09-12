@@ -2,7 +2,7 @@ export function RenderCell({ cell }) {
   return (
     <span className="flex h-[69px] w-[118px] flex-col items-center justify-center gap-[6px] rounded-lg border text-center">
       <div>
-        {cell.BLOCK_CODE}-{cell.TIER_ORDERED}-{cell.SLOT_ORDERED}
+        {cell.ID}-{cell.TIER_ORDERED}-{cell.SLOT_ORDERED}
       </div>
       <div>
         {cell.STATUS ? (

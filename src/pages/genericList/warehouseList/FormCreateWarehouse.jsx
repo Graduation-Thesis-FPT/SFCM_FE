@@ -20,8 +20,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  WAREHOUSE_CODE: z.string().trim().min(1, "Không được để trống!"),
-  WAREHOUSE_NAME: z.string().trim().min(1, "Không được để trống!"),
+  ID: z.string().trim().min(1, "Không được để trống!"),
+  NAME: z.string().trim().min(1, "Không được để trống!"),
   ACREAGE: z.number()
 });
 
@@ -31,8 +31,8 @@ export function FormCreateWarehouse({ revalidate }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      WAREHOUSE_CODE: "",
-      WAREHOUSE_NAME: "",
+      ID: "",
+      NAME: "",
       ACREAGE: 0
     }
   });
@@ -79,7 +79,7 @@ export function FormCreateWarehouse({ revalidate }) {
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
-                  name="WAREHOUSE_CODE"
+                  name="ID"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-600">
@@ -94,7 +94,7 @@ export function FormCreateWarehouse({ revalidate }) {
                 />
                 <FormField
                   control={form.control}
-                  name="WAREHOUSE_NAME"
+                  name="NAME"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-600">

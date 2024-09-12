@@ -41,7 +41,7 @@ export function WarehouseList() {
     },
     {
       headerName: "Mã kho *",
-      field: "WAREHOUSE_CODE",
+      field: "ID",
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell,
@@ -49,7 +49,7 @@ export function WarehouseList() {
     },
     {
       headerName: "Tên kho *",
-      field: "WAREHOUSE_NAME",
+      field: "NAME",
       flex: 1,
       filter: true,
       editable: true
@@ -64,7 +64,7 @@ export function WarehouseList() {
 
   const handleDeleteData = deteleData => {
     dispatch(setGlobalLoading(true));
-    let { deleteIdList } = fnDeleteRows(deteleData, rowData, "WAREHOUSE_CODE");
+    let { deleteIdList } = fnDeleteRows(deteleData, rowData, "ID");
     deleteWarehouse({ data: deleteIdList })
       .then(res => {
         toast.success(res);

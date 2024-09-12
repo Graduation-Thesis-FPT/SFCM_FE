@@ -11,8 +11,8 @@ function groupBy(array, key) {
 }
 
 function transformData(arr) {
-  // Group by BLOCK_CODE
-  const groupedByBlock = groupBy(arr, "BLOCK_CODE");
+  // Group by ID
+  const groupedByBlock = groupBy(arr, "ID");
 
   return Object.keys(groupedByBlock).map(blockCode => {
     // Group each block's items by TIER_ORDERED
@@ -27,7 +27,7 @@ function transformData(arr) {
 
     // Return the structured block
     return {
-      BLOCK_CODE: blockCode,
+      ID: blockCode,
       TIERS: tiers
     };
   });
@@ -58,9 +58,9 @@ export function DisplayCell({ filterData }) {
         <span className="mt-3 flex w-full flex-row gap-x-4 overflow-auto">
           {cellList.map(cell => {
             return (
-              <span key={cell.BLOCK_CODE}>
+              <span key={cell.ID}>
                 <div className="mb-2 text-center text-xl font-bold text-blue-600">
-                  Dãy {cell.BLOCK_CODE}
+                  Dãy {cell.ID}
                 </div>
                 <span className="flex h-[50vh] flex-row gap-x-3 overflow-y-auto overflow-x-hidden rounded-lg border p-[14px] text-sm font-medium">
                   {cell.TIERS.map(tier => (

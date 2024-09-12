@@ -1,7 +1,7 @@
 import { axiosPrivate } from "@/config/axios";
 
-export const getAllPalletPositionByWarehouseCode = async WAREHOUSE_CODE => {
-  return await axiosPrivate.get(`pallet/cell-position?warehouseCode=${WAREHOUSE_CODE}`);
+export const getAllPalletPositionByWarehouseCode = async ID => {
+  return await axiosPrivate.get(`pallet/cell-position?warehouseCode=${ID}`);
 };
 
 export const getListJobImport = async palletStatus => {

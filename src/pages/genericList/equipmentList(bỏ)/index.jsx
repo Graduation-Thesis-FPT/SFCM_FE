@@ -65,8 +65,8 @@
 //       editable: true
 //     },
 //     {
-//       headerName: BS_EQUIPMENT.WAREHOUSE_CODE.headerName,
-//       field: BS_EQUIPMENT.WAREHOUSE_CODE.field,
+//       headerName: BS_EQUIPMENT.ID.headerName,
+//       field: BS_EQUIPMENT.ID.field,
 //       flex: 1,
 //       filter: true,
 //       editable: true,

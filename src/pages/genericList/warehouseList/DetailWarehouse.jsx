@@ -16,8 +16,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  WAREHOUSE_CODE: z.string().trim().min(1, "Không được để trống!"),
-  WAREHOUSE_NAME: z.string().trim().min(1, "Không được để trống!"),
+  ID: z.string().trim().min(1, "Không được để trống!"),
+  NAME: z.string().trim().min(1, "Không được để trống!"),
   ACREAGE: z.number()
 });
 
@@ -25,8 +25,8 @@ export function DetailWarehouse({ onOpenChange, detailData, onDeleteData }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     values: {
-      WAREHOUSE_CODE: detailData.WAREHOUSE_CODE,
-      WAREHOUSE_NAME: detailData.WAREHOUSE_NAME,
+      ID: detailData.ID,
+      NAME: detailData.NAME,
       ACREAGE: detailData.ACREAGE
     }
   });
@@ -37,7 +37,7 @@ export function DetailWarehouse({ onOpenChange, detailData, onDeleteData }) {
 
   return (
     <CustomSheet
-      open={!!detailData.WAREHOUSE_CODE}
+      open={!!detailData.ID}
       onOpenChange={onOpenChange}
       form={form}
       title="Cập nhật thông tin kho"
@@ -48,7 +48,7 @@ export function DetailWarehouse({ onOpenChange, detailData, onDeleteData }) {
             <span className="grid grid-cols-3 gap-2">
               <FormField
                 control={form.control}
-                name="WAREHOUSE_CODE"
+                name="ID"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-600">
@@ -63,7 +63,7 @@ export function DetailWarehouse({ onOpenChange, detailData, onDeleteData }) {
               />
               <FormField
                 control={form.control}
-                name="WAREHOUSE_NAME"
+                name="NAME"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-600">

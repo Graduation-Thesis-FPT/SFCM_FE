@@ -97,7 +97,7 @@ export function IsInOutGateRender(params) {
 export function WarehouseCodeRender(params, warehouses) {
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(warehouses[0]?.WAREHOUSE_CODE);
+      params.setValue(warehouses[0]?.ID);
     }
   }, []);
   return (
@@ -113,8 +113,8 @@ export function WarehouseCodeRender(params, warehouses) {
       <SelectContent>
         <SelectGroup>
           {warehouses.map(item => (
-            <SelectItem key={item?.WAREHOUSE_CODE} value={item?.WAREHOUSE_CODE}>
-              {item?.WAREHOUSE_CODE} - {item?.WAREHOUSE_NAME}
+            <SelectItem key={item?.ID} value={item?.ID}>
+              {item?.ID} - {item?.NAME}
             </SelectItem>
           ))}
         </SelectGroup>

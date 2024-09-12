@@ -54,30 +54,30 @@ export function WarehouseDesign() {
       }
     },
     {
-      headerName: BS_BLOCK.WAREHOUSE_CODE.headerName,
-      field: BS_BLOCK.WAREHOUSE_CODE.field,
+      headerName: BS_BLOCK.WAREHOUSE_ID.headerName,
+      field: BS_BLOCK.WAREHOUSE_ID.field,
       flex: 1,
       filter: true,
       cellRenderer: params => WarehouseCodeRender(params, warehouses)
     },
     {
-      headerName: BS_BLOCK.BLOCK_CODE.headerName,
-      field: BS_BLOCK.BLOCK_CODE.field,
+      headerName: BS_BLOCK.ID.headerName,
+      field: BS_BLOCK.ID.field,
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell,
       onCellValueChanged: UpperCase
     },
     {
-      headerName: BS_BLOCK.BLOCK_NAME.headerName,
-      field: BS_BLOCK.BLOCK_NAME.field,
+      headerName: BS_BLOCK.NAME.headerName,
+      field: BS_BLOCK.NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: BS_BLOCK.TIER_COUNT.headerName,
-      field: BS_BLOCK.TIER_COUNT.field,
+      headerName: BS_BLOCK.TOTAL_TIERS.headerName,
+      field: BS_BLOCK.TOTAL_TIERS.field,
       cellDataType: "number",
       flex: 1,
       cellEditorParams: {
@@ -87,8 +87,8 @@ export function WarehouseDesign() {
       editable: true
     },
     {
-      headerName: BS_BLOCK.SLOT_COUNT.headerName,
-      field: BS_BLOCK.SLOT_COUNT.field,
+      headerName: BS_BLOCK.TOTAL_CELLS.headerName,
+      field: BS_BLOCK.TOTAL_CELLS.field,
       cellDataType: "number",
       cellEditorParams: {
         min: 0,
@@ -169,11 +169,7 @@ export function WarehouseDesign() {
   };
 
   const handleDeleteRows = selectedRows => {
-    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
-      selectedRows,
-      rowData,
-      "BLOCK_CODE"
-    );
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
     dispatch(setGlobalLoading(true));
     deleteBlock(deleteIdList)
       .then(res => {
@@ -204,7 +200,7 @@ export function WarehouseDesign() {
         setWarehouses(res.data.metadata);
         setFilterData(prevState => ({
           ...prevState,
-          warehouseCode: res.data.metadata[0]?.WAREHOUSE_CODE
+          warehouseCode: res.data.metadata[0]?.ID
         }));
       })
       .catch(err => {
@@ -238,8 +234,8 @@ export function WarehouseDesign() {
                   <SelectContent>
                     <SelectGroup>
                       {warehouses.map(warehouse => (
-                        <SelectItem key={warehouse.WAREHOUSE_CODE} value={warehouse.WAREHOUSE_CODE}>
-                          {warehouse.WAREHOUSE_CODE}
+                        <SelectItem key={warehouse.ID} value={warehouse.ID}>
+                          {warehouse.ID}
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -265,11 +261,11 @@ export function WarehouseDesign() {
                     <SelectGroup>
                       <SelectItem value="all">Tất cả</SelectItem>
                       {rowData
-                        .filter(block => block.WAREHOUSE_CODE === filterData.warehouseCode)
-                        .sort((a, b) => a.BLOCK_CODE.localeCompare(b.BLOCK_CODE))
+                        .filter(block => block.ID === filterData.warehouseCode)
+                        .sort((a, b) => a.ID.localeCompare(b.ID))
                         .map(block => (
-                          <SelectItem key={block.BLOCK_CODE} value={block.BLOCK_CODE}>
-                            {block.BLOCK_CODE}
+                          <SelectItem key={block.ID} value={block.ID}>
+                            {block.ID}
                           </SelectItem>
                         ))}
                     </SelectGroup>

@@ -6,18 +6,18 @@ class CommonColumns {
 }
 
 export class bs_warehouse extends CommonColumns {
-  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
-  WAREHOUSE_NAME = { field: "WAREHOUSE_NAME", headerName: "Tên kho *" };
+  ID = { field: "ID", headerName: "Mã kho *" };
+  NAME = { field: "NAME", headerName: "Tên kho *" };
   ACREAGE = { field: "ACREAGE", headerName: "Diện tích *" };
   STATUS = { field: "STATUS", headerName: "Trạng thái *" };
 }
 
 export class bs_block extends CommonColumns {
-  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
-  BLOCK_CODE = { field: "BLOCK_CODE", headerName: "Mã dãy *" };
-  BLOCK_NAME = { field: "BLOCK_NAME", headerName: "Tên dãy *" };
-  TIER_COUNT = { field: "TIER_COUNT", headerName: "Số tầng *" };
-  SLOT_COUNT = { field: "SLOT_COUNT", headerName: "Số ô *" };
+  ID = { field: "ID", headerName: "Mã dãy *" };
+  NAME = { field: "NAME", headerName: "Tên dãy *" };
+  WAREHOUSE_ID = { field: "WAREHOUSE_ID", headerName: "Mã kho *" };
+  TOTAL_TIERS = { field: "TOTAL_TIERS", headerName: "Số tầng *" };
+  TOTAL_CELLS = { field: "TOTAL_CELLS", headerName: "Số ô *" };
   BLOCK_WIDTH = { field: "BLOCK_WIDTH", headerName: "Chiều rộng (m)*" };
   BLOCK_HEIGHT = { field: "BLOCK_HEIGHT", headerName: "Chiều cao (m)*" };
   BLOCK_LENGTH = { field: "BLOCK_LENGTH", headerName: "Chiều dài (m)*" };
@@ -38,7 +38,7 @@ export class bs_equipment extends CommonColumns {
   EQU_TYPE = { field: "EQU_TYPE", headerName: "Mã loại thiết bị *" };
   EQU_CODE = { field: "EQU_CODE", headerName: "Mã thiết bị *" };
   EQU_CODE_NAME = { field: "EQU_CODE_NAME", headerName: "Tên thiết bị *" };
-  WAREHOUSE_CODE = { field: "WAREHOUSE_CODE", headerName: "Mã kho *" };
+  ID = { field: "ID", headerName: "Mã kho *" };
 }
 
 export class bs_method extends CommonColumns {
