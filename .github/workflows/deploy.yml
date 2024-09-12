@@ -77,7 +77,7 @@ jobs:
 
             # Check if SQL Server Docker container is running
             container_id=$(docker ps -q -f name=sfcm-db)
-            echo $container_id
+            echo "SQL Server Docker container ID: $container_id"
 
             if [ -z "$container_id" ]; then
               # Check if the container exists but is not running
