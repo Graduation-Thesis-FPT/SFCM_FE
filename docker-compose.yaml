@@ -11,8 +11,8 @@ services:
       - sfcm-net
     env_file:
       - ./.env
-    # environment:
-    #   - VITE_BASE_URL=https://sfcm.id.vn/api
+    environment:
+      - VITE_BASE_URL=https://sfcm.id.vn/api
     depends_on:
       - sfcm-be
   

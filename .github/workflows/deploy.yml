@@ -1,0 +1,80 @@
+name: Deploy SFCM_FE
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Notify Discord Deployment Start
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        curl -H "Content-Type: application/json" -X POST -d '{"content":"🚀 Deployment in progress..."}' $DISCORD_WEBHOOK_URL
+
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Install SSHPass
+      run: sudo apt-get install -y sshpass
+
+    - name: Deploy to VPS
+      env:
+        VPS_USER: ${{ secrets.VPS_USER }}
+        VPS_IP: ${{ secrets.VPS_IP }}
+        VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+        SFCM_FE_ENV: ${{ secrets.SFCM_FE_ENV }}
+        SFCM_NEW_BE_ENV: ${{ secrets.SFCM_NEW_BE_ENV }}
+      run: |
+        # SSH into the VPS and run the deployment commands
+        sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP << 'EOF'
+          # Create the directory if it doesn't exist
+          mkdir -p /root/capstone-new
+          cd /root/capstone-new
+
+          # Clone or pull the SFCM_FE repository
+          if [ ! -d "SFCM_FE" ]; then
+            git clone git@github.com:Graduation-Thesis-FPT/SFCM_FE.git
+          else
+            cd SFCM_FE
+            git pull origin master
+            cd ..
+          fi
+
+          # Clone or pull the SFCM_NEW_BE repository
+          if [ ! -d "SFCM_NEW_BE" ]; then
+            git clone git@github.com:Graduation-Thesis-FPT/SFCM_NEW_BE.git
+          else
+            cd SFCM_NEW_BE
+            git pull origin master
+            cd ..
+          fi
+
+          # Write .env files to the respective directories
+          echo "$SFCM_FE_ENV" > /root/capstone-new/SFCM_FE/.env
+          echo "$SFCM_NEW_BE_ENV" > /root/capstone-new/SFCM_NEW_BE/.env
+
+          # Check if SQL Server Docker container is running
+          if [ "$(docker ps -q -f name=sfcm-db)" == "" ]; then
+            echo "SQL Server Docker container is not running. Starting deployment for the database..."
+            /root/capstone-new/SFCM_FE/deployment/deploy-db.sh
+          else
+            echo "SQL Server Docker container is already running."
+          fi
+
+          # Run the deploy script
+          /root/capstone-new/SFCM_FE/deployment/deploy.sh
+        EOF
+
+    - name: Notify Discord Deployment Done
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        curl -H "Content-Type: application/json" -X POST -d '{"content":"✅ Deployment completed successfully!"}' $DISCORD_WEBHOOK_URL
