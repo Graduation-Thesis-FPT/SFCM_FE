@@ -29,7 +29,7 @@ services:
     env_file:
       - ../SFCM_NEW_BE/.env
     environment:
-      - DB_SERVER=host.docker.internal
+      - DB_SERVER=sfcm-db
 
 networks:
   sfcm-net:
