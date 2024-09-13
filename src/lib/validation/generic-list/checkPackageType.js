@@ -5,7 +5,7 @@ import { handleResult } from "..";
 
 const PACKAGE_TYPE = new package_type();
 
-export const checkItemType = gridRef => {
+export const checkPackageType = gridRef => {
   const tariffCodeSchema = z.object({
     ID: z
       .string({

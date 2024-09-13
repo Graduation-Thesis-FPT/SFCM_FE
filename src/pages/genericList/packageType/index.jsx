@@ -18,7 +18,7 @@ import { Section } from "@/components/common/section";
 import { actionGrantPermission } from "@/constants";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useRef, useState } from "react";
-import { checkItemType } from "@/lib/validation/generic-list/checkItemType";
+import { checkPackageType } from "@/lib/validation/generic-list/checkPackageType";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
@@ -75,7 +75,7 @@ export function PackageType() {
       return toast.warning("Không có dữ liệu thay đổi");
     }
 
-    const { isValid, mess } = checkItemType(gridRef);
+    const { isValid, mess } = checkPackageType(gridRef);
     if (!isValid) {
       toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
       return;

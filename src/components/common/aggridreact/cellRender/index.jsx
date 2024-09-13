@@ -186,10 +186,20 @@ export function BlockCodeRender(params, blockCodes) {
   );
 }
 
-export function CustomerTypeRender(params, customerType) {
+export function CustomerTypeRender(params) {
+  const customerType = [
+    {
+      ID: "SHIPPER",
+      NAME: "Đại lý"
+    },
+    {
+      ID: "CONSIGNEE",
+      NAME: "Chủ hàng"
+    }
+  ];
   useEffect(() => {
     if (params.value === undefined) {
-      params.setValue(customerType[0]?.CUSTOMER_TYPE_CODE);
+      params.setValue(customerType[0]?.ID);
     }
   }, []);
   return (
@@ -205,8 +215,8 @@ export function CustomerTypeRender(params, customerType) {
       <SelectContent>
         <SelectGroup>
           {customerType?.map(item => (
-            <SelectItem key={item?.CUSTOMER_TYPE_CODE} value={item?.CUSTOMER_TYPE_CODE}>
-              {item?.CUSTOMER_TYPE_CODE} - {item?.CUSTOMER_TYPE_NAME}
+            <SelectItem key={item?.ID} value={item?.ID}>
+              {item?.NAME}
             </SelectItem>
           ))}
         </SelectGroup>

@@ -5,7 +5,7 @@ import {
   CustomerTypeRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
-import { bs_customer } from "@/components/common/aggridreact/dbColumns";
+import { bs_customer, customer, user } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
@@ -25,13 +25,15 @@ import { BtnImportExcel } from "./btnImportExcel";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
 const BS_CUSTOMER = new bs_customer();
+const CUSTOMER = new customer();
+const USER = new user();
 
 export function CustomerList() {
   const dispatch = useDispatch();
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
-  const { data: allCustomerType } = useFetchData({ service: getAllCustomerType });
+  // const { data: allCustomerType } = useFetchData({ service: getAllCustomerType });
 
   const colDefs = [
     {
@@ -45,22 +47,16 @@ export function CustomerList() {
       }
     },
     {
-      headerName: BS_CUSTOMER.CUSTOMER_CODE.headerName,
-      field: BS_CUSTOMER.CUSTOMER_CODE.field,
+      headerName: CUSTOMER.ID.headerName,
+      field: CUSTOMER.ID.field,
       flex: 1,
       filter: true,
       onCellValueChanged: UpperCase,
       editable: OnlyEditWithInsertCell
     },
     {
-      headerName: BS_CUSTOMER.CUSTOMER_TYPE_CODE.headerName,
-      field: BS_CUSTOMER.CUSTOMER_TYPE_CODE.field,
-      flex: 1,
-      cellRenderer: params => CustomerTypeRender(params, allCustomerType)
-    },
-    {
-      headerName: BS_CUSTOMER.CUSTOMER_NAME.headerName,
-      field: BS_CUSTOMER.CUSTOMER_NAME.field,
+      headerName: "Tên khách hàng",
+      field: "FULLNAME",
       flex: 1,
       filter: true,
       editable: true
@@ -73,6 +69,12 @@ export function CustomerList() {
       flex: 1,
       filter: true,
       editable: true
+    },
+    {
+      headerName: CUSTOMER.CUSTOMER_TYPE.headerName,
+      field: CUSTOMER.CUSTOMER_TYPE.field,
+      flex: 1,
+      cellRenderer: CustomerTypeRender
     },
     {
       headerName: BS_CUSTOMER.EMAIL.headerName,
@@ -190,7 +192,7 @@ export function CustomerList() {
       <Section.Header title="Danh sách khách hàng"></Section.Header>
       <Section.Content>
         <LayoutTool>
-          <BtnDownExcelCustomerSample gridRef={gridRef} cusType={allCustomerType} />
+          {/* <BtnDownExcelCustomerSample gridRef={gridRef} cusType={allCustomerType} /> */}
           <BtnImportExcel gridRef={gridRef} onFileUpload={handleFileUpload} />
 
           <GrantPermission action={actionGrantPermission.CREATE}>

@@ -77,6 +77,25 @@ export class bs_customer extends CommonColumns {
   EMAIL = { field: "EMAIL", headerName: "Email *" };
   IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Hoạt động *" };
 }
+export class customer extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã khách hàng *" };
+  USERNAME = { field: "USERNAME", headerName: "Tên tài khoản*" };
+  CUSTOMER_TYPE = { field: "CUSTOMER_TYPE", headerName: "Loại khách hàng *" };
+  TAX_CODE = { field: "TAX_CODE", headerName: "Mã số thuế *" };
+}
+
+export class user extends CommonColumns {
+  USERNAME = { field: "USERNAME", headerName: "Tên tài khoản*" };
+  PASSWORD = { field: "PASSWORD", headerName: "Mật khẩu*" };
+  ROLE_ID = { field: "ROLE_ID", headerName: "Vai trò*" };
+  FULLNAME = { field: "FULLNAME", headerName: "Họ và tên*" };
+  BIRTHDAY = { field: "BIRTHDAY", headerName: "Ngày sinh*" };
+  ADDRESS = { field: "ADDRESS", headerName: "Địa chỉ*" };
+  TELEPHONE = { field: "TELEPHONE", headerName: "Số điện thoại*" };
+  EMAIL = { field: "EMAIL", headerName: "Email*" };
+  IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Hoạt động*" };
+  REMARK = { field: "REMARK", headerName: "Ghi chú*" };
+}
 
 export class dt_vessel_visit extends CommonColumns {
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
