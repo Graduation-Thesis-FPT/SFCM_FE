@@ -25,7 +25,7 @@ import {
 } from "@/apis/package_mnf_ld.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { getAllItemType } from "@/apis/item-type.api";
+import { getAllPackageType } from "@/apis/package-type.api";
 import {
   ItemTypeCodeRender,
   PackageUnitCodeRender
@@ -303,7 +303,7 @@ export function GoodsManifest() {
   }, []);
 
   const getItemType = () => {
-    getAllItemType()
+    getAllPackageType()
       .then(res => {
         setItemType(res.data.metadata);
       })

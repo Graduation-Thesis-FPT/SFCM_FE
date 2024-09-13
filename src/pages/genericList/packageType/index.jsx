@@ -1,10 +1,14 @@
-import { createAndUpdateItemType, deleteItemType, getAllItemType } from "@/apis/item-type.api";
+import {
+  createAndUpdatePackageType,
+  deletePackageType,
+  getAllPackageType
+} from "@/apis/package-type.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
-import { bs_item_type } from "@/components/common/aggridreact/dbColumns";
+import { package_type } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
@@ -18,9 +22,9 @@ import { checkItemType } from "@/lib/validation/generic-list/checkItemType";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
-const BS_ITEM_TYPE = new bs_item_type();
+const PACKAGE_TYPE = new package_type();
 
-export function ItemType() {
+export function PackageType() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);
@@ -37,24 +41,24 @@ export function ItemType() {
       }
     },
     {
-      headerName: BS_ITEM_TYPE.ITEM_TYPE_CODE.headerName,
-      field: BS_ITEM_TYPE.ITEM_TYPE_CODE.field,
+      headerName: PACKAGE_TYPE.ID.headerName,
+      field: PACKAGE_TYPE.ID.field,
       flex: 1,
       filter: true,
       editable: OnlyEditWithInsertCell,
       onCellValueChanged: UpperCase
     },
     {
-      headerName: BS_ITEM_TYPE.ITEM_TYPE_NAME.headerName,
-      field: BS_ITEM_TYPE.ITEM_TYPE_NAME.field,
+      headerName: PACKAGE_TYPE.NAME.headerName,
+      field: PACKAGE_TYPE.NAME.field,
       flex: 1,
       filter: true,
       editable: true,
       onCellValueChanged: UpperCase
     },
     {
-      headerName: BS_ITEM_TYPE.UPDATED_AT.headerName,
-      field: BS_ITEM_TYPE.UPDATED_AT.field,
+      headerName: PACKAGE_TYPE.UPDATED_AT.headerName,
+      field: PACKAGE_TYPE.UPDATED_AT.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
     }
@@ -77,7 +81,7 @@ export function ItemType() {
       return;
     }
 
-    createAndUpdateItemType(insertAndUpdateData)
+    createAndUpdatePackageType(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -88,13 +92,9 @@ export function ItemType() {
   };
 
   const handleDeleteRows = selectedRows => {
-    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
-      selectedRows,
-      rowData,
-      "ITEM_TYPE_CODE"
-    );
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
 
-    deleteItemType(deleteIdList)
+    deletePackageType(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -105,7 +105,7 @@ export function ItemType() {
   };
 
   const getRowData = () => {
-    getAllItemType()
+    getAllPackageType()
       .then(res => {
         setRowData(res.data.metadata);
       })

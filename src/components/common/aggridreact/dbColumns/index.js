@@ -53,6 +53,11 @@ export class bs_item_type extends CommonColumns {
   ITEM_TYPE_NAME = { field: "ITEM_TYPE_NAME", headerName: "Tên loại hàng *" };
 }
 
+export class package_type extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã loại hàng *" };
+  NAME = { field: "NAME", headerName: "Tên loại hàng *" };
+}
+
 export class bs_backage_unit extends CommonColumns {
   PACKAGE_UNIT_CODE = { field: "PACKAGE_UNIT_CODE", headerName: "Mã đơn vị *" };
   PACKAGE_UNIT_NAME = { field: "PACKAGE_UNIT_NAME", headerName: "Tên đơn vị *" };

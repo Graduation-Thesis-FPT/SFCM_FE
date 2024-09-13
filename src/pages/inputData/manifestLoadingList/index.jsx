@@ -25,7 +25,7 @@ import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { Input } from "@/components/common/ui/input";
-import { getAllItemType } from "@/apis/item-type.api";
+import { getAllPackageType } from "@/apis/package-type.api";
 import {
   CntrSztpRender,
   ConsigneeRender,
@@ -248,7 +248,7 @@ export function ManifestLoadingList() {
   };
 
   const getItemType = () => {
-    getAllItemType()
+    getAllPackageType()
       .then(res => {
         setItemType(res.data.metadata);
       })

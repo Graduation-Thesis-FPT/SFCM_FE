@@ -1,4 +1,4 @@
-import { getAllItemType } from "@/apis/item-type.api";
+import { getAllPackageType } from "@/apis/package-type.api";
 import { getAllMethod } from "@/apis/method.api";
 import { getAllTariffCode } from "@/apis/trf-codes.api";
 import {
@@ -46,7 +46,7 @@ import { formatVnd } from "@/lib/utils";
 
 export function StandardTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
-  const { data: itemTypes } = useFetchData({ service: getAllItemType });
+  const { data: itemTypes } = useFetchData({ service: getAllPackageType });
   const { data: methods } = useFetchData({ service: getAllMethod });
 
   const toast = useCustomToast();

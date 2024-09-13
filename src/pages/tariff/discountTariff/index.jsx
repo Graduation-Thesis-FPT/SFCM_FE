@@ -1,4 +1,4 @@
-import { getAllItemType } from "@/apis/item-type.api";
+import { getAllPackageType } from "@/apis/package-type.api";
 import { getAllMethod } from "@/apis/method.api";
 import { getAllTariffCode } from "@/apis/trf-codes.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
@@ -48,7 +48,7 @@ import { formatVnd } from "@/lib/utils";
 
 export function DiscountTariff() {
   const { data: tariffCodes } = useFetchData({ service: getAllTariffCode });
-  const { data: itemTypes } = useFetchData({ service: getAllItemType });
+  const { data: itemTypes } = useFetchData({ service: getAllPackageType });
   const { data: methods } = useFetchData({ service: getAllMethod });
   const { data: customers } = useFetchData({ service: getAllCustomer });
 

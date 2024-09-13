@@ -54,13 +54,6 @@ export function WarehouseDesign() {
       }
     },
     {
-      headerName: BS_BLOCK.WAREHOUSE_ID.headerName,
-      field: BS_BLOCK.WAREHOUSE_ID.field,
-      flex: 1,
-      filter: true,
-      cellRenderer: params => WarehouseCodeRender(params, warehouses)
-    },
-    {
       headerName: BS_BLOCK.ID.headerName,
       field: BS_BLOCK.ID.field,
       flex: 1,
@@ -74,6 +67,13 @@ export function WarehouseDesign() {
       flex: 1,
       filter: true,
       editable: true
+    },
+    {
+      headerName: BS_BLOCK.WAREHOUSE_ID.headerName,
+      field: BS_BLOCK.WAREHOUSE_ID.field,
+      flex: 1,
+      filter: true,
+      cellRenderer: params => WarehouseCodeRender(params, warehouses)
     },
     {
       headerName: BS_BLOCK.TOTAL_TIERS.headerName,

@@ -16,7 +16,7 @@ import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/
 import { useRef, useState } from "react";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 
-export function MethodList() {
+export function Service() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const [rowData, setRowData] = useState([]);

@@ -4,13 +4,10 @@ export * from "./userManagement/user";
 //genericList
 export * from "./genericList/warehouseDesign";
 export * from "./genericList/warehouseList";
-// export * from "./genericList/equipmentGroupList"; (bỏ)
-// export * from "./genericList/equipmentList"; (bỏ)
-export * from "./genericList/methodList";
-export * from "./genericList/itemType";
-export * from "./genericList/packageUnitList";
-// export * from "./genericList/gateList"; (bỏ)
-export * from "./genericList/customerType";
+export * from "./genericList/service";
+export * from "./genericList/packageType";
+// export * from "./genericList/packageUnitList";
+// export * from "./genericList/customerType";
 export * from "./genericList/customerList";
 //inputData
 export * from "./inputData/manifestLoadingList";
