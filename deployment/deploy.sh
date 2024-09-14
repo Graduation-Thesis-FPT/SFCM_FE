@@ -7,18 +7,16 @@ send_discord_embed() {
   local title="$1"
   local color="$2"
   local repo="$3"
-  local branch="$4"
-  local commit="$5"
-  local time="$6"
-  local additional_field="$7"
-  local actor="$8"
-  local actor_avatar_url="$9"
+  local commit="$4"
+  local time="$5"
+  local additional_field="$6"
+  local actor="$7"
+  local actor_avatar_url="$8"
 
   curl -H "Content-Type: application/json" -X POST -d "$(jq -n \
     --arg title "$title" \
     --arg color "$color" \
     --arg repo "$repo" \
-    --arg branch "$branch" \
     --arg commit "$commit" \
     --arg time "$time" \
     --arg additional "$additional_field" \
@@ -30,7 +28,7 @@ send_discord_embed() {
         title: $title,
         color: ($color | tonumber),
         fields: [
-          { name: "Repository", value: $repo, inline: true },
+          { name: "Repository", value: $repo, inline: false },
           { name: "Commit", value: "[\($commit)](https://github.com/\($repo)/commit/\($commit))", inline: false },
           { name: "Time", value: "`\($time)`", inline: false },
           { name: "Additional Info", value: $additional, inline: false }
@@ -67,7 +65,6 @@ if [ -f "$LOCK_FILE" ]; then
   done
 
   OLD_REPO_NAME=$(grep '^REPO_NAME=' $LOCK_FILE | cut -d '=' -f2)
-  OLD_BRANCH_NAME=$(grep '^BRANCH_NAME=' $LOCK_FILE | cut -d '=' -f2)
   OLD_COMMIT_HASH=$(grep '^COMMIT_HASH=' $LOCK_FILE | cut -d '=' -f2)
   OLD_DEPLOY_TIME=$(grep '^DEPLOY_TIME=' $LOCK_FILE | cut -d '=' -f2)
   OLD_ACTOR=$(grep '^ACTOR=' $LOCK_FILE | cut -d '=' -f2)
@@ -78,7 +75,6 @@ if [ -f "$LOCK_FILE" ]; then
     "⚠️ Deployment Cancelled" \
     "15105570" \
     "$OLD_REPO_NAME" \
-    "$OLD_BRANCH_NAME" \
     "$OLD_COMMIT_HASH" \
     "$OLD_DEPLOY_TIME" \
     "A new deployment has been initiated." \
@@ -90,10 +86,9 @@ if [ -f "$LOCK_FILE" ]; then
 fi
 
 # Write current PID to lock file
-echo "DEPLOYMENT_PID=$$" >"$LOCK_FILE"
+echo "DEPLOYMENT_PID=$$" > "$LOCK_FILE"
 # Write environment variables to lock file
 echo "REPO_NAME='$REPO_NAME'" > "$LOCK_FILE"
-echo "BRANCH_NAME='$BRANCH_NAME'" >> "$LOCK_FILE"
 echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
 echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
 echo "ACTOR='$ACTOR'" >> "$LOCK_FILE"
