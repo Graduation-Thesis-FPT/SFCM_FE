@@ -20,27 +20,27 @@ send_discord_embed() {
   # Construct the JSON payload using jq with all variables properly passed
   local payload
   payload=$(jq -n \
-    --arg title "$title" \
-    --arg color "$color" \
-    --arg repo "$repo" \
-    --arg commit "$commit" \
-    --arg time "$time" \
-    --arg additional "$additional_field" \
-    --arg actor "$actor" \
-    --arg actor_avatar_url "$actor_avatar_url" \
-    --arg timestamp "$timestamp" \
+    --arg title $title \
+    --arg color $color \
+    --arg repo $repo \
+    --arg commit $commit \
+    --arg time $time \
+    --arg additional $additional_field \
+    --arg actor $actor \
+    --arg actor_avatar_url $actor_avatar_url \
+    --arg timestamp $timestamp \
     '{
       embeds: [{
-        author: { name: $actor, icon_url: $actor_avatar_url },
-        title: $title,
-        color: ($color | tonumber),
+        author: { name: "$actor", icon_url: "$actor_avatar_url" },
+        title: "$title",
+        color: ("$color" | tonumber),
         fields: [
-          { name: "Repository", value: $repo, inline: false },
+          { name: "Repository", value: "$repo", inline: false },
           { name: "Commit", value: "[\($commit)](https://github.com/\($repo)/commit/\($commit))", inline: false },
           { name: "Time", value: "`\($time)`", inline: false },
-          { name: "Additional Info", value: $additional, inline: false }
+          { name: "Additional Info", value: "$additional", inline: false }
         ],
-        timestamp: $timestamp,
+        timestamp: "$timestamp",
         footer: { text: "Deployment System" }
       }]
     }')
@@ -103,11 +103,11 @@ echo "Starting new deployment with PID $$."
 # Write current PID to lock file
 echo "DEPLOYMENT_PID=$$" > "$LOCK_FILE"
 # Write environment variables to lock file
-echo "REPO_NAME='$REPO_NAME'" >> "$LOCK_FILE"
-echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
-echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
-echo "ACTOR='$ACTOR'" >> "$LOCK_FILE"
-echo "ACTOR_AVATAR_URL='$ACTOR_AVATAR_URL'" >> "$LOCK_FILE"
+echo "REPO_NAME=$REPO_NAME" >> "$LOCK_FILE"
+echo "COMMIT_HASH=$COMMIT_HASH" >> "$LOCK_FILE"
+echo "DEPLOY_TIME=$DEPLOY_TIME" >> "$LOCK_FILE"
+echo "ACTOR=$ACTOR" >> "$LOCK_FILE"
+echo "ACTOR_AVATAR_URL=$ACTOR_AVATAR_URL" >> "$LOCK_FILE"
 
 # Set working directory to the location of the docker-compose file
 cd /root/capstone-new/SFCM_FE
