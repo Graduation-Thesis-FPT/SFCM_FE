@@ -53,8 +53,8 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`" + $commit + "`", inline: false },
-                  { name: "Time", value: "`" + $time + "`", inline: false }
+                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Time", value: "`\($time)`", inline: false }
                 ],
                 timestamp: $timestamp,
                 footer: { text: "Deployment System" }
@@ -163,8 +163,8 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`" + $commit + "`", inline: false },
-                  { name: "Time", value: "`" + $time + "`", inline: false }
+                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Time", value: "`\($time)`", inline: false }
                 ],
                 timestamp: $timestamp,
                 footer: { text: "Deployment System" }
@@ -195,8 +195,8 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`" + $commit + "`", inline: false },
-                  { name: "Time", value: "`" + $time + "`", inline: false },
+                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Time", value: "`\($time)`", inline: false },
                   { name: "Error", value: $error, inline: false }
                 ],
                 timestamp: $timestamp,
@@ -226,8 +226,8 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`" + $commit + "`", inline: false },
-                  { name: "Time", value: "`" + $time + "`", inline: false }
+                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Time", value: "`\($time)`", inline: false }
                 ],
                 timestamp: $timestamp,
                 footer: { text: "Deployment System" }
