@@ -31,16 +31,16 @@ send_discord_embed() {
     --arg timestamp "$timestamp" \
     '{
       embeds: [{
-        author: { name: "$actor", icon_url: "$actor_avatar_url" },
-        title: "$title",
-        color: ("$color" | tonumber),
+        author: { name: $actor, icon_url: $actor_avatar_url },
+        title: $title,
+        color: ($color | tonumber),
         fields: [
-          { name: "Repository", value: "$repo", inline: false },
+          { name: "Repository", value: $repo, inline: false },
           { name: "Commit", value: "[\($commit)](https://github.com/\($repo)/commit/\($commit))", inline: false },
           { name: "Time", value: "`\($time)`", inline: false },
-          { name: "Additional Info", value: "$additional", inline: false }
+          { name: "Additional Info", value: $additional, inline: false }
         ],
-        timestamp: "$timestamp",
+        timestamp: $timestamp,
         footer: { text: "Deployment System" }
       }]
     }')
