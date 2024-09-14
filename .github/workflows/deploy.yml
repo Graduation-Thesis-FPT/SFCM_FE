@@ -26,7 +26,7 @@ jobs:
           echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
           echo "DEPLOY_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
           echo "ACTOR=${{ github.actor }}" >> $GITHUB_ENV
-          echo "ACTOR_AVATAR_URL=https://avatars.githubusercontent.com/u/${{ github.actor_id }}?v=4" >> $GITHUB_ENV
+          echo "ACTOR_AVATAR_URL=https://avatars.githubusercontent.com/u/${{ github.actor_id }}" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v4
