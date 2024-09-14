@@ -74,7 +74,7 @@ if [ -f "$LOCK_FILE" ]; then
   echo "Deployment in progress with PID $OLD_DEPLOYMENT_PID. Terminating it."
 
   # Terminate the existing deployment process
-  kill -TERM "$OLD_DEPLOYMENT_PID"
+  sudo kill -TERM "$OLD_DEPLOYMENT_PID"
 
   # Wait for the process to exit
   while kill -0 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
@@ -100,6 +100,16 @@ fi
 # Begin deployment
 echo "Starting new deployment with PID $$."
 
+send_discord_embed \
+  "🚀 Deployment Started" \
+  "3447003" \
+  "$REPO_NAME" \
+  "$COMMIT_HASH" \
+  "$DEPLOY_TIME" \
+  "Deployment has been initiated." \
+  "$ACTOR" \
+  "$ACTOR_AVATAR_URL"
+
 # Write current PID to lock file
 echo "DEPLOYMENT_PID=$$" > "$LOCK_FILE"
 # Write environment variables to lock file
@@ -118,10 +128,38 @@ docker network inspect sfcm-net >/dev/null 2>&1 || docker network create sfcm-ne
 # Deploy FE and BE using docker-compose
 docker compose -f docker-compose.yaml up -d --build
 
+# Check if 3 containers: sfcm-db, sfcm-be, sfcm-fe are running
+if [ $(docker ps -q -f name=sfcm-db | wc -l) -ne 1 ] || [ $(docker ps -q -f name=sfcm-be | wc -l) -ne 1 ] || [ $(docker ps -q -f name=sfcm-fe | wc -l) -ne 1 ]; then
+  echo "Error: One or more containers failed to start."
+  local missing_containers
+  missing_containers=$(docker ps --filter "status=exited" --format "{{.Names}}")
+  echo "Missing containers: $missing_containers"
+  send_discord_embed \
+    "❌ Deployment Failed" \
+    "15158332" \
+    "$REPO_NAME" \
+    "$COMMIT_HASH" \
+    "$DEPLOY_TIME" \
+    "Containers failed to start: $missing_containers" \
+    "$ACTOR" \
+    "$ACTOR_AVATAR_URL"
+  exit 1
+fi
+
 echo "Front-end and back-end services are now running."
 
 # Deployment completed
 echo "Deployment completed successfully."
+
+send_discord_embed \
+  "✅ Deployment Successful" \
+  "3066993" \
+  "$REPO_NAME" \
+  "$COMMIT_HASH" \
+  "$DEPLOY_TIME" \
+  "The deployment was successful." \
+  "$ACTOR" \
+  "$ACTOR_AVATAR_URL"
 
 # Remove lock file
 rm -f "$LOCK_FILE"
