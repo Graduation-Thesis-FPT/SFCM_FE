@@ -2,10 +2,39 @@
 
 LOCK_FILE="/tmp/deploy.lock"
 
-# Function to send Discord notification
-send_discord_notification() {
-  local message="$1"
-  curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"$message\"}" "$DISCORD_WEBHOOK_URL"
+# Function to send Discord embed notification
+send_discord_embed() {
+  local title="$1"
+  local color="$2"
+  local repo="$3"
+  local branch="$4"
+  local commit="$5"
+  local time="$6"
+  local additional_field="$7"
+
+  curl -H "Content-Type: application/json" -X POST -d "$(jq -n \
+    --arg title "$title" \
+    --arg color "$color" \
+    --arg repo "$repo" \
+    --arg branch "$branch" \
+    --arg commit "$commit" \
+    --arg time "$time" \
+    --arg additional "$additional_field" \
+    '{
+      embeds: [{
+        title: $title,
+        color: ($color | tonumber),
+        fields: [
+          { name: "Repository", value: $repo, inline: true },
+          { name: "Branch", value: $branch, inline: true },
+          { name: "Commit", value: "`" + $commit + "`", inline: false },
+          { name: "Time", value: "`" + $time + "`", inline: false },
+          { name: "Additional Info", value: $additional, inline: false }
+        ],
+        timestamp: "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
+        footer: { text: "Deployment System" }
+      }]
+    }')" "$DISCORD_WEBHOOK_URL"
 }
 
 # Set trap to handle script termination
@@ -19,27 +48,39 @@ trap 'cleanup' INT TERM EXIT
 
 # Check if lock file exists
 if [ -f "$LOCK_FILE" ]; then
-  existing_pid=$(cat "$LOCK_FILE")
-  echo "Deployment in progress with PID $existing_pid. Terminating it."
+  source "$LOCK_FILE"
+  echo "Deployment in progress with PID $DEPLOYMENT_PID. Terminating it."
 
   # Terminate the existing deployment process
-  kill -TERM "$existing_pid"
+  kill -TERM "$DEPLOYMENT_PID"
 
   # Wait for the process to exit
-  while kill -0 "$existing_pid" 2>/dev/null; do
-    echo "Waiting for process $existing_pid to terminate..."
+  while kill -0 "$DEPLOYMENT_PID" 2>/dev/null; do
+    echo "Waiting for process $DEPLOYMENT_PID to terminate..."
     sleep 1
   done
 
   # Remove the lock file
   rm -f "$LOCK_FILE"
 
-  # Send Discord notification about cancellation
-  send_discord_notification "⚠️ Previous deployment (PID $existing_pid) was canceled in favor of a new deployment."
+  # Send cancellation notification
+  send_discord_embed \
+    "⚠️ Deployment Cancelled" \
+    "15105570" \
+    "$REPO_NAME" \
+    "$BRANCH_NAME" \
+    "$COMMIT_HASH" \
+    "$DEPLOY_TIME" \
+    "A new deployment has been initiated."
 fi
 
 # Write current PID to lock file
-echo "$$" > "$LOCK_FILE"
+echo "DEPLOYMENT_PID=$$" >"$LOCK_FILE"
+# Write environment variables to lock file
+echo "REPO_NAME='$REPO_NAME'" > "$LOCK_FILE"
+echo "BRANCH_NAME='$BRANCH_NAME'" >> "$LOCK_FILE"
+echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
+echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
 
 # Begin deployment
 echo "Starting new deployment with PID $$."
