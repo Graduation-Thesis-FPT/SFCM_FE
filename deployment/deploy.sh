@@ -52,7 +52,7 @@ trap 'cleanup' INT TERM EXIT
 
 # Check if lock file exists
 if [ -f "$LOCK_FILE" ]; then
-  echo "LOCK_FILE: $LOCK_FILE" 
+  cat "$LOCK_FILE" 
   OLD_DEPLOYMENT_PID=$(grep '^DEPLOYMENT_PID=' $LOCK_FILE | cut -d '=' -f2)
 
   echo "Deployment in progress with PID $DEPLOYMENT_PID. Terminating it."
