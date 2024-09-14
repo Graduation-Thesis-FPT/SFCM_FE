@@ -1,4 +1,4 @@
-name: Deploy SFCM_FE
+name: Deploy
 
 on:
   push:
@@ -25,6 +25,7 @@ jobs:
           echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_ENV
           echo "COMMIT_HASH=${{ github.sha }}" >> $GITHUB_ENV
           echo "DEPLOY_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${{ github.ref }}" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -53,7 +54,7 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
                   { name: "Time", value: "`\($time)`", inline: false }
                 ],
                 timestamp: $timestamp,
@@ -163,7 +164,7 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
                   { name: "Time", value: "`\($time)`", inline: false }
                 ],
                 timestamp: $timestamp,
@@ -195,7 +196,7 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
                   { name: "Time", value: "`\($time)`", inline: false },
                   { name: "Error", value: $error, inline: false }
                 ],
@@ -226,7 +227,7 @@ jobs:
                 fields: [
                   { name: "Repository", value: $repo, inline: true },
                   { name: "Branch", value: $branch, inline: true },
-                  { name: "Commit", value: "`\($commit)`", inline: false },
+                  { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
                   { name: "Time", value: "`\($time)`", inline: false }
                 ],
                 timestamp: $timestamp,

@@ -27,8 +27,8 @@ send_discord_embed() {
         fields: [
           { name: "Repository", value: $repo, inline: true },
           { name: "Branch", value: $branch, inline: true },
-          { name: "Commit", value: "`" + $commit + "`", inline: false },
-          { name: "Time", value: "`" + $time + "`", inline: false },
+          { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
+          { name: "Time", value: "`\($time)`", inline: false }
           { name: "Additional Info", value: $additional, inline: false }
         ],
         timestamp: "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
