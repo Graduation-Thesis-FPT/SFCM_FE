@@ -28,7 +28,7 @@ send_discord_embed() {
           { name: "Repository", value: $repo, inline: true },
           { name: "Branch", value: $branch, inline: true },
           { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
-          { name: "Time", value: "`\($time)`", inline: false }
+          { name: "Time", value: "`\($time)`", inline: false },
           { name: "Additional Info", value: $additional, inline: false }
         ],
         timestamp: "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
@@ -48,7 +48,8 @@ trap 'cleanup' INT TERM EXIT
 
 # Check if lock file exists
 if [ -f "$LOCK_FILE" ]; then
-  source "$LOCK_FILE"
+  DEPLOYMENT_PID=$(grep '^DEPLOYMENT_PID=' $LOCK_FILE | cut -d '=' -f2)
+
   echo "Deployment in progress with PID $DEPLOYMENT_PID. Terminating it."
 
   # Terminate the existing deployment process
@@ -63,6 +64,14 @@ if [ -f "$LOCK_FILE" ]; then
   # Remove the lock file
   rm -f "$LOCK_FILE"
 
+  # Write current PID to lock file
+  echo "DEPLOYMENT_PID=$$" >"$LOCK_FILE"
+  # Write environment variables to lock file
+  echo "REPO_NAME='$REPO_NAME'" > "$LOCK_FILE"
+  echo "BRANCH_NAME='$BRANCH_NAME'" >> "$LOCK_FILE"
+  echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
+  echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
+
   # Send cancellation notification
   send_discord_embed \
     "⚠️ Deployment Cancelled" \
@@ -73,14 +82,6 @@ if [ -f "$LOCK_FILE" ]; then
     "$DEPLOY_TIME" \
     "A new deployment has been initiated."
 fi
-
-# Write current PID to lock file
-echo "DEPLOYMENT_PID=$$" >"$LOCK_FILE"
-# Write environment variables to lock file
-echo "REPO_NAME='$REPO_NAME'" > "$LOCK_FILE"
-echo "BRANCH_NAME='$BRANCH_NAME'" >> "$LOCK_FILE"
-echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
-echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
 
 # Begin deployment
 echo "Starting new deployment with PID $$."
