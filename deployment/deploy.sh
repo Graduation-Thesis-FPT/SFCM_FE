@@ -52,6 +52,11 @@ trap 'cleanup' INT TERM EXIT
 if [ -f "$LOCK_FILE" ]; then
   cat "$LOCK_FILE" 
   OLD_DEPLOYMENT_PID=$(grep '^DEPLOYMENT_PID=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_REPO_NAME=$(grep '^REPO_NAME=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_COMMIT_HASH=$(grep '^COMMIT_HASH=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_DEPLOY_TIME=$(grep '^DEPLOY_TIME=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_ACTOR=$(grep '^ACTOR=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_ACTOR_AVATAR_URL=$(grep '^ACTOR_AVATAR_URL=' $LOCK_FILE | cut -d '=' -f2)
 
   echo "Deployment in progress with PID $DEPLOYMENT_PID. Terminating it."
 
@@ -59,16 +64,10 @@ if [ -f "$LOCK_FILE" ]; then
   kill -TERM "$OLD_DEPLOYMENT_PID"
 
   # Wait for the process to exit
-  while kill -0 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
+  while kill -9 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
     echo "Waiting for process $OLD_DEPLOYMENT_PID to terminate..."
     sleep 1
   done
-
-  OLD_REPO_NAME=$(grep '^REPO_NAME=' $LOCK_FILE | cut -d '=' -f2)
-  OLD_COMMIT_HASH=$(grep '^COMMIT_HASH=' $LOCK_FILE | cut -d '=' -f2)
-  OLD_DEPLOY_TIME=$(grep '^DEPLOY_TIME=' $LOCK_FILE | cut -d '=' -f2)
-  OLD_ACTOR=$(grep '^ACTOR=' $LOCK_FILE | cut -d '=' -f2)
-  OLD_ACTOR_AVATAR_URL=$(grep '^ACTOR_AVATAR_URL=' $LOCK_FILE | cut -d '=' -f2)
 
   # Send cancellation notification
   send_discord_embed \
