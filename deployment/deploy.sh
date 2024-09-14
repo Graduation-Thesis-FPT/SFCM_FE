@@ -20,15 +20,15 @@ send_discord_embed() {
   # Construct the JSON payload using jq with all variables properly passed
   local payload
   payload=$(jq -n \
-    --arg title $title \
-    --arg color $color \
-    --arg repo $repo \
-    --arg commit $commit \
-    --arg time $time \
-    --arg additional $additional_field \
-    --arg actor $actor \
-    --arg actor_avatar_url $actor_avatar_url \
-    --arg timestamp $timestamp \
+    --arg title "$title" \
+    --arg color "$color" \
+    --arg repo "$repo" \
+    --arg commit "$commit" \
+    --arg time "$time" \
+    --arg additional "$additional_field" \
+    --arg actor "$actor" \
+    --arg actor_avatar_url "$actor_avatar_url" \
+    --arg timestamp "$timestamp" \
     '{
       embeds: [{
         author: { name: "$actor", icon_url: "$actor_avatar_url" },
@@ -77,7 +77,7 @@ if [ -f "$LOCK_FILE" ]; then
   kill -TERM "$OLD_DEPLOYMENT_PID"
 
   # Wait for the process to exit
-  while kill -9 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
+  while kill -0 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
     echo "Waiting for process $OLD_DEPLOYMENT_PID to terminate..."
     sleep 1
   done
