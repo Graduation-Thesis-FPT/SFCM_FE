@@ -85,17 +85,17 @@ if [ -f "$LOCK_FILE" ]; then
   rm -f "$LOCK_FILE"
 fi
 
+# Begin deployment
+echo "Starting new deployment with PID $$."
+
 # Write current PID to lock file
 echo "DEPLOYMENT_PID=$$" > "$LOCK_FILE"
 # Write environment variables to lock file
-echo "REPO_NAME='$REPO_NAME'" > "$LOCK_FILE"
+echo "REPO_NAME='$REPO_NAME'" >> "$LOCK_FILE"
 echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
 echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
 echo "ACTOR='$ACTOR'" >> "$LOCK_FILE"
 echo "ACTOR_AVATAR_URL='$ACTOR_AVATAR_URL'" >> "$LOCK_FILE"
-
-# Begin deployment
-echo "Starting new deployment with PID $$."
 
 # Set working directory to the location of the docker-compose file
 cd /root/capstone-new/SFCM_FE
