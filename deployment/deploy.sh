@@ -11,6 +11,8 @@ send_discord_embed() {
   local commit="$5"
   local time="$6"
   local additional_field="$7"
+  local actor="$8"
+  local actor_avatar_url="$9"
 
   curl -H "Content-Type: application/json" -X POST -d "$(jq -n \
     --arg title "$title" \
@@ -20,14 +22,16 @@ send_discord_embed() {
     --arg commit "$commit" \
     --arg time "$time" \
     --arg additional "$additional_field" \
+    --arg actor "$actor" \
+    --arg actor_avatar_url "$actor_avatar_url" \
     '{
       embeds: [{
+        author: { name: $actor, icon_url: $actor_avatar_url },
         title: $title,
         color: ($color | tonumber),
         fields: [
           { name: "Repository", value: $repo, inline: true },
-          { name: "Branch", value: $branch, inline: true },
-          { name: "Commit", value: "https://github.com/\($repo)/commit/\($commit)", inline: false },
+          { name: "Commit", value: "[\($commit)](https://github.com/\($repo)/commit/\($commit))", inline: false },
           { name: "Time", value: "`\($time)`", inline: false },
           { name: "Additional Info", value: $additional, inline: false }
         ],
@@ -48,26 +52,25 @@ trap 'cleanup' INT TERM EXIT
 
 # Check if lock file exists
 if [ -f "$LOCK_FILE" ]; then
-  DEPLOYMENT_PID=$(grep '^DEPLOYMENT_PID=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_DEPLOYMENT_PID=$(grep '^DEPLOYMENT_PID=' $LOCK_FILE | cut -d '=' -f2)
 
   echo "Deployment in progress with PID $DEPLOYMENT_PID. Terminating it."
 
   # Terminate the existing deployment process
-  kill -TERM "$DEPLOYMENT_PID"
+  kill -TERM "$OLD_DEPLOYMENT_PID"
 
   # Wait for the process to exit
-  while kill -0 "$DEPLOYMENT_PID" 2>/dev/null; do
-    echo "Waiting for process $DEPLOYMENT_PID to terminate..."
+  while kill -0 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
+    echo "Waiting for process $OLD_DEPLOYMENT_PID to terminate..."
     sleep 1
   done
-
-  # Remove the lock file
-  rm -f "$LOCK_FILE"
 
   OLD_REPO_NAME=$(grep '^REPO_NAME=' $LOCK_FILE | cut -d '=' -f2)
   OLD_BRANCH_NAME=$(grep '^BRANCH_NAME=' $LOCK_FILE | cut -d '=' -f2)
   OLD_COMMIT_HASH=$(grep '^COMMIT_HASH=' $LOCK_FILE | cut -d '=' -f2)
   OLD_DEPLOY_TIME=$(grep '^DEPLOY_TIME=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_ACTOR=$(grep '^ACTOR=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_ACTOR_AVATAR_URL=$(grep '^ACTOR_AVATAR_URL=' $LOCK_FILE | cut -d '=' -f2)
 
   # Send cancellation notification
   send_discord_embed \
@@ -77,7 +80,12 @@ if [ -f "$LOCK_FILE" ]; then
     "$OLD_BRANCH_NAME" \
     "$OLD_COMMIT_HASH" \
     "$OLD_DEPLOY_TIME" \
-    "A new deployment has been initiated."
+    "A new deployment has been initiated." \
+    "$OLD_ACTOR" \
+    "$OLD_ACTOR_AVATAR_URL"
+
+  # Remove the lock file
+  rm -f "$LOCK_FILE"
 fi
 
 # Write current PID to lock file
@@ -87,6 +95,8 @@ echo "REPO_NAME='$REPO_NAME'" > "$LOCK_FILE"
 echo "BRANCH_NAME='$BRANCH_NAME'" >> "$LOCK_FILE"
 echo "COMMIT_HASH='$COMMIT_HASH'" >> "$LOCK_FILE"
 echo "DEPLOY_TIME='$DEPLOY_TIME'" >> "$LOCK_FILE"
+echo "ACTOR='$ACTOR'" >> "$LOCK_FILE"
+echo "ACTOR_AVATAR_URL='$ACTOR_AVATAR_URL'" >> "$LOCK_FILE"
 
 # Begin deployment
 echo "Starting new deployment with PID $$."
