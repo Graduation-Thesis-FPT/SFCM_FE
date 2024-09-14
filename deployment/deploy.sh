@@ -20,15 +20,15 @@ send_discord_embed() {
   # Construct the JSON payload using jq with all variables properly passed
   local payload
   payload=$(jq -n \
-    --arg title $title \
-    --arg color $color \
-    --arg repo $repo \
-    --arg commit $commit \
-    --arg time $time \
-    --arg additional $additional_field \
-    --arg actor $actor \
-    --arg actor_avatar_url $actor_avatar_url \
-    --arg timestamp $timestamp \
+    --arg title "$title" \
+    --arg color "$color" \
+    --arg repo "$repo" \
+    --arg commit "$commit" \
+    --arg time "$time" \
+    --arg additional "$additional_field" \
+    --arg actor "$actor" \
+    --arg actor_avatar_url "$actor_avatar_url" \
+    --arg timestamp "$timestamp" \
     '{
       embeds: [{
         author: { name: "$actor", icon_url: "$actor_avatar_url" },
