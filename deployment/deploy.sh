@@ -64,14 +64,19 @@ if [ -f "$LOCK_FILE" ]; then
   # Remove the lock file
   rm -f "$LOCK_FILE"
 
+  OLD_REPO_NAME=$(grep '^REPO_NAME=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_BRANCH_NAME=$(grep '^BRANCH_NAME=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_COMMIT_HASH=$(grep '^COMMIT_HASH=' $LOCK_FILE | cut -d '=' -f2)
+  OLD_DEPLOY_TIME=$(grep '^DEPLOY_TIME=' $LOCK_FILE | cut -d '=' -f2)
+
   # Send cancellation notification
   send_discord_embed \
     "⚠️ Deployment Cancelled" \
     "15105570" \
-    "$REPO_NAME" \
-    "$BRANCH_NAME" \
-    "$COMMIT_HASH" \
-    "$DEPLOY_TIME" \
+    "$OLD_REPO_NAME" \
+    "$OLD_BRANCH_NAME" \
+    "$OLD_COMMIT_HASH" \
+    "$OLD_DEPLOY_TIME" \
     "A new deployment has been initiated."
 fi
 
