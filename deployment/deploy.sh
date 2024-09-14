@@ -77,7 +77,7 @@ if [ -f "$LOCK_FILE" ]; then
   kill -TERM "$OLD_DEPLOYMENT_PID"
 
   # Wait for the process to exit
-  while kill -9 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
+  while kill -0 "$OLD_DEPLOYMENT_PID" 2>/dev/null; do
     echo "Waiting for process $OLD_DEPLOYMENT_PID to terminate..."
     sleep 1
   done
