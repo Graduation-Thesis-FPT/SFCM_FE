@@ -12,8 +12,14 @@ send_discord_embed() {
   local additional_field="$6"
   local actor="$7"
   local actor_avatar_url="$8"
+  local timestamp
 
-  curl -H "Content-Type: application/json" -X POST -d "$(jq -n \
+  # Generate the timestamp in the required format
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  
+  # Construct the JSON payload using jq with all variables properly passed
+  local payload
+  payload=$(jq -n \
     --arg title "$title" \
     --arg color "$color" \
     --arg repo "$repo" \
@@ -22,6 +28,7 @@ send_discord_embed() {
     --arg additional "$additional_field" \
     --arg actor "$actor" \
     --arg actor_avatar_url "$actor_avatar_url" \
+    --arg timestamp "$timestamp" \
     '{
       embeds: [{
         author: { name: $actor, icon_url: $actor_avatar_url },
@@ -33,10 +40,16 @@ send_discord_embed() {
           { name: "Time", value: "`\($time)`", inline: false },
           { name: "Additional Info", value: $additional, inline: false }
         ],
-        timestamp: "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",
+        timestamp: $timestamp,
         footer: { text: "Deployment System" }
       }]
-    }')" "$DISCORD_WEBHOOK_URL"
+    }')
+
+  # Optionally, echo the payload for debugging
+  echo "$payload"
+
+  # Send the payload to Discord
+  curl -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK_URL"
 }
 
 # Set trap to handle script termination
@@ -58,7 +71,7 @@ if [ -f "$LOCK_FILE" ]; then
   OLD_ACTOR=$(grep '^ACTOR=' $LOCK_FILE | cut -d '=' -f2)
   OLD_ACTOR_AVATAR_URL=$(grep '^ACTOR_AVATAR_URL=' $LOCK_FILE | cut -d '=' -f2)
 
-  echo "Deployment in progress with PID $DEPLOYMENT_PID. Terminating it."
+  echo "Deployment in progress with PID $OLD_DEPLOYMENT_PID. Terminating it."
 
   # Terminate the existing deployment process
   kill -TERM "$OLD_DEPLOYMENT_PID"
