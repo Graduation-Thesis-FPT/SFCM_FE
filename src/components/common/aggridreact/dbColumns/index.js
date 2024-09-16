@@ -97,6 +97,17 @@ export class user extends CommonColumns {
   REMARK = { field: "REMARK", headerName: "Ghi chú*" };
 }
 
+export class container_tariff extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã biểu cước *" };
+  NAME = { field: "NAME", headerName: "Tên biểu cước *" };
+  CNTR_SIZE = { field: "CNTR_SIZE", headerName: "Kích thước cont *" };
+  UNIT_PRICE = { field: "UNIT_PRICE", headerName: "Tổng tiền (VND) *" };
+  VAT_RATE = { field: "VAT_RATE", headerName: "VAT (%) *" };
+  VALID_FROM = { field: "VALID_FROM", headerName: "Sử dụng từ ngày *" };
+  VALID_UNTIL = { field: "VALID_UNTIL", headerName: "Sử dụng đến ngày *" };
+  STATUS = { field: "STATUS", headerName: "Trạng thái" };
+}
+
 export class dt_vessel_visit extends CommonColumns {
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
   VESSEL_NAME = { field: "VESSEL_NAME", headerName: "Tên tàu *" };

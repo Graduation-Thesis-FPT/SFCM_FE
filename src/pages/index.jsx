@@ -12,6 +12,8 @@ export * from "./inputData/manifestLoadingList";
 export * from "./inputData/vesselInfo";
 export * from "./inputData/goodsManifest";
 //tariff
+export * from "./tariff/containerTariff";
+
 export * from "./tariff/tariffCode";
 export * from "./tariff/standardTariff";
 export * from "./tariff/discountTariff";

@@ -20,6 +20,7 @@ import * as numberingSystems from "cldr-data/supplemental/numberingSystems.json"
 import * as gregorian from "cldr-data/main/vi/ca-gregorian.json";
 import * as numbers from "cldr-data/main/vi/numbers.json";
 import * as timeZoneNames from "cldr-data/main/vi/timeZoneNames.json";
+import { Switch } from "../../ui/switch";
 
 loadCldr(numberingSystems, gregorian, numbers, timeZoneNames);
 
@@ -186,6 +187,30 @@ export function BlockCodeRender(params, blockCodes) {
   );
 }
 
+export function ContainerTariffStatusRender(params) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue("ACTIVE");
+    }
+  }, []);
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <Switch
+        className="data-[state=checked]:bg-green-800 data-[state=unchecked]:bg-red-800"
+        checked={params.value === "ACTIVE"}
+        onCheckedChange={value => {
+          params.setValue(value ? "ACTIVE" : "INACTIVE");
+        }}
+      ></Switch>
+      <div
+        className={`flex text-sm font-medium  ${params.value === "ACTIVE" ? "text-green-800" : "text-red-800"}`}
+      >
+        {params.value === "ACTIVE" ? "Hoạt động" : "Dừng"}
+      </div>
+    </div>
+  );
+}
+
 export function CustomerTypeRender(params) {
   const customerType = [
     {
@@ -320,9 +345,9 @@ export function ConsigneeRender(params, customerList) {
 
 export function CntrSztpRender(params) {
   let cntrSztpList = [
-    { label: "20", value: "20" },
-    { label: "40", value: "40" },
-    { label: "45", value: "45" }
+    { label: "20", value: 20 },
+    { label: "40", value: 40 },
+    { label: "45", value: 45 }
   ];
   useEffect(() => {
     if (params.value === undefined) {

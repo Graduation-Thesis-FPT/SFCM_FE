@@ -128,7 +128,7 @@ export function CustomerList() {
       </Section.Header>
       <Section.Content>
         <Section.Table>
-          <AgGrid ref={gridRef} rowData={customerList} colDefs={colDefs} />
+          <AgGrid rowSelection={"single"} ref={gridRef} rowData={customerList} colDefs={colDefs} />
         </Section.Table>
       </Section.Content>
       <CustomerUpdateForm
