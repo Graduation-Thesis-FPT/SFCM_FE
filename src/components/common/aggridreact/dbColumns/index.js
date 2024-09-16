@@ -75,7 +75,7 @@ export class bs_customer extends CommonColumns {
   ADDRESS = { field: "ADDRESS", headerName: "Địa chỉ *" };
   TAX_CODE = { field: "TAX_CODE", headerName: "Mã số thuế *" };
   EMAIL = { field: "EMAIL", headerName: "Email *" };
-  IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Hoạt động *" };
+  IS_ACTIVE = { field: "IS_ACTIVE", headerName: "Trạng thái *" };
 }
 export class customer extends CommonColumns {
   ID = { field: "ID", headerName: "Mã khách hàng *" };

@@ -277,7 +277,7 @@ export function UserUpdateForm({ detail = {}, revalidate, onOpenChange }) {
                       type="button"
                       variant="link"
                       onClick={() => {
-                        setOpenDialog(true);
+                        // setOpenDialog(true);
                       }}
                       className="p-0 text-sm font-medium text-blue-600 hover:text-blue-600/80"
                     >

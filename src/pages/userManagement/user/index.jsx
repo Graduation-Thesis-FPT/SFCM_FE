@@ -52,6 +52,10 @@ export function User() {
       minWidth: 150,
       maxWidth: 150,
       headerName: "Trạng thái",
+      headerClass: "center-header",
+      cellStyle: {
+        textAlign: "center"
+      },
       cellRenderer: params => {
         if (params.value) {
           return (

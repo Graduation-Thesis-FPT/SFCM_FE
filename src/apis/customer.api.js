@@ -4,6 +4,14 @@ export const getAllCustomer = async () => {
   return axiosPrivate.get(`customer`);
 };
 
+export const createCustomer = async data => {
+  return await axiosPrivate.post(`customer`, data);
+};
+
+export const updateCustomer = async data => {
+  return await axiosPrivate.patch(`customer`, data);
+};
+
 export const createAndUpdateCustomer = async data => {
   return await axiosPrivate.post(`customer`, data);
   // return await axiosCache.post(`customer`, data, {

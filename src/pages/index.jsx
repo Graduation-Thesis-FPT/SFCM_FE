@@ -6,8 +6,6 @@ export * from "./genericList/warehouseDesign";
 export * from "./genericList/warehouseList";
 export * from "./genericList/service";
 export * from "./genericList/packageType";
-// export * from "./genericList/packageUnitList";
-// export * from "./genericList/customerType";
 export * from "./genericList/customerList";
 //inputData
 export * from "./inputData/manifestLoadingList";
