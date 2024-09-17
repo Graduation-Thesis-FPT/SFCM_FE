@@ -15,6 +15,11 @@ services:
       - VITE_BASE_URL=https://sfcm.id.vn
     depends_on:
       - sfcm-be
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3050"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   
   sfcm-be:
     container_name: sfcm-be
