@@ -158,6 +158,20 @@ export class dt_package_mnf_ld extends CommonColumns {
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
 
+export class voyage_container_package extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã hàng hóa *" };
+  VOYAGE_CONTAINER_ID = { field: "VOYAGE_CONTAINER_ID", headerName: "Mã container chuyến tàu *" };
+  HOUSE_BILL = { field: "HOUSE_BILL", headerName: "Số House Bill *" };
+  PACKAGE_TYPE_ID = { field: "PACKAGE_TYPE_ID", headerName: "Mã loại hàng *" };
+  CONSIGNEE_ID = { field: "CONSIGNEE_ID", headerName: "Mã chủ hàng *" };
+  PACKAGE_UNIT = { field: "PACKAGE_UNIT", headerName: "Đơn vị hàng *" };
+  CBM = { field: "CBM", headerName: "Số khối (m³) *" };
+  TOTAL_ITEMS = { field: "TOTAL_ITEMS", headerName: "Tổng số lượng *" };
+  NOTE = { field: "NOTE", headerName: "Ghi chú" };
+  TIME_IN = { field: "TIME_IN", headerName: "Thời gian vào" };
+  STATUS = { field: "STATUS", headerName: "Trạng thái" };
+}
+
 export class trf_codes extends CommonColumns {
   TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };
   TRF_DESC = { field: "TRF_DESC", headerName: "Mô tả *" };

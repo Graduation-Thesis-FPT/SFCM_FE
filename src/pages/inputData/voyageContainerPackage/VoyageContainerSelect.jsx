@@ -1,8 +1,8 @@
-import { getVoyageContainerByVoyageID } from "@/apis/cntr-mnf-ld.api";
+import { getVoyageContainerByVoyageID } from "@/apis/voyage-container.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { StatusOfGoodsByTextRender } from "@/components/common/aggridreact/cellRender";
-import { dt_cntr_mnf_ld } from "@/components/common/aggridreact/dbColumns";
+import { voyage_container } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
+import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
 import {
   Sheet,
@@ -14,20 +14,23 @@ import {
 import useFetchData from "@/hooks/useRefetchData";
 import { useEffect, useRef } from "react";
 
-export function ContainerInfoSelect({
+const VOYAGE_CONTAINER = new voyage_container();
+
+export function VoyageContainerSelect({
   open,
   onOpenChange,
-  VOYAGEKEY,
+  VOYAGE_ID,
   onSelectContainerInfo,
   onGoBack
 }) {
-  const { data: manifestLoadingList, revalidate } = useFetchData({
-    service: getVoyageContainerByVoyageID,
-    params: VOYAGEKEY
-  });
   const toast = useCustomToast();
-  const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
   const gridRef = useRef(null);
+
+  const { data: voyageContainerList, revalidate } = useFetchData({
+    service: getVoyageContainerByVoyageID,
+    params: VOYAGE_ID
+  });
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -40,48 +43,61 @@ export function ContainerInfoSelect({
       }
     },
     {
-      headerName: DT_CNTR_MNF_LD.BILLOFLADING.headerName,
-      field: DT_CNTR_MNF_LD.BILLOFLADING.field,
+      headerName: VOYAGE_CONTAINER.CNTR_NO.headerName,
+      field: VOYAGE_CONTAINER.CNTR_NO.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.CNTRNO.headerName,
-      field: DT_CNTR_MNF_LD.CNTRNO.field,
+      headerName: VOYAGE_CONTAINER.CNTR_SIZE.headerName,
+      field: VOYAGE_CONTAINER.CNTR_SIZE.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.CNTRSZTP.headerName,
-      field: DT_CNTR_MNF_LD.CNTRSZTP.field,
+      headerName: VOYAGE_CONTAINER.SHIPPER_ID.headerName,
+      field: VOYAGE_CONTAINER.SHIPPER_ID.field,
+      flex: 1,
+      filter: true
+      // cellRenderer: params => CustomerRender(params, shipperList)
+    },
+    {
+      headerName: VOYAGE_CONTAINER.SEAL_NO.headerName,
+      field: VOYAGE_CONTAINER.SEAL_NO.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.SEALNO.headerName,
-      field: DT_CNTR_MNF_LD.SEALNO.field,
+      headerName: VOYAGE_CONTAINER.NOTE.headerName,
+      field: VOYAGE_CONTAINER.NOTE.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
-      field: DT_CNTR_MNF_LD.CONSIGNEE.field,
+      headerName: "Trạng thái cont",
+      field: VOYAGE_CONTAINER.STATUS.field,
       flex: 1,
-      filter: true
-    },
-    {
-      headerName: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.headerName,
-      field: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.field,
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: DT_CNTR_MNF_LD.COMMODITYDESCRIPTION.headerName,
-      field: DT_CNTR_MNF_LD.COMMODITYDESCRIPTION.field,
-      flex: 1,
-      filter: true
+      headerClass: "center-header",
+      cellStyle: {
+        textAlign: "center"
+      },
+      cellRenderer: params => {
+        if (params.value === "IMPORTED") {
+          return (
+            <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+              Đã nhập
+            </Badge>
+          );
+        }
+        return (
+          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+            Chưa nhập
+          </Badge>
+        );
+      }
     }
   ];
+
   const handleSelectRow = () => {
     let rowSelected = gridRef.current.api.getSelectedRows();
     if (rowSelected.length === 0) {
@@ -93,7 +109,7 @@ export function ContainerInfoSelect({
 
   useEffect(() => {
     revalidate();
-  }, [VOYAGEKEY]);
+  }, [VOYAGE_ID]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -106,7 +122,7 @@ export function ContainerInfoSelect({
                 <Button onClick={onGoBack} variant="outline">
                   Chọn lại tàu chuyến
                 </Button>
-                {manifestLoadingList?.length > 0 && (
+                {voyageContainerList?.length > 0 && (
                   <Button onClick={handleSelectRow} variant="blue">
                     Chọn
                   </Button>
@@ -121,7 +137,7 @@ export function ContainerInfoSelect({
           ref={gridRef}
           rowSelection={"single"}
           className="h-[50vh]"
-          rowData={manifestLoadingList || []}
+          rowData={voyageContainerList || []}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
         />

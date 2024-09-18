@@ -1,14 +1,13 @@
 import {
-  dt_cntr_mnf_ld,
-  dt_package_mnf_ld,
-  dt_vessel_visit
+  voyage,
+  voyage_container,
+  voyage_container_package
 } from "@/components/common/aggridreact/dbColumns";
 import { Section } from "@/components/common/section";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { useEffect, useRef, useState } from "react";
-import { VesselInfoSelect } from "./VesselInfoSelect";
-import { ContainerInfoSelect } from "./ContainerInfoSelect";
+import { VoyageContainerSelect } from "./VoyageContainerSelect";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
@@ -19,84 +18,94 @@ import { actionGrantPermission } from "@/constants";
 import { BtnSave } from "@/components/common/aggridreact/tableTools/BtnSave";
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import {
-  createAndUpdatePackageMnfLd,
-  deletePackageMnfLd,
-  getPackageMnfLdByFilter
-} from "@/apis/package_mnf_ld.api";
+  createAndUpdateVoyContPackage,
+  deleteVoyContPackage,
+  getVoyageContainerPackage
+} from "@/apis/voyage-container-package.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { getAllPackageType } from "@/apis/package-type.api";
 import {
-  ItemTypeCodeRender,
-  PackageUnitCodeRender
+  CustomerRender,
+  OnlyEditWithInsertCell,
+  PackageTypeRender
 } from "@/components/common/aggridreact/cellRender";
-import { BtnPrintGoodsManifest } from "./btnPrintGoodsManifest";
-import { BtnPrintLabel } from "./btnPrintLabel";
 import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
 import moment from "moment";
 import { getAllPackageUnit } from "@/apis/pakage-unit.api";
 import { BtnImportExcel } from "./btnImportExcel";
-import { Copy, X } from "lucide-react";
-import { removeLastAsterisk } from "@/lib/utils";
+import { Copy } from "lucide-react";
+import { cn, removeLastAsterisk } from "@/lib/utils";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
 import { checkGoodsManifest } from "@/lib/validation/input-data/checkGoodsManifest";
+import { VoyageSelect } from "./VoyageSelect";
+import useFetchData from "@/hooks/useRefetchData";
+import { getCustomerByCustomerType } from "@/apis/customer.api";
 
-const DT_VESSEL_VISIT = new dt_vessel_visit();
-const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
-const DT_PACKAGE_MNF_LD = new dt_package_mnf_ld();
+const VOYAGE = new voyage();
+const VOYAGE_CONTAINER = new voyage_container();
+const VOYAGE_CONTAINER_PACKAGE = new voyage_container_package();
+
 const vesselFilter = [
   {
-    name: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
-    field: DT_VESSEL_VISIT.VESSEL_NAME.field
+    name: VOYAGE.ID.headerName,
+    field: VOYAGE.ID.field
   },
   {
-    name: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
-    field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field
+    name: VOYAGE.VESSEL_NAME.headerName,
+    field: VOYAGE.VESSEL_NAME.field
   },
+
   {
-    name: DT_VESSEL_VISIT.ETA.headerName,
-    field: DT_VESSEL_VISIT.ETA.field
+    name: VOYAGE.ETA.headerName,
+    field: VOYAGE.ETA.field
   }
 ];
 const containerFilter = [
   {
-    name: DT_CNTR_MNF_LD.BILLOFLADING.headerName,
-    field: DT_CNTR_MNF_LD.BILLOFLADING.field
+    name: VOYAGE_CONTAINER.CNTR_NO.headerName,
+    field: VOYAGE_CONTAINER.CNTR_NO.field
   },
   {
-    name: DT_CNTR_MNF_LD.CNTRNO.headerName,
-    field: DT_CNTR_MNF_LD.CNTRNO.field
+    name: VOYAGE_CONTAINER.CNTR_SIZE.headerName,
+    field: VOYAGE_CONTAINER.CNTR_SIZE.field
   },
   {
-    name: DT_CNTR_MNF_LD.CNTRSZTP.headerName,
-    field: DT_CNTR_MNF_LD.CNTRSZTP.field
+    name: VOYAGE_CONTAINER.SHIPPER_ID.headerName,
+    field: VOYAGE_CONTAINER.SHIPPER_ID.field
   },
   {
-    name: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.headerName,
-    field: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.field
+    name: VOYAGE_CONTAINER.SEAL_NO.headerName,
+    field: VOYAGE_CONTAINER.SEAL_NO.field
   },
   {
-    name: DT_CNTR_MNF_LD.SEALNO.headerName,
-    field: DT_CNTR_MNF_LD.SEALNO.field
-  },
-  {
-    name: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
-    field: DT_CNTR_MNF_LD.CONSIGNEE.field
+    name: VOYAGE_CONTAINER.NOTE.headerName,
+    field: VOYAGE_CONTAINER.NOTE.field
   }
 ];
 
-export function GoodsManifest() {
+export function VoyageContainerPackage() {
   const dispatch = useDispatch();
   const gridRef = useRef(null);
-  const [rowData, setRowData] = useState([]);
-  const [itemType, setItemType] = useState([]);
-  const [unit, setUnit] = useState([]);
-  const [openVesselInfoSelect, setOpenVesselInfoSelect] = useState(false);
-  const [openContainerInfoSelect, setOpenContainerInfoSelect] = useState(false);
-  const [vesselInfo, setVesselInfo] = useState({});
-  const [containerInfo, setContainerInfo] = useState({});
-
   const toast = useCustomToast();
+  const { data: packageTypeList } = useFetchData({
+    service: getAllPackageType
+  });
+  const { data: consigneeList } = useFetchData({
+    service: getCustomerByCustomerType,
+    params: "CONSIGNEE"
+  });
+
+  const [rowData, setRowData] = useState([]);
+
+  const [unit, setUnit] = useState([]);
+
+  const [openSelectVoyage, setOpenSelectVoyage] = useState(false);
+  const [openSelectContainer, setOpenSelectContainer] = useState(false);
+
+  const [voyageSelected, setVoyageSelected] = useState({});
+  const [containerSelected, setContainerSelected] = useState({});
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -109,31 +118,46 @@ export function GoodsManifest() {
       }
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.HOUSE_BILL.headerName,
-      field: DT_PACKAGE_MNF_LD.HOUSE_BILL.field,
+      headerName: VOYAGE_CONTAINER_PACKAGE.HOUSE_BILL.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.HOUSE_BILL.field,
+      flex: 1,
+      filter: true,
+      editable: OnlyEditWithInsertCell
+    },
+    {
+      headerName: VOYAGE_CONTAINER_PACKAGE.CONSIGNEE_ID.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.CONSIGNEE_ID.field,
+      flex: 1,
+      filter: true,
+      cellStyle: {
+        alignItems: "center",
+        display: "flex"
+      },
+      cellRenderer: params => CustomerRender(params, consigneeList)
+    },
+    {
+      headerName: VOYAGE_CONTAINER_PACKAGE.PACKAGE_TYPE_ID.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.PACKAGE_TYPE_ID.field,
+      flex: 1,
+      filter: true,
+      cellStyle: {
+        alignItems: "center",
+        display: "flex"
+      },
+      cellRenderer: params => PackageTypeRender(params, packageTypeList)
+    },
+    {
+      headerName: VOYAGE_CONTAINER_PACKAGE.PACKAGE_UNIT.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.PACKAGE_UNIT.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.ITEM_TYPE_CODE.headerName,
-      field: DT_PACKAGE_MNF_LD.ITEM_TYPE_CODE.field,
-      flex: 1,
-      filter: true,
-      cellRenderer: params => ItemTypeCodeRender(params, itemType)
-    },
-    {
-      headerName: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.headerName,
-      field: DT_PACKAGE_MNF_LD.PACKAGE_UNIT_CODE.field,
-      flex: 1,
-      filter: true,
-      cellRenderer: params => PackageUnitCodeRender(params, unit)
-    },
-    {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: DT_PACKAGE_MNF_LD.CARGO_PIECE.headerName,
-      field: DT_PACKAGE_MNF_LD.CARGO_PIECE.field,
+      headerName: VOYAGE_CONTAINER_PACKAGE.TOTAL_ITEMS.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.TOTAL_ITEMS.field,
       flex: 1,
       filter: true,
       editable: true,
@@ -146,8 +170,8 @@ export function GoodsManifest() {
     {
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: DT_PACKAGE_MNF_LD.CBM.headerName,
-      field: DT_PACKAGE_MNF_LD.CBM.field,
+      headerName: VOYAGE_CONTAINER_PACKAGE.CBM.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.CBM.field,
       flex: 1,
       filter: true,
       editable: true,
@@ -158,34 +182,27 @@ export function GoodsManifest() {
       cellDataType: "number"
     },
     {
-      headerName: DT_PACKAGE_MNF_LD.DECLARE_NO.headerName,
-      field: DT_PACKAGE_MNF_LD.DECLARE_NO.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
-      headerName: DT_PACKAGE_MNF_LD.NOTE.headerName,
-      field: DT_PACKAGE_MNF_LD.NOTE.field,
+      headerName: VOYAGE_CONTAINER_PACKAGE.NOTE.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.NOTE.field,
       flex: 1,
       filter: true,
       editable: true
     }
   ];
 
-  const handleSelectVesselInfo = vessel => {
-    setContainerInfo({});
+  const handleSelectVoyage = vessel => {
+    setContainerSelected({});
     setRowData([]);
-    setVesselInfo({ ...vessel, ETA: moment(vessel.ETA).format("DD/MM/YYYY HH:mm") });
-    setOpenVesselInfoSelect(false);
-    setOpenContainerInfoSelect(true);
+    setVoyageSelected({ ...vessel, ETA: moment(vessel.ETA).format("DD/MM/YYYY") });
+    setOpenSelectVoyage(false);
+    setOpenSelectContainer(true);
   };
 
-  const handleSelectContainerInfo = container => {
-    setContainerInfo(container);
-    setOpenContainerInfoSelect(false);
+  const handleSelectContainer = container => {
+    setContainerSelected(container);
+    setOpenSelectContainer(false);
     dispatch(setGlobalLoading(true));
-    getPackageMnfLdByFilter(container.ROWGUID)
+    getVoyageContainerPackage(container.ID)
       .then(res => {
         setRowData(res.data.metadata);
         toast.success(res);
@@ -199,16 +216,16 @@ export function GoodsManifest() {
   };
 
   const handleContainerGoBackVessel = () => {
-    setOpenContainerInfoSelect(false);
-    setOpenVesselInfoSelect(true);
+    setOpenSelectContainer(false);
+    setOpenSelectVoyage(true);
   };
 
   const handleAddRow = () => {
-    if (!vesselInfo.VOYAGEKEY) {
+    if (!voyageSelected.ID) {
       toast.warning("Vui lòng chọn tàu chuyến");
       return;
     }
-    if (!containerInfo.ROWGUID) {
+    if (!containerSelected.ID) {
       toast.warning("Vui lòng chọn container");
       return;
     }
@@ -223,19 +240,19 @@ export function GoodsManifest() {
       return;
     }
 
-    const { isValid, mess } = checkGoodsManifest(gridRef);
-    if (!isValid) {
-      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
-      return;
-    }
+    // const { isValid, mess } = checkGoodsManifest(gridRef);
+    // if (!isValid) {
+    //   toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+    //   return;
+    // }
 
     dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
-        return { ...item, CONTAINER_ID: containerInfo.ROWGUID };
+        return { ...item, VOYAGE_CONTAINER_ID: containerSelected.ID };
       });
     }
-    createAndUpdatePackageMnfLd(insertAndUpdateData)
+    createAndUpdateVoyContPackage(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -250,8 +267,8 @@ export function GoodsManifest() {
 
   const handleDeleteRows = selectedRows => {
     dispatch(setGlobalLoading(true));
-    const { newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ROWGUID");
-    deletePackageMnfLd(selectedRows)
+    const { newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
+    deleteVoyContPackage(selectedRows)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -265,7 +282,7 @@ export function GoodsManifest() {
   };
 
   const getRowData = () => {
-    getPackageMnfLdByFilter(containerInfo.ROWGUID)
+    getVoyageContainerPackage(containerSelected.ID)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -275,11 +292,11 @@ export function GoodsManifest() {
   };
 
   const handleFileUpload = rowDataFileUpload => {
-    if (!vesselInfo.VOYAGEKEY) {
+    if (!voyageSelected.VOYAGEKEY) {
       toast.warning("Vui lòng chọn tàu chuyến");
       return;
     }
-    if (!containerInfo.ROWGUID) {
+    if (!containerSelected.ROWGUID) {
       toast.warning("Vui lòng chọn container");
       return;
     }
@@ -297,38 +314,13 @@ export function GoodsManifest() {
     setRowData(finalRowData);
   };
 
-  useEffect(() => {
-    getItemType();
-    getUnit();
-  }, []);
-
-  const getItemType = () => {
-    getAllPackageType()
-      .then(res => {
-        setItemType(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const getUnit = () => {
-    getAllPackageUnit()
-      .then(res => {
-        setUnit(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
   const handleCopyToClipboard = field => {
     try {
-      if (field === DT_CNTR_MNF_LD.CNTRNO.field && containerInfo.CNTRNO) {
-        navigator.clipboard.writeText(containerInfo?.CNTRNO);
+      if (field === VOYAGE_CONTAINER.CNTRNO.field && containerSelected.CNTRNO) {
+        navigator.clipboard.writeText(containerSelected?.CNTRNO);
         toast.success("Copy số container thành công");
-      } else if (field === DT_CNTR_MNF_LD.BILLOFLADING.field && containerInfo.BILLOFLADING) {
-        navigator.clipboard.writeText(containerInfo?.BILLOFLADING);
+      } else if (field === VOYAGE_CONTAINER.BILLOFLADING.field && containerSelected.BILLOFLADING) {
+        navigator.clipboard.writeText(containerSelected?.BILLOFLADING);
         toast.success("Copy số vận đơn thành công");
       } else {
         toast.error("Không có dữ liệu để copy");
@@ -348,24 +340,26 @@ export function GoodsManifest() {
               <Label htmlFor={item.field}>{item.name}</Label>
               <Input
                 onClick={() => {
-                  setOpenVesselInfoSelect(true);
+                  setOpenSelectVoyage(true);
                 }}
-                defaultValue={vesselInfo[item.field]}
+                defaultValue={voyageSelected[item.field]}
                 readOnly
                 className="hover:cursor-pointer"
                 id={item.field}
-                placeholder="Chọn chuyến tàu "
+                placeholder="Chọn chuyến tàu"
               />
             </div>
           ))}
         </span>
         <span className="grid grid-cols-6 gap-3">
           {containerFilter.map(item => (
-            <div key={item.field}>
+            <div
+              key={item.field}
+              className={cn(item.field === VOYAGE_CONTAINER.NOTE.field ? "col-span-2" : "")}
+            >
               <Label className="flex">
                 {removeLastAsterisk(item.name)}
-                {(item.field === DT_CNTR_MNF_LD.CNTRNO.field ||
-                  item.field === DT_CNTR_MNF_LD.BILLOFLADING.field) && (
+                {item.field === VOYAGE_CONTAINER.CNTR_NO.field && (
                   <Copy
                     onClick={() => {
                       handleCopyToClipboard(item.field);
@@ -376,18 +370,18 @@ export function GoodsManifest() {
               </Label>
               <Input
                 onClick={() => {
-                  if (!vesselInfo.VOYAGEKEY) {
-                    toast.warning("Vui lòng chọn tàu chuyến");
+                  if (!voyageSelected.ID) {
+                    toast.warning("Vui lòng chọn chuyến tàu");
                     return;
                   }
-                  setOpenContainerInfoSelect(true);
+                  setOpenSelectContainer(true);
                 }}
                 defaultValue={
-                  typeof containerInfo[item.field] === "boolean"
-                    ? containerInfo[item.field]
+                  typeof containerSelected[item.field] === "boolean"
+                    ? containerSelected[item.field]
                       ? "Có hàng"
                       : "Rỗng"
-                    : containerInfo[item.field] ?? ""
+                    : containerSelected[item.field] ?? ""
                 }
                 readOnly
                 className="hover:cursor-pointer"
@@ -399,33 +393,31 @@ export function GoodsManifest() {
         </span>
       </Section.Header>
       <Section.Content>
-        <span className="flex items-end justify-between">
-          <div>{/* Sau này để cái gì đó vô đây */}</div>
-          <LayoutTool>
-            <BtnPrintGoodsManifest
+        <LayoutTool>
+          {/* <BtnPrintGoodsManifest
               rowData={rowData}
-              vesselInfo={vesselInfo}
-              containerInfo={containerInfo}
-            />
-            <BtnPrintLabel
+              voyageSelected={voyageSelected}
+              containerSelected={containerSelected}
+            /> */}
+          {/* <BtnPrintLabel
               gridRef={gridRef}
-              vesselInfo={vesselInfo}
-              containerInfo={containerInfo}
-            />
-            <BtnDownExcelGoodsMnfSample gridRef={gridRef} itemType={itemType} unit={unit} />
-            <BtnExportExcel gridRef={gridRef} />
-            <BtnImportExcel gridRef={gridRef} onFileUpload={handleFileUpload} />
-            <GrantPermission action={actionGrantPermission.CREATE}>
-              <BtnAddRow onAddRow={handleAddRow} />
-            </GrantPermission>
-            <GrantPermission action={actionGrantPermission.UPDATE}>
-              <BtnSave onClick={handleSaveRows} />
-            </GrantPermission>
-          </LayoutTool>
-        </span>
+              voyageSelected={voyageSelected}
+              containerSelected={containerSelected}
+            /> */}
+          <BtnDownExcelGoodsMnfSample gridRef={gridRef} itemType={packageTypeList} unit={unit} />
+          <BtnExportExcel gridRef={gridRef} />
+          <BtnImportExcel gridRef={gridRef} onFileUpload={handleFileUpload} />
+          <GrantPermission action={actionGrantPermission.CREATE}>
+            <BtnAddRow onAddRow={handleAddRow} />
+          </GrantPermission>
+          <GrantPermission action={actionGrantPermission.UPDATE}>
+            <BtnSave onClick={handleSaveRows} />
+          </GrantPermission>
+        </LayoutTool>
         <Section.Table>
           <AgGrid
             contextMenu={true}
+            showCountRowSelected={true}
             setRowData={data => {
               setRowData(data);
             }}
@@ -438,20 +430,20 @@ export function GoodsManifest() {
           />
         </Section.Table>
       </Section.Content>
-      <VesselInfoSelect
-        open={openVesselInfoSelect}
+      <VoyageSelect
+        open={openSelectVoyage}
         onOpenChange={() => {
-          setOpenVesselInfoSelect(false);
+          setOpenSelectVoyage(false);
         }}
-        onSelectVesselInfo={handleSelectVesselInfo}
+        onSelectVesselInfo={handleSelectVoyage}
       />
-      <ContainerInfoSelect
-        VOYAGEKEY={vesselInfo?.VOYAGEKEY}
-        open={openContainerInfoSelect}
+      <VoyageContainerSelect
+        VOYAGE_ID={voyageSelected?.ID}
+        open={openSelectContainer}
         onOpenChange={() => {
-          setOpenContainerInfoSelect(false);
+          setOpenSelectContainer(false);
         }}
-        onSelectContainerInfo={handleSelectContainerInfo}
+        onSelectContainerInfo={handleSelectContainer}
         onGoBack={handleContainerGoBackVessel}
       />
     </Section>

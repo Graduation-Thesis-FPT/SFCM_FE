@@ -285,12 +285,7 @@ export function StatusOfGoodsByTextRender(params) {
   return params.value ? "Có hàng" : "Rỗng";
 }
 
-export function ItemTypeCodeRender(params, itemType) {
-  useEffect(() => {
-    if (params.value === undefined) {
-      params.setValue(itemType[0]?.ITEM_TYPE_CODE);
-    }
-  }, []);
+export function PackageTypeRender(params, packageType) {
   return (
     <Select
       onValueChange={value => {
@@ -303,9 +298,9 @@ export function ItemTypeCodeRender(params, itemType) {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {itemType.map(item => (
-            <SelectItem key={item?.ITEM_TYPE_CODE} value={item?.ITEM_TYPE_CODE}>
-              {item?.ITEM_TYPE_CODE} - {item?.ITEM_TYPE_NAME}
+          {packageType.map(item => (
+            <SelectItem key={item?.ID} value={item?.ID}>
+              {item?.ID} - {item?.NAME}
             </SelectItem>
           ))}
         </SelectGroup>

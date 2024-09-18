@@ -1,7 +1,6 @@
 import { getAllVoyage } from "@/apis/voyage.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
-import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { voyage } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -13,12 +12,14 @@ import {
 } from "@/components/common/ui/sheet";
 import useFetchData from "@/hooks/useRefetchData";
 import React, { useRef } from "react";
+const VOYAGEKEY = new voyage();
 
-export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
-  const { data: vesselList } = useFetchData({ service: getAllVoyage });
+export function VoyageSelect({ onOpenChange, open, onSelectVesselInfo }) {
+  const { data: voyageList } = useFetchData({ service: getAllVoyage });
+
   const toast = useCustomToast();
   const gridRef = useRef(null);
-  const DT_VESSEL_VISIT = new dt_vessel_visit();
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -31,40 +32,29 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
       }
     },
     {
-      headerName: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
-      field: DT_VESSEL_VISIT.VESSEL_NAME.field,
+      headerName: VOYAGEKEY.ID.headerName,
+      field: VOYAGEKEY.ID.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field,
+      headerName: VOYAGEKEY.VESSEL_NAME.headerName,
+      field: VOYAGEKEY.VESSEL_NAME.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.ETA.headerName,
-      field: DT_VESSEL_VISIT.ETA.field,
+      headerName: VOYAGEKEY.ETA.headerName,
+      field: VOYAGEKEY.ETA.field,
       flex: 1,
-      cellRenderer: DateTimeByTextRender
-    },
-    {
-      headerName: DT_VESSEL_VISIT.CallSign.headerName,
-      field: DT_VESSEL_VISIT.CallSign.field,
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: DT_VESSEL_VISIT.IMO.headerName,
-      field: DT_VESSEL_VISIT.IMO.field,
-      flex: 1,
-      filter: true
+      editable: true,
+      cellDataType: "date"
     }
   ];
   const handleSelectRow = () => {
     let rowSelected = gridRef.current.api.getSelectedRows();
     if (rowSelected.length === 0) {
-      toast.warning("Vui lòng chọn tàu chuyến");
+      toast.warning("Vui lòng chọn chuyến tàu");
       return;
     }
     onSelectVesselInfo(rowSelected[0]);
@@ -75,7 +65,7 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
         <SheetHeader>
           <SheetTitle>
             <span className="mx-10 my-3 flex items-end justify-between">
-              <div className="text-lg font-bold">Chọn chuyến tàu </div>
+              <div className="text-lg font-bold">Chọn chuyến tàu</div>
               <Button onClick={handleSelectRow} variant="blue">
                 Chọn
               </Button>
@@ -87,7 +77,7 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
           ref={gridRef}
           rowSelection={"single"}
           className="h-[50vh]"
-          rowData={vesselList || []}
+          rowData={voyageList || []}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
         />

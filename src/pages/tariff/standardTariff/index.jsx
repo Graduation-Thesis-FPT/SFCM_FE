@@ -8,7 +8,7 @@ import {
 } from "@/apis/trf-std.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
-  ItemTypeCodeRender,
+  PackageTypeRender,
   MethodCodeRender,
   TrfCodeRender
 } from "@/components/common/aggridreact/cellRender";
@@ -96,7 +96,7 @@ export function StandardTariff() {
       headerName: TRF_STD.ITEM_TYPE_CODE.headerName,
       field: TRF_STD.ITEM_TYPE_CODE.field,
       flex: 1,
-      cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
+      cellRenderer: params => PackageTypeRender(params, itemTypes)
     },
     {
       headerClass: "number-header",

@@ -34,7 +34,7 @@ import {
   createAndUpdateVoyageContainer,
   deleteManifestLoadingListCont,
   getVoyageContainerByVoyageID
-} from "@/apis/cntr-mnf-ld.api";
+} from "@/apis/voyage-container.api";
 import { getCustomerByCustomerType } from "@/apis/customer.api";
 import { GrantPermission } from "@/components/common/grant-permission";
 import moment from "moment";
@@ -51,24 +51,24 @@ const formSchema = z.object({
 });
 
 const VOYAGE_CONTAINER = new voyage_container();
-const ID = new voyage();
+const VOYAGE = new voyage();
 
 const formField = [
   {
-    name: ID.ID.field,
-    label: ID.ID.headerName
+    name: VOYAGE.ID.field,
+    label: VOYAGE.ID.headerName
   },
-  { name: ID.VESSEL_NAME.field, label: ID.VESSEL_NAME.headerName },
+  { name: VOYAGE.VESSEL_NAME.field, label: VOYAGE.VESSEL_NAME.headerName },
   {
-    name: ID.ETA.field,
-    label: ID.ETA.headerName
+    name: VOYAGE.ETA.field,
+    label: VOYAGE.ETA.headerName
   }
 ];
 
 export function VoyageContainer() {
   const [openVesselInfoSheet, setOpenVesselInfoSheet] = useState(false);
   const [rowData, setRowData] = useState([]);
-  const { data: shipperList, loading } = useFetchData({
+  const { data: shipperList } = useFetchData({
     service: getCustomerByCustomerType,
     params: "SHIPPER"
   });

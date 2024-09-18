@@ -4,7 +4,7 @@ import { getAllTariffCode } from "@/apis/trf-codes.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   ConsigneeRender,
-  ItemTypeCodeRender,
+  PackageTypeRender,
   MethodCodeRender,
   TrfCodeRender
 } from "@/components/common/aggridreact/cellRender";
@@ -108,7 +108,7 @@ export function DiscountTariff() {
       field: TRF_DISCOUNT.ITEM_TYPE_CODE.field,
       flex: 1,
       filter: true,
-      cellRenderer: params => ItemTypeCodeRender(params, itemTypes)
+      cellRenderer: params => PackageTypeRender(params, itemTypes)
     },
     {
       headerClass: "number-header",

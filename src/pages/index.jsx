@@ -10,7 +10,7 @@ export * from "./genericList/customerList";
 //inputData
 export * from "./inputData/voyage";
 export * from "./inputData/voyageContainer";
-export * from "./inputData/goodsManifest";
+export * from "./inputData/voyageContainerPackage";
 //tariff
 export * from "./tariff/containerTariff";
 
