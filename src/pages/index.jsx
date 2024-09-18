@@ -9,7 +9,7 @@ export * from "./genericList/packageType";
 export * from "./genericList/customerList";
 //inputData
 export * from "./inputData/manifestLoadingList";
-export * from "./inputData/vesselInfo";
+export * from "./inputData/voyage";
 export * from "./inputData/goodsManifest";
 //tariff
 export * from "./tariff/containerTariff";

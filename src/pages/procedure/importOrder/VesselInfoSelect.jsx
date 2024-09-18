@@ -1,4 +1,4 @@
-import { getAllVessel } from "@/apis/vessel.api";
+import { getAllVoyage } from "@/apis/voyage.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
@@ -15,7 +15,7 @@ import useFetchData from "@/hooks/useRefetchData";
 import React, { useRef } from "react";
 
 export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
-  const { data: vesselList } = useFetchData({ service: getAllVessel });
+  const { data: vesselList } = useFetchData({ service: getAllVoyage });
   const toast = useCustomToast();
   const gridRef = useRef(null);
   const DT_VESSEL_VISIT = new dt_vessel_visit();

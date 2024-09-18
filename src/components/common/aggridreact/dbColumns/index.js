@@ -117,6 +117,12 @@ export class dt_vessel_visit extends CommonColumns {
   IMO = { field: "IMO", headerName: "IMO" };
 }
 
+export class voyage extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã chuyến tàu *" };
+  VESSEL_NAME = { field: "VESSEL_NAME", headerName: "Tên tàu *" };
+  ETA = { field: "ETA", headerName: "Ngày tàu đến *" };
+}
+
 export class dt_cntr_mnf_ld extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };

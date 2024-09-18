@@ -2,9 +2,9 @@ import { Section } from "@/components/common/section";
 import { useRef, useState } from "react";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
 import { addDays } from "date-fns";
-import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { voyage } from "@/components/common/aggridreact/dbColumns";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { createAndUpdateVessel, deleteVessel, getVesselByFilter } from "@/apis/vessel.api";
+import { createAndUpdateVoyage, deleteVoyage, getVoyageByFilter } from "@/apis/voyage.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { GrantPermission } from "@/components/common/grant-permission";
@@ -15,18 +15,18 @@ import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnEx
 import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { DateTimePickerRender } from "@/components/common/aggridreact/cellRender";
+import { OnlyEditWithInsertCell } from "@/components/common/aggridreact/cellRender";
 import { Label } from "@/components/common/ui/label";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
-import { checkVessel } from "@/lib/validation/input-data/checkVessel";
+import { checkVoyage } from "@/lib/validation/input-data/checkVoyage";
 
-const DT_VESSEL_VISIT = new dt_vessel_visit();
+const VOYAGEKEY = new voyage();
 const initFilterData = {
   from_date: addDays(new Date(), -30),
   to_date: addDays(new Date(), 30)
 };
 
-export function VesselInfo() {
+export function Voyage() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const dispatch = useDispatch();
@@ -46,38 +46,26 @@ export function VesselInfo() {
       }
     },
     {
-      headerName: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
-      field: DT_VESSEL_VISIT.VESSEL_NAME.field,
+      headerName: VOYAGEKEY.ID.headerName,
+      field: VOYAGEKEY.ID.field,
+      flex: 1,
+      filter: true,
+      editable: true,
+      editable: OnlyEditWithInsertCell
+    },
+    {
+      headerName: VOYAGEKEY.VESSEL_NAME.headerName,
+      field: VOYAGEKEY.VESSEL_NAME.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field,
+      headerName: VOYAGEKEY.ETA.headerName,
+      field: VOYAGEKEY.ETA.field,
       flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
-      headerName: DT_VESSEL_VISIT.ETA.headerName,
-      field: DT_VESSEL_VISIT.ETA.field,
-      flex: 1,
-      cellRenderer: DateTimePickerRender
-    },
-    {
-      headerName: DT_VESSEL_VISIT.CallSign.headerName,
-      field: DT_VESSEL_VISIT.CallSign.field,
-      flex: 1,
-      filter: true,
-      editable: true
-    },
-    {
-      headerName: DT_VESSEL_VISIT.IMO.headerName,
-      field: DT_VESSEL_VISIT.IMO.field,
-      flex: 1,
-      filter: true,
-      editable: true
+      editable: true,
+      cellDataType: "date"
     }
   ];
 
@@ -93,14 +81,14 @@ export function VesselInfo() {
       return;
     }
 
-    const { isValid, mess } = checkVessel(gridRef);
+    const { isValid, mess } = checkVoyage(gridRef);
     if (!isValid) {
       toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
       return;
     }
 
     dispatch(setGlobalLoading(true));
-    createAndUpdateVessel(insertAndUpdateData)
+    createAndUpdateVoyage(insertAndUpdateData)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -114,13 +102,9 @@ export function VesselInfo() {
   };
 
   const handleDeleteRows = selectedRows => {
-    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(
-      selectedRows,
-      rowData,
-      "VOYAGEKEY"
-    );
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
     dispatch(setGlobalLoading(true));
-    deleteVessel(deleteIdList)
+    deleteVoyage(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -140,7 +124,7 @@ export function VesselInfo() {
     });
     if (value?.from && value?.to) {
       dispatch(setGlobalLoading(true));
-      getVesselByFilter(value.from, value.to)
+      getVoyageByFilter(value.from, value.to)
         .then(res => {
           setRowData(
             res.data.metadata?.map(rowData => {
@@ -161,7 +145,7 @@ export function VesselInfo() {
   };
 
   const getRowData = () => {
-    getVesselByFilter(filter.from_date, filter.to_date)
+    getVoyageByFilter(filter.from_date, filter.to_date)
       .then(res => {
         setRowData(
           res.data.metadata?.map(rowData => {

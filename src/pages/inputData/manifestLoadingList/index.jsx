@@ -14,7 +14,7 @@ import { z } from "zod";
 import { useEffect, useRef, useState } from "react";
 import { dt_cntr_mnf_ld, dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { getAllVessel } from "@/apis/vessel.api";
+import { getAllVoyage } from "@/apis/voyage.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { actionGrantPermission } from "@/constants";
@@ -238,7 +238,7 @@ export function ManifestLoadingList() {
   };
 
   const getVesselList = () => {
-    getAllVessel()
+    getAllVoyage()
       .then(res => {
         setVesselList(res.data.metadata);
       })
