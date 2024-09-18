@@ -75,7 +75,7 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
         <SheetHeader>
           <SheetTitle>
             <span className="mx-10 my-3 flex items-end justify-between">
-              <div className="text-lg font-bold">Chọn tàu chuyến</div>
+              <div className="text-lg font-bold">Chọn chuyến tàu </div>
               <Button onClick={handleSelectRow} variant="blue">
                 Chọn
               </Button>

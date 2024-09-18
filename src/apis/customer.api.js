@@ -3,6 +3,9 @@ import { axiosPrivate } from "@/config/axios";
 export const getAllCustomer = async () => {
   return axiosPrivate.get(`customer`);
 };
+export const getCustomerByCustomerType = async CUSTOMER_TYPE => {
+  return axiosPrivate.get(`customer?CUSTOMER_TYPE=${CUSTOMER_TYPE}`);
+};
 
 export const createCustomer = async data => {
   return await axiosPrivate.post(`customer`, data);

@@ -1,4 +1,4 @@
-import { getManifestLoadingListContByFilter } from "@/apis/cntr-mnf-ld.api";
+import { getVoyageContainerByVoyageID } from "@/apis/cntr-mnf-ld.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { StatusOfGoodsByTextRender } from "@/components/common/aggridreact/cellRender";
 import { dt_cntr_mnf_ld } from "@/components/common/aggridreact/dbColumns";
@@ -22,7 +22,7 @@ export function ContainerInfoSelect({
   onGoBack
 }) {
   const { data: manifestLoadingList, revalidate } = useFetchData({
-    service: getManifestLoadingListContByFilter,
+    service: getVoyageContainerByVoyageID,
     params: VOYAGEKEY
   });
   const toast = useCustomToast();

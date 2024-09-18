@@ -11,10 +11,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect, useRef, useState } from "react";
-import { dt_cntr_mnf_ld, dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { useRef, useState } from "react";
+import { voyage_container, voyage } from "@/components/common/aggridreact/dbColumns";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { getAllVoyage } from "@/apis/voyage.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { actionGrantPermission } from "@/constants";
@@ -25,62 +24,63 @@ import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { Input } from "@/components/common/ui/input";
-import { getAllPackageType } from "@/apis/package-type.api";
 import {
-  CntrSztpRender,
-  ConsigneeRender,
-  ItemTypeCodeRender
+  CntrSizeRender,
+  CustomerRender,
+  OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
 import { VesselInfoSheet } from "./vesselInfoSheet";
 import {
-  createAndUpdateManifestLoadingListCont,
+  createAndUpdateVoyageContainer,
   deleteManifestLoadingListCont,
-  getManifestLoadingListContByFilter
+  getVoyageContainerByVoyageID
 } from "@/apis/cntr-mnf-ld.api";
-import { getAllCustomer } from "@/apis/customer.api";
+import { getCustomerByCustomerType } from "@/apis/customer.api";
 import { GrantPermission } from "@/components/common/grant-permission";
 import moment from "moment";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
-import { checkManifestLoadingList } from "@/lib/validation/input-data/checkManifestLoadingList";
+import { checkVoyageContainer } from "@/lib/validation/input-data/checkVoyageContainer";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
+import useFetchData from "@/hooks/useRefetchData";
+import { Badge } from "@/components/common/ui/badge";
 
 const formSchema = z.object({
-  VOYAGEKEY: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
-  VESSEL_NAME: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
-  INBOUND_VOYAGE: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" }),
-  ETA: z.string().min(1, { message: "Vui lòng chọn tàu chuyến!" })
+  ID: z.string().min(1, { message: "Vui lòng chọn chuyến tàu!" }),
+  VESSEL_NAME: z.string().min(1, { message: "Vui lòng chọn chuyến tàu!" }),
+  ETA: z.string().min(1, { message: "Vui lòng chọn chuyến tàu!" })
 });
 
-const DT_VESSEL_VISIT = new dt_vessel_visit();
-const DT_CNTR_MNF_LD = new dt_cntr_mnf_ld();
+const VOYAGE_CONTAINER = new voyage_container();
+const ID = new voyage();
 
 const formField = [
-  { name: DT_VESSEL_VISIT.VESSEL_NAME.field, label: DT_VESSEL_VISIT.VESSEL_NAME.headerName },
   {
-    name: DT_VESSEL_VISIT.INBOUND_VOYAGE.field,
-    label: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName
+    name: ID.ID.field,
+    label: ID.ID.headerName
   },
+  { name: ID.VESSEL_NAME.field, label: ID.VESSEL_NAME.headerName },
   {
-    name: DT_VESSEL_VISIT.ETA.field,
-    label: DT_VESSEL_VISIT.ETA.headerName
+    name: ID.ETA.field,
+    label: ID.ETA.headerName
   }
 ];
 
-export function ManifestLoadingList() {
+export function VoyageContainer() {
   const [openVesselInfoSheet, setOpenVesselInfoSheet] = useState(false);
   const [rowData, setRowData] = useState([]);
-  const [vesselList, setVesselList] = useState([]);
-  const [customerList, setCustomerList] = useState([]);
-  const [itemType, setItemType] = useState([]);
+  const { data: shipperList, loading } = useFetchData({
+    service: getCustomerByCustomerType,
+    params: "SHIPPER"
+  });
+
   const gridRef = useRef(null);
   const toast = useCustomToast();
   const dispatch = useDispatch();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      VOYAGEKEY: "",
+      ID: "",
       VESSEL_NAME: "",
-      INBOUND_VOYAGE: "",
       ETA: ""
     }
   });
@@ -97,58 +97,77 @@ export function ManifestLoadingList() {
       }
     },
     {
-      headerName: DT_CNTR_MNF_LD.BILLOFLADING.headerName,
-      field: DT_CNTR_MNF_LD.BILLOFLADING.field,
+      headerName: VOYAGE_CONTAINER.CNTR_NO.headerName,
+      field: VOYAGE_CONTAINER.CNTR_NO.field,
       flex: 1,
       filter: true,
-      editable: true,
+      editable: OnlyEditWithInsertCell,
       onCellValueChanged: UpperCase
     },
     {
-      headerName: DT_CNTR_MNF_LD.CNTRNO.headerName,
-      field: DT_CNTR_MNF_LD.CNTRNO.field,
+      headerName: VOYAGE_CONTAINER.CNTR_SIZE.headerName,
+      field: VOYAGE_CONTAINER.CNTR_SIZE.field,
       flex: 1,
       filter: true,
-      editable: true,
-      onCellValueChanged: UpperCase
+      cellStyle: {
+        alignItems: "center",
+        display: "flex"
+      },
+      cellRenderer: CntrSizeRender
     },
     {
-      headerName: DT_CNTR_MNF_LD.CNTRSZTP.headerName,
-      field: DT_CNTR_MNF_LD.CNTRSZTP.field,
+      headerName: VOYAGE_CONTAINER.SHIPPER_ID.headerName,
+      field: VOYAGE_CONTAINER.SHIPPER_ID.field,
       flex: 1,
-      cellRenderer: CntrSztpRender
+      filter: true,
+      cellStyle: {
+        alignItems: "center",
+        display: "flex"
+      },
+      cellRenderer: params => CustomerRender(params, shipperList)
     },
     {
-      headerName: DT_CNTR_MNF_LD.SEALNO.headerName,
-      field: DT_CNTR_MNF_LD.SEALNO.field,
+      headerName: VOYAGE_CONTAINER.SEAL_NO.headerName,
+      field: VOYAGE_CONTAINER.SEAL_NO.field,
       flex: 1,
       filter: true,
       editable: true
     },
     {
-      headerName: DT_CNTR_MNF_LD.CONSIGNEE.headerName,
-      field: DT_CNTR_MNF_LD.CONSIGNEE.field,
-      flex: 1,
-      cellRenderer: params => ConsigneeRender(params, customerList)
-    },
-    {
-      headerName: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.headerName,
-      field: DT_CNTR_MNF_LD.ITEM_TYPE_CODE.field,
-      flex: 1,
-      cellRenderer: params => ItemTypeCodeRender(params, itemType)
-    },
-    {
-      headerName: DT_CNTR_MNF_LD.COMMODITYDESCRIPTION.headerName,
-      field: DT_CNTR_MNF_LD.COMMODITYDESCRIPTION.field,
+      headerName: VOYAGE_CONTAINER.NOTE.headerName,
+      field: VOYAGE_CONTAINER.NOTE.field,
       flex: 1,
       filter: true,
       editable: true
+    },
+    {
+      headerName: "Trạng thái cont",
+      field: VOYAGE_CONTAINER.STATUS.field,
+      flex: 1,
+      headerClass: "center-header",
+      cellStyle: {
+        textAlign: "center"
+      },
+      cellRenderer: params => {
+        if (params.value === "IMPORTED") {
+          return (
+            <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+              Đã nhập
+            </Badge>
+          );
+        }
+        return (
+          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+            Chưa nhập
+          </Badge>
+        );
+      }
     }
   ];
 
   const handleAddRow = () => {
-    if (!form.getValues("VOYAGEKEY")) {
-      toast.error("Vui lòng chọn tàu chuyến");
+    if (!form.getValues("ID")) {
+      toast.warning("Vui lòng chọn chuyến tàu");
       return;
     }
     const newRow = fnAddRowsVer2(rowData, colDefs);
@@ -162,7 +181,7 @@ export function ManifestLoadingList() {
       return;
     }
 
-    const { isValid, mess } = checkManifestLoadingList(gridRef);
+    const { isValid, mess } = checkVoyageContainer(gridRef);
     if (!isValid) {
       toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
       return;
@@ -171,13 +190,13 @@ export function ManifestLoadingList() {
     dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
       insertAndUpdateData.insert = insertAndUpdateData.insert.map(item => {
-        return { ...item, VOYAGEKEY: form.getValues("VOYAGEKEY") };
+        return { ...item, VOYAGE_ID: form.getValues("ID") };
       });
     }
-    createAndUpdateManifestLoadingListCont(insertAndUpdateData)
+    createAndUpdateVoyageContainer(insertAndUpdateData)
       .then(res => {
         toast.success(res);
-        getRowDataByFilter(form.getValues("VOYAGEKEY"));
+        getRowDataByFilter(form.getValues("ID"));
       })
       .catch(err => {
         toast.error(err);
@@ -188,7 +207,7 @@ export function ManifestLoadingList() {
   };
 
   const handleDeleteRows = selectedRows => {
-    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ROWGUID");
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
     dispatch(setGlobalLoading(true));
     deleteManifestLoadingListCont(deleteIdList)
       .then(res => {
@@ -203,8 +222,8 @@ export function ManifestLoadingList() {
       });
   };
 
-  const getRowDataByFilter = async VOYAGEKEY => {
-    await getManifestLoadingListContByFilter(VOYAGEKEY)
+  const getRowDataByFilter = async ID => {
+    await getVoyageContainerByVoyageID(ID)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -217,14 +236,11 @@ export function ManifestLoadingList() {
 
   const handleChangeVesselInfo = async rowSelected => {
     setOpenVesselInfoSheet(false);
-
-    form.setValue("VOYAGEKEY", rowSelected[0].VOYAGEKEY);
+    form.setValue("ID", rowSelected[0].ID);
     form.setValue("VESSEL_NAME", rowSelected[0].VESSEL_NAME);
-    form.setValue("INBOUND_VOYAGE", rowSelected[0].INBOUND_VOYAGE);
-    form.setValue("ETA", moment(rowSelected[0].ETA).format("DD/MM/YYYY HH:mm"));
-
+    form.setValue("ETA", moment(rowSelected[0].ETA).format("DD/MM/YYYY"));
     dispatch(setGlobalLoading(true));
-    getManifestLoadingListContByFilter(rowSelected[0].VOYAGEKEY)
+    getVoyageContainerByVoyageID(rowSelected[0].ID)
       .then(res => {
         toast.success(res);
         setRowData(res.data.metadata);
@@ -236,42 +252,6 @@ export function ManifestLoadingList() {
         dispatch(setGlobalLoading(false));
       });
   };
-
-  const getVesselList = () => {
-    getAllVoyage()
-      .then(res => {
-        setVesselList(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const getItemType = () => {
-    getAllPackageType()
-      .then(res => {
-        setItemType(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const getCustomerList = () => {
-    getAllCustomer()
-      .then(res => {
-        setCustomerList(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  useEffect(() => {
-    getItemType();
-    getVesselList();
-    getCustomerList();
-  }, []);
 
   return (
     <Section>
@@ -295,7 +275,7 @@ export function ManifestLoadingList() {
                           }}
                           readOnly
                           className="hover:cursor-pointer"
-                          placeholder="Chọn tàu chuyến"
+                          placeholder="Chọn chuyến tàu "
                         />
                       </FormControl>
                       <FormMessage />
@@ -311,7 +291,7 @@ export function ManifestLoadingList() {
                 setOpenVesselInfoSheet(true);
               }}
             >
-              Chọn tàu chuyến
+              Chọn chuyến tàu
             </Button>
           </form>
         </Form>
@@ -344,7 +324,6 @@ export function ManifestLoadingList() {
       </Section.Content>
       <VesselInfoSheet
         onChangeVesselInfo={handleChangeVesselInfo}
-        vesselList={vesselList}
         open={openVesselInfoSheet}
         onOpenChange={() => {
           setOpenVesselInfoSheet(false);

@@ -314,6 +314,30 @@ export function ItemTypeCodeRender(params, itemType) {
   );
 }
 
+export function CustomerRender(params, customerList) {
+  return (
+    <Select
+      onValueChange={value => {
+        params.setValue(value);
+      }}
+      value={params.value}
+    >
+      <SelectTrigger className="border-none bg-white/0 focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {customerList.map(item => (
+            <SelectItem key={item?.ID} value={item?.ID}>
+              {item?.ID} - {item?.FULLNAME}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function ConsigneeRender(params, customerList) {
   useEffect(() => {
     if (params.value === undefined) {
@@ -343,17 +367,12 @@ export function ConsigneeRender(params, customerList) {
   );
 }
 
-export function CntrSztpRender(params) {
+export function CntrSizeRender(params) {
   let cntrSztpList = [
     { label: "20", value: 20 },
     { label: "40", value: 40 },
     { label: "45", value: 45 }
   ];
-  useEffect(() => {
-    if (params.value === undefined) {
-      params.setValue(cntrSztpList[0]?.value);
-    }
-  }, []);
   return (
     <Select
       onValueChange={value => {

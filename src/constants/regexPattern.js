@@ -4,6 +4,6 @@ export const regexPattern = {
   ONLY_LATIN: /^[A-Za-z0-9]+$/,
   NO_SPACE: /^[^\s-]+$/,
   NO_SPECIAL_CHAR: /^[^`~!@#$%^&*()._{}<>?/;:'"[\]|\\,=+-]+$/,
-  CNTRNO: /^[A-Za-z]{4}[0-9]{7}$/,
+  CNTR_NO: /^[A-Za-z]{4}[0-9]{7}$/,
   TAX_CODE: /^(\d{10}|\d{10}-\d{3})$/
 };
