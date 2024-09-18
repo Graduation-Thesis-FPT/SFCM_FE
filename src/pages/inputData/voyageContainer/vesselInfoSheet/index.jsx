@@ -1,6 +1,6 @@
+import { getAllVoyage } from "@/apis/voyage.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
-import { dt_vessel_visit } from "@/components/common/aggridreact/dbColumns";
+import { voyage } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -10,12 +10,18 @@ import {
   SheetHeader,
   SheetTitle
 } from "@/components/common/ui/sheet";
+import useFetchData from "@/hooks/useRefetchData";
 import { useRef } from "react";
 
-export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVesselInfo }) {
+const VOYAGEKEY = new voyage();
+
+export function VesselInfoSheet({ open, onOpenChange, onChangeVesselInfo }) {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const DT_VESSEL_VISIT = new dt_vessel_visit();
+  const { data: voyageList, loading } = useFetchData({
+    service: getAllVoyage
+  });
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -28,34 +34,22 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
       }
     },
     {
-      headerName: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
-      field: DT_VESSEL_VISIT.VESSEL_NAME.field,
+      headerName: VOYAGEKEY.ID.headerName,
+      field: VOYAGEKEY.ID.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field,
+      headerName: VOYAGEKEY.VESSEL_NAME.headerName,
+      field: VOYAGEKEY.VESSEL_NAME.field,
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.ETA.headerName,
-      field: DT_VESSEL_VISIT.ETA.field,
+      headerName: VOYAGEKEY.ETA.headerName,
+      field: VOYAGEKEY.ETA.field,
       flex: 1,
-      cellRenderer: DateTimeByTextRender
-    },
-    {
-      headerName: DT_VESSEL_VISIT.CallSign.headerName,
-      field: DT_VESSEL_VISIT.CallSign.field,
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: DT_VESSEL_VISIT.IMO.headerName,
-      field: DT_VESSEL_VISIT.IMO.field,
-      flex: 1,
-      filter: true
+      cellDataType: "date"
     }
   ];
 
@@ -74,7 +68,7 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
         <SheetHeader>
           <SheetTitle>
             <span className="mx-10 my-3 flex items-end justify-between">
-              <div className="text-lg font-bold">Chọn tàu chuyến</div>
+              <div className="text-lg font-bold">Chọn chuyến tàu </div>
               <Button onClick={handleSelectRow} variant="blue">
                 Chọn
               </Button>
@@ -86,7 +80,7 @@ export function VesselInfoSheet({ open, onOpenChange, vesselList, onChangeVessel
           ref={gridRef}
           rowSelection={"single"}
           className="h-[50vh]"
-          rowData={vesselList || []}
+          rowData={voyageList || []}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
         />

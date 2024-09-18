@@ -280,7 +280,7 @@ export function ExportOrder() {
                 readOnly
                 className="hover:cursor-pointer "
                 id={item.field}
-                placeholder="Chọn tàu chuyến"
+                placeholder="Chọn chuyến tàu "
               />
             </div>
           ))}

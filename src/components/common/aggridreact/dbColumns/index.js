@@ -117,6 +117,12 @@ export class dt_vessel_visit extends CommonColumns {
   IMO = { field: "IMO", headerName: "IMO" };
 }
 
+export class voyage extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã chuyến tàu *" };
+  VESSEL_NAME = { field: "VESSEL_NAME", headerName: "Tên tàu *" };
+  ETA = { field: "ETA", headerName: "Ngày tàu đến *" };
+}
+
 export class dt_cntr_mnf_ld extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   VOYAGEKEY = { field: "VOYAGEKEY", headerName: "Mã tàu *" };
@@ -130,6 +136,16 @@ export class dt_cntr_mnf_ld extends CommonColumns {
   COMMODITYDESCRIPTION = { field: "COMMODITYDESCRIPTION", headerName: "Ghi chú" };
 }
 
+export class voyage_container extends CommonColumns {
+  ID = { field: "ID", headerName: "Mã container chuyến tàu *" };
+  VOYAGE_ID = { field: "VOYAGE_ID", headerName: "Mã chuyến tàu *" };
+  CNTR_NO = { field: "CNTR_NO", headerName: "Số container *" };
+  SHIPPER_ID = { field: "SHIPPER_ID", headerName: "Mã đại lý *" };
+  CNTR_SIZE = { field: "CNTR_SIZE", headerName: "Kích thước container *" };
+  SEAL_NO = { field: "SEAL_NO", headerName: "Số seal" };
+  STATUS = { field: "STATUS", headerName: "Trạng thái container *" };
+  NOTE = { field: "NOTE", headerName: "Ghi chú" };
+}
 export class dt_package_mnf_ld extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   PACKAGE_UNIT_CODE = { field: "PACKAGE_UNIT_CODE", headerName: "Đơn vị tính *" };

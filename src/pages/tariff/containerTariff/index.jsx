@@ -2,7 +2,7 @@ import { createAndUpdateConatinerTariff, getAllContainerTariff } from "@/apis/co
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import {
-  CntrSztpRender,
+  CntrSizeRender,
   ContainerTariffStatusRender,
   OnlyEditWithInsertCell
 } from "@/components/common/aggridreact/cellRender";
@@ -60,7 +60,11 @@ export function ContainerTariff() {
       field: CONTAINER_TARIFF.CNTR_SIZE.field,
       flex: 1,
       filter: true,
-      cellRenderer: CntrSztpRender
+      cellStyle: {
+        alignItems: "center",
+        display: "flex"
+      },
+      cellRenderer: CntrSizeRender
     },
 
     {

@@ -1,4 +1,4 @@
-import { getAllVessel } from "@/apis/vessel.api";
+import { getAllVoyage } from "@/apis/voyage.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import {
   DateTimeByTextRender,

@@ -73,6 +73,10 @@ export function WarehouseDesign() {
       field: BS_BLOCK.WAREHOUSE_ID.field,
       flex: 1,
       filter: true,
+      cellStyle: {
+        alignItems: "center",
+        display: "flex"
+      },
       cellRenderer: params => WarehouseCodeRender(params, warehouses)
     },
     {
