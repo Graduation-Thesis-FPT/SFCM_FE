@@ -21,6 +21,7 @@ import * as gregorian from "cldr-data/main/vi/ca-gregorian.json";
 import * as numbers from "cldr-data/main/vi/numbers.json";
 import * as timeZoneNames from "cldr-data/main/vi/timeZoneNames.json";
 import { Switch } from "../../ui/switch";
+import { Badge } from "../../ui/badge";
 
 loadCldr(numberingSystems, gregorian, numbers, timeZoneNames);
 
@@ -283,6 +284,63 @@ export function StatusOfGoodsByTextRender(params) {
     }
   }, []);
   return params.value ? "Có hàng" : "Rỗng";
+}
+
+export function VoyContPackageStatusRender(params) {
+  const getStatusBadge = () => {
+    switch (params.value) {
+      case "IN_CONTAINER":
+        return (
+          <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
+            Trên Container
+          </Badge>
+        );
+      case "ALLOCATING":
+        return (
+          <Badge className="rounded-sm border-transparent bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+            Đang tách hàng
+          </Badge>
+        );
+      case "IN_WAREHOUSE":
+        return (
+          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+            Trong Kho
+          </Badge>
+        );
+      case "OUT_FOR_DELIVERY":
+        return (
+          <Badge className="rounded-sm border-transparent  bg-red-100 text-red-800 hover:bg-red-200">
+            Đã xuất kho
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
+  return <div>{getStatusBadge()}</div>;
+}
+
+export function VoyContainerStatusRender(params) {
+  const getStatusBadge = () => {
+    switch (params.value) {
+      case "IMPORTED":
+        return (
+          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+            Đã nhập kho
+          </Badge>
+        );
+      case "PENDING":
+        return (
+          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+            Chưa nhập kho
+          </Badge>
+        );
+
+      default:
+        return null;
+    }
+  };
+  return <div>{getStatusBadge()}</div>;
 }
 
 export function PackageTypeRender(params, packageType) {

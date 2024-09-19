@@ -1,5 +1,6 @@
 import { getVoyageContainerByVoyageID } from "@/apis/voyage-container.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { VoyContainerStatusRender } from "@/components/common/aggridreact/cellRender";
 import { voyage_container } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Badge } from "@/components/common/ui/badge";
@@ -81,20 +82,7 @@ export function VoyageContainerSelect({
       cellStyle: {
         textAlign: "center"
       },
-      cellRenderer: params => {
-        if (params.value === "IMPORTED") {
-          return (
-            <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
-              Đã nhập
-            </Badge>
-          );
-        }
-        return (
-          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
-            Chưa nhập
-          </Badge>
-        );
-      }
+      cellRenderer: VoyContainerStatusRender
     }
   ];
 

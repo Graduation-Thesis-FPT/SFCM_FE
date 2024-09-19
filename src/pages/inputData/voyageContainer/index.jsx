@@ -27,7 +27,8 @@ import { Input } from "@/components/common/ui/input";
 import {
   CntrSizeRender,
   CustomerRender,
-  OnlyEditWithInsertCell
+  OnlyEditWithInsertCell,
+  VoyContainerStatusRender
 } from "@/components/common/aggridreact/cellRender";
 import { VesselInfoSheet } from "./vesselInfoSheet";
 import {
@@ -148,20 +149,7 @@ export function VoyageContainer() {
       cellStyle: {
         textAlign: "center"
       },
-      cellRenderer: params => {
-        if (params.value === "IMPORTED") {
-          return (
-            <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
-              Đã nhập
-            </Badge>
-          );
-        }
-        return (
-          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
-            Chưa nhập
-          </Badge>
-        );
-      }
+      cellRenderer: VoyContainerStatusRender
     }
   ];
 

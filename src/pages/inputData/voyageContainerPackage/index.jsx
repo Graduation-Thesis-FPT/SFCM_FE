@@ -6,7 +6,7 @@ import {
 import { Section } from "@/components/common/section";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { VoyageContainerSelect } from "./VoyageContainerSelect";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -28,19 +28,23 @@ import { getAllPackageType } from "@/apis/package-type.api";
 import {
   CustomerRender,
   OnlyEditWithInsertCell,
-  PackageTypeRender
+  PackageTypeRender,
+  VoyContPackageStatusRender
 } from "@/components/common/aggridreact/cellRender";
 import { BtnDownExcelGoodsMnfSample } from "./btnDownExcelGoodsMnfSample";
 import moment from "moment";
-import { getAllPackageUnit } from "@/apis/pakage-unit.api";
 import { BtnImportExcel } from "./btnImportExcel";
 import { Copy } from "lucide-react";
 import { cn, removeLastAsterisk } from "@/lib/utils";
 import { ErrorWithDetail } from "@/components/common/custom-toast/ErrorWithDetail";
-import { checkGoodsManifest } from "@/lib/validation/input-data/checkGoodsManifest";
+import { checkVoyContPackage } from "@/lib/validation/input-data/checkVoyContPackage";
 import { VoyageSelect } from "./VoyageSelect";
 import useFetchData from "@/hooks/useRefetchData";
 import { getCustomerByCustomerType } from "@/apis/customer.api";
+
+const checkIncludesID = (listCheck, ID) => {
+  return listCheck.map(item => item.ID).includes(ID);
+};
 
 const VOYAGE = new voyage();
 const VOYAGE_CONTAINER = new voyage_container();
@@ -97,8 +101,6 @@ export function VoyageContainerPackage() {
   });
 
   const [rowData, setRowData] = useState([]);
-
-  const [unit, setUnit] = useState([]);
 
   const [openSelectVoyage, setOpenSelectVoyage] = useState(false);
   const [openSelectContainer, setOpenSelectContainer] = useState(false);
@@ -163,7 +165,7 @@ export function VoyageContainerPackage() {
       editable: true,
       cellEditorParams: {
         min: 0,
-        max: 1000
+        max: 10000
       },
       cellDataType: "number"
     },
@@ -177,7 +179,7 @@ export function VoyageContainerPackage() {
       editable: true,
       cellEditorParams: {
         min: 0,
-        max: 1000
+        max: 10000
       },
       cellDataType: "number"
     },
@@ -187,6 +189,16 @@ export function VoyageContainerPackage() {
       flex: 1,
       filter: true,
       editable: true
+    },
+    {
+      headerName: VOYAGE_CONTAINER_PACKAGE.STATUS.headerName,
+      field: VOYAGE_CONTAINER_PACKAGE.STATUS.field,
+      flex: 1,
+      headerClass: "center-header",
+      cellStyle: {
+        textAlign: "center"
+      },
+      cellRenderer: VoyContPackageStatusRender
     }
   ];
 
@@ -240,11 +252,11 @@ export function VoyageContainerPackage() {
       return;
     }
 
-    // const { isValid, mess } = checkGoodsManifest(gridRef);
-    // if (!isValid) {
-    //   toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
-    //   return;
-    // }
+    const { isValid, mess } = checkVoyContPackage(gridRef);
+    if (!isValid) {
+      toast.errorWithDetail(<ErrorWithDetail mess={mess} />);
+      return;
+    }
 
     dispatch(setGlobalLoading(true));
     if (insertAndUpdateData.insert.length > 0) {
@@ -267,8 +279,8 @@ export function VoyageContainerPackage() {
 
   const handleDeleteRows = selectedRows => {
     dispatch(setGlobalLoading(true));
-    const { newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
-    deleteVoyContPackage(selectedRows)
+    const { deleteIdList, newRowDataAfterDeleted } = fnDeleteRows(selectedRows, rowData, "ID");
+    deleteVoyContPackage(deleteIdList)
       .then(res => {
         toast.success(res);
         setRowData(newRowDataAfterDeleted);
@@ -292,22 +304,28 @@ export function VoyageContainerPackage() {
   };
 
   const handleFileUpload = rowDataFileUpload => {
-    if (!voyageSelected.VOYAGEKEY) {
+    if (!voyageSelected.ID) {
       toast.warning("Vui lòng chọn tàu chuyến");
       return;
     }
-    if (!containerSelected.ROWGUID) {
+    if (!containerSelected.ID) {
       toast.warning("Vui lòng chọn container");
       return;
     }
     const finalRowData = rowDataFileUpload?.map(item => {
       return {
         ...item,
-        CARGO_PIECE: Number(item?.CARGO_PIECE),
+        TOTAL_ITEMS: Number(item?.TOTAL_ITEMS),
         CBM: Number(item?.CBM),
         HOUSE_BILL: item.HOUSE_BILL?.toString(),
-        DECLARE_NO: item.DECLARE_NO?.toString(),
-        NOTE: item.NOTE?.toString()
+        PACKAGE_UNIT: item.PACKAGE_UNIT?.toString(),
+        NOTE: item.NOTE?.toString(),
+        PACKAGE_TYPE_ID: checkIncludesID(packageTypeList, item.PACKAGE_TYPE_ID?.toString())
+          ? item.PACKAGE_TYPE_ID?.toString()
+          : null,
+        CONSIGNEE_ID: checkIncludesID(consigneeList, item.CONSIGNEE_ID?.toString())
+          ? item.CONSIGNEE_ID?.toString()
+          : null
       };
     });
     toast.success("Nhập file thành công");
@@ -316,14 +334,11 @@ export function VoyageContainerPackage() {
 
   const handleCopyToClipboard = field => {
     try {
-      if (field === VOYAGE_CONTAINER.CNTRNO.field && containerSelected.CNTRNO) {
-        navigator.clipboard.writeText(containerSelected?.CNTRNO);
+      if (field === VOYAGE_CONTAINER.CNTR_NO.field && containerSelected.CNTR_NO) {
+        navigator.clipboard.writeText(containerSelected?.CNTR_NO);
         toast.success("Copy số container thành công");
-      } else if (field === VOYAGE_CONTAINER.BILLOFLADING.field && containerSelected.BILLOFLADING) {
-        navigator.clipboard.writeText(containerSelected?.BILLOFLADING);
-        toast.success("Copy số vận đơn thành công");
       } else {
-        toast.error("Không có dữ liệu để copy");
+        toast.warning("Không có dữ liệu để copy");
       }
     } catch (error) {
       console.log(error);
@@ -404,7 +419,11 @@ export function VoyageContainerPackage() {
               voyageSelected={voyageSelected}
               containerSelected={containerSelected}
             /> */}
-          <BtnDownExcelGoodsMnfSample gridRef={gridRef} itemType={packageTypeList} unit={unit} />
+          <BtnDownExcelGoodsMnfSample
+            gridRef={gridRef}
+            packageTypeList={packageTypeList}
+            consigneeList={consigneeList}
+          />
           <BtnExportExcel gridRef={gridRef} />
           <BtnImportExcel gridRef={gridRef} onFileUpload={handleFileUpload} />
           <GrantPermission action={actionGrantPermission.CREATE}>

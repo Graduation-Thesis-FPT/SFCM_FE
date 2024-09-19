@@ -11,13 +11,13 @@ import { FileSpreadsheet, Loader2 } from "lucide-react";
 
 export const BtnDownExcelGoodsMnfSample = ({
   gridRef,
-  itemType = [],
-  unit = [],
+  packageTypeList = [],
+  consigneeList = [],
   isLoading = false
 }) => {
   const createExcelFile = async () => {
     let firstRow = gridRef.current.props.columnDefs
-      .filter(item => item.field)
+      .filter(item => item.field && item.field !== "STATUS")
       .map(item => {
         return { header: item.headerName, key: item.field, width: 15 };
       });
@@ -26,39 +26,39 @@ export const BtnDownExcelGoodsMnfSample = ({
 
     worksheet.columns = [{ header: "STT", key: "STT", width: 10 }, ...firstRow];
 
-    const itemTypeCodeOption = itemType.map(item => item.ITEM_TYPE_CODE).join(",");
-    const unitCodeOption = unit.map(item => item.PACKAGE_UNIT_CODE).join(",");
+    const packageTypeIDOption = packageTypeList.map(item => item.ID).join(",");
+    const consigneeIDOption = consigneeList.map(item => item.ID).join(",");
 
     worksheet.getCell("C2").dataValidation = {
       type: "list",
       allowBlank: true,
-      formulae: [`"${itemTypeCodeOption}"`]
+      formulae: [`"${consigneeIDOption}"`]
     };
     worksheet.getCell("C3").dataValidation = {
       type: "list",
       allowBlank: true,
-      formulae: [`"${itemTypeCodeOption}"`]
+      formulae: [`"${consigneeIDOption}"`]
     };
     worksheet.getCell("C4").dataValidation = {
       type: "list",
       allowBlank: true,
-      formulae: [`"${itemTypeCodeOption}"`]
+      formulae: [`"${consigneeIDOption}"`]
     };
 
     worksheet.getCell("D2").dataValidation = {
       type: "list",
       allowBlank: true,
-      formulae: [`"${unitCodeOption}"`]
+      formulae: [`"${packageTypeIDOption}"`]
     };
     worksheet.getCell("D3").dataValidation = {
       type: "list",
       allowBlank: true,
-      formulae: [`"${unitCodeOption}"`]
+      formulae: [`"${packageTypeIDOption}"`]
     };
     worksheet.getCell("D4").dataValidation = {
       type: "list",
       allowBlank: true,
-      formulae: [`"${unitCodeOption}"`]
+      formulae: [`"${packageTypeIDOption}"`]
     };
 
     // Generate buffer

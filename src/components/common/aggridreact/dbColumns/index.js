@@ -165,7 +165,7 @@ export class voyage_container_package extends CommonColumns {
   PACKAGE_TYPE_ID = { field: "PACKAGE_TYPE_ID", headerName: "Mã loại hàng *" };
   CONSIGNEE_ID = { field: "CONSIGNEE_ID", headerName: "Mã chủ hàng *" };
   PACKAGE_UNIT = { field: "PACKAGE_UNIT", headerName: "Đơn vị hàng *" };
-  CBM = { field: "CBM", headerName: "Số khối (m³) *" };
+  CBM = { field: "CBM", headerName: "Tổng số khối (m³) *" };
   TOTAL_ITEMS = { field: "TOTAL_ITEMS", headerName: "Tổng số lượng *" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
   TIME_IN = { field: "TIME_IN", headerName: "Thời gian vào" };

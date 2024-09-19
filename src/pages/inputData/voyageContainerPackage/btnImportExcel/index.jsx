@@ -1,3 +1,4 @@
+import { voyage_container_package } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -11,16 +12,18 @@ import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import * as XLSX from "xlsx";
 
+const VOYAGE_CONTAINER_PACKAGE = new voyage_container_package();
+
 const checkColumns = columns => {
   const requiredColumns = [
-    "STT",
-    "Số House Bill *",
-    "Mã loại hàng *",
-    "Đơn vị tính *",
-    "Số lượng",
-    "Số khối (m³) *",
-    "Số tờ khai",
-    "Ghi chú"
+    `STT`,
+    `${VOYAGE_CONTAINER_PACKAGE.HOUSE_BILL.headerName}`,
+    `${VOYAGE_CONTAINER_PACKAGE.CONSIGNEE_ID.headerName}`,
+    `${VOYAGE_CONTAINER_PACKAGE.PACKAGE_TYPE_ID.headerName}`,
+    `${VOYAGE_CONTAINER_PACKAGE.PACKAGE_UNIT.headerName}`,
+    `${VOYAGE_CONTAINER_PACKAGE.TOTAL_ITEMS.headerName}`,
+    `${VOYAGE_CONTAINER_PACKAGE.CBM.headerName}`,
+    `${VOYAGE_CONTAINER_PACKAGE.NOTE.headerName}`
   ];
   return requiredColumns.every(col => columns.includes(col));
 };
