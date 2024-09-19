@@ -109,11 +109,13 @@ jobs:
           DEPLOY_TIME: ${{ env.DEPLOY_TIME }}
         run: |
           # Perform healthcheck
-          response=$(curl --retry 3 --retry-delay 10 -s https://sfcm.id.vn/api/v1/health)
+          response=$(curl --retry 10 --retry-delay 10 -s https://sfcm.id.vn/api/v1/health)
           echo "Healthcheck response: $response"
 
+          response_last_line=$(echo "$response" | tail -n 1)
+
           # Check if the response is not "OK"
-          if [ "$response" != "OK" ]; then
+          if [ "$response_last_line" != "OK" ]; then
             echo "Healthcheck failed. Sending Discord notification..."
 
             # Define notification details
@@ -209,10 +211,21 @@ jobs:
           sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_IP" 'bash -s' <<EOF
             # Read previous commit hash
             export PREV_COMMIT_HASH=\$(cat /root/capstone-new/previous_commit.txt)
+
+            export SFCM_FE_ENV="$SFCM_FE_ENV"
+            export SFCM_NEW_BE_ENV="$SFCM_NEW_BE_ENV"
+            export DISCORD_WEBHOOK_URL="$DISCORD_WEBHOOK_URL"
+            export REPO_NAME="$REPO_NAME"
+            export COMMIT_HASH="$COMMIT_HASH"
+            export DEPLOY_TIME="$DEPLOY_TIME"
+            export ACTOR="$ACTOR"
+            export ACTOR_AVATAR_URL="$ACTOR_AVATAR_URL"
+
             if [ -z "\$PREV_COMMIT_HASH" ]; then
               echo "No previous commit hash found. Cannot rollback."
               exit 1
             fi
             # Call the rollback function in deploy.sh
             /root/capstone-new/SFCM_FE/deployment/deploy.sh rollback
+            exit 1
           EOF
