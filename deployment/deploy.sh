@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LOCK_FILE="/tmp/deploy.lock"
+PREV_COMMIT_FILE="/root/capstone-new/previous_commit.txt"
 
 # Function to send Discord embed notification
 send_discord_embed() {
@@ -52,6 +53,39 @@ send_discord_embed() {
   curl -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK_URL"
 }
 
+# Function to perform rollback
+rollback() {
+  # Check if PREV_COMMIT_HASH is set, if not, read from file
+  if [ -z "$PREV_COMMIT_HASH" ]; then
+    if [ -f "$PREV_COMMIT_FILE" ]; then
+      PREV_COMMIT_HASH=$(cat "$PREV_COMMIT_FILE")
+    else
+      echo "Previous commit hash not found. Cannot perform rollback."
+      exit 1
+    fi
+  fi
+  
+  echo "Initiating rollback to commit $PREV_COMMIT_HASH."
+  
+  # Checkout the previous commit
+  git checkout $PREV_COMMIT_HASH
+  git pull
+  
+  # Rebuild and redeploy previous version
+  docker compose -f docker-compose.yaml up -d --build
+  
+  # Notify Discord about rollback
+  send_discord_embed \
+    "🔄 Rollback Initiated" \
+    "15105570" \
+    "$REPO_NAME" \
+    "$PREV_COMMIT_HASH" \
+    "$DEPLOY_TIME" \
+    "Deployment failed. Rolled back to the previous stable version." \
+    "$ACTOR" \
+    "$ACTOR_AVATAR_URL"
+}
+
 # Set trap to handle script termination
 cleanup() {
   echo "Deployment script terminated. Cleaning up."
@@ -60,6 +94,13 @@ cleanup() {
 }
 
 trap 'cleanup' INT TERM EXIT
+
+# Before starting deployment, read the previous commit hash
+if [ -f "$PREV_COMMIT_FILE" ]; then
+  PREV_COMMIT_HASH=$(cat "$PREV_COMMIT_FILE")
+else
+  PREV_COMMIT_HASH="$COMMIT_HASH" # If no previous, set current
+fi
 
 # Check if lock file exists
 if [ -f "$LOCK_FILE" ]; then
@@ -150,6 +191,7 @@ echo "Front-end and back-end services are now running."
 
 # Deployment completed
 echo "Deployment completed successfully."
+echo "$COMMIT_HASH" > "$PREV_COMMIT_FILE"
 
 send_discord_embed \
   "✅ Deployment Successful" \
@@ -161,8 +203,6 @@ send_discord_embed \
   "$ACTOR" \
   "$ACTOR_AVATAR_URL"
 
-# Remove lock file
+# Remove lock file and cleanup
 rm -f "$LOCK_FILE"
-
-# Remove the trap
 trap - INT TERM EXIT
