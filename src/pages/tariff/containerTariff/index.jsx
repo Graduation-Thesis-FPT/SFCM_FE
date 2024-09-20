@@ -105,7 +105,7 @@ export function ContainerTariff() {
       editable: true,
       cellDataType: "number",
       cellEditorParams: {
-        min: 0,
+        min: 10000,
         max: 1000000000
       },
       valueFormatter: params => {
