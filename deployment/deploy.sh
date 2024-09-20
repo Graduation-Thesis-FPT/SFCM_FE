@@ -68,8 +68,15 @@ rollback() {
   echo "Initiating rollback to commit $PREV_COMMIT_HASH."
   
   # Checkout the previous commit
+  cd /root/capstone-new/SFCM_NEW_BE
   git checkout $PREV_COMMIT_HASH
   git pull
+
+  cd /root/capstone-new/SFCM_FE
+  git checkout $PREV_COMMIT_HASH
+  git pull
+
+  cd /root/capstone-new/SFCM_FE
   
   # Rebuild and redeploy previous version
   docker compose -f docker-compose.yaml up -d --build
