@@ -18,8 +18,10 @@ const VOYAGEKEY = new voyage();
 export function VesselInfoSheet({ open, onOpenChange, onChangeVesselInfo }) {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const { data: voyageList, loading } = useFetchData({
-    service: getAllVoyage
+  const { data: voyageList } = useFetchData({
+    service: getAllVoyage,
+    dependencies: [open],
+    shouldFetch: !!open
   });
 
   const colDefs = [
@@ -83,6 +85,9 @@ export function VesselInfoSheet({ open, onOpenChange, onChangeVesselInfo }) {
           rowData={voyageList || []}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
+          }}
         />
       </SheetContent>
     </Sheet>

@@ -268,6 +268,8 @@ export function ImportOrder() {
     calculateImportContainer(listContId)
       .then(res => {
         toast.success(res);
+        setBillInfoList(res.data.metadata);
+        setOpenDialogBillInfo(true);
       })
       .catch(err => {
         toast.error(err);
@@ -455,15 +457,8 @@ export function ImportOrder() {
         }}
         onSelectedFilterInfo={handleSelectedFilterInfo}
       />
-      {/* <ContainerSelect
-        contList={contList}
-        open={openContainerSelect}
-        onOpenChange={() => {
-          setOpenContainerSelect(false);
-        }}
-        onSelectContainerInfo={handleSelectContainerInfo}
-      /> */}
       <DialogBillInfo
+        filterInfoSelected={filterInfoSelected}
         containerList={containerList}
         EXP_DATE={EXP_DATE}
         selectedCustomer={customerList.find(customer => customer.CUSTOMER_CODE === CUSTOMER_CODE)}

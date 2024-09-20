@@ -15,7 +15,11 @@ import React, { useRef } from "react";
 const VOYAGEKEY = new voyage();
 
 export function VoyageSelect({ onOpenChange, open, onSelectVesselInfo }) {
-  const { data: voyageList } = useFetchData({ service: getAllVoyage });
+  const { data: voyageList } = useFetchData({
+    service: getAllVoyage,
+    dependencies: [open],
+    shouldFetch: !!open
+  });
 
   const toast = useCustomToast();
   const gridRef = useRef(null);
@@ -47,7 +51,6 @@ export function VoyageSelect({ onOpenChange, open, onSelectVesselInfo }) {
       headerName: VOYAGEKEY.ETA.headerName,
       field: VOYAGEKEY.ETA.field,
       flex: 1,
-      editable: true,
       cellDataType: "date"
     }
   ];
@@ -80,6 +83,9 @@ export function VoyageSelect({ onOpenChange, open, onSelectVesselInfo }) {
           rowData={voyageList || []}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
+          }}
         />
       </SheetContent>
     </Sheet>

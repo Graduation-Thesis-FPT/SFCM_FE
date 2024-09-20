@@ -29,7 +29,9 @@ export function VoyageContainerSelect({
 
   const { data: voyageContainerList, revalidate } = useFetchData({
     service: getVoyageContainerByVoyageID,
-    params: VOYAGE_ID
+    params: VOYAGE_ID,
+    dependencies: [open],
+    shouldFetch: !!open
   });
 
   const colDefs = [
@@ -95,10 +97,6 @@ export function VoyageContainerSelect({
     onSelectContainerInfo(rowSelected[0]);
   };
 
-  useEffect(() => {
-    revalidate();
-  }, [VOYAGE_ID]);
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="top" hiddenIconClose={true} className="p-0">
@@ -128,6 +126,9 @@ export function VoyageContainerSelect({
           rowData={voyageContainerList || []}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
+          }}
         />
       </SheetContent>
     </Sheet>

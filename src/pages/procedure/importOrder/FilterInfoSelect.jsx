@@ -1,8 +1,7 @@
 import { getAllVoyageWithCustomerCanImportOrder } from "@/apis/import-order.api";
-import { getAllVoyage } from "@/apis/voyage.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
-import { dt_vessel_visit, voyage } from "@/components/common/aggridreact/dbColumns";
+import { voyage } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -20,7 +19,7 @@ const VOYAGE = new voyage();
 export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
   const toast = useCustomToast();
   const gridRef = useRef(null);
-  const { data: voyageList } = useFetchData({
+  const { data: voyageList, loading } = useFetchData({
     service: getAllVoyageWithCustomerCanImportOrder,
     dependencies: [open],
     shouldFetch: !!open
@@ -110,9 +109,12 @@ export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
           ref={gridRef}
           rowSelection={"single"}
           className="h-[50vh]"
-          rowData={voyageList || []}
+          rowData={voyageList}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
+          }}
         />
       </SheetContent>
     </Sheet>

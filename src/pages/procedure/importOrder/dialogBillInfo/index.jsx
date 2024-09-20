@@ -1,6 +1,6 @@
 import { invoicePublishIn, saveInOrder } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { bill_info, bs_customer } from "@/components/common/aggridreact/dbColumns";
+import { bill_info, bs_customer, customer } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -31,6 +31,7 @@ export function DialogBillInfo({
   onOpenChange,
   onSaveInOrderSuccess,
   billInfoList = [],
+  filterInfoSelected = {},
   selectedCustomer = {},
   EXP_DATE = "",
   rowData = []
@@ -39,23 +40,33 @@ export function DialogBillInfo({
   const gridRef = useRef(null);
   const BILL_INFO = new bill_info();
   const BS_CUSTOMER = new bs_customer();
+  const CUSTOMER = new customer();
   const toast = useCustomToast();
   const [HTTT, setHTTT] = useState("TM");
   const [isSaveInOrder, setIsSaveInOrder] = useState(false);
 
   const colDefs = [
     {
-      headerName: BILL_INFO.TRF_DESC.headerName,
-      field: BILL_INFO.TRF_DESC.field,
+      headerName: "Mã biểu cước",
+      field: "ID",
       flex: 1
     },
-
     {
+      headerName: "Tên biểu cước",
+      field: "NAME",
+      flex: 1
+    },
+    {
+      headerName: "Kích thước cont",
+      field: "CNTR_SIZE",
+      flex: 1
+    },
+    {
+      headerName: "Số lượng (cont)",
+      field: "QTY",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: BILL_INFO.QTY.headerName,
-      field: BILL_INFO.QTY.field,
-      flex: 1,
       cellRenderer: params => {
         if (!params.value) {
           return "";
@@ -64,42 +75,44 @@ export function DialogBillInfo({
       }
     },
     {
+      headerName: "VAT (%)",
+      field: "VAT_RATE",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.UNIT_RATE.headerName} (VND)`,
-      field: BILL_INFO.UNIT_RATE.field,
-      flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
-      headerClass: "number-header",
-      cellClass: "text-end",
-      headerName: BILL_INFO.VAT.headerName,
-      field: BILL_INFO.VAT.field,
-      flex: 1
-    },
-    {
-      headerClass: "number-header",
-      cellClass: "text-end",
-      headerName: `${BILL_INFO.VAT_PRICE.headerName} (VND)`,
-      field: BILL_INFO.VAT_PRICE.field,
+      headerName: "Tiền thuế (VND)",
+      field: "VAT_PRICE",
       flex: 1,
+      headerClass: "number-header",
+      cellClass: "text-end",
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
+      headerName: "Thành tiền (VND)",
+      field: "AMOUNT",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.AMOUNT.headerName} (VND)`,
-      field: BILL_INFO.AMOUNT.field,
-      flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
+    // {
+    //   headerName: "Đơn giá (VND)",
+    //   field: "UNIT_RATE",
+    //   flex: 1,
+    //   headerClass: "number-header",
+    //   cellClass: "text-end",
+    //   cellRenderer: params => formatVnd(params.value).replace("VND", "")
+    // },
+
     {
+      headerName: "Tổng tiền (VND)",
+      field: "TAMOUNT",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.TAMOUNT.headerName} (VND)`,
-      field: BILL_INFO.TAMOUNT.field,
-      flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     }
   ];
@@ -193,10 +206,6 @@ export function DialogBillInfo({
     };
   }, []);
 
-  if (!selectedCustomer.CUSTOMER_NAME || !billInfoList.length) {
-    return null;
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[80%]">
@@ -206,15 +215,15 @@ export function DialogBillInfo({
               <div className="min-w-fit space-y-2">
                 <p className="text-16 font-semibold">Thông tin thanh toán</p>
                 <Separator />
-                <div className="bold2nd grid grid-cols-2 gap-x-2 gap-y-2">
-                  <p>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</p>
-                  <p>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</p>
-                  <p>{BS_CUSTOMER.ADDRESS.headerName}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</p>
-                  <p>{BS_CUSTOMER.EMAIL.headerName}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</p>
+                <div className="bold2nd grid grid-cols-3 gap-x-2 gap-y-2">
+                  <p>Mã số thuế</p>
+                  <p className="col-span-2">{filterInfoSelected?.TAX_CODE}</p>
+                  <p>Tên đại lý</p>
+                  <p className="col-span-2">{filterInfoSelected?.FULLNAME}</p>
+                  <p>Địa chỉ</p>
+                  <p className="col-span-2">{filterInfoSelected?.ADDRESS}</p>
+                  <p>Email</p>
+                  <p className="col-span-2">{filterInfoSelected?.EMAIL}</p>
                 </div>
               </div>
 
@@ -270,7 +279,7 @@ export function DialogBillInfo({
                 <div className="flex justify-center">
                   <Button onClick={handleSaveInOrder} variant="blue" disabled={isSaveInOrder}>
                     {isSaveInOrder && <Loader2 className="mr-2 animate-spin" />}
-                    Xác nhận thanh toán
+                    Xác nhận
                   </Button>
                 </div>
               </div>
