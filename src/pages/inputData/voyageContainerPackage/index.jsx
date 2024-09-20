@@ -85,6 +85,10 @@ const containerFilter = [
   {
     name: VOYAGE_CONTAINER.NOTE.headerName,
     field: VOYAGE_CONTAINER.NOTE.field
+  },
+  {
+    name: VOYAGE_CONTAINER.STATUS.headerName,
+    field: VOYAGE_CONTAINER.STATUS.field
   }
 ];
 
@@ -352,7 +356,7 @@ export function VoyageContainerPackage() {
         <span className="grid grid-cols-3 gap-3">
           {vesselFilter.map(item => (
             <div key={item.field}>
-              <Label htmlFor={item.field}>{item.name}</Label>
+              <Label htmlFor={item.field}>{removeLastAsterisk(item.name)}</Label>
               <Input
                 onClick={() => {
                   setOpenSelectVoyage(true);
@@ -366,7 +370,7 @@ export function VoyageContainerPackage() {
             </div>
           ))}
         </span>
-        <span className="grid grid-cols-6 gap-3">
+        <span className="grid grid-cols-7 gap-3">
           {containerFilter.map(item => (
             <div
               key={item.field}
@@ -392,14 +396,21 @@ export function VoyageContainerPackage() {
                   setOpenSelectContainer(true);
                 }}
                 defaultValue={
-                  typeof containerSelected[item.field] === "boolean"
-                    ? containerSelected[item.field]
-                      ? "Có hàng"
-                      : "Rỗng"
+                  item.field === "STATUS"
+                    ? containerSelected[item.field] === "PENDING"
+                      ? "Chưa nhập kho"
+                      : "Đã nhập kho"
                     : containerSelected[item.field] ?? ""
                 }
                 readOnly
-                className="hover:cursor-pointer"
+                className={cn(
+                  item.field === "STAUTS" && containerSelected[item.field] === "PENDING"
+                    ? "text-red"
+                    : containerSelected[item.field] === "PENDING"
+                      ? "text-blue"
+                      : "",
+                  "hover:cursor-pointer"
+                )}
                 id={item.field}
                 placeholder="Chọn container"
               />
