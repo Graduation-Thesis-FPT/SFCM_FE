@@ -14,3 +14,11 @@ export const getAllContainerByVoyIdAndCusId = async (VOYAGE_ID, SHIPPER_ID) => {
 export const calculateImportContainer = async listContId => {
   return await axiosPrivate.post(`import/calculate`, { arrayContID: listContId });
 };
+
+export const saveImportOrder = async (arrayContID, paymentInfo, note) => {
+  return await axiosPrivate.post(`import/save`, {
+    arrayContID: arrayContID,
+    paymentInfo: paymentInfo,
+    note: note
+  });
+};

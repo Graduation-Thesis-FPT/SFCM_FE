@@ -1,6 +1,6 @@
-import { invoicePublishIn, saveInOrder } from "@/apis/order.api";
+import { saveImportOrder } from "@/apis/import-order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { bill_info, bs_customer, customer } from "@/components/common/aggridreact/dbColumns";
+import { bill_info } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -11,39 +11,27 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/common/ui/select";
+
 import { Separator } from "@/components/common/ui/separator";
+import { Textarea } from "@/components/common/ui/textarea";
 import { socket } from "@/config/socket";
-import { formatVnd, removeLastAsterisk } from "@/lib/utils";
+import { formatVnd } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+const BILL_INFO = new bill_info();
 
 export function DialogBillInfo({
   open = false,
   onOpenChange,
-  onSaveInOrderSuccess,
   billInfoList = [],
+  selectedContIdList = [],
   filterInfoSelected = {},
-  selectedCustomer = {},
-  EXP_DATE = "",
-  rowData = []
+  onSaveImportOrderSuccess
 }) {
-  const dispatch = useDispatch();
   const gridRef = useRef(null);
-  const BILL_INFO = new bill_info();
-  const BS_CUSTOMER = new bs_customer();
-  const CUSTOMER = new customer();
   const toast = useCustomToast();
-  const [HTTT, setHTTT] = useState("TM");
-  const [isSaveInOrder, setIsSaveInOrder] = useState(false);
+  const [isSaveImportOrder, setIsSaveImportOrder] = useState(false);
+  const [noteImportOrder, setNoteImportOrder] = useState("");
 
   const colDefs = [
     {
@@ -98,15 +86,6 @@ export function DialogBillInfo({
       cellClass: "text-end",
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
-    // {
-    //   headerName: "Đơn giá (VND)",
-    //   field: "UNIT_RATE",
-    //   flex: 1,
-    //   headerClass: "number-header",
-    //   cellClass: "text-end",
-    //   cellRenderer: params => formatVnd(params.value).replace("VND", "")
-    // },
-
     {
       headerName: "Tổng tiền (VND)",
       field: "TAMOUNT",
@@ -117,85 +96,24 @@ export function DialogBillInfo({
     }
   ];
 
-  const handleSaveInOrder = () => {
-    setIsSaveInOrder(true);
-    let datasTemp = billInfoList.map(item => {
-      return {
-        TariffName: item.TRF_DESC,
-        UnitCode: "CBM",
-        UnitRate: item.UNIT_RATE,
-        Amount: item.AMOUNT,
-        Vat: item.VAT_PRICE,
-        VatRate: item.VAT,
-        QTY: item.QTY
-      };
-    });
-    let args = {
-      cusTaxCode: selectedCustomer.TAX_CODE,
-      cusAddr: selectedCustomer.ADDRESS,
-      cusName: selectedCustomer.CUSTOMER_NAME,
-      sum_amount: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
-      vat_amount: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0),
-      total_amount: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0),
-      paymentMethod: HTTT,
-      datas: [...datasTemp]
+  const handleSaveImportOrder = () => {
+    setIsSaveImportOrder(true);
+    const paymentInfo = {
+      PRE_VAT_AMOUNT: billInfoList.reduce((a, b) => a + Number(b.AMOUNT), 0),
+      VAT_AMOUNT: billInfoList.reduce((a, b) => a + Number(b.VAT_PRICE), 0),
+      TOTAL_AMOUNT: billInfoList.reduce((a, b) => a + Number(b.TAMOUNT), 0)
     };
-    invoicePublishIn(args)
+    saveImportOrder(selectedContIdList, paymentInfo, noteImportOrder)
       .then(res => {
-        if (!res.data.metadata.success) {
-          throw new Error(res.data.metadata.error);
-        }
-        return res.data.metadata;
-      })
-      .then(invoiceInfo => {
-        const reqData = rowData.map(item => {
-          return {
-            ...item,
-            EXP_DATE: EXP_DATE,
-            CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE,
-            DE_ORDER_NO: invoiceInfo.fkey
-          };
-        });
-
-        const paymentInfoHeader = {
-          INV_NO: invoiceInfo.inv,
-          ACC_CD: HTTT,
-          INV_DATE: invoiceInfo.invoiceDate,
-          AMOUNT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
-          VAT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0),
-          TAMOUNT: billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
-        };
-
-        const paymentInfoDtl = billInfoList.map(item => {
-          return {
-            QTY: item.QTY,
-            UNIT_RATE: item.UNIT_RATE,
-            AMOUNT: item.AMOUNT,
-            VAT: item.VAT_PRICE,
-            VAT_RATE: item.VAT,
-            TAMOUNT: item.TAMOUNT,
-            CARGO_TYPE: item.ITEM_TYPE_CODE,
-            TRF_DESC: item.TRF_DESC
-          };
-        });
-
-        saveInOrder(reqData, paymentInfoHeader, paymentInfoDtl)
-          .then(res => {
-            onOpenChange();
-            socket.emit("saveInOrderSuccess");
-            onSaveInOrderSuccess(res.data.metadata);
-            toast.success(res);
-          })
-          .catch(err => {
-            toast.error(err);
-          })
-          .finally(() => {
-            setIsSaveInOrder(false);
-          });
+        socket.emit("saveInOrderSuccess");
+        toast.success(res);
+        onSaveImportOrderSuccess(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
-        setIsSaveInOrder(false);
+      })
+      .finally(() => {
+        setIsSaveImportOrder(false);
       });
   };
 
@@ -205,6 +123,10 @@ export function DialogBillInfo({
       socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    setNoteImportOrder("");
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -253,32 +175,24 @@ export function DialogBillInfo({
               </div>
 
               <div className="space-y-2">
-                <div className="text-16 font-semibold">Hình thức thanh toán</div>
+                <div className="text-16 font-semibold">Ghi chú</div>
                 <Separator />
                 <div>
-                  <Select
-                    id="HTTT"
-                    value={HTTT}
-                    onValueChange={value => {
-                      setHTTT(value);
-                    }}
-                  >
-                    <SelectTrigger className="">
-                      <SelectValue placeholder="Chọn hình thức thanh toán" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="TM">Tiền mặt</SelectItem>
-                        <SelectItem value="CK">Chuyển khoản</SelectItem>
-                        <SelectItem value="TM/CK">Tiền mặt và chuyển khoản</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <Textarea
+                    id="NOTE"
+                    placeholder="Nhập ghi chú"
+                    value={noteImportOrder}
+                    onChange={e => setNoteImportOrder(e.target.value)}
+                  />
                 </div>
 
                 <div className="flex justify-center">
-                  <Button onClick={handleSaveInOrder} variant="blue" disabled={isSaveInOrder}>
-                    {isSaveInOrder && <Loader2 className="mr-2 animate-spin" />}
+                  <Button
+                    onClick={handleSaveImportOrder}
+                    variant="blue"
+                    disabled={isSaveImportOrder}
+                  >
+                    {isSaveImportOrder && <Loader2 className="mr-2 animate-spin" />}
                     Xác nhận
                   </Button>
                 </div>

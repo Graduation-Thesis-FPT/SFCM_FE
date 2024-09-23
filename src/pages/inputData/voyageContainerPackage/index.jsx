@@ -376,17 +376,7 @@ export function VoyageContainerPackage() {
               key={item.field}
               className={cn(item.field === VOYAGE_CONTAINER.NOTE.field ? "col-span-2" : "")}
             >
-              <Label className="flex">
-                {removeLastAsterisk(item.name)}
-                {item.field === VOYAGE_CONTAINER.CNTR_NO.field && (
-                  <Copy
-                    onClick={() => {
-                      handleCopyToClipboard(item.field);
-                    }}
-                    className="ml-3 size-3 hover:cursor-pointer hover:text-black/70"
-                  />
-                )}
-              </Label>
+              <Label className="flex">{removeLastAsterisk(item.name)}</Label>
               <Input
                 onClick={() => {
                   if (!voyageSelected.ID) {
@@ -398,17 +388,19 @@ export function VoyageContainerPackage() {
                 defaultValue={
                   item.field === "STATUS"
                     ? containerSelected[item.field] === "PENDING"
-                      ? "Chưa nhập kho"
-                      : "Đã nhập kho"
+                      ? "Chưa làm lệnh"
+                      : containerSelected[item.field] === "IMPORTED"
+                        ? "Đã làm lệnh"
+                        : ""
                     : containerSelected[item.field] ?? ""
                 }
                 readOnly
                 className={cn(
-                  item.field === "STAUTS" && containerSelected[item.field] === "PENDING"
-                    ? "text-red"
-                    : containerSelected[item.field] === "PENDING"
-                      ? "text-blue"
-                      : "",
+                  item.field === "STATUS"
+                    ? containerSelected[item.field] === "PENDING"
+                      ? "text-green-800"
+                      : "text-red-800"
+                    : "",
                   "hover:cursor-pointer"
                 )}
                 id={item.field}

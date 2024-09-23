@@ -44,7 +44,9 @@ export const PATH_NAME = {
 
   /*Customer side*/
   //customer-order
-  customerOrder: "customer-order"
+  customerOrder: "customer-order",
+
+  payment: "payment"
 };
 
 export const ROUTE_TITLE_PAGE = {
@@ -92,5 +94,6 @@ export const MAIN_MENU = [
   PATH_NAME.tariff,
   PATH_NAME.procedure,
   PATH_NAME.warehouseOperation,
-  PATH_NAME.customerOrder
+  PATH_NAME.customerOrder,
+  PATH_NAME.payment
 ];

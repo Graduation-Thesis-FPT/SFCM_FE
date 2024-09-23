@@ -23,7 +23,7 @@ export * from "./procedure/importOrder";
 export * from "./procedure/exportOrder";
 export * from "./procedure/cancelInvoice";
 //warehouseOperation
-export * from "./warehouseOperation/importTally";
+export * from "./warehouseOperation/packageCellAllocation";
 export * from "./warehouseOperation/exportTally";
 export * from "./warehouseOperation/forkLift";
 //report

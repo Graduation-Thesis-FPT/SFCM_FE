@@ -15,19 +15,19 @@ export function JobQuantityCheckList({
   const DT_PALLET_STOCK = new dt_pallet_stock();
   const colDefs = [
     {
-      field: JOB_QUANTITY_CHECK.ESTIMATED_CARGO_PIECE.field,
+      field: "ITEMS_IN_CELL",
       headerName: JOB_QUANTITY_CHECK.ESTIMATED_CARGO_PIECE.headerName
     },
     {
-      field: DT_PALLET_STOCK.PALLET_LENGTH.field,
+      field: "SEPARATED_PACKAGE_LENGTH",
       headerName: DT_PALLET_STOCK.PALLET_LENGTH.headerName
     },
     {
-      field: DT_PALLET_STOCK.PALLET_WIDTH.field,
+      field: "SEPARATED_PACKAGE_WIDTH",
       headerName: DT_PALLET_STOCK.PALLET_WIDTH.headerName
     },
     {
-      field: DT_PALLET_STOCK.PALLET_HEIGHT.field,
+      field: "SEPARATED_PACKAGE_HEIGHT",
       headerName: DT_PALLET_STOCK.PALLET_HEIGHT.headerName
     },
     {
@@ -70,8 +70,8 @@ export function JobQuantityCheckList({
           )}
         >
           <span className="mb-2 flex justify-between text-sm">
-            <div>STT: {item.SEQ}</div>
-            <div className="font-bold">{item.PALLET_NO}</div>
+            <div>STT: {item.SEQUENCE}</div>
+            <div className="font-bold">{item.ROWGUID}</div>
             <div>
               {isCompleteJobQuantityCheck() && (
                 <PrintPallet selectedPackage={selectedPackage} data={item || {}} />
@@ -101,7 +101,7 @@ export function JobQuantityCheckList({
                     className={cn(isCompleteJobQuantityCheck() && "cursor-not-allowed")}
                     readOnly={isCompleteJobQuantityCheck()}
                     type="number"
-                    min={col.field === "ESTIMATED_CARGO_PIECE" ? 1 : 0}
+                    min={col.field === "ITEMS_IN_CELL" ? 1 : 0}
                     id={col.field}
                     placeholder="Nhập số"
                     value={Number(item[col.field]).toString() ?? 0}

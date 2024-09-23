@@ -1,21 +1,12 @@
-import {
-  completeJobQuantityCheckByPackageId,
-  getAllImportTallyContainer,
-  getAllJobQuantityCheckByPACKAGE_ID,
-  getImportTallyContainerInfoByCONTAINER_ID,
-  insertAndUpdateJobQuantityCheck
-} from "@/apis/import-tally.api";
-import { deliver_order } from "@/components/common/aggridreact/dbColumns";
+import { voyage, voyage_container } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Section } from "@/components/common/section";
-import { SelectSearch } from "@/components/common/select-search";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
-import useFetchData from "@/hooks/useRefetchData";
-import { cn } from "@/lib/utils";
+import { cn, removeLastAsterisk } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { JobQuantityCheckList } from "./jobQuantityCheckList";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
@@ -36,63 +27,103 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/common/ui/tooltip";
-import { socket } from "@/config/socket";
+import {
+  completePackageSeparate,
+  getAllPackageByVoyageContainerId,
+  getAllPackageCellAllocationByVoyContPkID,
+  insertAndUpdatePackageCellAllocation
+} from "@/apis/package-cell-allocation.api";
+import { ContainerImportSelect } from "./ContainerImportSelect";
+import { VoyContPackageStatusRender } from "@/components/common/aggridreact/cellRender";
+
+const VOYAGE = new voyage();
+const VOYAGE_CONTAINER = new voyage_container();
+
+const containerFilter = [
+  {
+    name: VOYAGE_CONTAINER.CNTR_NO.headerName,
+    field: VOYAGE_CONTAINER.CNTR_NO.field
+  },
+  {
+    name: VOYAGE_CONTAINER.SHIPPER_ID.headerName,
+    field: VOYAGE_CONTAINER.SHIPPER_ID.field
+  },
+  {
+    name: VOYAGE.ID.headerName,
+    field: VOYAGE.ID.field
+  },
+  {
+    name: VOYAGE.VESSEL_NAME.headerName,
+    field: VOYAGE.VESSEL_NAME.field
+  },
+  {
+    name: VOYAGE.ETA.headerName,
+    field: VOYAGE.ETA.field
+  }
+];
 
 export function ImportTally() {
-  const { data: importTallyContainerList, revalidate } = useFetchData({
-    service: getAllImportTallyContainer
-  });
-  const DELIVER_ORDER = new deliver_order();
+  const [openContainerImportSelect, setOpenContainerImportSelect] = useState(false);
+  const [containerSelected, setContainerSelected] = useState({});
+
   const toast = useCustomToast();
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState({
-    VESSEL_NAME: "",
-    INBOUND_VOYAGE: "",
-    CONTAINER_ID: "",
-    CNTRNO: "",
-    ISSUE_DATE: "",
-    EXP_DATE: ""
-  });
+
   const [importTallyPackageList, setImportTallyPackageList] = useState([]);
   const [selectedPackage, setSelectedPackage] = useState({});
   const [jobQuantityCheckList, setJobQuantityCheckList] = useState([]);
 
-  const handleChangeFilter = value => {
-    if (!value) {
-      setFilter({
-        VESSEL_NAME: "",
-        INBOUND_VOYAGE: "",
-        CONTAINER_ID: "",
-        CNTRNO: "",
-        ISSUE_DATE: "",
-        EXP_DATE: ""
-      });
-      setImportTallyPackageList([]);
-      setSelectedPackage({});
-      setJobQuantityCheckList([]);
-      return;
+  const handleAddNewJobQuantityCheck = () => {
+    if (!calculateEstimatedCargoPiece()) {
+      return toast.warning("Đã kiểm đếm hết số lượng hàng");
     }
-    setImportTallyPackageList([]);
+
+    let newRow = {
+      key: uuidv4(),
+      status: "insert",
+      ITEMS_IN_CELL: calculateEstimatedCargoPiece(),
+      VOYAGE_CONTAINER_PACKAGE_ID: selectedPackage.ID,
+      SEQUENCE: jobQuantityCheckList.length + 1,
+      SEPARATED_PACKAGE_LENGTH: 0,
+      SEPARATED_PACKAGE_WIDTH: 0,
+      SEPARATED_PACKAGE_HEIGHT: 0,
+      NOTE: ""
+    };
+    setJobQuantityCheckList([newRow, ...jobQuantityCheckList]);
+  };
+
+  const calculateEstimatedCargoPiece = () => {
+    let totalEstimatedCargoPiece = 0;
+    jobQuantityCheckList.forEach(item => {
+      totalEstimatedCargoPiece += item.ITEMS_IN_CELL;
+    });
+    return selectedPackage.TOTAL_ITEMS - totalEstimatedCargoPiece;
+  };
+
+  const isCompleteJobQuantityCheck = () => {
+    if (
+      jobQuantityCheckList.filter(item => item.IS_SEPARATED === true).length ===
+        jobQuantityCheckList.length &&
+      jobQuantityCheckList.length > 0
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  ///////////////////////////////
+
+  const handleSelectContainer = selectedRow => {
     setSelectedPackage({});
     setJobQuantityCheckList([]);
+
     dispatch(setGlobalLoading(true));
-    const importTallyContainerInfo = importTallyContainerList?.find(
-      item => item.CONTAINER_ID === value
-    );
-
-    setFilter({
-      CONTAINER_ID: value,
-      VESSEL_NAME: importTallyContainerInfo?.VESSEL_NAME,
-      INBOUND_VOYAGE: importTallyContainerInfo?.INBOUND_VOYAGE,
-      CNTRNO: importTallyContainerInfo?.CNTRNO,
-      ISSUE_DATE: importTallyContainerInfo?.ISSUE_DATE,
-      EXP_DATE: importTallyContainerInfo?.EXP_DATE
-    });
-
-    getImportTallyContainerInfoByCONTAINER_ID(value)
+    setOpenContainerImportSelect(false);
+    setContainerSelected(selectedRow);
+    getAllPackageByVoyageContainerId(selectedRow.VOYAGE_CONTAINER_ID)
       .then(res => {
-        toast.success(res);
         setImportTallyPackageList(res.data.metadata);
+        toast.success(res);
       })
       .catch(err => {
         toast.error(err);
@@ -105,7 +136,7 @@ export function ImportTally() {
   const handleSelectPackage = packageInfo => {
     dispatch(setGlobalLoading(true));
     setSelectedPackage(packageInfo);
-    getAllJobQuantityCheckByPACKAGE_ID(packageInfo.PK_ROWGUID)
+    getAllPackageCellAllocationByVoyContPkID(packageInfo.ID)
       .then(res => {
         setJobQuantityCheckList(res.data.metadata);
       })
@@ -115,49 +146,6 @@ export function ImportTally() {
       .finally(() => {
         dispatch(setGlobalLoading(false));
       });
-  };
-
-  const getJobQuantityCheckByPACKAGE_ID = () => {
-    getAllJobQuantityCheckByPACKAGE_ID(selectedPackage.PK_ROWGUID)
-      .then(res => {
-        setJobQuantityCheckList(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
-      });
-  };
-
-  const calculateEstimatedCargoPiece = () => {
-    let totalEstimatedCargoPiece = 0;
-    jobQuantityCheckList.forEach(item => {
-      totalEstimatedCargoPiece += item.ESTIMATED_CARGO_PIECE;
-    });
-    return selectedPackage.CARGO_PIECE - totalEstimatedCargoPiece;
-  };
-
-  const handleAddNewJobQuantityCheck = () => {
-    if (!calculateEstimatedCargoPiece()) {
-      return toast.warning("Đã kiểm đếm hết số lượng hàng");
-    }
-    let newRow = {
-      key: uuidv4(),
-      status: "insert",
-      PACKAGE_ID: selectedPackage.PK_ROWGUID,
-      SEQ: jobQuantityCheckList.length + 1,
-      ESTIMATED_CARGO_PIECE: calculateEstimatedCargoPiece(),
-      ACTUAL_CARGO_PIECE: selectedPackage.CARGO_PIECE,
-      START_DATE: new Date(),
-      JOB_STATUS: "I",
-      PALLET_LENGTH: 0,
-      PALLET_WIDTH: 0,
-      PALLET_HEIGHT: 0,
-      HOUSE_BILL: selectedPackage.HOUSE_BILL,
-      NOTE: ""
-    };
-    setJobQuantityCheckList([newRow, ...jobQuantityCheckList]);
   };
 
   const handleSaveJobQuantityCheck = () => {
@@ -167,15 +155,20 @@ export function ImportTally() {
       return toast.warning("Không có dữ liệu thay đổi");
     }
 
+    if (insertAndUpdateData.update.length > 0) {
+      insertAndUpdateData.update = insertAndUpdateData.update.map(({ CELL_ID, ...item }) => item);
+    }
+
     if (calculateEstimatedCargoPiece() < 0) {
       return toast.warning("Số lượng hàng kiểm đếm không chính xác. Vui lòng kiểm tra lại!");
     }
 
     dispatch(setGlobalLoading(true));
-    insertAndUpdateJobQuantityCheck(selectedPackage.PK_ROWGUID, insertAndUpdateData)
+    insertAndUpdatePackageCellAllocation(selectedPackage.ID, insertAndUpdateData)
       .then(res => {
         toast.success(res);
-        getJobQuantityCheckByPACKAGE_ID();
+        getImportTallyContainerInfo(containerSelected.VOYAGE_CONTAINER_ID);
+        getPackageCellAllocation(selectedPackage.ID);
       })
       .catch(err => {
         toast.error(err);
@@ -183,17 +176,6 @@ export function ImportTally() {
       .finally(() => {
         dispatch(setGlobalLoading(false));
       });
-  };
-
-  const isCompleteJobQuantityCheck = () => {
-    if (
-      jobQuantityCheckList.filter(item => item.JOB_STATUS === "C").length ===
-        jobQuantityCheckList.length &&
-      jobQuantityCheckList.length > 0
-    ) {
-      return true;
-    }
-    return false;
   };
 
   const handleCompleteJobQuantityCheck = () => {
@@ -210,12 +192,11 @@ export function ImportTally() {
     }
 
     dispatch(setGlobalLoading(true));
-    completeJobQuantityCheckByPackageId(selectedPackage.PK_ROWGUID)
+    completePackageSeparate(selectedPackage.ID)
       .then(res => {
         toast.success(res);
-        getJobQuantityCheckByPACKAGE_ID();
-        getImportTallyContainerInfo(filter.CONTAINER_ID);
-        socket.emit("completeJobQuantityCheck");
+        getPackageCellAllocation(selectedPackage.ID);
+        getImportTallyContainerInfo(containerSelected.VOYAGE_CONTAINER_ID);
       })
       .catch(err => {
         toast.error(err);
@@ -225,8 +206,10 @@ export function ImportTally() {
       });
   };
 
-  const getImportTallyContainerInfo = async CONTAINER_ID => {
-    getImportTallyContainerInfoByCONTAINER_ID(CONTAINER_ID)
+  ///////////////////////////////
+
+  const getImportTallyContainerInfo = async VOYAGE_CONTAINER_ID => {
+    getAllPackageByVoyageContainerId(VOYAGE_CONTAINER_ID)
       .then(res => {
         setImportTallyPackageList(res.data.metadata);
       })
@@ -235,78 +218,38 @@ export function ImportTally() {
       });
   };
 
-  useEffect(() => {
-    socket.connect();
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("receiveSaveInOrderSuccess", message => {
-        revalidate();
+  const getPackageCellAllocation = VOYAGE_CONTAINER_PACKAGE_ID => {
+    getAllPackageCellAllocationByVoyContPkID(VOYAGE_CONTAINER_PACKAGE_ID)
+      .then(res => {
+        setJobQuantityCheckList(res.data.metadata);
+      })
+      .catch(err => {
+        toast.error(err);
       });
-      return () => socket.off("receiveSaveInOrderSuccess");
-    }
-  }, []);
+  };
 
   return (
     <Section>
       <Section.Header className="grid grid-cols-3 gap-3 md:grid-cols-5">
-        <div>
-          <Label htmlFor="VESSEL">Container kiểm đếm</Label>
-          <SelectSearch
-            id="CONTAINER_ID"
-            className="min-w-10"
-            labelSelect="Chọn container kiểm đếm"
-            value={filter.CONTAINER_ID}
-            data={importTallyContainerList?.map(item => {
-              return { value: item.CONTAINER_ID, label: item.CNTRNO };
-            })}
-            onSelect={handleChangeFilter}
-          />
-        </div>
-        <div>
-          <Label htmlFor="VESSEL_NAME">Tên tàu</Label>
-          <Input
-            value={filter.VESSEL_NAME ?? ""}
-            readOnly
-            className="hover:cursor-not-allowed"
-            id="VESSEL_NAME"
-            placeholder="Chọn container kiểm đếm"
-          />
-        </div>
-        <div>
-          <Label htmlFor="INBOUND_VOYAGE">Chuyến nhập</Label>
-          <Input
-            value={filter.INBOUND_VOYAGE ?? ""}
-            readOnly
-            className="hover:cursor-not-allowed"
-            id="INBOUND_VOYAGE"
-            placeholder="Chọn container kiểm đếm"
-          />
-        </div>
-        <div>
-          <Label htmlFor="ISSUE_DATE">{DELIVER_ORDER.ISSUE_DATE.headerName}</Label>
-          <Input
-            value={filter.ISSUE_DATE ? moment(filter.ISSUE_DATE).format("DD/MM/YYYY HH:mm") : ""}
-            readOnly
-            className="hover:cursor-not-allowed"
-            id="ISSUE_DATE"
-            placeholder="Chọn container kiểm đếm"
-          />
-        </div>
-        <div>
-          <Label htmlFor="EXP_DATE">{DELIVER_ORDER.EXP_DATE.headerName}</Label>
-          <Input
-            value={filter.EXP_DATE ? moment(filter.EXP_DATE).format("DD/MM/YYYY HH:mm") : ""}
-            readOnly
-            className="hover:cursor-not-allowed"
-            id="TRF_NAME"
-            placeholder="Chọn container kiểm đếm"
-          />
-        </div>
+        {containerFilter.map(item => (
+          <div key={item.field}>
+            <Label className="flex">{removeLastAsterisk(item.name)}</Label>
+            <Input
+              onClick={() => {
+                setOpenContainerImportSelect(true);
+              }}
+              defaultValue={
+                item.field === "ETA"
+                  ? moment(containerSelected[item.field]).format("DD/MM/YYYY")
+                  : containerSelected[item.field] ?? ""
+              }
+              readOnly
+              className={cn("hover:cursor-pointer")}
+              id={item.field}
+              placeholder="Chọn container"
+            />
+          </div>
+        ))}
       </Section.Header>
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel>
@@ -323,7 +266,7 @@ export function ImportTally() {
                     key={item.HOUSE_BILL}
                     className={cn(
                       "flex cursor-pointer justify-between rounded-md border px-8 py-6",
-                      selectedPackage?.PK_ROWGUID === item.PK_ROWGUID && "bg-blue-50 ",
+                      selectedPackage?.ID === item.ID && "bg-blue-50 ",
                       "m-auto w-[95%] overflow-hidden shadow-lg transition-all duration-300 hover:scale-[1.02]"
                     )}
                     onClick={() => {
@@ -335,13 +278,13 @@ export function ImportTally() {
                         Số Housebill: <b>{item?.HOUSE_BILL}</b>
                       </div>
                       <div>
-                        Chủ hàng: <b>{item?.CONSIGNEE}</b>
+                        Mã chủ hàng: <b>{item?.CONSIGNEE_ID}</b>
                       </div>
                       <div>
-                        Số tờ khai: <b>{item?.DECLARE_NO}</b>
+                        Mã loại hàng: <b>{item?.PACKAGE_TYPE_ID}</b>
                       </div>
                       <div>
-                        Loại hàng: <b>{item?.ITEM_TYPE_NAME}</b>
+                        Số khối: <b>{item?.CBM}</b>
                       </div>
                       <div>
                         Số Seal: <b>{item?.SEALNO}</b>
@@ -349,13 +292,16 @@ export function ImportTally() {
                       <div>
                         Ghi chú: <b>{item?.NOTE}</b>
                       </div>
+                      <div className="flex space-x-2">
+                        <span>Trạng thái:</span>
+                        {VoyContPackageStatusRender({ value: item?.STATUS })}
+                      </div>
                     </div>
                     <div className="flex flex-col justify-between text-center">
                       <div>
                         Tổng số lượng
                         <div className="font-bold">
-                          {item?.CARGO_PIECE} ({item?.PACKAGE_UNIT_CODE} - {item?.PACKAGE_UNIT_NAME}
-                          )
+                          {item?.TOTAL_ITEMS} ({item?.PACKAGE_UNIT})
                         </div>
                       </div>
                       {item?.JOB_STATUS === "C" && (
@@ -375,7 +321,7 @@ export function ImportTally() {
         <ResizablePanel>
           <div className="flex h-full flex-col border-l px-4">
             <div className="pt-8 text-center text-lg font-bold leading-5 text-gray-900">
-              Kiểm đếm
+              Tách hàng
             </div>
             {!selectedPackage.HOUSE_BILL ? (
               <div className="mt-10 text-center text-sm opacity-50">Không có dữ liệu</div>
@@ -384,9 +330,9 @@ export function ImportTally() {
                 <span className="mx-auto flex w-[95%] justify-between pt-4 text-sm">
                   <div className="flex flex-col justify-between">
                     <span>
-                      Số lượng hàng chưa kiểm đếm:{" "}
+                      Số lượng hàng chưa tách:{" "}
                       <b>
-                        {calculateEstimatedCargoPiece()}/{selectedPackage.CARGO_PIECE}
+                        {calculateEstimatedCargoPiece()}/{selectedPackage.TOTAL_ITEMS}
                       </b>
                     </span>
                     <span>
@@ -438,6 +384,15 @@ export function ImportTally() {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+      <ContainerImportSelect
+        open={openContainerImportSelect}
+        onOpenChange={() => {
+          setOpenContainerImportSelect(false);
+        }}
+        onSelectContainerInfo={selectedRow => {
+          handleSelectContainer(selectedRow);
+        }}
+      />
     </Section>
   );
 }

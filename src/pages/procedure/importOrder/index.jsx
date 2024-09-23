@@ -1,40 +1,19 @@
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import {
-  dt_cntr_mnf_ld,
-  dt_package_mnf_ld,
-  dt_vessel_visit,
-  voyage
-} from "@/components/common/aggridreact/dbColumns";
+import { voyage } from "@/components/common/aggridreact/dbColumns";
 import { Section } from "@/components/common/section";
 import { Button } from "@/components/common/ui/button";
 import { useRef, useState } from "react";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { regexPattern } from "@/constants/regexPattern";
-import { DatePicker } from "@/components/common/date-picker";
-import { addDays } from "date-fns";
 import moment from "moment";
-import { getContList, getManifestPackage, getToBillIn } from "@/apis/order.api";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from "@/components/common/ui/select";
 import { DialogBillInfo } from "./dialogBillInfo";
 import { DialogSaveBillSuccess } from "./dialogSaveBillSuccess";
-import { MultipleSelect } from "@/components/common/multiple-select";
 import { FilterInfoSelect } from "./FilterInfoSelect";
 import { calculateImportContainer, getAllContainerByVoyIdAndCusId } from "@/apis/import-order.api";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { VoyContainerStatusRender } from "@/components/common/aggridreact/cellRender";
-
-const DT_PACKAGE_MNF_LD = new dt_package_mnf_ld();
 
 const VOYAGE = new voyage();
 
@@ -70,29 +49,17 @@ export function ImportOrder() {
   const toast = useCustomToast();
   const dispach = useDispatch();
 
-  const [containerList, setContainerList] = useState([]);
-  // const [configAttachSrvList, setConfigAttachSrvList] = useState([]);
-
   const [filterInfoSelected, setFilterInfoSelected] = useState({});
   const [openFilterInfoSelect, setOpenFilterInfoSelect] = useState(false);
 
-  const [contList, setContList] = useState([]);
-  const [openContainerSelect, setOpenContainerSelect] = useState(false);
-
-  const [customerList, setCustomerList] = useState([]);
-
-  const [selectedAttachSrvList, setSelectedAttachSrvList] = useState([]);
-  const [CUSTOMER_CODE, setCUSTOMER_CODE] = useState("");
-  const [BILLOFLADING, setBILLOFLADING] = useState("");
-  const [CNTRNO, setCNTRNO] = useState("");
-  const [EXP_DATE, setEXP_DATE] = useState(addDays(new Date(), 2));
-
-  const [billInfoList, setBillInfoList] = useState([]);
-
-  const [dataBillAfterSave, setDataBillAfterSave] = useState({});
+  const [containerList, setContainerList] = useState([]);
+  const [selectedContIdList, setSelectedContIdList] = useState([]);
 
   const [openDialogBillInfo, setOpenDialogBillInfo] = useState(false);
+  const [billInfoList, setBillInfoList] = useState([]);
+
   const [openDialogSaveBillSuccess, setOpenDialogSaveBillSuccess] = useState(false);
+  const [dataBillAfterSave, setDataBillAfterSave] = useState({});
 
   const colDefs = [
     {
@@ -156,103 +123,16 @@ export function ImportOrder() {
       });
   };
 
-  const handleSelectContainerInfo = cont => {
-    setContainerList([]);
-    setOpenContainerSelect(false);
-    setCNTRNO(cont.CNTRNO);
-    let dataSend = { VOYAGEKEY: filterInfoSelected.VOYAGEKEY, CNTRNO: cont.CNTRNO };
-    getManifestPackage(dataSend)
-      .then(res => {
-        if (res.data.metadata.length === 0) {
-          setContainerList([]);
-          return toast.error("Không tìm thấy dữ liệu. Vui lòng kiểm tra lại!");
-        }
-        setContainerList(res.data.metadata);
-        toast.success(res);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const handleEnterBillOfLading = () => {
-    if (!filterInfoSelected.VOYAGEKEY || !BILLOFLADING) {
-      return;
-    }
-    let dataSend = { VOYAGEKEY: filterInfoSelected.VOYAGEKEY, BILLOFLADING: BILLOFLADING };
-    getContList(dataSend)
-      .then(res => {
-        setCNTRNO("");
-        setContainerList([]);
-        if (res.data.metadata.length === 0) {
-          return toast.error("Không tìm thấy dữ liệu. Vui lòng kiểm tra lại số vận đơn!");
-        }
-        setContList(res.data.metadata);
-        setOpenContainerSelect(true);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const handleEnterCntrNo = () => {
-    if (!filterInfoSelected.VOYAGEKEY || !CNTRNO) {
-      return;
-    }
-    if (!regexPattern.CNTRNO.test(CNTRNO)) {
-      setBILLOFLADING("");
-      setContainerList([]);
-      return toast.error("Số container không hợp lệ");
-    }
-    let dataSend = { VOYAGEKEY: filterInfoSelected.VOYAGEKEY, CNTRNO: CNTRNO };
-    getManifestPackage(dataSend)
-      .then(res => {
-        setBILLOFLADING("");
-        if (res.data.metadata.length === 0) {
-          setContainerList([]);
-          return toast.error("Không tìm thấy dữ liệu. Vui lòng kiểm tra lại số container!");
-        }
-        setContainerList(res.data.metadata);
-        toast.success(res);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  ///////
-
-  const handleGetToBillIn = () => {
-    if (!CUSTOMER_CODE) {
-      return toast.warning("Vui lòng chọn khách hàng!");
-    }
-    const arrayPackage = containerList.map(item => ({ ...item, CUSTOMER_CODE }));
-    const servicesList = selectedAttachSrvList.map(item => item.value);
-    getToBillIn(arrayPackage, servicesList)
-      .then(res => {
-        setBillInfoList(res.data.metadata);
-      })
-      .then(() => {
-        setOpenDialogBillInfo(true);
-      })
-      .catch(err => {
-        toast.error(err);
-      });
-  };
-
-  const handleSaveInOrderSuccess = data => {
+  const handleSaveImportOrderSuccess = data => {
     setDataBillAfterSave(data);
+    setOpenDialogBillInfo(false);
     setOpenDialogSaveBillSuccess(true);
   };
 
   const handleMakeNewOrder = () => {
     setOpenDialogSaveBillSuccess(false);
-    setContainerList([]);
     setFilterInfoSelected({});
-    setBILLOFLADING("");
-    setCNTRNO("");
-    setCUSTOMER_CODE("");
-    setSelectedAttachSrvList([]);
+    setContainerList([]);
     setBillInfoList([]);
     setDataBillAfterSave({});
   };
@@ -269,6 +149,7 @@ export function ImportOrder() {
       .then(res => {
         toast.success(res);
         setBillInfoList(res.data.metadata);
+        setSelectedContIdList(listContId);
         setOpenDialogBillInfo(true);
       })
       .catch(err => {
@@ -459,25 +340,23 @@ export function ImportOrder() {
       />
       <DialogBillInfo
         filterInfoSelected={filterInfoSelected}
-        containerList={containerList}
-        EXP_DATE={EXP_DATE}
-        selectedCustomer={customerList.find(customer => customer.CUSTOMER_CODE === CUSTOMER_CODE)}
+        selectedContIdList={selectedContIdList}
         billInfoList={billInfoList}
         open={openDialogBillInfo}
         onOpenChange={() => {
           setOpenDialogBillInfo(false);
         }}
-        onSaveInOrderSuccess={handleSaveInOrderSuccess}
+        onSaveImportOrderSuccess={handleSaveImportOrderSuccess}
       />
       <DialogSaveBillSuccess
-        CNTRNO={CNTRNO}
-        selectedCustomer={customerList.find(customer => customer.CUSTOMER_CODE === CUSTOMER_CODE)}
-        onMakeNewOrder={handleMakeNewOrder}
-        data={dataBillAfterSave}
+        filterInfoSelected={filterInfoSelected}
+        billInfoList={billInfoList}
+        dataBillAfterSave={dataBillAfterSave}
         open={openDialogSaveBillSuccess}
         onOpenChange={() => {
           setOpenDialogSaveBillSuccess(false);
         }}
+        onMakeNewOrder={handleMakeNewOrder}
       />
     </Section>
   );
