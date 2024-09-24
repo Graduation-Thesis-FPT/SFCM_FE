@@ -4,7 +4,8 @@ import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import {
   CntrSizeRender,
   ContainerTariffStatusRender,
-  OnlyEditWithInsertCell
+  OnlyEditWithInsertCell,
+  PackageTariffDetailStatusRender
 } from "@/components/common/aggridreact/cellRender";
 import { container_tariff } from "@/components/common/aggridreact/dbColumns";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
@@ -124,8 +125,7 @@ export function ContainerTariff() {
       headerName: CONTAINER_TARIFF.STATUS.headerName,
       field: CONTAINER_TARIFF.STATUS.field,
       flex: 1,
-      filter: true,
-      cellRenderer: ContainerTariffStatusRender
+      cellRenderer: PackageTariffDetailStatusRender
     }
   ];
 

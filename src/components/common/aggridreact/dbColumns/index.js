@@ -196,6 +196,20 @@ export class trf_std extends CommonColumns {
   INCLUDE_VAT = { field: "INCLUDE_VAT", headerName: "Bao gồm VAT" };
 }
 
+export class package_tariff_detail extends CommonColumns {
+  ROWGUID = { field: "ROWGUID", headerName: "Mã chi tiết biểu cước *" };
+  PACKAGE_TARIFF_ID = { field: "PACKAGE_TARIFF_ID", headerName: "Mã biểu cước *" };
+  PACKAGE_TYPE_ID = { field: "PACKAGE_TYPE_ID", headerName: "Mã loại hàng *" };
+  PACKAGE_TARIFF_DESCRIPTION = {
+    field: "PACKAGE_TARIFF_DESCRIPTION",
+    headerName: "Mô tả chi tiết *"
+  };
+  UNIT = { field: "UNIT", headerName: "Đơn vị tính *" };
+  UNIT_PRICE = { field: "UNIT_PRICE", headerName: "Tổng tiền *" };
+  VAT_RATE = { field: "VAT_RATE", headerName: "VAT (%) *" };
+  STATUS = { field: "STATUS", headerName: "Trạng thái *" };
+}
+
 export class trf_dis extends CommonColumns {
   ROWGUID = { field: "ROWGUID", headerName: "ROWGUID *" };
   TRF_CODE = { field: "TRF_CODE", headerName: "Mã biểu cước *" };

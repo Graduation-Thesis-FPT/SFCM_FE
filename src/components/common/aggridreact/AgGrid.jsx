@@ -67,7 +67,6 @@ const AgGrid = forwardRef(
     const handleDeleteRow = () => {
       let keyInsert = [];
       let dataInDb = [];
-
       selectedRows.forEach(item => {
         if (item.status === "insert") {
           keyInsert.push(item.key);
@@ -75,13 +74,11 @@ const AgGrid = forwardRef(
           dataInDb.push(item);
         }
       });
-
       //Chỉ xóa dòng chưa lưu vào database
       if (keyInsert.length > 0 && dataInDb.length === 0) {
         setRowData(rowData.filter(item => !keyInsert.includes(item.key)));
         return;
       }
-
       onDeleteRow(selectedRows);
     };
 

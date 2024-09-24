@@ -35,6 +35,7 @@ import {
 } from "@/apis/package-cell-allocation.api";
 import { ContainerImportSelect } from "./ContainerImportSelect";
 import { VoyContPackageStatusRender } from "@/components/common/aggridreact/cellRender";
+import { Badge } from "@/components/common/ui/badge";
 
 const VOYAGE = new voyage();
 const VOYAGE_CONTAINER = new voyage_container();
@@ -240,7 +241,9 @@ export function ImportTally() {
               }}
               defaultValue={
                 item.field === "ETA"
-                  ? moment(containerSelected[item.field]).format("DD/MM/YYYY")
+                  ? containerSelected[item.field]
+                    ? moment(containerSelected[item.field]).format("DD/MM/YYYY")
+                    : ""
                   : containerSelected[item.field] ?? ""
               }
               readOnly
@@ -294,7 +297,15 @@ export function ImportTally() {
                       </div>
                       <div className="flex space-x-2">
                         <span>Trạng thái:</span>
-                        {VoyContPackageStatusRender({ value: item?.STATUS })}
+                        {item?.IS_SEPARATED ? (
+                          <div className="flex flex-col items-center justify-center font-bold text-green-600">
+                            <Badge className="rounded-sm border-transparent bg-green-100 text-green-600 hover:bg-green-200">
+                              Hoàn thành tách hàng
+                            </Badge>
+                          </div>
+                        ) : (
+                          VoyContPackageStatusRender({ value: item?.STATUS })
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col justify-between text-center">
@@ -304,10 +315,10 @@ export function ImportTally() {
                           {item?.TOTAL_ITEMS} ({item?.PACKAGE_UNIT})
                         </div>
                       </div>
-                      {item?.JOB_STATUS === "C" && (
+                      {item?.IS_SEPARATED && (
                         <div className="flex flex-col items-center justify-center font-bold text-green-600">
                           <CheckCircle className="size-10" />
-                          <div>Hoàn thành kiểm đếm</div>
+                          <div>Hoàn thành tách hàng</div>
                         </div>
                       )}
                     </div>
@@ -344,7 +355,7 @@ export function ImportTally() {
                     {isCompleteJobQuantityCheck() ? (
                       <div className="flex flex-col items-center justify-center font-bold text-green-600">
                         <CheckCircle />
-                        <div>Hoàn thành kiểm đếm</div>
+                        <div>Hoàn thành tách hàng</div>
                       </div>
                     ) : (
                       <LayoutTool>

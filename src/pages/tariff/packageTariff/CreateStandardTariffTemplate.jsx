@@ -1,3 +1,4 @@
+import { createPackageTariff } from "@/apis/package-tariff.api";
 import { createTariffTemp } from "@/apis/tariff-temp.api";
 import { createStandardTariffTemplate } from "@/apis/trf-std.api";
 import { trf_temp } from "@/components/common/aggridreact/dbColumns";
@@ -16,44 +17,47 @@ import {
 import { Input } from "@/components/common/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import moment from "moment";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  TRF_TEMP_NAME: z.string().min(1, "Không được để trống!"),
-  FROM_DATE: z.date({
+  NAME: z
+    .string({
+      required_error: "Không được để trống!"
+    })
+    .min(1, "Không được để trống!"),
+  VALID_FROM: z.date({
     required_error: "Vui lòng chọn thời ghi hiệu lực từ!"
   }),
-  TO_DATE: z.date({
+  VALID_UNTIL: z.date({
     required_error: "Vui lòng chọn thời ghi hiệu lực đến!"
   })
 });
 
 export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
   const toast = useCustomToast();
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const TRF_TEMP = new trf_temp();
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      TRF_TEMP_NAME: "",
-      FROM_DATE: addDays(new Date(), -30),
-      TO_DATE: addDays(new Date(), 30)
+      NAME: "",
+      VALID_FROM: addDays(new Date(), -30),
+      VALID_UNTIL: addDays(new Date(), 30)
     }
   });
 
   const onSubmit = values => {
-    if (values.FROM_DATE >= values.TO_DATE) {
+    if (values.VALID_FROM >= values.VALID_UNTIL) {
       return toast.error("Thời gian hiệu lực không hợp lệ!");
     }
-    values.FROM_DATE = moment(values.FROM_DATE).startOf("day").format();
-    values.TO_DATE = moment(values.TO_DATE).endOf("day").format();
-
-    createTariffTemp({ insert: [values], update: [] })
+    setLoading(true);
+    values.VALID_FROM = moment(values.VALID_FROM).startOf("day").format();
+    values.VALID_UNTIL = moment(values.VALID_UNTIL).endOf("day").format();
+    createPackageTariff({ insert: [values], update: [] })
       .then(res => {
         toast.success(res);
         setOpen(false);
@@ -61,6 +65,9 @@ export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -74,29 +81,29 @@ export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
         className="h-[36px] px-[16px] py-[8px]"
       >
         <PlusCircle className="mr-2 size-4" />
-        Tạo mẫu biểu cước
+        Tạo biểu cước mới
       </Button>
       <CustomSheet
         open={open}
         onOpenChange={() => {
           setOpen(false);
         }}
-        title="Tạo mẫu biểu cước mới"
+        title="Tạo biểu cước mới"
         form={form}
       >
-        <CustomSheet.Content title="Thông tin mẫu biểu cước">
+        <CustomSheet.Content title="Thông tin biểu cước">
           <Form {...form}>
             <form
               id="creat-user"
               onSubmit={form.handleSubmit(onSubmit)}
-              className="grid grid-cols-2 gap-3"
+              className="grid grid-cols-2 gap-3 gap-y-5"
             >
               <FormField
                 control={form.control}
-                name="TRF_TEMP_NAME"
+                name="NAME"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{TRF_TEMP.TRF_TEMP_NAME.headerName}</FormLabel>
+                  <FormItem className="col-span-2">
+                    <FormLabel>Tên biểu cước</FormLabel>
                     <FormControl>
                       <Input type="text" placeholder="Nhập tên biểu cước" {...field} />
                     </FormControl>
@@ -104,13 +111,12 @@ export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
                   </FormItem>
                 )}
               />
-              <div></div>
               <FormField
                 control={form.control}
-                name="FROM_DATE"
+                name="VALID_FROM"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{TRF_TEMP.FROM_DATE.headerName}</FormLabel>
+                    <FormLabel>Hiệu lực từ ngày</FormLabel>
                     <FormControl>
                       <DatePicker onSelected={field.onChange} date={field.value} />
                     </FormControl>
@@ -120,10 +126,10 @@ export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
               />
               <FormField
                 control={form.control}
-                name="TO_DATE"
+                name="VALID_UNTIL"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{TRF_TEMP.TO_DATE.headerName}</FormLabel>
+                    <FormLabel>Hiệu lực đến ngày</FormLabel>
                     <FormControl>
                       <DatePicker onSelected={field.onChange} date={field.value} />
                     </FormControl>
@@ -143,10 +149,18 @@ export function CreateStandardTariffTemplate({ onCreateNewTemplate }) {
             className="mr-3 h-[36px] w-[126px] text-blue-600 hover:text-blue-600"
             variant="outline"
             type="button"
+            disabled={loading}
           >
             Hủy
           </Button>
-          <Button form="creat-user" type="submit" className="h-[36px] w-[126px]" variant="blue">
+          <Button
+            form="creat-user"
+            type="submit"
+            className="h-[36px] w-[126px]"
+            variant="blue"
+            disabled={loading}
+          >
+            {loading && <Loader2 className="mr-2 animate-spin" />}
             Tạo mới
           </Button>
         </CustomSheet.Footer>

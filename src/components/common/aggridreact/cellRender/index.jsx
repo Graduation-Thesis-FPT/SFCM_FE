@@ -197,14 +197,38 @@ export function ContainerTariffStatusRender(params) {
   return (
     <div className="flex items-center justify-center gap-2">
       <Switch
-        className="data-[state=checked]:bg-green-800 data-[state=unchecked]:bg-red-800"
+        className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600"
         checked={params.value === "ACTIVE"}
         onCheckedChange={value => {
           params.setValue(value ? "ACTIVE" : "INACTIVE");
         }}
       ></Switch>
       <div
-        className={`flex text-sm font-medium  ${params.value === "ACTIVE" ? "text-green-800" : "text-red-800"}`}
+        className={`flex text-sm font-medium  ${params.value === "ACTIVE" ? "text-blue-600" : "text-gray-600"}`}
+      >
+        {params.value === "ACTIVE" ? "Hoạt động" : "Dừng"}
+      </div>
+    </div>
+  );
+}
+
+export function PackageTariffDetailStatusRender(params) {
+  useEffect(() => {
+    if (params.value === undefined) {
+      params.setValue("ACTIVE");
+    }
+  }, []);
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <Switch
+        className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600"
+        checked={params.value === "ACTIVE"}
+        onCheckedChange={value => {
+          params.setValue(value ? "ACTIVE" : "INACTIVE");
+        }}
+      ></Switch>
+      <div
+        className={`flex text-sm font-medium  ${params.value === "ACTIVE" ? "text-blue-600" : "text-gray-600"}`}
       >
         {params.value === "ACTIVE" ? "Hoạt động" : "Dừng"}
       </div>

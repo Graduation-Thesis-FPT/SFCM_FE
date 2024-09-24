@@ -124,15 +124,15 @@ export function ForkLift() {
     }
     setSelectedJob(job);
     if (selectedJobStatusRef.current === "S") {
-      if (job.WAREHOUSE_CODE === selectedWarehouseCodeRef.current) {
+      if (job.ID === selectedWarehouseCodeRef.current) {
         setTimeout(() => {
           scrollToElement(job.CELL_ID);
         }, 100);
         return;
       }
-      setSelectedWarehouseCode(job.WAREHOUSE_CODE);
-      selectedWarehouseCodeRef.current = job.WAREHOUSE_CODE;
-      getAllPalletPositionByWarehouseCode(job.WAREHOUSE_CODE)
+      setSelectedWarehouseCode(job.ID);
+      selectedWarehouseCodeRef.current = job.ID;
+      getAllPalletPositionByWarehouseCode(job.ID)
         .then(res => {
           setWarehouseData(res.data.metadata);
         })
@@ -173,7 +173,7 @@ export function ForkLift() {
     const obj = {
       CELL_ID: selectedCell.ROWGUID,
       PALLET_NO: selectedJob.PALLET_NO,
-      WAREHOUSE_CODE: selectedWarehouseCodeRef.current
+      ID: selectedWarehouseCodeRef.current
     };
     inputPalletToCell(obj)
       .then(res => {
@@ -201,7 +201,7 @@ export function ForkLift() {
     const dataReq = {
       PALLET_NO: selectedJob.PALLET_NO,
       CELL_ID: selectedJob.CELL_ID,
-      WAREHOUSE_CODE: selectedWarehouseCodeRef.current
+      ID: selectedWarehouseCodeRef.current
     };
     exportPallet(dataReq)
       .then(res => {
@@ -226,7 +226,7 @@ export function ForkLift() {
     const obj = {
       CELL_ID: dataChangePosition.newCellId,
       PALLET_NO: dataChangePosition.oldPALLET_NO,
-      WAREHOUSE_CODE: selectedWarehouseCodeRef.current
+      ID: selectedWarehouseCodeRef.current
     };
     changePalletPosition(obj)
       .then(res => {
@@ -272,8 +272,8 @@ export function ForkLift() {
     getAllWarehouse()
       .then(res => {
         setWarehouseList(res.data.metadata);
-        setSelectedWarehouseCode(res.data?.metadata[0]?.WAREHOUSE_CODE);
-        selectedWarehouseCodeRef.current = res.data?.metadata[0]?.WAREHOUSE_CODE;
+        setSelectedWarehouseCode(res.data?.metadata[0]?.ID);
+        selectedWarehouseCodeRef.current = res.data?.metadata[0]?.ID;
       })
       .then(() => {
         getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
@@ -348,8 +348,8 @@ export function ForkLift() {
               <SelectContent>
                 <SelectGroup>
                   {warehouseList?.map(warehouse => (
-                    <SelectItem key={warehouse.WAREHOUSE_CODE} value={warehouse.WAREHOUSE_CODE}>
-                      {warehouse.WAREHOUSE_CODE} - {warehouse.WAREHOUSE_NAME}
+                    <SelectItem key={warehouse.ID} value={warehouse.ID}>
+                      {warehouse.ID} - {warehouse.NAME}
                     </SelectItem>
                   ))}
                 </SelectGroup>

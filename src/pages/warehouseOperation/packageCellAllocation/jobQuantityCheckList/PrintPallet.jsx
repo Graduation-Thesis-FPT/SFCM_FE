@@ -53,8 +53,8 @@ const ComponentPrint = forwardRef(({ data = {}, selectedPackage = {} }, ref) => 
           </div>
         </div>
         <div className="text-center">
-          <div className="text-24 font-bold">Thông tin pallet</div>
-          <div className="text-24 font-bold">{data?.PALLET_NO}</div>
+          <div className="text-24 font-bold">Thông tin kiện hàng</div>
+          <div className=" font-bold">{data?.ROWGUID}</div>
           <div>*****************</div>
         </div>
         <div className="flex size-[52px] flex-col text-center font-bold">
@@ -66,7 +66,7 @@ const ComponentPrint = forwardRef(({ data = {}, selectedPackage = {} }, ref) => 
         <div className="flex justify-between">
           <div className="space-y-3">
             <div>
-              Mã tàu: <span>{selectedPackage?.VOYAGEKEY} </span>
+              Mã tàu: <span>{selectedPackage?.ID} </span>
             </div>
             <div>
               Tên tàu: <span>{data?.VESSEL_NAME} </span>
@@ -74,7 +74,7 @@ const ComponentPrint = forwardRef(({ data = {}, selectedPackage = {} }, ref) => 
           </div>
           <div className="space-y-3">
             <div>
-              Chuyến nhập: <span>{data?.INBOUND_VOYAGE} </span>
+              Chuyến nhập: <span>{data?.ID} </span>
             </div>
             <div>
               Ngày tàu đến: <span>{moment(data?.ETA)?.format("DD/MM/Y HH:mm")} </span>

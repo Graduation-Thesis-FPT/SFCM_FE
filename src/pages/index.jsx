@@ -13,18 +13,14 @@ export * from "./inputData/voyageContainer";
 export * from "./inputData/voyageContainerPackage";
 //tariff
 export * from "./tariff/containerTariff";
+export * from "./tariff/packageTariff";
 
-export * from "./tariff/tariffCode";
-export * from "./tariff/standardTariff";
-export * from "./tariff/discountTariff";
-export * from "./tariff/configAttachSrv";
 //procedure
 export * from "./procedure/importOrder";
 export * from "./procedure/exportOrder";
 export * from "./procedure/cancelInvoice";
 //warehouseOperation
 export * from "./warehouseOperation/packageCellAllocation";
-export * from "./warehouseOperation/exportTally";
 export * from "./warehouseOperation/forkLift";
 //report
 export * from "./report/inExOrder";
