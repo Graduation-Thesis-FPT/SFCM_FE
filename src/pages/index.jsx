@@ -30,8 +30,8 @@ export * from "./report/revenue";
 export * from "./customer-order/order";
 export * from "./customer-order/order-tracking";
 
-//payment-confirmation
-export * from "./payment-confirmation/AllPayment";
-export * from "./payment-confirmation/CancelledPayment";
-export * from "./payment-confirmation/PaidPayment";
-export * from "./payment-confirmation/PendingPayment";
+// //payment-confirmation
+// export * from "./payment-confirmation/AllPayment";
+// export * from "./payment-confirmation/CancelledPayment";
+// export * from "./payment-confirmation/PaidPayment";
+// export * from "./payment-confirmation/PendingPayment";
