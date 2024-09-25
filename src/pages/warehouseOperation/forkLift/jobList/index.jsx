@@ -23,27 +23,28 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
         <div className="h-full overflow-hidden overflow-y-auto text-sm">
           {jobList.map(job => (
             <div
-              key={job.PALLET_NO}
+              key={job.ROWGUID}
               onClick={() => {
                 handleSelectedJob(job);
               }}
               className={cn(
-                job.PALLET_NO === selectedJob.PALLET_NO && "bg-blue-100",
+                job.ROWGUID === selectedJob.ROWGUID && "bg-blue-100",
                 "my-2 rounded-md border p-2 shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
               )}
             >
-              <div className="mb-2 text-center font-bold">{job.PALLET_NO}</div>
+              <div className="mb-2 text-center font-bold">{job.ROWGUID}</div>
 
               <div className="flex justify-between gap-x-1">
                 <div className="w-1/2 space-y-1">
+                  <div>Mã chuyến tàu: {job.voyage_ID}</div>
                   <div>Tên tàu: {job.VESSEL_NAME}</div>
-                  <div>Chuyến nhập: {job.INBOUND_VOYAGE}</div>
-                  <div>Số container: {job.CNTRNO}</div>
+                  <div>Số container: {job.CNTR_NO}</div>
                 </div>
                 <div className="flex w-1/2 flex-col items-end  space-y-1 align-bottom">
-                  <div>Số lượng: {job.ESTIMATED_CARGO_PIECE}</div>
+                  <div>Số lượng: {job.ITEMS_IN_CELL}</div>
                   <div>
-                    Kích thước: {job.PALLET_LENGTH}x{job.PALLET_WIDTH}x{job.PALLET_HEIGHT} (m)
+                    Kích thước: {job.SEPARATED_PACKAGE_LENGTH}x{job.SEPARATED_PACKAGE_WIDTH}x
+                    {job.SEPARATED_PACKAGE_HEIGHT} (m)
                   </div>
                 </div>
               </div>

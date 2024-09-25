@@ -133,7 +133,7 @@ export function DialogBillInfo({
       <DialogContent className="max-w-[80%]">
         <DialogHeader>
           <DialogTitle className="text-sm font-normal">
-            <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+            <div className="grid grid-cols-3 gap-x-8 gap-y-4">
               <div className="min-w-fit space-y-2">
                 <p className="text-16 font-semibold">Thông tin thanh toán</p>
                 <Separator />
@@ -197,8 +197,9 @@ export function DialogBillInfo({
                   </Button>
                 </div>
               </div>
-
+              <Separator className="col-span-3" />
               <span className="col-span-3">
+                <div className="mb-2 font-bold">Chi tiết đơn hàng</div>
                 <AgGrid
                   ref={gridRef}
                   rowSelection={"none"}

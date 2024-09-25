@@ -12,10 +12,6 @@ export const getAllPackageCellAllocationByVoyContPkID = async VOYAGE_CONTAINER_P
   return await axiosPrivate.get(`package-cell-allocation/${VOYAGE_CONTAINER_PACKAGE_ID}`);
 };
 
-export const getReadyToWarehouse = async () => {
-  return await axiosPrivate.get(`package-cell-allocation/ready-to-warehouse`);
-};
-
 export const insertAndUpdatePackageCellAllocation = async (
   VOYAGE_CONTAINER_PACKAGE_ID,
   listData
@@ -32,20 +28,8 @@ export const completePackageSeparate = async VOYAGE_CONTAINER_PACKAGE_ID => {
   );
 };
 
-// export const getAllContainerByVoyIdAndCusId = async (VOYAGE_ID, SHIPPER_ID) => {
-//   return await axiosPrivate.get(
-//     `import/import-container?VOYAGE_ID=${VOYAGE_ID}&SHIPPER_ID=${SHIPPER_ID}`
-//   );
-// };
+///////// fork lift
 
-// export const calculateImportContainer = async listContId => {
-//   return await axiosPrivate.post(`import/calculate`, { arrayContID: listContId });
-// };
-
-// export const saveImportOrder = async (arrayContID, paymentInfo, note) => {
-//   return await axiosPrivate.post(`import/save`, {
-//     arrayContID: arrayContID,
-//     paymentInfo: paymentInfo,
-//     note: note
-//   });
-// };
+export const getPackageReadyToWarehouse = async () => {
+  return await axiosPrivate.get(`package-cell-allocation/ready-to-warehouse`);
+};

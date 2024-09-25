@@ -1,6 +1,6 @@
-import { invoicePublishEx, saveExOrder, saveInOrder } from "@/apis/order.api";
+import { saveExportOrder } from "@/apis/export-order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { bill_info, bs_customer } from "@/components/common/aggridreact/dbColumns";
+import { bill_info } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -11,178 +11,113 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/common/ui/select";
+
 import { Separator } from "@/components/common/ui/separator";
+import { Textarea } from "@/components/common/ui/textarea";
 import { socket } from "@/config/socket";
-import { formatVnd, removeLastAsterisk } from "@/lib/utils";
+import { formatVnd } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 
 const BILL_INFO = new bill_info();
-const BS_CUSTOMER = new bs_customer();
 
 export function DialogBillInfoEx({
   open = false,
   onOpenChange,
-  packageFilter = {},
-  packageList = [],
   billInfoEx = [],
-  selectedCustomer = {},
+  customerSelected = {},
   onSaveExOrderSuccess
 }) {
-  const dispatch = useDispatch();
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const [HTTT, setHTTT] = useState("TM");
   const [isSaveExOrder, setIsSaveExOrder] = useState(false);
+  const [noteExportOrder, setNoteExportOrder] = useState("");
 
   const colDefs = [
     {
-      headerName: BILL_INFO.TRF_DESC.headerName,
-      field: BILL_INFO.TRF_DESC.field,
+      headerName: "Số House Bill",
+      field: "HOUSE_BILL",
       flex: 1
     },
     {
-      headerClass: "number-header",
-      cellClass: "text-end",
-      headerName: "Số ngày lưu kho",
-      field: BILL_INFO.QTY.field,
-      flex: 1,
-      cellRenderer: params => {
-        if (!params.value) {
-          return "";
-        }
-        return Number(params.value);
-      }
-    },
-    {
-      headerClass: "number-header",
-      cellClass: "text-end",
-      headerName: `${BILL_INFO.UNIT_RATE.headerName} (VND)`,
-      field: BILL_INFO.UNIT_RATE.field,
-      flex: 1,
-      cellRenderer: params => formatVnd(params.value).replace("VND", "")
-    },
-    {
-      headerClass: "number-header",
-      cellClass: "text-end",
-      headerName: BILL_INFO.VAT.headerName,
-      field: BILL_INFO.VAT.field,
+      headerName: "Loại hàng",
+      field: "PACKAGE_TYPE_ID",
       flex: 1
     },
     {
+      headerName: "Ngày nhập kho",
+      field: "TIME_IN",
+      flex: 1,
+      cellDataType: "date"
+    },
+    {
+      headerName: "Tổng số khối (m³)",
+      field: "CBM",
+      flex: 1,
+      headerClass: "number-header",
+      cellClass: "text-end"
+    },
+    {
+      headerName: "Chi tiết biểu cước",
+      field: "PACKAGE_TARIFF_DESCRIPTION",
+      flex: 1
+    },
+    {
+      headerName: "Đơn giá (VND)",
+      field: "UNIT_PRICE",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.VAT_PRICE.headerName} (VND)`,
-      field: BILL_INFO.VAT_PRICE.field,
-      flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
+      headerName: "VAT (%)",
+      field: "VAT_RATE",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.AMOUNT.headerName} (VND)`,
-      field: BILL_INFO.AMOUNT.field,
-      flex: 1,
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
     {
+      headerName: "Tiền thuế (VND)",
+      field: "VAT_AMOUNT",
+      flex: 1,
       headerClass: "number-header",
       cellClass: "text-end",
-      headerName: `${BILL_INFO.TAMOUNT.headerName} (VND)`,
-      field: BILL_INFO.TAMOUNT.field,
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
+    },
+    {
+      headerName: "Thành tiền (VND)",
+      field: "PRE_VAT_AMOUNT",
       flex: 1,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
+    },
+    {
+      headerName: "Tổng tiền (VND)",
+      field: "TOTAL_AMOUNT",
+      flex: 1,
+      headerClass: "number-header",
+      cellClass: "text-end",
       cellRenderer: params => formatVnd(params.value).replace("VND", "")
     }
   ];
 
   const handleSaveExOrder = () => {
     setIsSaveExOrder(true);
-    let datasTemp = billInfoEx.map(item => {
-      return {
-        TariffName: item.TRF_DESC,
-        UnitCode: "CBM",
-        UnitRate: item.UNIT_RATE,
-        Amount: item.AMOUNT,
-        Vat: item.VAT_PRICE,
-        VatRate: item.VAT,
-        QTY: item.QTY
-      };
-    });
-
-    let args = {
-      cusTaxCode: selectedCustomer.TAX_CODE,
-      cusAddr: selectedCustomer.ADDRESS,
-      cusName: selectedCustomer.CUSTOMER_NAME,
-      sum_amount: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
-      vat_amount: billInfoEx?.reduce((a, b) => a + Number(Number(b[BILL_INFO.VAT_PRICE.field])), 0),
-      total_amount: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0),
-      paymentMethod: HTTT,
-      datas: [...datasTemp]
-    };
-    invoicePublishEx(args)
+    const reqData = { ...billInfoEx, NOTE: noteExportOrder };
+    saveExportOrder(reqData)
       .then(res => {
-        if (!res.data.metadata.success) {
-          throw new Error(res.data.metadata.error);
-        }
-        return res.data.metadata;
-      })
-      .then(invoiceInfo => {
-        const reqData = packageList.map(item => {
-          return {
-            ...item,
-            EXP_DATE: packageFilter.EXP_DATE,
-            CUSTOMER_CODE: selectedCustomer.CUSTOMER_CODE,
-            DE_ORDER_NO: invoiceInfo.fkey,
-            PACKAGE_ID: item.ROWGUID
-          };
-        });
-
-        const paymentInfoHeader = {
-          INV_NO: invoiceInfo.inv,
-          ACC_CD: HTTT,
-          INV_DATE: invoiceInfo.invoiceDate,
-          AMOUNT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0),
-          VAT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0),
-          TAMOUNT: billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
-        };
-
-        const paymentInfoDtl = billInfoEx.map(item => {
-          return {
-            QTY: item.QTY,
-            UNIT_RATE: item.UNIT_RATE,
-            AMOUNT: item.AMOUNT,
-            VAT: item.VAT_PRICE,
-            VAT_RATE: item.VAT,
-            TAMOUNT: item.TAMOUNT,
-            CARGO_TYPE: item.ITEM_TYPE_CODE,
-            TRF_DESC: item.TRF_DESC
-          };
-        });
-
-        saveExOrder(reqData, paymentInfoHeader, paymentInfoDtl)
-          .then(res => {
-            socket.emit("saveExOrderSuccess");
-            toast.success(res);
-            onSaveExOrderSuccess(res.data.metadata);
-          })
-          .catch(err => {
-            toast.error(err);
-          })
-          .finally(() => {
-            setIsSaveExOrder(false);
-          });
+        socket.emit("saveExOrderSuccess");
+        toast.success(res);
+        onSaveExOrderSuccess(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
         setIsSaveExOrder(false);
       });
   };
@@ -194,28 +129,34 @@ export function DialogBillInfoEx({
     };
   }, []);
 
-  if (!selectedCustomer.CUSTOMER_NAME || !packageList.length) {
-    return null;
-  }
+  useEffect(() => {
+    setNoteExportOrder("");
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[80%]">
         <DialogHeader>
           <DialogTitle className="text-sm font-normal">
-            <div className="grid grid-cols-3 gap-x-8 gap-y-8">
+            <div className="grid grid-cols-3 gap-x-8 gap-y-4">
               <div className="space-y-2">
                 <p className="text-16 font-semibold">Thông tin thanh toán</p>
                 <Separator />
-                <div className="bold2nd grid grid-cols-2 gap-y-2">
-                  <p>{removeLastAsterisk(BS_CUSTOMER.TAX_CODE.headerName)}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.TAX_CODE.field]}</p>
-                  <p>{removeLastAsterisk(BS_CUSTOMER.CUSTOMER_NAME.headerName)}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.CUSTOMER_NAME.field]}</p>
-                  <p>{removeLastAsterisk(BS_CUSTOMER.ADDRESS.headerName)}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.ADDRESS.field]}</p>
-                  <p>{removeLastAsterisk(BS_CUSTOMER.EMAIL.headerName)}</p>
-                  <p>{selectedCustomer[BS_CUSTOMER.EMAIL.field]}</p>
+                <div className="bold2nd grid grid-cols-3 gap-x-2 gap-y-2">
+                  <p>Mã số thuế</p>
+                  <p className="col-span-2">{customerSelected?.TAX_CODE}</p>
+                  <p>Tên chủ hàng</p>
+                  <p className="col-span-2">{customerSelected.FULLNAME}</p>
+                  <p>Địa chỉ</p>
+                  <p className="col-span-2">{customerSelected?.ADDRESS}</p>
+                  <p>Email</p>
+                  <p className="col-span-2">{customerSelected?.EMAIL}</p>
+                  <p>Ngày lấy hàng</p>
+                  <p className="col-span-2">
+                    {billInfoEx?.PICKUP_DATE
+                      ? moment(billInfoEx?.PICKUP_DATE).format("DD/MM/YYYY")
+                      : ""}
+                  </p>
                 </div>
               </div>
 
@@ -224,47 +165,25 @@ export function DialogBillInfoEx({
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
                   <p>{BILL_INFO.AMOUNT.headerName}</p>
-                  <p className="text-end">
-                    {formatVnd(
-                      billInfoEx.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0)
-                    )}
-                  </p>
+                  <p className="text-end">{formatVnd(billInfoEx?.PRE_VAT_AMOUNT)}</p>
                   <p>{BILL_INFO.VAT_PRICE.headerName}</p>
-                  <p className="text-end">
-                    {formatVnd(
-                      billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0)
-                    )}
-                  </p>
+                  <p className="text-end">{formatVnd(billInfoEx?.VAT_AMOUNT)}</p>
                   <p>{BILL_INFO.TAMOUNT.headerName}</p>
-                  <p className="text-end">
-                    {formatVnd(
-                      billInfoEx?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
-                    )}
-                  </p>
+                  <p className="text-end">{formatVnd(billInfoEx?.TOTAL_AMOUNT)}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="text-16 font-semibold">Hình thức thanh toán</div>
+                <div className="text-16 font-semibold">Ghi chú</div>
                 <Separator />
-                <Select
-                  id="HTTT"
-                  value={HTTT}
-                  onValueChange={value => {
-                    setHTTT(value);
-                  }}
-                >
-                  <SelectTrigger className="min-w-full">
-                    <SelectValue placeholder="Chọn hình thức thanh toán" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="TM">Tiền mặt</SelectItem>
-                      <SelectItem value="CK">Chuyển khoản</SelectItem>
-                      <SelectItem value="TM/CK">Tiền mặt và chuyển khoản</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <div>
+                  <Textarea
+                    id="NOTE"
+                    placeholder="Nhập ghi chú"
+                    value={noteExportOrder}
+                    onChange={e => setNoteExportOrder(e.target.value)}
+                  />
+                </div>
 
                 <div className="flex justify-center">
                   <Button onClick={handleSaveExOrder} variant="blue" disabled={isSaveExOrder}>
@@ -273,13 +192,14 @@ export function DialogBillInfoEx({
                   </Button>
                 </div>
               </div>
-
+              <Separator className="col-span-3 " />
               <div className="col-span-3">
+                <div className="mb-2 font-bold">Chi tiết đơn hàng</div>
                 <AgGrid
                   ref={gridRef}
                   rowSelection={"none"}
-                  className="h-[200px]"
-                  rowData={billInfoEx || []}
+                  className="h-[300px]"
+                  rowData={billInfoEx?.EXPORT_ORDER_DETAILS || []}
                   colDefs={colDefs}
                   pagination={false}
                 />

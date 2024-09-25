@@ -19,7 +19,7 @@ const VOYAGE = new voyage();
 export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
   const toast = useCustomToast();
   const gridRef = useRef(null);
-  const { data: voyageList, loading } = useFetchData({
+  const { data: voyageList } = useFetchData({
     service: getAllVoyageWithCustomerCanImportOrder,
     dependencies: [open],
     shouldFetch: !!open

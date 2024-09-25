@@ -297,7 +297,7 @@ export function ImportTally() {
                       </div>
                       <div className="flex space-x-2">
                         <span>Trạng thái:</span>
-                        {item?.IS_SEPARATED ? (
+                        {item?.IS_SEPARATED && item?.STATUS !== "IN_WAREHOUSE" ? (
                           <div className="flex flex-col items-center justify-center font-bold text-green-600">
                             <Badge className="rounded-sm border-transparent bg-green-100 text-green-600 hover:bg-green-200">
                               Hoàn thành tách hàng

@@ -48,7 +48,7 @@ export const CellList = forwardRef(
                                 )}
                               >
                                 <div className="flex justify-between border-b px-2 py-1 font-bold">
-                                  {cell.STATUS ? (
+                                  {cell.IS_FILLED ? (
                                     <div className="text-green-600">Chứa hàng</div>
                                   ) : (
                                     <div className="text-gray-500">Trống</div>
@@ -57,14 +57,16 @@ export const CellList = forwardRef(
                                     {block}-{tier}-{cell.SLOT_ORDERED}
                                   </div>
                                 </div>
-                                {cell.STATUS ? (
+                                {cell.IS_FILLED ? (
                                   <div className="p-2 text-center">
-                                    <div>Số lượng: {cell.ESTIMATED_CARGO_PIECE}</div>
-                                    <div className="font-bold">{cell.PALLET_NO}</div>
+                                    <div>Số lượng: {cell.ITEMS_IN_CELL}</div>
+                                    <div className="font-bold">
+                                      {cell.packageCellAllocation_ROWGUID}
+                                    </div>
                                   </div>
                                 ) : (
                                   <div className="p-2 text-center opacity-40">
-                                    <div>Kích thước (m)</div>
+                                    <div>Kích thước (d-r-c)</div>
                                     <div className="font-bold">
                                       {cell.CELL_LENGTH}x{cell.CELL_WIDTH}x{cell.CELL_HEIGHT}
                                     </div>
