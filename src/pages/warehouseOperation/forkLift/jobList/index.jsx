@@ -58,8 +58,8 @@ const ExportItem = ({ job, selectedJob, handleSelectedJob }) => {
           "rounded-md border shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
         )}
       >
-        <div className="border-b p-1 text-center font-bold">
-          <div> {job.ROWGUID}</div>
+        <div className="border-b border-gray-400 p-1 text-center font-bold">
+          Mã lệnh: {job.ORDER_ID}
         </div>
 
         <div className="flex justify-between gap-x-1 p-2">
@@ -72,7 +72,9 @@ const ExportItem = ({ job, selectedJob, handleSelectedJob }) => {
             <div>Số số khối: {job.CBM}</div>
           </div>
         </div>
-        <div className="border-t p-1 text-center font-bold">Mã lệnh: {job.ORDER_ID}</div>
+        <div className="border-t border-gray-400 p-1 text-center text-10 font-bold">
+          {job.ROWGUID}
+        </div>
       </div>
     </div>
   );
@@ -81,29 +83,38 @@ const ExportItem = ({ job, selectedJob, handleSelectedJob }) => {
 const ImportItem = ({ job, selectedJob, handleSelectedJob }) => {
   return (
     <div
+      className="flex flex-col p-2"
       key={job.ROWGUID}
       onClick={() => {
         handleSelectedJob(job);
       }}
-      className={cn(
-        job.ROWGUID === selectedJob.ROWGUID && "bg-blue-100",
-        "my-2 rounded-md border p-2 shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
-      )}
     >
-      <div className="mb-2 text-center font-bold">{job.ROWGUID}</div>
-
-      <div className="flex justify-between gap-x-1">
-        <div className="w-1/2 space-y-1">
-          <div>Mã chuyến tàu: {job.voyage_ID}</div>
-          <div>Tên tàu: {job.VESSEL_NAME}</div>
-          <div>Số container: {job.CNTR_NO}</div>
+      <div
+        className={cn(
+          "bg-green-50",
+          job.ROWGUID === selectedJob.ROWGUID && "bg-green-200",
+          "rounded-md border shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
+        )}
+      >
+        <div className="border-b border-gray-400 p-1 text-center  font-bold">
+          Mã lệnh: {job.ORDER_ID}
         </div>
-        <div className="flex w-1/2 flex-col items-end  space-y-1 align-bottom">
-          <div>Số lượng: {job.ITEMS_IN_CELL}</div>
-          <div>
-            Kích thước: {job.SEPARATED_PACKAGE_LENGTH}x{job.SEPARATED_PACKAGE_WIDTH}x
-            {job.SEPARATED_PACKAGE_HEIGHT} (m)
+        <div className="flex justify-between gap-x-1 p-2">
+          <div className="w-1/2 space-y-1">
+            <div>Mã chuyến tàu: {job.voyage_ID}</div>
+            <div>Tên tàu: {job.VESSEL_NAME}</div>
+            <div>Số container: {job.CNTR_NO}</div>
           </div>
+          <div className="flex w-1/2 flex-col items-end  space-y-1 align-bottom">
+            <div>Số lượng: {job.ITEMS_IN_CELL}</div>
+            <div>
+              Kích thước: {job.SEPARATED_PACKAGE_LENGTH}x{job.SEPARATED_PACKAGE_WIDTH}x
+              {job.SEPARATED_PACKAGE_HEIGHT} (m)
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-gray-400 p-1 text-center text-10 font-bold">
+          {job.ROWGUID}
         </div>
       </div>
     </div>
