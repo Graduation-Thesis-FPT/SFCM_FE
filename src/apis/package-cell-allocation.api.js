@@ -33,3 +33,7 @@ export const completePackageSeparate = async VOYAGE_CONTAINER_PACKAGE_ID => {
 export const getPackageReadyToWarehouse = async () => {
   return await axiosPrivate.get(`package-cell-allocation/ready-to-warehouse`);
 };
+
+export const getPackageReadyToExport = async () => {
+  return await axiosPrivate.get(`package-cell-allocation/ready-to-export`);
+};

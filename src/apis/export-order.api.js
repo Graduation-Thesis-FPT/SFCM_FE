@@ -5,12 +5,16 @@ export const getPackageCanExportByConsigneeId = async id => {
   return await axiosPrivate.get(`export-order/package-can-export?CONSIGNEE_ID=${id}`);
 };
 
-export const getExportOrder = async id => {
+export const getExportOrderById = async id => {
   return await axiosPrivate.get(`export-order/${id}`);
 };
 
 export const getExportOrders = async (consigneeId, from, to) => {
   return await axiosPrivate.get(`export-order?consigneeId=${consigneeId}&from=${from}$to=${to}`);
+};
+
+export const getExportOrderForDocById = async ID => {
+  return await axiosPrivate.get(`export-order/doc?ID=${ID}`);
 };
 
 export const calculateExportOrder = async (voyageContainerPackageIds, pickupDate) => {

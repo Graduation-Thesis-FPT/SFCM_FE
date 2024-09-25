@@ -1,15 +1,27 @@
-import {
-  changePalletPosition,
-  exportPallet,
-  getAllPalletPositionByWarehouseCode,
-  getListJobImport,
-  getListJobExport,
-  inputPalletToCell
-} from "@/apis/pallet.api";
+import { exportPallet } from "@/apis/pallet.api";
 import { getAllWarehouse } from "@/apis/warehouse.api";
+import {
+  changePackageAllocatedPosition,
+  getAllPackagePositionByWarehouseCode,
+  placePackageAllocatedIntoCell,
+  suggestCellByWarehouseCode
+} from "@/apis/cell.api";
+import {
+  getPackageReadyToExport,
+  getPackageReadyToWarehouse
+} from "@/apis/package-cell-allocation.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Section } from "@/components/common/section";
 import { Label } from "@/components/common/ui/label";
+import { useEffect, useRef, useState } from "react";
+import { CellList } from "./cellList";
+import { JobList } from "./jobList";
+import { Button } from "@/components/common/ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { cn } from "@/lib/utils";
+import { socket } from "@/config/socket";
+import { Download, Upload } from "lucide-react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -23,11 +35,6 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
-import useFetchData from "@/hooks/useRefetchData";
-import { useEffect, useRef, useState } from "react";
-import { CellList } from "./cellList";
-import { JobList } from "./jobList";
-import { Button } from "@/components/common/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -37,18 +44,6 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-import { useDispatch, useSelector } from "react-redux";
-import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { cn } from "@/lib/utils";
-import { socket } from "@/config/socket";
-import {
-  changePackageAllocatedPosition,
-  getAllPackagePositionByWarehouseCode,
-  placePackageAllocatedIntoCell,
-  suggestCellByWarehouseCode
-} from "@/apis/cell.api";
-import { Download, Upload } from "lucide-react";
-import { getPackageReadyToWarehouse } from "@/apis/package-cell-allocation.api";
 
 const scrollToElement = cellID => {
   const element = document.getElementById(cellID);
@@ -86,15 +81,19 @@ export function ForkLift() {
   const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
 
   const handleSelectedWarehouse = newWarehouseCode => {
+    dispacth(setGlobalLoading(true));
     setSelectedJob({});
     setSelectedWarehouseCode(newWarehouseCode);
     selectedWarehouseCodeRef.current = newWarehouseCode;
-    getAllPalletPositionByWarehouseCode(newWarehouseCode)
+    getAllPackagePositionByWarehouseCode(newWarehouseCode)
       .then(res => {
         setWarehouseData(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
       });
   };
 
@@ -130,16 +129,17 @@ export function ForkLift() {
       return;
     }
     setSelectedJob(job);
+    //Xuất kho
     if (selectedJobStatusRef.current === "S") {
-      if (job.ID === selectedWarehouseCodeRef.current) {
+      if (job.WAREHOUSE_ID === selectedWarehouseCodeRef.current) {
         setTimeout(() => {
           scrollToElement(job.CELL_ID);
         }, 100);
         return;
       }
-      setSelectedWarehouseCode(job.ID);
-      selectedWarehouseCodeRef.current = job.ID;
-      getAllPalletPositionByWarehouseCode(job.ID)
+      setSelectedWarehouseCode(job.WAREHOUSE_ID);
+      selectedWarehouseCodeRef.current = job.WAREHOUSE_ID;
+      getAllPackagePositionByWarehouseCode(job.WAREHOUSE_ID)
         .then(res => {
           setWarehouseData(res.data.metadata);
         })
@@ -200,7 +200,7 @@ export function ForkLift() {
   };
 
   const handleExportPallet = () => {
-    if (!selectedJob.PALLET_NO) {
+    if (!selectedJob.ROWGUID) {
       toast.warning("Vui lòng chọn pallet cần xuất");
       return;
     }
@@ -253,6 +253,7 @@ export function ForkLift() {
   };
 
   const handleSelectedJobStatus = value => {
+    dispacth(setGlobalLoading(true));
     setSelectedCell({});
     setSelectedJob({});
     setSelectedJobStatus(value);
@@ -300,17 +301,23 @@ export function ForkLift() {
         .catch(err => {
           setJobList([]);
           toast.error(err);
+        })
+        .finally(() => {
+          dispacth(setGlobalLoading(false));
         });
       return;
     }
     //get export job
-    getListJobExport()
+    getPackageReadyToExport()
       .then(res => {
         setJobList(res.data.metadata);
       })
       .catch(err => {
         setJobList([]);
         toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
       });
   };
 

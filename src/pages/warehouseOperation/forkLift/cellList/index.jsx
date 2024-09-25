@@ -44,7 +44,7 @@ export const CellList = forwardRef(
                                 key={index}
                                 className={cn(
                                   cell.ROWGUID === selectedCell.ROWGUID && "bg-blue-100",
-                                  "mx-2 my-1 min-w-44 rounded-md border shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
+                                  "m-2 min-w-44 rounded-md border shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
                                 )}
                               >
                                 <div className="flex justify-between border-b px-2 py-1 font-bold">
