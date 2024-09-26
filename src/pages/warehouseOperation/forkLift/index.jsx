@@ -7,6 +7,7 @@ import {
   suggestCellByWarehouseCode
 } from "@/apis/cell.api";
 import {
+  exportPackageAllocatedFromCell,
   getPackageReadyToExport,
   getPackageReadyToWarehouse
 } from "@/apis/package-cell-allocation.api";
@@ -173,7 +174,7 @@ export function ForkLift() {
       return;
     }
     if (!selectedJob.ROWGUID) {
-      toast.warning("Vui lòng chọn pallet cần chuyển hàng");
+      toast.warning("Vui lòng chọn kiện hàng cần chuyển");
       return;
     }
     dispacth(setGlobalLoading(true));
@@ -201,16 +202,17 @@ export function ForkLift() {
 
   const handleExportPallet = () => {
     if (!selectedJob.ROWGUID) {
-      toast.warning("Vui lòng chọn pallet cần xuất");
+      toast.warning("Vui lòng chọn kiện hàng cần xuất");
       return;
     }
     dispacth(setGlobalLoading(true));
     const dataReq = {
-      PALLET_NO: selectedJob.PALLET_NO,
       CELL_ID: selectedJob.CELL_ID,
-      ID: selectedWarehouseCodeRef.current
+      WAREHOUSE_ID: selectedWarehouseCodeRef.current,
+      VOYAGE_CONTAINER_PACKAGE_ID: selectedJob.VOYAGE_CONTAINER_PACKAGE_ID,
+      PACKAGE_CELL_ID: selectedJob.ROWGUID
     };
-    exportPallet(dataReq)
+    exportPackageAllocatedFromCell(dataReq)
       .then(res => {
         socket.emit("inputPalletToCellSuccess");
         toast.success(res);
@@ -432,9 +434,9 @@ export function ForkLift() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bạn có muốn di chuyển pallet ?</DialogTitle>
+            <DialogTitle>Bạn có muốn di chuyển kiện hàng?</DialogTitle>
             <DialogDescription>
-              Chuyển Pallet:
+              Chuyển kiện hàng:
               <span className="font-bold">
                 {" "}
                 {dataChangePosition.old_packageCellAllocation_ROWGUID}{" "}

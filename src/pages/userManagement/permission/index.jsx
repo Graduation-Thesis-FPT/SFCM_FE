@@ -50,7 +50,6 @@ export function Permission() {
             variant="link"
             size="xs"
             onClick={() => {
-              console.log(params.data);
               setDetailData(params.data);
             }}
             className="text-xs text-blue-700 hover:text-blue-700/80"

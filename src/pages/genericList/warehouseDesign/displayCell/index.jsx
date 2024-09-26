@@ -12,7 +12,7 @@ function groupBy(array, key) {
 
 function transformData(arr) {
   // Group by ID
-  const groupedByBlock = groupBy(arr, "ID");
+  const groupedByBlock = groupBy(arr, "BLOCK_ID");
 
   return Object.keys(groupedByBlock).map(blockCode => {
     // Group each block's items by TIER_ORDERED
@@ -62,10 +62,10 @@ export function DisplayCell({ filterData }) {
                 <div className="mb-2 text-center text-xl font-bold text-blue-600">
                   Dãy {cell.ID}
                 </div>
-                <span className="flex h-[50vh] flex-row gap-x-3 overflow-y-auto overflow-x-hidden rounded-lg border p-[14px] text-sm font-medium">
+                <span className="flex h-[60vh] flex-row gap-x-3 overflow-y-auto overflow-x-hidden rounded-lg border p-[14px] text-sm font-medium">
                   {cell.TIERS.map(tier => (
                     <span key={tier.TIER_ORDERED}>
-                      <div className="mb-3 text-center">Tầng {tier.TIER_ORDERED}</div>
+                      <div className="mb-3 text-center font-bold">Tầng {tier.TIER_ORDERED}</div>
                       <span className="flex flex-col gap-3">
                         {tier.CELLS.sort((a, b) => a.SLOT_ORDERED - b.SLOT_ORDERED).map(cell => (
                           <div key={cell.SLOT_ORDERED}>

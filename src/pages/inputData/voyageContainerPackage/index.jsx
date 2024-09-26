@@ -268,7 +268,7 @@ export function VoyageContainerPackage() {
         return { ...item, VOYAGE_CONTAINER_ID: containerSelected.ID };
       });
     }
-    createAndUpdateVoyContPackage(insertAndUpdateData)
+    createAndUpdateVoyContPackage(insertAndUpdateData, containerSelected.ID)
       .then(res => {
         toast.success(res);
         getRowData();
@@ -336,20 +336,6 @@ export function VoyageContainerPackage() {
     setRowData(finalRowData);
   };
 
-  const handleCopyToClipboard = field => {
-    try {
-      if (field === VOYAGE_CONTAINER.CNTR_NO.field && containerSelected.CNTR_NO) {
-        navigator.clipboard.writeText(containerSelected?.CNTR_NO);
-        toast.success("Copy số container thành công");
-      } else {
-        toast.warning("Không có dữ liệu để copy");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Copy thất bại. Vui lòng thử lại");
-    }
-  };
-
   return (
     <Section>
       <Section.Header className="space-y-4">
@@ -388,9 +374,9 @@ export function VoyageContainerPackage() {
                 defaultValue={
                   item.field === "STATUS"
                     ? containerSelected[item.field] === "PENDING"
-                      ? "Chưa làm lệnh"
+                      ? "Chưa nhập"
                       : containerSelected[item.field] === "IMPORTED"
-                        ? "Đã làm lệnh"
+                        ? "Đã nhập"
                         : ""
                     : containerSelected[item.field] ?? ""
                 }

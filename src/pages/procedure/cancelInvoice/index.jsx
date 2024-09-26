@@ -1,8 +1,9 @@
 import { getAllCustomer } from "@/apis/customer.api";
-import { getCancelInvoice } from "@/apis/order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
-import { deliver_order } from "@/components/common/aggridreact/dbColumns";
+import {
+  DateTimeByTextRender,
+  StatusOrderPaymentRender
+} from "@/components/common/aggridreact/cellRender";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -12,7 +13,6 @@ import { SelectSearch } from "@/components/common/select-search";
 import { Button } from "@/components/common/ui/button";
 import { Label } from "@/components/common/ui/label";
 import useFetchData from "@/hooks/useRefetchData";
-import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { addDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
@@ -27,25 +27,23 @@ import {
   SelectValue
 } from "@/components/common/ui/select";
 import { Input } from "@/components/common/ui/input";
-import { Badge } from "@/components/common/ui/badge";
+import { loadCancelOrder } from "@/apis/cancel-order.api";
 
-const DELIVER_ORDER = new deliver_order();
 const initFilter = {
   from: addDays(new Date(), -30),
   to: addDays(new Date(), 30),
-  ORDER_TYPE: "all",
-  DE_ORDER_NO: "",
-  CUSTOMER_CODE: "",
-  PAYMENT_STATUS: "all"
+  TYPE: "NK",
+  ORDER_ID: "",
+  CUSTOMER_ID: ""
 };
 
 export function CancelInvoice() {
-  const { data: customerList, loading: loadingCustomerList } = useFetchData({
-    service: getAllCustomer
-  });
   const toast = useCustomToast();
   const gridRef = useRef(null);
   const dispatch = useDispatch();
+  const { data: customerList, loading: loadingCustomerList } = useFetchData({
+    service: getAllCustomer
+  });
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -58,59 +56,35 @@ export function CancelInvoice() {
       }
     },
     {
-      headerName: DELIVER_ORDER.DE_ORDER_NO.headerName,
-      field: DELIVER_ORDER.DE_ORDER_NO.field,
+      headerName: "Mã lệnh",
+      field: "order_ID",
       flex: 1,
       filter: true
     },
     {
-      headerName: DELIVER_ORDER.INV_ID.headerName,
-      field: DELIVER_ORDER.INV_ID.field,
-      flex: 1,
-      filter: true
-    },
-
-    {
-      headerName: "Tên khách hàng",
-      field: "CUSTOMER_NAME",
+      headerName: "Mã khách hàng",
+      field: "cus_ID",
       flex: 1,
       filter: true
     },
     {
-      headerName: "Ngày làm lệnh",
-      field: "INV_DATE",
+      headerName: "Ghi chú",
+      field: "order_NOTE",
       flex: 1,
-      cellRenderer: DateTimeByTextRender
+      filter: true
     },
     {
-      cellClass: "text-end",
-      headerClass: "number-header",
-      headerName: "Tổng tiền (VND)",
-      field: "TAMOUNT",
+      headerName: "Trạng thái lệnh",
+      field: "order_STATUS",
       flex: 1,
-      cellRenderer: params => {
-        return formatVnd(params.value).replace("VND", "");
-      }
+      filter: true
     },
     {
       headerName: "Trạng thái thanh toán",
-      field: "PAYMENT_STATUS",
+      field: "pay_STATUS",
       minWidth: 180,
       maxWidth: 180,
-      cellRenderer: params => {
-        if (params.value === "Y") {
-          return (
-            <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
-              Đã thanh toán
-            </Badge>
-          );
-        }
-        return (
-          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
-            Đã hủy
-          </Badge>
-        );
-      }
+      cellRenderer: StatusOrderPaymentRender
     },
     {
       field: "#",
@@ -119,7 +93,7 @@ export function CancelInvoice() {
       flex: 0.5,
       cellStyle: { alignContent: "center", textAlign: "center" },
       cellRenderer: params => {
-        if (params.data.PAYMENT_STATUS === "C") {
+        if (params.data.pay_STATUS === "PAID" || params.data.pay_STATUS === "CANCELLED") {
           return null;
         }
         return (
@@ -128,7 +102,7 @@ export function CancelInvoice() {
             size="xs"
             onClick={() => {
               setOpenDialog(true);
-              setCancelInvoiceData(params.data);
+              setCancelOrderSelected(params.data);
             }}
             className="text-xs text-red-700 hover:text-red-700/80"
           >
@@ -144,10 +118,10 @@ export function CancelInvoice() {
 
   const [filter, setFilter] = useState(initFilter);
 
-  const [cancelInvoiceData, setCancelInvoiceData] = useState({});
+  const [cancelOrderSelected, setCancelOrderSelected] = useState({});
 
   const getRowData = () => {
-    getCancelInvoice(filter)
+    loadCancelOrder(filter)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -158,7 +132,7 @@ export function CancelInvoice() {
 
   useEffect(() => {
     dispatch(setGlobalLoading(true));
-    getCancelInvoice(filter)
+    loadCancelOrder(filter)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -172,64 +146,44 @@ export function CancelInvoice() {
 
   return (
     <Section>
-      <Section.Header className="grid grid-cols-5 items-end gap-3">
-        <div>
-          <Label htmlFor="DE_ORDER_NO">Mã đơn hàng</Label>
+      <Section.Header className="grid grid-cols-6 items-end gap-3">
+        <div className="col-span-1">
+          <Label htmlFor="ORDER_ID">Mã đơn hàng</Label>
           <Input
             className="hover:cursor-pointer"
-            id="DE_ORDER_NO"
+            id="ORDER_ID"
             placeholder="Nhập mã đơn hàng"
             onBlur={e => {
-              setFilter({ ...filter, DE_ORDER_NO: e.target.value });
+              setFilter({ ...filter, ORDER_ID: e.target.value });
             }}
           />
         </div>
-        <div>
-          <Label htmlFor="CUSTOMER_CODE">Khách hàng</Label>
+
+        <div className="col-span-2">
+          <Label htmlFor="CUSTOMER_ID">Khách hàng</Label>
           <SelectSearch
-            id="CUSTOMER_CODE"
+            id="CUSTOMER_ID"
             className="w-full"
             labelSelect={loadingCustomerList ? "Đang tải dữ liệu..." : "Chọn khách hàng"}
-            value={filter.CUSTOMER_CODE}
+            value={filter.CUSTOMER_ID}
             data={customerList?.map(item => {
               return {
-                value: item.CUSTOMER_CODE,
-                label: `${item.CUSTOMER_CODE + " - " + item.CUSTOMER_NAME}`
+                value: item.ID,
+                label: `${item.ID + " - " + item.FULLNAME}`
               };
             })}
             onSelect={value => {
-              setFilter({ ...filter, CUSTOMER_CODE: value });
+              setFilter({ ...filter, CUSTOMER_ID: value });
             }}
           />
         </div>
-        <div>
-          <Label htmlFor="PAYMENT_STATUS">Trạng thái lệnh *</Label>
+        <div className="col-span-1">
+          <Label htmlFor="TYPE">Loại lệnh *</Label>
           <Select
-            id="PAYMENT_STATUS"
-            value={filter.PAYMENT_STATUS}
+            id="TYPE"
+            value={filter.TYPE}
             onValueChange={value => {
-              setFilter({ ...filter, PAYMENT_STATUS: value });
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn trạng thái lệnh" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="Y">Đã thanh toán</SelectItem>
-                <SelectItem value="C">Đã hủy</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="ORDER_TYPE">Loại lệnh *</Label>
-          <Select
-            id="ORDER_TYPE"
-            value={filter.ORDER_TYPE}
-            onValueChange={value => {
-              setFilter({ ...filter, ORDER_TYPE: value });
+              setFilter({ ...filter, TYPE: value });
             }}
           >
             <SelectTrigger>
@@ -237,14 +191,13 @@ export function CancelInvoice() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="all">Tất cả</SelectItem>
-                <SelectItem value="NK">Lệnh xuất</SelectItem>
-                <SelectItem value="XK">Lệnh nhập</SelectItem>
+                <SelectItem value="NK">Lệnh nhập</SelectItem>
+                <SelectItem value="XK">Lệnh xuất</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
-        <div>
+        <div className="col-span-2">
           <Label htmlFor="from-to">Ngày làm lệnh *</Label>
           <DatePickerWithRangeInForm
             className="w-full"
@@ -270,18 +223,18 @@ export function CancelInvoice() {
             colDefs={colDefs}
             onGridReady={() => {
               gridRef.current.api.showLoadingOverlay();
-              getRowData();
             }}
           />
         </Section.Table>
       </Section.Content>
       <DialogCancelInvoice
+        filter={filter}
         getRowData={getRowData}
         open={openDialog}
         onOpenChange={() => {
           setOpenDialog(false);
         }}
-        cancelInvoiceData={cancelInvoiceData}
+        cancelOrderSelected={cancelOrderSelected}
       />
     </Section>
   );
