@@ -378,13 +378,13 @@ export function VoyContainerStatusRender(params) {
       case "IMPORTED":
         return (
           <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
-            Đã làm lệnh
+            Đã nhập
           </Badge>
         );
       case "PENDING":
         return (
           <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
-            Chưa làm lệnh
+            Chưa nhập
           </Badge>
         );
 

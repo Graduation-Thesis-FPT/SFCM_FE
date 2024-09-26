@@ -199,7 +199,7 @@ export function DialogBillInfoEx({
                   ref={gridRef}
                   rowSelection={"none"}
                   className="h-[300px]"
-                  rowData={billInfoEx?.EXPORT_ORDER_DETAILS || []}
+                  rowData={billInfoEx?.ORDER_DETAILS || []}
                   colDefs={colDefs}
                   pagination={false}
                 />

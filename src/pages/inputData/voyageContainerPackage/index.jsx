@@ -374,9 +374,9 @@ export function VoyageContainerPackage() {
                 defaultValue={
                   item.field === "STATUS"
                     ? containerSelected[item.field] === "PENDING"
-                      ? "Chưa làm lệnh"
+                      ? "Chưa nhập"
                       : containerSelected[item.field] === "IMPORTED"
-                        ? "Đã làm lệnh"
+                        ? "Đã nhập"
                         : ""
                     : containerSelected[item.field] ?? ""
                 }
