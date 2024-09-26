@@ -268,7 +268,7 @@ export function VoyageContainerPackage() {
         return { ...item, VOYAGE_CONTAINER_ID: containerSelected.ID };
       });
     }
-    createAndUpdateVoyContPackage(insertAndUpdateData)
+    createAndUpdateVoyContPackage(insertAndUpdateData, containerSelected.ID)
       .then(res => {
         toast.success(res);
         getRowData();

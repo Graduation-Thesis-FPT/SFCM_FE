@@ -6,8 +6,11 @@ export const getVoyageContainerPackage = async VOYAGE_CONTAINER_ID => {
   );
 };
 
-export const createAndUpdateVoyContPackage = async data => {
-  return await axiosPrivate.post(`voyage-container-package`, data);
+export const createAndUpdateVoyContPackage = async (data, VOYAGE_CONTAINER_ID) => {
+  return await axiosPrivate.post(
+    `voyage-container-package?VOYAGE_CONTAINER_ID=${VOYAGE_CONTAINER_ID}`,
+    data
+  );
 };
 
 export const deleteVoyContPackage = async arr => {
