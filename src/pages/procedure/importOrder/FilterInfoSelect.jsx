@@ -37,24 +37,6 @@ export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
       }
     },
     {
-      headerName: VOYAGE.ID.headerName,
-      field: VOYAGE.ID.field,
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: VOYAGE.VESSEL_NAME.headerName,
-      field: VOYAGE.VESSEL_NAME.field,
-      flex: 1,
-      filter: true
-    },
-    {
-      headerName: VOYAGE.ETA.headerName,
-      field: VOYAGE.ETA.field,
-      flex: 1,
-      cellRenderer: DateTimeByTextRender
-    },
-    {
       headerName: "Mã đại lý",
       field: "SHIPPER_ID",
       flex: 1,
@@ -75,12 +57,31 @@ export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
       cellClass: "text-end"
     },
     {
-      headerName: "Số cont chưa nhập",
-      field: "num_of_cont_can_import",
+      headerName: VOYAGE.ID.headerName,
+      field: VOYAGE.ID.field,
       flex: 1,
-      headerClass: "number-header",
-      cellClass: "text-end"
+      filter: true
+    },
+    {
+      headerName: VOYAGE.VESSEL_NAME.headerName,
+      field: VOYAGE.VESSEL_NAME.field,
+      flex: 1,
+      filter: true
+    },
+    {
+      headerName: VOYAGE.ETA.headerName,
+      field: VOYAGE.ETA.field,
+      flex: 1,
+      cellRenderer: DateTimeByTextRender
     }
+
+    // {
+    //   headerName: "Số cont chưa nhập",
+    //   field: "num_of_cont_can_import",
+    //   flex: 1,
+    //   headerClass: "number-header",
+    //   cellClass: "text-end"
+    // }
   ];
   const handleSelectRow = () => {
     let rowSelected = gridRef.current.api.getSelectedRows();
@@ -97,7 +98,9 @@ export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
         <SheetHeader>
           <SheetTitle>
             <span className="mx-10 my-3 flex items-end justify-between">
-              <div className="text-lg font-bold">Danh sách các chuyến tàu có thể làm lệnh nhập</div>
+              <div className="text-lg font-bold">
+                Danh sách các đại lý có thể làm lệnh nhập trên từng chuyến tàu
+              </div>
               <Button onClick={handleSelectRow} variant="blue">
                 Chọn
               </Button>

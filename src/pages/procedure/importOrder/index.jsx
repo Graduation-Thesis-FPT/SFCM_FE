@@ -14,6 +14,8 @@ import { calculateImportContainer, getAllContainerByVoyIdAndCusId } from "@/apis
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { VoyContainerStatusRender } from "@/components/common/aggridreact/cellRender";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogContainerDetail } from "./DialogContainerDetail";
 
 const VOYAGE = new voyage();
 
@@ -61,6 +63,9 @@ export function ImportOrder() {
   const [openDialogSaveBillSuccess, setOpenDialogSaveBillSuccess] = useState(false);
   const [dataBillAfterSave, setDataBillAfterSave] = useState({});
 
+  const [selectedContainer, setSelectedContainer] = useState({});
+  const [openDialogContainerDetail, setOpenDialogContainerDetail] = useState(false);
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -102,6 +107,27 @@ export function ImportOrder() {
         textAlign: "center"
       },
       cellRenderer: VoyContainerStatusRender
+    },
+    {
+      headerName: "",
+      field: "#",
+      cellStyle: { alignContent: "center", textAlign: "center" },
+      flex: 0.5,
+      cellRenderer: params => {
+        return (
+          <Button
+            variant="link"
+            size="xs"
+            onClick={() => {
+              setSelectedContainer(params.data);
+              setOpenDialogContainerDetail(true);
+            }}
+            className="text-xs text-blue-700 hover:text-blue-700/80"
+          >
+            Chi tiết
+          </Button>
+        );
+      }
     }
   ];
 
@@ -211,6 +237,13 @@ export function ImportOrder() {
           />
         </Section.Table>
       </Section.Content>
+      <DialogContainerDetail
+        open={openDialogContainerDetail}
+        onOpenChange={() => {
+          setOpenDialogContainerDetail(false);
+        }}
+        selectedContainer={selectedContainer}
+      />
       <FilterInfoSelect
         open={openFilterInfoSelect}
         onOpenChange={() => {
