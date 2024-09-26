@@ -59,10 +59,6 @@ export function DialogCancelInvoice({
       paymentID: cancelOrderSelected.pay_ID,
       Note: data.CANCEL_REMARK
     };
-    console.log(
-      "🚀 ~ onSubmit ~ dataReq.cancelOrderSelected.pay_ID:",
-      dataReq.cancelOrderSelected.pay_ID
-    );
     cancelOrder(dataReq)
       .then(res => {
         getRowData();
