@@ -1,15 +1,27 @@
-import {
-  changePalletPosition,
-  exportPallet,
-  getAllPalletPositionByWarehouseCode,
-  getListJobImport,
-  getListJobExport,
-  inputPalletToCell
-} from "@/apis/pallet.api";
+import { exportPallet } from "@/apis/pallet.api";
 import { getAllWarehouse } from "@/apis/warehouse.api";
+import {
+  changePackageAllocatedPosition,
+  getAllPackagePositionByWarehouseCode,
+  placePackageAllocatedIntoCell,
+  suggestCellByWarehouseCode
+} from "@/apis/cell.api";
+import {
+  getPackageReadyToExport,
+  getPackageReadyToWarehouse
+} from "@/apis/package-cell-allocation.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Section } from "@/components/common/section";
 import { Label } from "@/components/common/ui/label";
+import { useEffect, useRef, useState } from "react";
+import { CellList } from "./cellList";
+import { JobList } from "./jobList";
+import { Button } from "@/components/common/ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { cn } from "@/lib/utils";
+import { socket } from "@/config/socket";
+import { Download, Upload } from "lucide-react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -23,11 +35,6 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
-import useFetchData from "@/hooks/useRefetchData";
-import { useEffect, useRef, useState } from "react";
-import { CellList } from "./cellList";
-import { JobList } from "./jobList";
-import { Button } from "@/components/common/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -37,12 +44,6 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-import { useDispatch, useSelector } from "react-redux";
-import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import { cn } from "@/lib/utils";
-import { socket } from "@/config/socket";
-import { suggestCellByWarehouseCode } from "@/apis/cell.api";
-import { Download, Upload } from "lucide-react";
 
 const scrollToElement = cellID => {
   const element = document.getElementById(cellID);
@@ -80,15 +81,19 @@ export function ForkLift() {
   const [selectedWarehouseCode, setSelectedWarehouseCode] = useState("");
 
   const handleSelectedWarehouse = newWarehouseCode => {
+    dispacth(setGlobalLoading(true));
     setSelectedJob({});
     setSelectedWarehouseCode(newWarehouseCode);
     selectedWarehouseCodeRef.current = newWarehouseCode;
-    getAllPalletPositionByWarehouseCode(newWarehouseCode)
+    getAllPackagePositionByWarehouseCode(newWarehouseCode)
       .then(res => {
         setWarehouseData(res.data.metadata);
       })
       .catch(err => {
         toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
       });
   };
 
@@ -96,14 +101,15 @@ export function ForkLift() {
     if (selectedJobStatusRef.current === "S") {
       return;
     }
-    if (!cell.PALLET_NO && selectedCell.PALLET_NO) {
+
+    if (!cell.IS_FILLED && selectedCell.IS_FILLED) {
       setDataChangePosition({
-        oldPALLET_NO: selectedCell.PALLET_NO,
-        newPALLET_NO: cell.PALLET_NO,
-        oldCell: `${selectedCell.BLOCK_CODE}-${selectedCell.TIER_ORDERED}-${selectedCell.SLOT_ORDERED}`,
-        newCell: `${cell.BLOCK_CODE}-${cell.TIER_ORDERED}-${cell.SLOT_ORDERED}`,
-        oldCellId: selectedCell.ROWGUID,
-        newCellId: cell.ROWGUID
+        old_packageCellAllocation_ROWGUID: selectedCell.packageCellAllocation_ROWGUID,
+        new_packageCellAllocation_ROWGUID: cell.packageCellAllocation_ROWGUID,
+        oldCell: `${selectedCell.BLOCK_ID}-${selectedCell.TIER_ORDERED}-${selectedCell.SLOT_ORDERED}`,
+        newCell: `${cell.BLOCK_ID}-${cell.TIER_ORDERED}-${cell.SLOT_ORDERED}`,
+        old_Cell_ROWGUID: selectedCell.ROWGUID,
+        new_Cell_ROWGUID: cell.ROWGUID
       });
       setOpenDialogChangePosition(true);
       return;
@@ -118,21 +124,22 @@ export function ForkLift() {
   };
 
   const handleSelectedJob = job => {
-    if (job.PALLET_NO === selectedJob.PALLET_NO) {
+    if (job.ROWGUID === selectedJob.ROWGUID) {
       setSelectedJob({});
       return;
     }
     setSelectedJob(job);
+    //Xuất kho
     if (selectedJobStatusRef.current === "S") {
-      if (job.ID === selectedWarehouseCodeRef.current) {
+      if (job.WAREHOUSE_ID === selectedWarehouseCodeRef.current) {
         setTimeout(() => {
           scrollToElement(job.CELL_ID);
         }, 100);
         return;
       }
-      setSelectedWarehouseCode(job.ID);
-      selectedWarehouseCodeRef.current = job.ID;
-      getAllPalletPositionByWarehouseCode(job.ID)
+      setSelectedWarehouseCode(job.WAREHOUSE_ID);
+      selectedWarehouseCodeRef.current = job.WAREHOUSE_ID;
+      getAllPackagePositionByWarehouseCode(job.WAREHOUSE_ID)
         .then(res => {
           setWarehouseData(res.data.metadata);
         })
@@ -165,17 +172,17 @@ export function ForkLift() {
       toast.warning("Vui lòng chọn ô cần chuyển hàng");
       return;
     }
-    if (!selectedJob.PALLET_NO) {
+    if (!selectedJob.ROWGUID) {
       toast.warning("Vui lòng chọn pallet cần chuyển hàng");
       return;
     }
     dispacth(setGlobalLoading(true));
     const obj = {
       CELL_ID: selectedCell.ROWGUID,
-      PALLET_NO: selectedJob.PALLET_NO,
-      ID: selectedWarehouseCodeRef.current
+      PACKAGE_ROWGUID: selectedJob.ROWGUID,
+      WAREHOUSE_ID: selectedWarehouseCodeRef.current
     };
-    inputPalletToCell(obj)
+    placePackageAllocatedIntoCell(obj)
       .then(res => {
         toast.success(res);
         setSelectedCell({});
@@ -193,7 +200,7 @@ export function ForkLift() {
   };
 
   const handleExportPallet = () => {
-    if (!selectedJob.PALLET_NO) {
+    if (!selectedJob.ROWGUID) {
       toast.warning("Vui lòng chọn pallet cần xuất");
       return;
     }
@@ -224,11 +231,11 @@ export function ForkLift() {
     setOpenDialogChangePosition(false);
     dispacth(setGlobalLoading(true));
     const obj = {
-      CELL_ID: dataChangePosition.newCellId,
-      PALLET_NO: dataChangePosition.oldPALLET_NO,
-      ID: selectedWarehouseCodeRef.current
+      CELL_ID: dataChangePosition.new_Cell_ROWGUID,
+      PACKAGE_ROWGUID: dataChangePosition.old_packageCellAllocation_ROWGUID,
+      WAREHOUSE_ID: selectedWarehouseCodeRef.current
     };
-    changePalletPosition(obj)
+    changePackageAllocatedPosition(obj)
       .then(res => {
         socket.emit("inputPalletToCellSuccess");
         toast.success(res);
@@ -246,6 +253,7 @@ export function ForkLift() {
   };
 
   const handleSelectedJobStatus = value => {
+    dispacth(setGlobalLoading(true));
     setSelectedCell({});
     setSelectedJob({});
     setSelectedJobStatus(value);
@@ -254,7 +262,7 @@ export function ForkLift() {
   };
 
   const getAllCellByWarehouseCode = warehouseCode => {
-    getAllPalletPositionByWarehouseCode(warehouseCode)
+    getAllPackagePositionByWarehouseCode(warehouseCode)
       .then(res => {
         setWarehouseData(res.data.metadata);
       })
@@ -286,24 +294,30 @@ export function ForkLift() {
   const getJob = status => {
     //get import job
     if (status === "I") {
-      getListJobImport(status)
+      getPackageReadyToWarehouse()
         .then(res => {
           setJobList(res.data.metadata);
         })
         .catch(err => {
           setJobList([]);
           toast.error(err);
+        })
+        .finally(() => {
+          dispacth(setGlobalLoading(false));
         });
       return;
     }
     //get export job
-    getListJobExport()
+    getPackageReadyToExport()
       .then(res => {
         setJobList(res.data.metadata);
       })
       .catch(err => {
         setJobList([]);
         toast.error(err);
+      })
+      .finally(() => {
+        dispacth(setGlobalLoading(false));
       });
   };
 
@@ -420,8 +434,12 @@ export function ForkLift() {
           <DialogHeader>
             <DialogTitle>Bạn có muốn di chuyển pallet ?</DialogTitle>
             <DialogDescription>
-              Chuyển Pallet:<span className="font-bold"> {dataChangePosition.oldPALLET_NO} </span>từ
-              ô<span className="font-bold"> {dataChangePosition.oldCell} </span>sang ô
+              Chuyển Pallet:
+              <span className="font-bold">
+                {" "}
+                {dataChangePosition.old_packageCellAllocation_ROWGUID}{" "}
+              </span>
+              từ ô<span className="font-bold"> {dataChangePosition.oldCell} </span>sang ô
               <span className="font-bold"> {dataChangePosition.newCell}</span>
             </DialogDescription>
           </DialogHeader>

@@ -1,3 +1,4 @@
+import { getAllCustomerCanExportOrders } from "@/apis/export-order.api";
 import { getAllVoyage } from "@/apis/voyage.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
@@ -15,10 +16,13 @@ import useFetchData from "@/hooks/useRefetchData";
 import React, { useRef } from "react";
 
 export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
-  const { data: vesselList } = useFetchData({ service: getAllVoyage });
+  const { data: customerCanExportOrdersList } = useFetchData({
+    service: getAllCustomerCanExportOrders,
+    dependencies: [open],
+    shouldFetch: !!open
+  });
   const toast = useCustomToast();
   const gridRef = useRef(null);
-  const DT_VESSEL_VISIT = new dt_vessel_visit();
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -31,51 +35,60 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
       }
     },
     {
-      headerName: DT_VESSEL_VISIT.VESSEL_NAME.headerName,
-      field: DT_VESSEL_VISIT.VESSEL_NAME.field,
+      headerName: "Mã chủ hàng",
+      field: "CONSIGNEE_ID",
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.INBOUND_VOYAGE.headerName,
-      field: DT_VESSEL_VISIT.INBOUND_VOYAGE.field,
+      headerName: "Tên chủ hàng",
+      field: "FULLNAME",
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.ETA.headerName,
-      field: DT_VESSEL_VISIT.ETA.field,
-      flex: 1,
-      cellRenderer: DateTimeByTextRender
-    },
-    {
-      headerName: DT_VESSEL_VISIT.CallSign.headerName,
-      field: DT_VESSEL_VISIT.CallSign.field,
+      headerName: "Mã số thuế",
+      field: "TAX_CODE",
       flex: 1,
       filter: true
     },
     {
-      headerName: DT_VESSEL_VISIT.IMO.headerName,
-      field: DT_VESSEL_VISIT.IMO.field,
+      headerName: "Email",
+      field: "EMAIL",
       flex: 1,
       filter: true
+    },
+    {
+      headerName: "Địa chỉ",
+      field: "ADDRESS",
+      flex: 1,
+      filter: true
+    },
+    {
+      headerName: "Số kiện hàng",
+      field: "num_of_pk_can_export",
+      flex: 0.5,
+      headerClass: "number-header",
+      cellClass: "text-end"
     }
   ];
+
   const handleSelectRow = () => {
     let rowSelected = gridRef.current.api.getSelectedRows();
     if (rowSelected.length === 0) {
-      toast.warning("Vui lòng chọn tàu chuyến");
+      toast.warning("Vui lòng chọn khách hàng");
       return;
     }
     onSelectVesselInfo(rowSelected[0]);
   };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="top" hiddenIconClose={true} className="p-0">
         <SheetHeader>
           <SheetTitle>
             <span className="mx-10 my-3 flex items-end justify-between">
-              <div className="text-lg font-bold">Chọn chuyến tàu </div>
+              <div className="text-lg font-bold">Danh sách các khách hàng có thể làm lệnh xuất</div>
               <Button onClick={handleSelectRow} variant="blue">
                 Chọn
               </Button>
@@ -87,9 +100,12 @@ export function VesselInfoSelect({ onOpenChange, open, onSelectVesselInfo }) {
           ref={gridRef}
           rowSelection={"single"}
           className="h-[50vh]"
-          rowData={vesselList || []}
+          rowData={customerCanExportOrdersList}
           colDefs={colDefs}
           onRowDoubleClicked={handleSelectRow}
+          onGridReady={() => {
+            gridRef.current.api.showLoadingOverlay();
+          }}
         />
       </SheetContent>
     </Sheet>
