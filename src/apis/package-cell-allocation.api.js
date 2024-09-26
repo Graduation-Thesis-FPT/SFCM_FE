@@ -37,3 +37,7 @@ export const getPackageReadyToWarehouse = async () => {
 export const getPackageReadyToExport = async () => {
   return await axiosPrivate.get(`package-cell-allocation/ready-to-export`);
 };
+
+export const exportPackageAllocatedFromCell = async data => {
+  return await axiosPrivate.patch(`package-cell-allocation/export-package`, data);
+};

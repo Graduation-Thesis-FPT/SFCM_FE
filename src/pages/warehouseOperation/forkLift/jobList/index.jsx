@@ -24,12 +24,14 @@ export function JobList({ jobList = [], onSelectedJob, selectedJob = {}, selecte
           {jobList.map(job =>
             selectedJobStatus === "I" ? (
               <ImportItem
+                key={job.ROWGUID}
                 job={job}
                 selectedJob={selectedJob}
                 handleSelectedJob={handleSelectedJob}
               />
             ) : (
               <ExportItem
+                key={job.ROWGUID}
                 job={job}
                 selectedJob={selectedJob}
                 handleSelectedJob={handleSelectedJob}
