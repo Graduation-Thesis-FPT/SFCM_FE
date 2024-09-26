@@ -310,6 +310,34 @@ export function StatusOfGoodsByTextRender(params) {
   return params.value ? "Có hàng" : "Rỗng";
 }
 
+export const StatusOrderPaymentRender = params => {
+  const getStatusBadge = () => {
+    switch (params.value) {
+      case "PENDING":
+        return (
+          <Badge className="rounded-sm border-transparent bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+            Chờ thanh toán
+          </Badge>
+        );
+      case "PAID":
+        return (
+          <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+            Đã thanh toán
+          </Badge>
+        );
+      case "CANCELLED":
+        return (
+          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
+            Đã hủy
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
+  return <div>{getStatusBadge()}</div>;
+};
+
 export function VoyContPackageStatusRender(params) {
   const getStatusBadge = () => {
     switch (params.value) {

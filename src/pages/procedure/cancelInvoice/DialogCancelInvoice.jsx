@@ -17,15 +17,15 @@ import {
   FormMessage
 } from "@/components/common/ui/form";
 import { Textarea } from "@/components/common/ui/textarea";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { cancelInvoice } from "@/apis/order.api";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { useState } from "react";
+import { cancelOrder } from "@/apis/cancel-order.api";
 const FormSchema = z.object({
-  reason: z
+  CANCEL_REMARK: z
     .string()
     .trim()
     .min(1, {
@@ -37,8 +37,9 @@ const FormSchema = z.object({
 });
 export function DialogCancelInvoice({
   open = false,
-  cancelInvoiceData = {},
+  cancelOrderSelected = {},
   onOpenChange,
+  filter = {},
   getRowData
 }) {
   const toast = useCustomToast();
@@ -46,19 +47,23 @@ export function DialogCancelInvoice({
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      reason: ""
+      CANCEL_REMARK: ""
     }
   });
 
   function onSubmit(data) {
     setLoading(true);
     const dataReq = {
-      fkey: cancelInvoiceData.DE_ORDER_NO,
-      reason: data.reason,
-      cancelDate: new Date(),
-      invNo: cancelInvoiceData.INV_ID
+      TYPE: filter.TYPE,
+      orderID: cancelOrderSelected.order_ID,
+      paymentID: cancelOrderSelected.pay_ID,
+      Note: data.CANCEL_REMARK
     };
-    cancelInvoice(dataReq)
+    console.log(
+      "🚀 ~ onSubmit ~ dataReq.cancelOrderSelected.pay_ID:",
+      dataReq.cancelOrderSelected.pay_ID
+    );
+    cancelOrder(dataReq)
       .then(res => {
         getRowData();
         toast.success(res);
@@ -79,7 +84,7 @@ export function DialogCancelInvoice({
         <DialogHeader>
           <DialogTitle>
             <span className="font-normal">Bạn có muốn hủy lệnh:</span>{" "}
-            {cancelInvoiceData.DE_ORDER_NO}
+            {cancelOrderSelected.order_ID}
           </DialogTitle>
           <DialogDescription className="hidden" />
         </DialogHeader>
@@ -87,7 +92,7 @@ export function DialogCancelInvoice({
           <form id="cancel-invoice" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="reason"
+              name="CANCEL_REMARK"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -107,7 +112,7 @@ export function DialogCancelInvoice({
             Quay lại
           </Button>
 
-          <Button form="cancel-invoice" type="submit" variant="red" onClick={() => {}}>
+          <Button form="cancel-invoice" type="submit" variant="red" disabled={loading}>
             {loading && <Loader2 className="mr-2 animate-spin" />}
             Hủy lệnh
           </Button>
