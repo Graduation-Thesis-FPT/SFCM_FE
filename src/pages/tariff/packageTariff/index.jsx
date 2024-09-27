@@ -167,7 +167,7 @@ export function PackageTariff() {
       return { ...item, PACKAGE_TARIFF_ID: packageTariffSelected.ID };
     });
     dispatch(setGlobalLoading(true));
-    createAndUpdatePackageTariffDetail(insertAndUpdateData)
+    createAndUpdatePackageTariffDetail(insertAndUpdateData, packageTariffSelected.ID)
       .then(res => {
         toast.success(res);
         getStandardTariffByFilter(packageTariffSelected.ID);

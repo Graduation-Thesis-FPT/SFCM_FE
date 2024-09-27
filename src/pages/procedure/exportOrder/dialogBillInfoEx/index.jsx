@@ -110,7 +110,7 @@ export function DialogBillInfoEx({
     const reqData = { ...billInfoEx, NOTE: noteExportOrder };
     saveExportOrder(reqData)
       .then(res => {
-        socket.emit("saveExOrderSuccess");
+        socket.emit("send-save-order");
         toast.success(res);
         onSaveExOrderSuccess(res.data.metadata);
       })

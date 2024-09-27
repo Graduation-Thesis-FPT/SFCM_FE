@@ -254,7 +254,7 @@ export function CancelledPayment() {
       />
       <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
       <Section>
-        <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
+        <Section.Header title="Danh sách đơn hàng đã hủy" />
         <Section.Content>
           <Form {...form}>
             <form

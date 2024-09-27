@@ -34,6 +34,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 import { z } from "zod";
+import { socket } from "@/config/socket";
 
 const formSchema = z.object({
   status: z.enum(["PENDING", "PAID", "CANCELLED", "all"]).optional(),
@@ -244,6 +245,39 @@ export function PendingPayment() {
         dispatch(setGlobalLoading(false));
       });
   };
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("get-save-order", message => {
+        const { status, orderType, searchQuery, orderId } = form.getValues();
+        //exclude empty value from { status, orderType, searchBy, orderId } = form.getValues()
+        const filteredValues = Object.fromEntries(
+          Object.entries({ status, orderType, searchQuery, orderId }).filter(
+            ([_, v]) => v != null && v !== "" && v !== "all"
+          )
+        );
+
+        getPayment(filteredValues)
+          .then(res => {
+            setRowData(res.data.metadata);
+          })
+          .catch(err => {
+            toast.error(err);
+          });
+      });
+      return () => {
+        socket.off("get-save-order");
+      };
+    }
+  }, []);
+
   return (
     <>
       <EditPayment
@@ -252,6 +286,7 @@ export function PendingPayment() {
         paymentInfo={paymentInfo}
         revalidatePayments={revalidatePayments}
       />
+
       <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
       <Section>
         <Section.Header title="Danh sách đơn hàng chờ thanh toán" />

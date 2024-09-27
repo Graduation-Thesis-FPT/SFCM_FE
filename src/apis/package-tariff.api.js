@@ -16,6 +16,6 @@ export const getPackageTariffDetailByFK = async PACKAGE_TARIFF_ID => {
   return await axiosPrivate.get(`package-tariff-detail?PACKAGE_TARIFF_ID=${PACKAGE_TARIFF_ID}`);
 };
 
-export const createAndUpdatePackageTariffDetail = async data => {
-  return await axiosPrivate.post(`package-tariff-detail`, data);
+export const createAndUpdatePackageTariffDetail = async (data, packageTariffId) => {
+  return await axiosPrivate.post(`package-tariff-detail?packageTariffId=${packageTariffId}`, data);
 };

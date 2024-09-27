@@ -6,7 +6,7 @@ import { Label } from "@/components/common/ui/label";
 import { cn, removeLastAsterisk } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { JobQuantityCheckList } from "./jobQuantityCheckList";
 import { BtnAddRow } from "@/components/common/aggridreact/tableTools/BtnAddRow";
@@ -36,6 +36,7 @@ import {
 import { ContainerImportSelect } from "./ContainerImportSelect";
 import { VoyContPackageStatusRender } from "@/components/common/aggridreact/cellRender";
 import { Badge } from "@/components/common/ui/badge";
+import { socket } from "@/config/socket";
 
 const VOYAGE = new voyage();
 const VOYAGE_CONTAINER = new voyage_container();
@@ -76,7 +77,7 @@ export function ImportTally() {
 
   const handleAddNewJobQuantityCheck = () => {
     if (!calculateEstimatedCargoPiece()) {
-      return toast.warning("Đã kiểm đếm hết số lượng hàng");
+      return toast.warning("Đã tách hàng hết số lượng hàng");
     }
 
     let newRow = {
@@ -161,7 +162,7 @@ export function ImportTally() {
     }
 
     if (calculateEstimatedCargoPiece() < 0) {
-      return toast.warning("Số lượng hàng kiểm đếm không chính xác. Vui lòng kiểm tra lại!");
+      return toast.warning("Số lượng hàng tách không chính xác. Vui lòng kiểm tra lại!");
     }
 
     dispatch(setGlobalLoading(true));
@@ -181,20 +182,21 @@ export function ImportTally() {
 
   const handleCompleteJobQuantityCheck = () => {
     if (isCompleteJobQuantityCheck()) {
-      return toast.warning("Đã xác nhận hoàn thành kiểm đếm");
+      return toast.warning("Đã xác nhận hoàn thành tách hàng");
     }
 
     if (jobQuantityCheckList.filter(item => item.status).length > 0) {
-      return toast.warning("Vui lòng lưu dữ liệu trước khi hoàn thành kiểm đếm");
+      return toast.warning("Vui lòng lưu dữ liệu trước khi xác nhận hoàn thành tách hàng");
     }
 
     if (calculateEstimatedCargoPiece()) {
-      return toast.warning("Vui lòng kiểm đếm hết số lượng hàng");
+      return toast.warning("Vui lòng tách hết số lượng hàng");
     }
 
     dispatch(setGlobalLoading(true));
     completePackageSeparate(selectedPackage.ID)
       .then(res => {
+        socket.emit("send-package-cell-allocation");
         toast.success(res);
         getPackageCellAllocation(selectedPackage.ID);
         getImportTallyContainerInfo(containerSelected.VOYAGE_CONTAINER_ID);
@@ -228,6 +230,13 @@ export function ImportTally() {
         toast.error(err);
       });
   };
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <Section>
@@ -371,7 +380,7 @@ export function ImportTally() {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Xác nhận hoàn thành kiểm đếm</p>
+                              <p>Xác nhận hoàn thành tách hàng</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

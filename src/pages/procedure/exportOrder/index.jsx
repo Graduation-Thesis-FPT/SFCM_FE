@@ -6,7 +6,7 @@ import { Section } from "@/components/common/section";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
 import moment from "moment";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VesselInfoSelect } from "./VesselInfoSelect";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
@@ -23,6 +23,7 @@ import {
 import { getAllPackageType } from "@/apis/package-type.api";
 import useFetchData from "@/hooks/useRefetchData";
 import { DatePicker } from "@/components/common/date-picker";
+import { socket } from "@/config/socket";
 
 const VOYAGE_CONTAINER_PACKAGE = new voyage_container_package();
 

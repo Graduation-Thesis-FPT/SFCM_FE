@@ -1,4 +1,3 @@
-import { exportPallet } from "@/apis/pallet.api";
 import { getAllWarehouse } from "@/apis/warehouse.api";
 import {
   changePackageAllocatedPosition,
@@ -333,20 +332,23 @@ export function ForkLift() {
 
   useEffect(() => {
     if (socket) {
-      socket.on("receiveCompleteJobQuantityCheck", message => {
+      socket.on("get-package-cell-allocation", message => {
         getJob(selectedJobStatusRef.current);
       });
+
+      socket.on("get-package-export", message => {
+        getJob(selectedJobStatusRef.current);
+      });
+
       socket.on("receiveInputPalletToCellSuccess", message => {
         getJob(selectedJobStatusRef.current);
         getAllCellByWarehouseCode(selectedWarehouseCodeRef.current);
       });
-      socket.on("receiveSaveExOrderSuccess", message => {
-        getJob(selectedJobStatusRef.current);
-      });
+
       return () => {
-        socket.off("receiveCompleteJobQuantityCheck");
+        socket.off("get-package-cell-allocation");
+        socket.off("get-package-export");
         socket.off("receiveInputPalletToCellSuccess");
-        socket.off("receiveSaveExOrderSuccess");
       };
     }
   }, []);

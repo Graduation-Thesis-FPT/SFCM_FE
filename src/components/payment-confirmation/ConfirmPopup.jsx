@@ -11,9 +11,10 @@ import {
 import { useToggle } from "@/hooks/useToggle";
 import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useCustomToast } from "../common/custom-toast";
+import { socket } from "@/config/socket";
 
 export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePayments }) {
   const [open, setOpen] = useToggle();
@@ -24,6 +25,7 @@ export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePaym
     dispatch(setGlobalLoading(true));
     updatePaymentStatus({ paymentInfo })
       .then(res => {
+        socket.emit("send-package-export");
         dispatch(setGlobalLoading(false));
         revalidatePayments();
         toast.success(res);
@@ -35,6 +37,13 @@ export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePaym
         toast.error(err);
       });
   };
+
+  useEffect(() => {
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <>
@@ -61,20 +70,20 @@ export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePaym
         >
           <DialogHeader>
             <DialogTitle className="text-blue-600">Xác nhận thanh toán</DialogTitle>
-            <DialogDescription className="text-black">
+            <div className="text-sm text-black">
               <p>
-                Bạn xác nhận khách hàng{" "}
-                <strong>{paymentInfo?.ORDER?.USER?.FULLNAME ?? "N/A"}</strong>
+                Bạn xác nhận khách hàng <b>{paymentInfo?.ORDER?.USER?.FULLNAME ?? "N/A"}</b>
               </p>
               <p>
                 đã thanh toán số tiền là{" "}
-                <strong>{formatVnd(paymentInfo?.PAYMENT?.TOTAL_AMOUNT ?? 1)} </strong>
+                <b>{formatVnd(paymentInfo?.PAYMENT?.TOTAL_AMOUNT ?? 1)} </b>
               </p>
 
               <p>
-                cho lệnh có mã <strong>{paymentInfo?.ORDER?.ID ?? "N/A"}</strong>
+                cho lệnh có mã <b>{paymentInfo?.ORDER?.ID ?? "N/A"}</b>
               </p>
-            </DialogDescription>
+            </div>
+            <DialogDescription className="hidden" />
           </DialogHeader>
           <DialogFooter>
             <Button

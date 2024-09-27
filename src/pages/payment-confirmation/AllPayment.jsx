@@ -254,7 +254,7 @@ export function AllPayment() {
       />
       <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
       <Section>
-        <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
+        <Section.Header title="Danh sách tất đơn hàng" />
         <Section.Content>
           <Form {...form}>
             <form
