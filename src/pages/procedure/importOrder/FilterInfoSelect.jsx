@@ -73,15 +73,14 @@ export function FilterInfoSelect({ onOpenChange, open, onSelectedFilterInfo }) {
       field: VOYAGE.ETA.field,
       flex: 1,
       cellRenderer: DateTimeByTextRender
+    },
+    {
+      headerName: "Số cont chưa nhập",
+      field: "num_of_cont_can_import",
+      flex: 1,
+      headerClass: "number-header",
+      cellClass: "text-end"
     }
-
-    // {
-    //   headerName: "Số cont chưa nhập",
-    //   field: "num_of_cont_can_import",
-    //   flex: 1,
-    //   headerClass: "number-header",
-    //   cellClass: "text-end"
-    // }
   ];
   const handleSelectRow = () => {
     let rowSelected = gridRef.current.api.getSelectedRows();

@@ -22,3 +22,7 @@ export const saveImportOrder = async (arrayContID, paymentInfo, note) => {
     note: note
   });
 };
+
+export const getImportOrderForDocById = async ID => {
+  return await axiosPrivate.get(`import/doc?ID=${ID}`);
+};
