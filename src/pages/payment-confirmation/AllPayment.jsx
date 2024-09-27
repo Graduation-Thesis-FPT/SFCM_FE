@@ -47,7 +47,9 @@ export function AllPayment() {
   const toast = useCustomToast();
   const paymentRef = useRef(null);
   const [openSheet, setOpen] = useToggle(false);
+  const [openPrint, setOpenPrint] = useToggle(false);
   const [paymentInfo, setPaymentInfo] = useState({});
+  const onBeforeGetContentResolve = useRef();
   const PAYMENT_CONFIRMATION = new payment_confirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -58,7 +60,11 @@ export function AllPayment() {
       orderId: ""
     }
   });
-  const { data: payments, loading } = useFetchData({ service: getPayment });
+  const {
+    data: payments,
+    loading,
+    revalidate: revalidatePayments
+  } = useFetchData({ service: getPayment });
   const [rowData, setRowData] = useSetData(payments);
   const dispatch = useDispatch();
 
@@ -85,8 +91,9 @@ export function AllPayment() {
               size={16}
               className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
+                console.log("aa", paymentInfo);
                 setPaymentInfo(params.data);
-                handlePrintInvoice();
+                setOpenPrint(true);
               }}
             />
             <p className="flex-1">{params.data.PAYMENT.ID}</p>
@@ -208,6 +215,13 @@ export function AllPayment() {
     }
   });
 
+  useEffect(() => {
+    if (openPrint) {
+      handlePrintInvoice();
+      setOpenPrint(false);
+    }
+  }, [openPrint, handlePrintInvoice]);
+
   const onSubmit = values => {
     dispatch(setGlobalLoading(true));
     const { status, orderType, searchQuery, orderId } = form.getValues();
@@ -231,8 +245,8 @@ export function AllPayment() {
   };
   return (
     <>
-      <EditPayment open={openSheet} setOpen={setOpen} paymentInfo={paymentInfo} />
-      <InvoiceTemplate ref={paymentRef} paymentInfo={paymentInfo} />
+      <EditPayment open={openSheet} setOpen={setOpen} paymentInfo={paymentInfo} revalidatePayments={revalidatePayments}/>
+      <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
       <Section>
         <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
         <Section.Content>

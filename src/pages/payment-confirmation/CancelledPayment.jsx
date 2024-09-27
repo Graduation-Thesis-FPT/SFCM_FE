@@ -29,7 +29,7 @@ import { useToggle } from "@/hooks/useToggle";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightToLine, Printer, Search } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
@@ -45,10 +45,11 @@ const formSchema = z.object({
 export function CancelledPayment() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const paymentRef = useRef();
-  const [payment, setPayment] = useToggle();
-  const [open, setOpen] = useToggle();
+  const paymentRef = useRef(null);
+  const [openSheet, setOpen] = useToggle(false);
+  const [openPrint, setOpenPrint] = useToggle(false);
   const [paymentInfo, setPaymentInfo] = useState({});
+  const onBeforeGetContentResolve = useRef();
   const PAYMENT_CONFIRMATION = new payment_confirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -59,10 +60,11 @@ export function CancelledPayment() {
       orderId: ""
     }
   });
-  const { data: payments, loading } = useFetchData({
-    service: getPayment,
-    params: { status: "CANCELLED" }
-  });
+  const {
+    data: payments,
+    loading,
+    revalidate: revalidatePayments
+  } = useFetchData({ service: getPayment, params: { status: "CANCELLED" } });
   const [rowData, setRowData] = useSetData(payments);
   const dispatch = useDispatch();
 
@@ -89,8 +91,9 @@ export function CancelledPayment() {
               size={16}
               className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
-                setPayment(params.data);
-                handlePrintInvoice();
+                console.log("aa", paymentInfo);
+                setPaymentInfo(params.data);
+                setOpenPrint(true);
               }}
             />
             <p className="flex-1">{params.data.PAYMENT.ID}</p>
@@ -212,6 +215,13 @@ export function CancelledPayment() {
     }
   });
 
+  useEffect(() => {
+    if (openPrint) {
+      handlePrintInvoice();
+      setOpenPrint(false);
+    }
+  }, [openPrint, handlePrintInvoice]);
+
   const onSubmit = values => {
     dispatch(setGlobalLoading(true));
     const { status, orderType, searchQuery, orderId } = form.getValues();
@@ -235,8 +245,13 @@ export function CancelledPayment() {
   };
   return (
     <>
-      <EditPayment open={open} setOpen={setOpen} paymentInfo={paymentInfo} />
-      <InvoiceTemplate ref={paymentRef} paymentInfo={payment} />
+      <EditPayment
+        open={openSheet}
+        setOpen={setOpen}
+        paymentInfo={paymentInfo}
+        revalidatePayments={revalidatePayments}
+      />
+      <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
       <Section>
         <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
         <Section.Content>

@@ -15,7 +15,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useCustomToast } from "../common/custom-toast";
 
-export default function ConfirmPopup({ paymentInfo, setSheetOpen }) {
+export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePayments }) {
   const [open, setOpen] = useToggle();
   const dispatch = useDispatch();
   const toast = useCustomToast();
@@ -25,6 +25,7 @@ export default function ConfirmPopup({ paymentInfo, setSheetOpen }) {
     updatePaymentStatus({ paymentInfo })
       .then(res => {
         dispatch(setGlobalLoading(false));
+        revalidatePayments();
         toast.success(res);
         setOpen(false);
         setSheetOpen(false);

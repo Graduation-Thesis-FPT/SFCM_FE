@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import ConfirmPopup from "./ConfirmPopup";
 import { formatVnd } from "@/lib/utils";
 
-export function EditPayment({ paymentInfo, open, setOpen }) {
+export function EditPayment({ paymentInfo, open, setOpen, revalidatePayments }) {
   const form = useForm({
     resolver: zodResolver()
   });
@@ -155,7 +155,7 @@ export function EditPayment({ paymentInfo, open, setOpen }) {
             Đóng
           </Button>
           {paymentInfo?.PAYMENT?.STATUS === "PENDING" && (
-            <ConfirmPopup paymentInfo={paymentInfo} setSheetOpen={setOpen} />
+            <ConfirmPopup paymentInfo={paymentInfo} setSheetOpen={setOpen} revalidatePayments={revalidatePayments}/>
           )}
         </CustomSheet.Footer>
       </div>
