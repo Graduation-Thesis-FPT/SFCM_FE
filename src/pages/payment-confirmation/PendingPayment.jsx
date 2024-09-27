@@ -79,27 +79,12 @@ export function PendingPayment() {
         return Number(params.node.id) + 1;
       }
     },
+
     {
-      headerName: PAYMENT_CONFIRMATION.PAYMENT.ID.headerName,
-      field: PAYMENT_CONFIRMATION.PAYMENT.ID.field,
+      headerName: PAYMENT_CONFIRMATION.ORDER.ID.headerName,
+      field: PAYMENT_CONFIRMATION.ORDER.ID.field,
       flex: 0.75,
-      filter: true,
-      cellRenderer: params => {
-        return (
-          <div className="flex items-center gap-2">
-            <Printer
-              size={16}
-              className="mr-1 flex-none cursor-pointer text-blue-600"
-              onClick={() => {
-                console.log("aa", paymentInfo);
-                setPaymentInfo(params.data);
-                setOpenPrint(true);
-              }}
-            />
-            <p className="flex-1">{params.data.PAYMENT.ID}</p>
-          </div>
-        );
-      }
+      filter: true
     },
     {
       headerName: PAYMENT_CONFIRMATION.ORDER.USER.FULLNAME.headerName,
@@ -138,10 +123,26 @@ export function PendingPayment() {
     },
 
     {
-      headerName: PAYMENT_CONFIRMATION.ORDER.ID.headerName,
-      field: PAYMENT_CONFIRMATION.ORDER.ID.field,
+      headerName: PAYMENT_CONFIRMATION.PAYMENT.ID.headerName,
+      field: PAYMENT_CONFIRMATION.PAYMENT.ID.field,
       flex: 0.75,
-      filter: true
+      filter: true,
+      cellRenderer: params => {
+        return (
+          <div className="flex items-center gap-2">
+            <Printer
+              size={16}
+              className="mr-1 flex-none cursor-pointer text-blue-600"
+              onClick={() => {
+                console.log("aa", paymentInfo);
+                setPaymentInfo(params.data);
+                setOpenPrint(true);
+              }}
+            />
+            <p className="flex-1">{params.data.PAYMENT.ID}</p>
+          </div>
+        );
+      }
     },
 
     {
