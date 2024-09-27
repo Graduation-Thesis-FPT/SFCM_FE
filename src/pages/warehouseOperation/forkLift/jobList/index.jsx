@@ -63,15 +63,22 @@ const ExportItem = ({ job, selectedJob, handleSelectedJob }) => {
         <div className="border-b border-gray-400 p-1 text-center font-bold">
           Mã lệnh: {job.ORDER_ID}
         </div>
-
         <div className="flex justify-between gap-x-1 p-2">
-          <div className="w-1/2 space-y-1">
-            <div>Số house bill: {job.HOUSE_BILL}</div>
+          <div className="space-y-1">
+            <div>Mã kiện: {job.ID}</div>
+            <div>
+              Số house bill: {job.HOUSE_BILL} ({job.SEQUENCE})
+            </div>
             <div>Chủ hàng: {job.CONSIGNEE_ID}</div>
           </div>
-          <div className="flex w-1/2 flex-col items-end space-y-1 align-bottom">
-            <div>Số lượng: {job.ITEMS_IN_CELL}</div>
-            <div>Số số khối: {job.CBM}</div>
+          <div className="flex flex-col items-end space-y-1">
+            <div>
+              Số lượng: {job.ITEMS_IN_CELL} ({job.PACKAGE_UNIT})
+            </div>
+            <div>
+              Kích thước: {job.SEPARATED_PACKAGE_LENGTH}x{job.SEPARATED_PACKAGE_WIDTH}x
+              {job.SEPARATED_PACKAGE_HEIGHT} (m)
+            </div>
           </div>
         </div>
         <div className="border-t border-gray-400 p-1 text-center text-10 font-bold">
@@ -98,17 +105,21 @@ const ImportItem = ({ job, selectedJob, handleSelectedJob }) => {
           "rounded-md border shadow-md transition-all duration-200 hover:scale-[1.02] hover:cursor-pointer"
         )}
       >
-        <div className="border-b border-gray-400 p-1 text-center  font-bold">
+        <div className="border-b border-gray-400 p-1 text-center font-bold">
           Mã lệnh: {job.ORDER_ID}
         </div>
         <div className="flex justify-between gap-x-1 p-2">
-          <div className="w-1/2 space-y-1">
-            <div>Mã chuyến tàu: {job.voyage_ID}</div>
-            <div>Tên tàu: {job.VESSEL_NAME}</div>
-            <div>Số container: {job.CNTR_NO}</div>
+          <div className="space-y-1">
+            <div>Mã kiện: {job.ID}</div>
+            <div>
+              Số house bill: {job.HOUSE_BILL} ({job.SEQUENCE})
+            </div>
+            <div>Chủ hàng: {job.CONSIGNEE_ID}</div>
           </div>
-          <div className="flex w-1/2 flex-col items-end  space-y-1 align-bottom">
-            <div>Số lượng: {job.ITEMS_IN_CELL}</div>
+          <div className="flex flex-col items-end space-y-1">
+            <div>
+              Số lượng: {job.ITEMS_IN_CELL} ({job.PACKAGE_UNIT})
+            </div>
             <div>
               Kích thước: {job.SEPARATED_PACKAGE_LENGTH}x{job.SEPARATED_PACKAGE_WIDTH}x
               {job.SEPARATED_PACKAGE_HEIGHT} (m)
