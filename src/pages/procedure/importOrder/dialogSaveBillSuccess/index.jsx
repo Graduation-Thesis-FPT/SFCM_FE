@@ -6,28 +6,36 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/common/ui/dialog";
-import { CheckCircle } from "lucide-react";
-import { ComponentPrintInOrder } from "./ComponentPrintInOrder";
+import { CheckCircle, Loader2 } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
+import { ComponentPrintOrder } from "@/components/order/ComponentPrintOrder";
+import useFetchData from "@/hooks/useRefetchData";
+import { getImportOrderForDocById } from "@/apis/import-order.api";
 
-export function DialogSaveBillSuccess({
-  open = false,
-  dataBillAfterSave = {},
-  billInfoList = [],
-  filterInfoSelected = {},
-  onMakeNewOrder
-}) {
+export function DialogSaveBillSuccess({ open = false, dataBillAfterSave = {}, onMakeNewOrder }) {
+  const { data: dataForPrint } = useFetchData({
+    service: getImportOrderForDocById,
+    params: dataBillAfterSave?.importOrder?.ID,
+    dependencies: [open],
+    shouldFetch: !!open
+  });
   const printRef = useRef(null);
   const dispatch = useDispatch();
 
+  const [loading, setLoading] = useState(false);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    onBeforePrint: () => dispatch(setGlobalLoading(true)),
-    onAfterPrint: () => dispatch(setGlobalLoading(false))
+    onBeforePrint: () => setLoading(true),
+    onAfterPrint: () => setLoading(false)
   });
+
+  const filterHeaderToPrint = data => {
+    if (!data || !data.length) return {};
+    return data[0];
+  };
 
   return (
     <Dialog open={open}>
@@ -43,17 +51,18 @@ export function DialogSaveBillSuccess({
               Trạng thái: <span className="font-semibold">Chờ thanh toán</span>
             </div>
             <div className="flex justify-center gap-4">
-              <Button variant="outline" onClick={onMakeNewOrder}>
+              <Button variant="outline" onClick={onMakeNewOrder} disabled={loading}>
                 Làm lệnh mới
               </Button>
-              <Button onClick={handlePrint} variant="blue">
+              <Button onClick={handlePrint} variant="blue" disabled={loading}>
+                {loading && <Loader2 className="mr-2 animate-spin" />}
                 In lệnh nhập kho
               </Button>
-              <ComponentPrintInOrder
+              <ComponentPrintOrder
                 ref={printRef}
-                filterInfoSelected={filterInfoSelected}
-                dataBillAfterSave={dataBillAfterSave}
-                billInfoList={billInfoList}
+                header={filterHeaderToPrint(dataForPrint)}
+                detail={dataForPrint || []}
+                type="NK"
               />
             </div>
           </DialogTitle>

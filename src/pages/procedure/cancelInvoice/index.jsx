@@ -28,6 +28,7 @@ import {
 } from "@/components/common/ui/select";
 import { Input } from "@/components/common/ui/input";
 import { loadCancelOrder } from "@/apis/cancel-order.api";
+import { DialogDetail } from "./DialogDetail";
 
 const initFilter = {
   from: addDays(new Date(), -30),
@@ -74,10 +75,11 @@ export function CancelInvoice() {
       filter: true
     },
     {
-      headerName: "Trạng thái lệnh",
-      field: "order_STATUS",
+      headerName: "Ngày làm lệnh",
+      field: "CREATED_AT",
       flex: 1,
-      filter: true
+      filter: true,
+      cellDataType: "date"
     },
     {
       headerName: "Trạng thái thanh toán",
@@ -89,31 +91,56 @@ export function CancelInvoice() {
     {
       field: "#",
       headerName: "",
-      minWidth: 120,
-      flex: 0.5,
+      flex: 1,
       cellStyle: { alignContent: "center", textAlign: "center" },
       cellRenderer: params => {
         if (params.data.pay_STATUS === "PAID" || params.data.pay_STATUS === "CANCELLED") {
-          return null;
+          return (
+            <Button
+              variant="link"
+              size="xs"
+              onClick={() => {
+                setOpenDialogDetail(true);
+                setCancelOrderSelected(params.data);
+              }}
+              className="text-xs text-blue-700 hover:text-blue-700/80"
+            >
+              Chi tiết
+            </Button>
+          );
         }
         return (
-          <Button
-            variant="link"
-            size="xs"
-            onClick={() => {
-              setOpenDialog(true);
-              setCancelOrderSelected(params.data);
-            }}
-            className="text-xs text-red-700 hover:text-red-700/80"
-          >
-            Hủy lệnh
-          </Button>
+          <div>
+            <Button
+              variant="link"
+              size="xs"
+              onClick={() => {
+                setOpenDialog(true);
+                setCancelOrderSelected(params.data);
+              }}
+              className="text-xs text-red-700 hover:text-red-700/80"
+            >
+              Hủy lệnh
+            </Button>
+            <Button
+              variant="link"
+              size="xs"
+              onClick={() => {
+                setOpenDialogDetail(true);
+                setCancelOrderSelected(params.data);
+              }}
+              className="text-xs text-blue-700 hover:text-blue-700/80"
+            >
+              Chi tiết
+            </Button>
+          </div>
         );
       }
     }
   ];
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogDetail, setOpenDialogDetail] = useState(false);
   const [rowData, setRowData] = useState([]);
 
   const [filter, setFilter] = useState(initFilter);
@@ -235,6 +262,16 @@ export function CancelInvoice() {
           setOpenDialog(false);
         }}
         cancelOrderSelected={cancelOrderSelected}
+      />
+
+      <DialogDetail
+        filter={filter}
+        getRowData={getRowData}
+        open={openDialogDetail}
+        onOpenChange={() => {
+          setOpenDialogDetail(false);
+        }}
+        detailData={cancelOrderSelected}
       />
     </Section>
   );
