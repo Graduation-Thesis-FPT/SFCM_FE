@@ -247,6 +247,7 @@ export function InExOrder() {
   return (
     <>
       <EditPayment
+        readOnly={true}
         open={openSheet}
         setOpen={setOpen}
         paymentInfo={paymentInfo}
