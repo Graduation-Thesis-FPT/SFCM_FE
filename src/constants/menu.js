@@ -1,5 +1,3 @@
-import { UserRound } from "lucide-react";
-
 export const PATH_NAME = {
   /*Warehouse side*/
   //user-management
@@ -46,7 +44,11 @@ export const PATH_NAME = {
   //customer-order
   customerOrder: "customer-order",
 
-  payment: "payment"
+  paymentConfirmation: "payment-confirmation",
+  allPatment: "all-payment",
+  cancelledPayment: "cancelled-payment",
+  paidPayment: "paid-payment",
+  pendingPayment: "pending-payment"
 };
 
 export const ROUTE_TITLE_PAGE = {
@@ -95,5 +97,5 @@ export const MAIN_MENU = [
   PATH_NAME.procedure,
   PATH_NAME.warehouseOperation,
   PATH_NAME.customerOrder,
-  PATH_NAME.payment
+  PATH_NAME.paymentConfirmation
 ];
