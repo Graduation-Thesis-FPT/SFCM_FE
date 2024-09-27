@@ -294,3 +294,64 @@ export class bs_order_tracking extends CommonColumns {
   TOTAL_CBM = { field: "TOTAL_CBM", headerName: "Tổng khối lượng (m³)" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
+
+export class payment_confirmation {
+  ORDER = {
+    ID: { field: "ORDER.ID", headerName: "Mã đơn hàng" },
+    PAYMENT_ID: { field: "ORDER.PAYMENT_ID", headerName: "Mã thanh toán" },
+    NOTE: { field: "ORDER.NOTE", headerName: "Ghi chú" },
+    CAN_CANCEL: { field: "ORDER.CAN_CANCEL", headerName: "Có thể hủy" },
+    STATUS: { field: "ORDER.STATUS", headerName: "Trạng thái" },
+    CANCEL_NOTE: { field: "ORDER.CANCEL_NOTE", headerName: "Ghi chú hủy" },
+    CREATED_BY: { field: "ORDER.CREATED_BY", headerName: "Người tạo" },
+    CREATED_AT: { field: "ORDER.CREATED_AT", headerName: "Ngày làm lệnh" },
+    UPDATED_BY: { field: "ORDER.UPDATED_BY", headerName: "Người cập nhật" },
+    UPDATED_AT: { field: "ORDER.UPDATED_AT", headerName: "Ngày cập nhật" },
+    ORDER_DETAILS: {
+      ROWGUID: { field: "ORDER.ORDER_DETAILS.ROWGUID", headerName: "ROWGUID" },
+      ORDER_ID: { field: "ORDER.ORDER_DETAILS.ORDER_ID", headerName: "Mã đơn hàng" },
+      VOYAGE_CONTAINER_ID: {
+        field: "ORDER.ORDER_DETAILS.VOYAGE_CONTAINER_ID",
+        headerName: "Mã container chuyến tàu"
+      },
+      VOYAGE_CONTAINER_PACKAGE_ID: {
+        field: "ORDER.ORDER_DETAILS.VOYAGE_CONTAINER_PACKAGE_ID",
+        headerName: "Mã kiện hàng"
+      },
+      CBM: { field: "ORDER.ORDER_DETAILS.CBM", headerName: "Số khối (m³)" },
+      TOTAL_DAYS: { field: "ORDER.ORDER_DETAILS.TOTAL_DAYS", headerName: "Tổng số ngày" },
+      CONTAINER_TARIFF_ID: {
+        field: "ORDER.ORDER_DETAILS.CONTAINER_TARIFF_ID",
+        headerName: "Mã biểu cước"
+      },
+      NOTE: { field: "ORDER.ORDER_DETAILS.NOTE", headerName: "Ghi chú" },
+      CREATED_BY: { field: "ORDER.ORDER_DETAILS.CREATED_BY", headerName: "Người tạo" },
+      CREATED_AT: { field: "ORDER.ORDER_DETAILS.CREATED_AT", headerName: "Ngày tạo" },
+      UPDATED_BY: { field: "ORDER.ORDER_DETAILS.UPDATED_BY", headerName: "Người cập nhật" },
+      UPDATED_AT: { field: "ORDER.ORDER_DETAILS.UPDATED_AT", headerName: "Ngày cập nhật" },
+      CUSTOMER_ID: { field: "ORDER.ORDER_DETAILS.CUSTOMER_ID", headerName: "Mã khách hàng" },
+      USERNAME: { field: "ORDER.ORDER_DETAILS.USERNAME", headerName: "Tên tài khoản" }
+    },
+    USER: {
+      USERNAME: { field: "ORDER.USER.USERNAME", headerName: "Tên tài khoản" },
+      FULLNAME: { field: "ORDER.USER.FULLNAME", headerName: "Tên khách hàng" },
+      CUSTOMER_ID: { field: "ORDER.USER.CUSTOMER_ID", headerName: "Mã khách hàng" },
+      TAX_CODE: { field: "ORDER.USER.TAX_CODE", headerName: "Mã số thuế" }
+    }
+  };
+  ORDER_TYPE = { field: "ORDER_TYPE", headerName: "Loại lệnh" };
+  PAYMENT = {
+    ID: { field: "PAYMENT.ID", headerName: "Mã thanh toán" },
+    PRE_VAT_AMOUNT: { field: "PAYMENT.PRE_VAT_AMOUNT", headerName: "Tổng tiền trước VAT" },
+    VAT_AMOUNT: { field: "PAYMENT.VAT_AMOUNT", headerName: "Tiền VAT" },
+    TOTAL_AMOUNT: { field: "PAYMENT.TOTAL_AMOUNT", headerName: "Tổng tiền" },
+    STATUS: { field: "PAYMENT.STATUS", headerName: "Trạng thái" },
+    CANCEL_DATE: { field: "PAYMENT.CANCEL_DATE", headerName: "Ngày hủy" },
+    CANCEL_REMARK: { field: "PAYMENT.CANCEL_REMARK", headerName: "Ghi chú hủy" },
+    CANCELLED_BY: { field: "PAYMENT.CANCEL_BY", headerName: "Người hủy" },
+    CREATED_BY: { field: "PAYMENT.CREATED_BY", headerName: "Người tạo" },
+    CREATED_AT: { field: "PAYMENT.CREATED_AT", headerName: "Ngày tạo" },
+    UPDATED_BY: { field: "PAYMENT.UPDATED_BY", headerName: "Người cập nhật" },
+    UPDATED_AT: { field: "PAYMENT.UPDATED_AT", headerName: "Ngày cập nhật" }
+  };
+}
