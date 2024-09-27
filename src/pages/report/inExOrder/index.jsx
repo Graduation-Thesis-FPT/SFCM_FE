@@ -1,8 +1,9 @@
+import { getExportOrderForDocById } from "@/apis/export-order.api";
+import { getImportOrderForDocById } from "@/apis/import-order.api";
 import { getPayment } from "@/apis/payment.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { payment_confirmation } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
-import { InvoiceTemplate } from "@/components/common/invoice/template";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
@@ -22,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
+import { ComponentPrintOrder } from "@/components/order/ComponentPrintOrder";
 import { EditPayment } from "@/components/payment-confirmation/EditPayment";
 import useFetchData from "@/hooks/useRefetchData";
 import { useSetData } from "@/hooks/useSetData";
@@ -42,15 +44,15 @@ const formSchema = z.object({
   orderId: z.string().optional()
 });
 
+const PAYMENT_CONFIRMATION = new payment_confirmation();
+
 export function InExOrder() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const paymentRef = useRef(null);
+  const orderRef = useRef(null);
   const [openSheet, setOpen] = useToggle(false);
   const [openPrint, setOpenPrint] = useToggle(false);
   const [paymentInfo, setPaymentInfo] = useState({});
-  const onBeforeGetContentResolve = useRef();
-  const PAYMENT_CONFIRMATION = new payment_confirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,6 +70,36 @@ export function InExOrder() {
   const [rowData, setRowData] = useSetData(payments);
   const dispatch = useDispatch();
 
+  const [dataForPrint, setDataForPrint] = useState([]);
+  const [orderSelected, setOrderSelected] = useState({});
+
+  const handleClickToPrint = data => {
+    setOrderSelected({ orderType: data.ORDER_TYPE, payStatus: data.PAYMENT.STATUS });
+    if (data.ORDER_TYPE === "IMPORT") {
+      getImportOrderForDocById(data.ORDER.ID)
+        .then(res => {
+          setDataForPrint(res.data.metadata);
+        })
+        .then(() => {
+          setOpenPrint(true);
+        })
+        .catch(err => {
+          toast.error(err);
+        });
+    } else if (data.ORDER_TYPE === "EXPORT") {
+      getExportOrderForDocById(data.ORDER.ID)
+        .then(res => {
+          setDataForPrint(res.data.metadata);
+        })
+        .then(() => {
+          setOpenPrint(true);
+        })
+        .catch(err => {
+          toast.error(err);
+        });
+    }
+  };
+
   const colDefs = [
     {
       cellClass: "text-gray-600 bg-gray-50 text-center",
@@ -79,12 +111,25 @@ export function InExOrder() {
         return Number(params.node.id) + 1;
       }
     },
-
     {
       headerName: PAYMENT_CONFIRMATION.ORDER.ID.headerName,
       field: PAYMENT_CONFIRMATION.ORDER.ID.field,
       flex: 0.75,
-      filter: true
+      filter: true,
+      cellRenderer: params => {
+        return (
+          <div className="flex items-center gap-2">
+            <Printer
+              size={16}
+              className="mr-1 flex-none cursor-pointer text-blue-600"
+              onClick={() => {
+                handleClickToPrint(params.data);
+              }}
+            />
+            <p className="flex-1">{params.data.PAYMENT.ID}</p>
+          </div>
+        );
+      }
     },
     {
       headerName: PAYMENT_CONFIRMATION.ORDER.USER.FULLNAME.headerName,
@@ -126,23 +171,7 @@ export function InExOrder() {
       headerName: PAYMENT_CONFIRMATION.PAYMENT.ID.headerName,
       field: PAYMENT_CONFIRMATION.PAYMENT.ID.field,
       flex: 0.75,
-      filter: true,
-      cellRenderer: params => {
-        return (
-          <div className="flex items-center gap-2">
-            <Printer
-              size={16}
-              className="mr-1 flex-none cursor-pointer text-blue-600"
-              onClick={() => {
-                console.log("aa", paymentInfo);
-                setPaymentInfo(params.data);
-                setOpenPrint(true);
-              }}
-            />
-            <p className="flex-1">{params.data.PAYMENT.ID}</p>
-          </div>
-        );
-      }
+      filter: true
     },
 
     {
@@ -206,8 +235,9 @@ export function InExOrder() {
       }
     }
   ];
+
   const handlePrintInvoice = useReactToPrint({
-    content: () => paymentRef.current,
+    content: () => orderRef.current,
     onBeforePrint: () => {
       dispatch(setGlobalLoading(true));
     },
@@ -244,6 +274,12 @@ export function InExOrder() {
         dispatch(setGlobalLoading(false));
       });
   };
+
+  const filterHeaderToPrint = data => {
+    if (!data || !data.length) return {};
+    return data[0];
+  };
+
   return (
     <>
       <EditPayment
@@ -253,7 +289,13 @@ export function InExOrder() {
         paymentInfo={paymentInfo}
         revalidatePayments={revalidatePayments}
       />
-      <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
+      <ComponentPrintOrder
+        ref={orderRef}
+        header={filterHeaderToPrint(dataForPrint)}
+        detail={dataForPrint || []}
+        type={orderSelected.orderType === "IMPORT" ? "NK" : "XK"}
+        statusOrder={orderSelected.payStatus}
+      />
       <Section>
         <Section.Header title="Danh sách các đơn hàng" />
         <Section.Content>

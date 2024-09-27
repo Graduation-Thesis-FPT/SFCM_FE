@@ -1,6 +1,5 @@
 import { saveExportOrder } from "@/apis/export-order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { bill_info } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Button } from "@/components/common/ui/button";
 import {
@@ -19,8 +18,6 @@ import { formatVnd } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-
-const BILL_INFO = new bill_info();
 
 export function DialogBillInfoEx({
   open = false,
@@ -89,14 +86,6 @@ export function DialogBillInfoEx({
     },
     {
       headerName: "Thành tiền (VND)",
-      field: "PRE_VAT_AMOUNT",
-      flex: 1,
-      headerClass: "number-header",
-      cellClass: "text-end",
-      cellRenderer: params => formatVnd(params.value).replace("VND", "")
-    },
-    {
-      headerName: "Tổng tiền (VND)",
       field: "TOTAL_AMOUNT",
       flex: 1,
       headerClass: "number-header",

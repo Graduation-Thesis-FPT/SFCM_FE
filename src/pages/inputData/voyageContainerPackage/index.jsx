@@ -398,16 +398,6 @@ export function VoyageContainerPackage() {
       </Section.Header>
       <Section.Content>
         <LayoutTool>
-          {/* <BtnPrintGoodsManifest
-              rowData={rowData}
-              voyageSelected={voyageSelected}
-              containerSelected={containerSelected}
-            /> */}
-          {/* <BtnPrintLabel
-              gridRef={gridRef}
-              voyageSelected={voyageSelected}
-              containerSelected={containerSelected}
-            /> */}
           <BtnDownExcelGoodsMnfSample
             gridRef={gridRef}
             packageTypeList={packageTypeList}

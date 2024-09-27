@@ -57,8 +57,23 @@ export function CustomerList() {
       headerName: CUSTOMER.CUSTOMER_TYPE.headerName,
       field: CUSTOMER.CUSTOMER_TYPE.field,
       flex: 1,
+      headerClass: "center-header",
+      cellStyle: {
+        textAlign: "center"
+      },
       cellRenderer: params => {
-        return params.value === "CONSIGNEE" ? "Chủ hàng" : "Đại lý";
+        if (params.value === "CONSIGNEE") {
+          return (
+            <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 ">
+              Chủ hàng
+            </Badge>
+          );
+        }
+        return (
+          <Badge className=" rounded-sm border-transparent bg-orange-100 text-orange-800 hover:bg-orange-200">
+            Đại lý
+          </Badge>
+        );
       }
     },
     {

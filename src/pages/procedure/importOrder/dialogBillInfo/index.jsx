@@ -62,6 +62,15 @@ export function DialogBillInfo({
         return Number(params.value);
       }
     },
+
+    {
+      headerName: "Đơn giá (VND)",
+      field: "UNIT_PRICE",
+      flex: 1,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
+    },
     {
       headerName: "VAT (%)",
       field: "VAT_RATE",
@@ -80,14 +89,6 @@ export function DialogBillInfo({
     },
     {
       headerName: "Thành tiền (VND)",
-      field: "AMOUNT",
-      flex: 1,
-      headerClass: "number-header",
-      cellClass: "text-end",
-      cellRenderer: params => formatVnd(params.value).replace("VND", "")
-    },
-    {
-      headerName: "Tổng tiền (VND)",
       field: "TAMOUNT",
       flex: 1,
       headerClass: "number-header",
