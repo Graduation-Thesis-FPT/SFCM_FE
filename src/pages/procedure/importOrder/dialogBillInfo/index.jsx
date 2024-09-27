@@ -153,20 +153,20 @@ export function DialogBillInfo({
                 <div className="text-16 font-semibold">Tổng tiền thanh toán</div>
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
-                  <p>{BILL_INFO.AMOUNT.headerName}</p>
+                  <p>Tổng tiền trước thuế</p>
                   <p className="text-end">
                     {formatVnd(
                       billInfoList.reduce((a, b) => a + Number(b[BILL_INFO.AMOUNT.field]), 0)
                     )}
                   </p>
-                  <p>{BILL_INFO.VAT_PRICE.headerName}</p>
+                  <p>Tổng tiền thuế</p>
                   <p className="text-end">
                     {formatVnd(
                       billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.VAT_PRICE.field]), 0)
                     )}
                   </p>
-                  <p>{BILL_INFO.TAMOUNT.headerName}</p>
-                  <p className="text-end">
+                  <p>Thành tiền</p>
+                  <p className="text-end text-16 text-blue-800">
                     {formatVnd(
                       billInfoList?.reduce((a, b) => a + Number(b[BILL_INFO.TAMOUNT.field]), 0)
                     )}

@@ -164,12 +164,14 @@ export function DialogBillInfoEx({
                 <p className="text-16 font-semibold">Tổng tiền thanh toán</p>
                 <Separator />
                 <div className="bold2nd grid grid-cols-2 gap-y-2">
-                  <p>{BILL_INFO.AMOUNT.headerName}</p>
+                  <p>Tổng tiền trước thuế</p>
                   <p className="text-end">{formatVnd(billInfoEx?.PRE_VAT_AMOUNT)}</p>
-                  <p>{BILL_INFO.VAT_PRICE.headerName}</p>
+                  <p>Tổng tiền thuế</p>
                   <p className="text-end">{formatVnd(billInfoEx?.VAT_AMOUNT)}</p>
-                  <p>{BILL_INFO.TAMOUNT.headerName}</p>
-                  <p className="text-end">{formatVnd(billInfoEx?.TOTAL_AMOUNT)}</p>
+                  <p>Thành tiền</p>
+                  <p className="text-end text-16 text-blue-800">
+                    {formatVnd(billInfoEx?.TOTAL_AMOUNT)}
+                  </p>
                 </div>
               </div>
 
@@ -199,7 +201,7 @@ export function DialogBillInfoEx({
                   ref={gridRef}
                   rowSelection={"none"}
                   className="h-[300px]"
-                  rowData={billInfoEx?.ORDER_DETAILS || []}
+                  rowData={billInfoEx?.EXPORT_ORDER_DETAILS || []}
                   colDefs={colDefs}
                   pagination={false}
                 />

@@ -16,7 +16,7 @@ export const ComponentPrintOrder = forwardRef(
         ref={ref}
         className={cn(
           hiddenToPrint ? "hidden-to-print" : "",
-          " relative min-h-[100vh] space-y-3 p-10",
+          "relative min-h-[100vh] space-y-3 p-10",
           className
         )}
       >

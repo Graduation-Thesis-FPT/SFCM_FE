@@ -28,6 +28,10 @@ export const completePackageSeparate = async VOYAGE_CONTAINER_PACKAGE_ID => {
   );
 };
 
+export const getPackageCellAllocationForDocByRowguid = async rowguid => {
+  return await axiosPrivate.get(`package-cell-allocation/doc?ROWGUID=${rowguid}`);
+};
+
 ///////// fork lift
 
 export const getPackageReadyToWarehouse = async () => {
