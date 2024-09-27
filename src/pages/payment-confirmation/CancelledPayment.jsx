@@ -1,9 +1,8 @@
-import { getOrderByOrderNo } from "@/apis/customer-order.api";
-import { viewInvoice } from "@/apis/order.api";
 import { getPayment } from "@/apis/payment.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { payment_confirmation } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
+import { InvoiceTemplate } from "@/components/common/invoice/template";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
@@ -23,21 +22,22 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/common/ui/select";
+import { EditPayment } from "@/components/payment-confirmation/EditPayment";
 import useFetchData from "@/hooks/useRefetchData";
 import { useSetData } from "@/hooks/useSetData";
 import { useToggle } from "@/hooks/useToggle";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightToLine, Printer, Search } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 import { z } from "zod";
 
 const formSchema = z.object({
-  status: z.enum(["PENDING", "PAID", "CANCELLED", 'all']).optional(),
-  orderType: z.enum(["IMPORT", "EXPORT", 'all']).optional(),
+  status: z.enum(["PENDING", "PAID", "CANCELLED", "all"]).optional(),
+  orderType: z.enum(["IMPORT", "EXPORT", "all"]).optional(),
   searchQuery: z.string().optional(),
   orderId: z.string().optional()
 });
@@ -45,8 +45,10 @@ const formSchema = z.object({
 export function CancelledPayment() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const orderDetailRef = useRef();
+  const paymentRef = useRef();
   const [payment, setPayment] = useToggle();
+  const [open, setOpen] = useToggle();
+  const [paymentInfo, setPaymentInfo] = useState({});
   const PAYMENT_CONFIRMATION = new payment_confirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -85,9 +87,10 @@ export function CancelledPayment() {
           <div className="flex items-center gap-2">
             <Printer
               size={16}
-              className="mr-1 cursor-pointer text-blue-600 flex-none"
+              className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
-                console.log(params.data.PAYMENT.ID);
+                setPayment(params.data);
+                handlePrintInvoice();
               }}
             />
             <p className="flex-1">{params.data.PAYMENT.ID}</p>
@@ -135,21 +138,7 @@ export function CancelledPayment() {
       headerName: PAYMENT_CONFIRMATION.ORDER.ID.headerName,
       field: PAYMENT_CONFIRMATION.ORDER.ID.field,
       flex: 0.75,
-      filter: true,
-      cellRenderer: params => {
-        return (
-          <div className="flex items-center gap-2">
-            <Printer
-              size={16}
-              className="mr-1 cursor-pointer text-blue-600 flex-none"
-              onClick={() => {
-                console.log(params.data.ORDER.ID);
-              }}
-            />
-            <p className="flex-1">{params.data.ORDER.ID}</p>
-          </div>
-        );
-      }
+      filter: true
     },
 
     {
@@ -202,9 +191,9 @@ export function CancelledPayment() {
             variant="link"
             size="xs"
             className="text-xs text-blue-700 hover:text-blue-800"
-            onClick={async () => {
-              // await handleGetOrder(params.data.DE_ORDER_NO);
-              // handlePrint();
+            onClick={() => {
+              setPaymentInfo(params.data);
+              setOpen(true);
             }}
           >
             Chi tiết
@@ -213,42 +202,16 @@ export function CancelledPayment() {
       }
     }
   ];
-  const handlePrint = useReactToPrint({
-    content: () => orderDetailRef.current,
-    onBeforePrint: () => dispatch(setGlobalLoading(true)),
-    onAfterPrint: () => dispatch(setGlobalLoading(false))
+  const handlePrintInvoice = useReactToPrint({
+    content: () => paymentRef.current,
+    onBeforePrint: () => {
+      dispatch(setGlobalLoading(true));
+    },
+    onAfterPrint: () => {
+      dispatch(setGlobalLoading(false));
+    }
   });
 
-  const handleViewInvoice = deliveryOrderNO => {
-    dispatch(setGlobalLoading(true));
-    viewInvoice(deliveryOrderNO)
-      .then(res => {
-        let base64Data = res.data.metadata.content.data;
-        const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, "_blank");
-      })
-      .catch(err => {
-        toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
-      });
-  };
-
-  const handleGetOrder = async orderNo => {
-    dispatch(setGlobalLoading(true));
-    await getOrderByOrderNo({ orderNo: orderNo })
-      .then(async res => {
-        await setPayment(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
-      });
-  };
   const onSubmit = values => {
     dispatch(setGlobalLoading(true));
     const { status, orderType, searchQuery, orderId } = form.getValues();
@@ -261,7 +224,6 @@ export function CancelledPayment() {
 
     getPayment(filteredValues)
       .then(res => {
-        console.log(res.data.metadata);
         setRowData(res.data.metadata);
       })
       .catch(err => {
@@ -272,77 +234,80 @@ export function CancelledPayment() {
       });
   };
   return (
-    <Section>
-      <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
+    <>
+      <EditPayment open={open} setOpen={setOpen} paymentInfo={paymentInfo} />
+      <InvoiceTemplate ref={paymentRef} paymentInfo={payment} />
+      <Section>
+        <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
+        <Section.Content>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex items-end justify-start gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="orderId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tìm mã đơn hàng</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Nhập tên mã đơn hàng" className="w-[300px]" />
+                    </FormControl>
+                    <FormMessage>{form.formState.errors?.orderId?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="searchQuery"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tìm tên khách hàng</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Nhập tên khách hàng" className="w-[300px]" />
+                    </FormControl>
+                    <FormMessage>{form.formState.errors?.searchBy?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
 
-      <Section.Content>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex items-end justify-start gap-2"
-          >
-            <FormField
-              control={form.control}
-              name="orderId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tìm mã đơn hàng</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nhập tên mã đơn hàng" className="w-[300px]" />
-                  </FormControl>
-                  <FormMessage>{form.formState.errors?.orderId?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="searchQuery"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tìm tên khách hàng</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nhập tên khách hàng" className="w-[300px]" />
-                  </FormControl>
-                  <FormMessage>{form.formState.errors?.searchBy?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="orderType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Loại lệnh</FormLabel>
+                    <FormControl>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-[150px]">
+                          <SelectValue placeholder="Chọn loại lệnh" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all" className="text-gray-800">
+                            Tất cả
+                          </SelectItem>
+                          <SelectItem value="IMPORT">Nhập</SelectItem>
+                          <SelectItem value="EXPORT">Xuất</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage>{form.formState.errors?.orderType?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="orderType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Loại lệnh</FormLabel>
-                  <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue placeholder="Chọn loại lệnh" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all" className="text-gray-800">
-                          Tất cả
-                        </SelectItem>
-                        <SelectItem value="IMPORT">Nhập</SelectItem>
-                        <SelectItem value="EXPORT">Xuất</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage>{form.formState.errors?.orderType?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-
-            <Button className="h-[36px] text-xs" type="submit">
-              Tìm kiếm
-              <Search className="ml-2 size-4" />
-            </Button>
-          </form>
-        </Form>
-        <Section.Table>
-          <AgGrid ref={gridRef} colDefs={colDefs} loading={loading} rowData={rowData} />
-        </Section.Table>
-      </Section.Content>
-    </Section>
+              <Button className="h-[36px] text-xs" type="submit">
+                Tìm kiếm
+                <Search className="ml-2 size-4" />
+              </Button>
+            </form>
+          </Form>
+          <Section.Table>
+            <AgGrid ref={gridRef} colDefs={colDefs} loading={loading} rowData={rowData} />
+          </Section.Table>
+        </Section.Content>
+      </Section>
+    </>
   );
 }

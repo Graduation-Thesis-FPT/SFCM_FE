@@ -29,7 +29,7 @@ import { useToggle } from "@/hooks/useToggle";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightToLine, Printer, Search } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
@@ -45,8 +45,9 @@ const formSchema = z.object({
 export function AllPayment() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const paymentRef = useRef();
-  const [payment, setPayment] = useToggle();
+  const paymentRef = useRef(null);
+  const [openSheet, setOpen] = useToggle(false);
+  const [paymentInfo, setPaymentInfo] = useState({});
   const PAYMENT_CONFIRMATION = new payment_confirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -84,7 +85,7 @@ export function AllPayment() {
               size={16}
               className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
-                setPayment(params.data);
+                setPaymentInfo(params.data);
                 handlePrintInvoice();
               }}
             />
@@ -181,7 +182,19 @@ export function AllPayment() {
       filter: true,
       cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
-        return <EditPayment paymentInfo={params.data} />;
+        return (
+          <Button
+            variant="link"
+            size="xs"
+            className="text-xs text-blue-700 hover:text-blue-800"
+            onClick={() => {
+              setPaymentInfo(params.data);
+              setOpen(true);
+            }}
+          >
+            Chi tiết
+          </Button>
+        );
       }
     }
   ];
@@ -197,7 +210,6 @@ export function AllPayment() {
 
   const onSubmit = values => {
     dispatch(setGlobalLoading(true));
-    console.log(form.getValues());
     const { status, orderType, searchQuery, orderId } = form.getValues();
     //exclude empty value from { status, orderType, searchBy, orderId } = form.getValues()
     const filteredValues = Object.fromEntries(
@@ -208,7 +220,6 @@ export function AllPayment() {
 
     getPayment(filteredValues)
       .then(res => {
-        console.log(res.data.metadata);
         setRowData(res.data.metadata);
       })
       .catch(err => {
@@ -220,7 +231,8 @@ export function AllPayment() {
   };
   return (
     <>
-      <InvoiceTemplate ref={paymentRef} paymentInfo={payment} />
+      <EditPayment open={openSheet} setOpen={setOpen} paymentInfo={paymentInfo} />
+      <InvoiceTemplate ref={paymentRef} paymentInfo={paymentInfo} />
       <Section>
         <Section.Header title="Danh sách đơn hàng chờ thanh toán" />
         <Section.Content>

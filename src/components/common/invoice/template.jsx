@@ -1,3 +1,12 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import { formatVnd } from "@/lib/utils";
 import moment from "moment";
 import React, { forwardRef } from "react";
 import { useSelector } from "react-redux";
@@ -153,50 +162,65 @@ export const InvoiceTemplate = forwardRef(({ paymentInfo = {} }, ref) => {
 
                 {/* Table */}
                 <div style={{ clear: "both", position: "relative" }}>
-                  <table className="template-bordered table">
-                    <thead>
-                      <tr className="data" style={{ textAlign: "center" }}>
-                        <td width="40px">
-                          <strong>STT</strong>
-                        </td>
-                        <td width="300px">
-                          <strong>Tên hàng hóa, dịch vụ</strong>
-                        </td>
-                        <td width="110px">
-                          <strong>Đơn vị tính</strong>
-                        </td>
-                        <td width="110px">
-                          <strong>Số lượng</strong>
-                        </td>
-                        <td width="150px">
-                          <strong>Đơn giá</strong>
-                        </td>
-                        <td width="150px">
-                          <strong>Thành tiền</strong>
-                        </td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Sample Rows */}
-                      <tr className="data">
-                        <td style={{ textAlign: "center" }}>1</td>
-                        <td style={{ textAlign: "center" }}>2</td>
-                        <td style={{ textAlign: "center" }}>3</td>
-                        <td style={{ textAlign: "center" }}>4</td>
-                        <td style={{ textAlign: "center" }}>5</td>
-                        <td style={{ textAlign: "center" }}>6 = 4 x 5</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <Table className="border text-xs">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-nowrap">STT</TableHead>
+                        <TableHead className="text-nowrap">Tên hàng hóa, dịch vụ</TableHead>
+                        <TableHead className="text-nowrap">Đơn vị tính</TableHead>
+                        <TableHead className="text-nowrap">
+                          {paymentInfo?.ORDER_TYPE === "EXPORT" ? "Số khối" : "Kích thước"}
+                        </TableHead>
+                        {paymentInfo?.ORDER_TYPE === "EXPORT" && (
+                          <TableHead className="text-nowrap">Số ngày</TableHead>
+                        )}
+                        <TableHead className="text-nowrap">Đơn giá</TableHead>
+                        <TableHead className="text-nowrap">Thuế</TableHead>
+                        <TableHead className="text-nowrap">Thành tiền</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paymentInfo?.ORDER_TYPE === "IMPORT" &&
+                        paymentInfo?.ORDER?.ORDER_DETAILS?.map((item, index) => (
+                          <TableRow className="data" key={index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.VOYAGE_CONTAINER_ID ?? "N/A"}</TableCell>
+                            <TableCell>feet</TableCell>
+                            <TableCell>{item.CNTR_SIZE ?? 1}ft</TableCell>
+                            <TableCell>{formatVnd(item.UNIT_PRICE ?? 1000)}</TableCell>
+                            <TableCell>{item.VAT_RATE ?? 1}%</TableCell>
+                            <TableCell>{formatVnd(item.TOTAL_AMOUNT ?? 1000)}</TableCell>
+                          </TableRow>
+                        ))}
+                      {paymentInfo?.ORDER_TYPE === "EXPORT" &&
+                        paymentInfo?.ORDER?.ORDER_DETAILS?.map((item, index) => (
+                          <TableRow className="data" key={index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{item.VOYAGE_CONTAINER_PACKAGE_ID ?? "N/A"}</TableCell>
+                            <TableCell>Khối/ngày</TableCell>
+                            <TableCell>{item.CBM ?? 1}</TableCell>
+                            <TableCell>{item.TOTAL_DAYS ?? 1}</TableCell>
+
+                            <TableCell>{formatVnd(item.UNIT_PRICE ?? 1)}</TableCell>
+                            <TableCell>{item.VAT_RATE ?? 1}%</TableCell>
+                            <TableCell>{formatVnd(item.TOTAL_AMOUNT ?? 1)}</TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
                 </div>
 
                 {/* Footer */}
                 <div id="footer" style={{ clear: "both", marginTop: "15px" }}>
                   <div style={{ float: "left", width: "40%" }}>
                     <p style={{ fontSize: "14px", textAlign: "center" }}>Người mua hàng</p>
-                    <p style={{
-                      marginTop: "70px",
-                    }}>{paymentInfo?.ORDER?.USER?.FULLNAME ?? "N/A"} </p>
+                    <p
+                      style={{
+                        marginTop: "70px"
+                      }}
+                    >
+                      {paymentInfo?.ORDER?.USER?.FULLNAME ?? "N/A"}{" "}
+                    </p>
                   </div>
                   <div style={{ float: "right", width: "40%" }}>
                     <p style={{ fontSize: "14px", textAlign: "center" }}>Thủ trưởng đơn vị</p>

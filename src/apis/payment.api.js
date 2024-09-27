@@ -9,3 +9,6 @@ export const getPayment = async ({ status, orderId, orderType, searchQuery }) =>
     searchQuery=${searchQuery || ""}`.replace(/\s+/g, "")
   );
 };
+export const updatePaymentStatus = async ({ paymentInfo }) => {
+  return await axiosPrivate.post(`payment`, { paymentInfo });
+};

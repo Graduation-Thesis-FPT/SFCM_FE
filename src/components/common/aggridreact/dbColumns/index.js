@@ -314,6 +314,12 @@ export class payment_confirmation {
         field: "ORDER.ORDER_DETAILS.VOYAGE_CONTAINER_ID",
         headerName: "Mã container chuyến tàu"
       },
+      VOYAGE_CONTAINER_PACKAGE_ID: {
+        field: "ORDER.ORDER_DETAILS.VOYAGE_CONTAINER_PACKAGE_ID",
+        headerName: "Mã kiện hàng"
+      },
+      CBM: { field: "ORDER.ORDER_DETAILS.CBM", headerName: "Số khối (m³)" },
+      TOTAL_DAYS: { field: "ORDER.ORDER_DETAILS.TOTAL_DAYS", headerName: "Tổng số ngày" },
       CONTAINER_TARIFF_ID: {
         field: "ORDER.ORDER_DETAILS.CONTAINER_TARIFF_ID",
         headerName: "Mã biểu cước"
