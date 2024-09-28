@@ -28,6 +28,7 @@ import { EditPayment } from "@/components/payment-confirmation/EditPayment";
 import useFetchData from "@/hooks/useRefetchData";
 import { useSetData } from "@/hooks/useSetData";
 import { useToggle } from "@/hooks/useToggle";
+import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRightToLine, Printer, Search } from "lucide-react";
@@ -121,12 +122,12 @@ export function InExOrder() {
           <div className="flex items-center gap-2">
             <Printer
               size={16}
-              className="mr-1 flex-none cursor-pointer text-blue-600"
+              className="flex-none cursor-pointer text-blue-600"
               onClick={() => {
                 handleClickToPrint(params.data);
               }}
             />
-            <p className="flex-1">{params.data.PAYMENT.ID}</p>
+            <p>{params.data.PAYMENT.ID}</p>
           </div>
         );
       }
@@ -134,14 +135,13 @@ export function InExOrder() {
     {
       headerName: PAYMENT_CONFIRMATION.ORDER.USER.FULLNAME.headerName,
       field: PAYMENT_CONFIRMATION.ORDER.USER.FULLNAME.field,
-      flex: 0.5,
+      flex: 1.5,
       filter: true
     },
     {
       headerName: PAYMENT_CONFIRMATION.ORDER_TYPE.headerName,
       field: PAYMENT_CONFIRMATION.ORDER_TYPE.field,
       flex: 0.5,
-      filter: true,
       cellRenderer: params => {
         if (!!params.data.ORDER_TYPE) {
           if (params.data.ORDER_TYPE === "EXPORT")
@@ -170,14 +170,18 @@ export function InExOrder() {
     {
       headerName: PAYMENT_CONFIRMATION.PAYMENT.ID.headerName,
       field: PAYMENT_CONFIRMATION.PAYMENT.ID.field,
-      flex: 0.75,
-      filter: true
+      filter: true,
+      flex: 0.75
     },
 
     {
-      headerName: PAYMENT_CONFIRMATION.PAYMENT.TOTAL_AMOUNT.headerName,
+      headerName: `${PAYMENT_CONFIRMATION.PAYMENT.TOTAL_AMOUNT.headerName} (VND)`,
       field: PAYMENT_CONFIRMATION.PAYMENT.TOTAL_AMOUNT.field,
-      flex: 0.5
+      flex: 0.75,
+      filter: true,
+      headerClass: "number-header",
+      cellClass: "text-end",
+      cellRenderer: params => formatVnd(params.value).replace("VND", "")
     },
 
     {
@@ -216,8 +220,7 @@ export function InExOrder() {
     {
       headerName: "",
       flex: 0.45,
-      filter: true,
-      cellStyle: { alignContent: "space-evenly" },
+      cellStyle: { alignContent: "center", textAlign: "center" },
       cellRenderer: params => {
         return (
           <Button

@@ -1,13 +1,18 @@
 import { getAllCustomer } from "@/apis/customer.api";
 import { viewInvoice } from "@/apis/order.api";
+import { getPayment } from "@/apis/payment.api";
 import { getReportRevenue } from "@/apis/report.api";
+import { getAllUser } from "@/apis/user.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
+import { InvoiceTemplate } from "@/components/common/invoice/template";
 import { Section } from "@/components/common/section";
+import { SelectSearch } from "@/components/common/select-search";
+import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
 import { Input } from "@/components/common/ui/input";
 import { Label } from "@/components/common/ui/label";
@@ -23,23 +28,29 @@ import useFetchData from "@/hooks/useRefetchData";
 import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { addDays } from "date-fns";
+import { ArrowRightToLine, Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useReactToPrint } from "react-to-print";
 
 export function Revenue() {
   const gridRef = useRef();
   const toast = useCustomToast();
   const dispatch = useDispatch();
 
-  const { data: customerList } = useFetchData({
+  const { data: customerList, loading: loadingCustomerList } = useFetchData({
     service: getAllCustomer
   });
+
+  const { data: userList } = useFetchData({
+    service: getAllUser
+  });
   const [filter, setFilter] = useState({
-    from: addDays(new Date(), -30),
-    to: addDays(new Date(), 30),
-    isInEx: "all",
-    PAYER: "all",
-    INV_NO: ""
+    fromDate: addDays(new Date(), -30),
+    toDate: addDays(new Date(), 30),
+    TYPE: "all",
+    CUSTOMER_ID: "",
+    PAYMENT_ID: ""
   });
 
   const [rowData, setRowData] = useState([]);
@@ -76,18 +87,7 @@ export function Revenue() {
         }
       },
       headerName: "Mã hóa đơn",
-      field: "INV_NO",
-      flex: 1,
-      filter: true
-    },
-    {
-      cellClass: params => {
-        if (params.node.rowPinned) {
-          return "bg-gray-200";
-        }
-      },
-      headerName: "Mã đơn hàng",
-      field: "DE_ORDER_NO",
+      field: "ID",
       flex: 1,
       filter: true
     },
@@ -98,7 +98,7 @@ export function Revenue() {
         }
       },
       headerName: "Tên khách hàng",
-      field: "CUSTOMER_NAME",
+      field: "FULLNAME",
       flex: 1,
       filter: true
     },
@@ -108,18 +108,26 @@ export function Revenue() {
           return "bg-gray-200";
         }
       },
-      headerName: "Hình thức thanh toán",
-      field: "ACC_CD",
-      flex: 1,
+      headerName: "Loại đơn hàng",
+      field: "TYPE",
+      flex: 0.7,
       cellRenderer: params => {
-        if (params.node.rowPinned) {
-          return "";
+        if (!!params.value) {
+          if (params.value === "XK")
+            return (
+              <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
+                Xuất
+                <ArrowRightToLine className="ml-1" size={16} />
+              </Badge>
+            );
+          else if (params.value === "NK")
+            return (
+              <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
+                <ArrowRightToLine className="mr-1" size={16} />
+                Nhập
+              </Badge>
+            );
         }
-        return params.value === "TM/CK"
-          ? "Tiền mặt/Chuyển khoản"
-          : params.value === "TM"
-            ? "Tiền mặt"
-            : "Chuyển khoản";
       }
     },
     {
@@ -129,24 +137,43 @@ export function Revenue() {
         }
       },
       headerName: "Ngày hoàn thành",
-      field: "INV_DATE",
+      field: "DatePayment",
+      flex: 1,
+      cellRenderer: params => {
+        return DateTimeByTextRender(params);
+      }
+    },
+    {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200 text-end font-bold ";
+        }
+      },
+      headerName: "Người thu tiền",
+      field: "cashier",
       flex: 1,
       colSpan: params => (params.node.rowPinned ? 2 : 1),
       cellRenderer: params => {
         if (params.node.rowPinned) {
           let allTAMOUNT = rowData.reduce((a, b) => {
-            return a + b.TAMOUNT;
+            return a + b.TOTAL_AMOUNT;
           }, 0);
           return `Tổng: ${formatVnd(allTAMOUNT)}`.replace("VND", "");
         }
-        return DateTimeByTextRender(params);
+
+        let temp = userList?.find(item => item.USERNAME === params.value);
+        if (temp?.FULLNAME) {
+          return temp.FULLNAME;
+        } else {
+          return params.value;
+        }
       }
     },
     {
       cellClass: "text-end",
       headerClass: "number-header",
       headerName: "Tổng tiền (VND)",
-      field: "TAMOUNT",
+      field: "TOTAL_AMOUNT",
       flex: 1,
       cellRenderer: params => {
         return formatVnd(params.value).replace("VND", "");
@@ -160,7 +187,6 @@ export function Revenue() {
         return "text-center";
       },
       flex: 0.6,
-      minWidth: 100,
       cellRenderer: params => {
         if (params.node.rowPinned) {
           let sl = rowData.length;
@@ -170,7 +196,8 @@ export function Revenue() {
           <Button
             variant="link"
             onClick={() => {
-              handleViewInvoice(params.data.DE_ORDER_NO);
+              handleGetPaymentInfo(params.data);
+              // handleViewInvoice(params.data.ID);
             }}
             className="cursor-pointer text-sm font-medium text-blue-700 hover:text-blue-700/80"
           >
@@ -180,29 +207,6 @@ export function Revenue() {
       }
     }
   ];
-
-  const handleViewInvoice = async fkey => {
-    dispatch(setGlobalLoading(true));
-    viewInvoice(fkey)
-      .then(res => {
-        if (!res.data.metadata.success) {
-          throw new Error(res.data.metadata.error);
-        }
-        let base64Data = res.data.metadata.content.data;
-        const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, "_blank");
-      })
-      .catch(err => {
-        if (err?.message?.includes("Cannot")) {
-          return toast.error("Không thể xem hóa đơn. Vui lòng thử lại sau!");
-        }
-        toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
-      });
-  };
 
   const getRowData = () => {
     dispatch(setGlobalLoading(true));
@@ -224,20 +228,57 @@ export function Revenue() {
         dispatch(setGlobalLoading(false));
       });
   };
+  const paymentRef = useRef(null);
+  const handlePrintInvoice = useReactToPrint({
+    content: () => paymentRef.current,
 
+    onAfterPrint: () => {
+      dispatch(setGlobalLoading(false));
+    }
+  });
+  const [paymentInfo, setPaymentInfo] = useState(null);
+
+  const handleGetPaymentInfo = data => {
+    dispatch(setGlobalLoading(true));
+    getPayment({
+      orderId: data.order_ID,
+      orderType: data.TYPE === "NK" ? "IMPORT" : "EXPORT",
+      status: "PAID"
+    })
+      .then(res => {
+        if (!res.data.metadata.length) {
+          toast.error("Không tìm thấy dữ liệu!");
+          return;
+        }
+        setPaymentInfo(res.data.metadata[0]);
+      })
+      .then(() => {
+        setTimeout(() => {
+          handlePrintInvoice();
+        }, 200);
+      })
+      .catch(err => {
+        toast.error(err);
+      })
+      .finally(() => {
+        dispatch(setGlobalLoading(false));
+      });
+  };
   return (
     <Section>
+      <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
+
       <Section.Header>
         <div className="grid grid-cols-5 items-end gap-3">
           <div>
-            <Label htmlFor="INV_NO">Mã hóa đơn</Label>
+            <Label htmlFor="PAYMENT_ID">Mã hóa đơn</Label>
             <Input
-              id="INV_NO"
+              id="PAYMENT_ID"
               placeholder="Nhập mã hóa đơn"
-              value={filter.INV_NO}
+              value={filter.PAYMENT_ID}
               maxLength={50}
               onChange={e => {
-                setFilter({ ...filter, INV_NO: e.target.value?.trim()?.toUpperCase() });
+                setFilter({ ...filter, PAYMENT_ID: e.target.value?.trim()?.toUpperCase() });
               }}
               onKeyPress={e => {
                 if (e.key === "Enter") {
@@ -247,40 +288,31 @@ export function Revenue() {
             />
           </div>
           <div>
-            <Label htmlFor="PAYER">Khách hàng *</Label>
-            <Select
-              id="PAYER"
-              value={filter.PAYER}
-              onValueChange={value => {
-                setFilter({ ...filter, PAYER: value });
+            <Label htmlFor="CUSTOMER_ID">Khách hàng *</Label>
+            <SelectSearch
+              id="CUSTOMER_ID"
+              className="w-full"
+              labelSelect={loadingCustomerList ? "Đang tải dữ liệu..." : "Chọn khách hàng"}
+              value={filter.CUSTOMER_ID}
+              data={customerList?.map(item => {
+                return {
+                  value: item.ID,
+                  label: `${item.ID + " - " + item.FULLNAME}`
+                };
+              })}
+              onSelect={value => {
+                setFilter({ ...filter, CUSTOMER_ID: value });
               }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Chọn khách hàng" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  {customerList?.map(
-                    customer =>
-                      customer.IS_ACTIVE && (
-                        <SelectItem key={customer.USERNAME} value={customer.CUSTOMER_CODE}>
-                          {customer.CUSTOMER_CODE} - {customer.CUSTOMER_NAME}
-                        </SelectItem>
-                      )
-                  )}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            />
           </div>
 
           <div>
-            <Label htmlFor="isInEx">Loại đơn hàng *</Label>
+            <Label htmlFor="TYPE">Loại đơn hàng *</Label>
             <Select
-              id="isInEx"
-              value={filter.isInEx}
+              id="TYPE"
+              value={filter.TYPE}
               onValueChange={value => {
-                setFilter({ ...filter, isInEx: value });
+                setFilter({ ...filter, TYPE: value });
               }}
             >
               <SelectTrigger className="w-full">
@@ -289,8 +321,8 @@ export function Revenue() {
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="I">Nhập</SelectItem>
-                  <SelectItem value="E">Xuất</SelectItem>
+                  <SelectItem value="NK">Nhập</SelectItem>
+                  <SelectItem value="XK">Xuất</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -300,23 +332,27 @@ export function Revenue() {
             <DatePickerWithRangeInForm
               className="w-full"
               id="from-to"
-              date={{ from: filter.from, to: filter.to }}
+              date={{ from: filter.fromDate, to: filter.toDate }}
               onSelected={value => {
-                setFilter({ ...filter, from: value?.from, to: value?.to });
+                setFilter({ ...filter, fromDate: value?.from, toDate: value?.to });
               }}
             />
           </div>
           <div className="text-end">
-            <Button onClick={getRowData} variant="blue" className="w-fit">
-              Nạp dữ liệu
+            <Button onClick={getRowData} className="h-[36px] w-fit">
+              Tìm kiếm
+              <Search className="ml-2 size-4" />
             </Button>
           </div>
         </div>
       </Section.Header>
       <Section.Content>
-        <LayoutTool>
-          <BtnExportExcel gridRef={gridRef} />
-        </LayoutTool>
+        <div className="flex items-end justify-between">
+          <span className="text-lg font-bold">Danh sách các hóa đơn</span>
+          <LayoutTool>
+            <BtnExportExcel gridRef={gridRef} />
+          </LayoutTool>
+        </div>
         <Section.Table>
           <AgGrid
             setRowData={data => {

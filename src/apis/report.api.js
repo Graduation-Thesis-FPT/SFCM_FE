@@ -18,14 +18,16 @@ export const getReportInExOrder = async ({
     }
   });
 
-export const getReportRevenue = async ({ from, to, isInEx = "", INV_NO = "", PAYER = "" }) => {
-  return await axiosPrivate.get(`inv-vat`, {
+export const getReportRevenue = async ({ fromDate, toDate, TYPE, CUSTOMER_ID, PAYMENT_ID }) => {
+  if (!fromDate || !toDate) throw new Error("Chưa chọn ngày!");
+  if (fromDate > toDate) throw new Error("Chọn ngày không hợp lệ!");
+  return await axiosPrivate.get(`import/load-report-revenue`, {
     params: {
-      from: moment(from).startOf("day").format("YYYY-MM-DD HH:mm:ss"),
-      to: moment(to).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
-      isInEx: isInEx === "all" ? "" : isInEx,
-      PAYER: PAYER === "all" ? "" : PAYER,
-      INV_NO
+      from: moment(fromDate).startOf("day").format("Y-MM-DD HH:mm:ss"),
+      to: moment(toDate).endOf("day").format("Y-MM-DD HH:mm:ss"),
+      TYPE: TYPE === "all" ? "" : TYPE,
+      CUSTOMER_ID: CUSTOMER_ID === "all" ? "" : CUSTOMER_ID,
+      PAYMENT_ID
     }
   });
 };
