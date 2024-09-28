@@ -179,7 +179,7 @@ export function DialogBillInfoEx({
                 <div className="flex justify-center">
                   <Button onClick={handleSaveExOrder} variant="blue" disabled={isSaveExOrder}>
                     {isSaveExOrder && <Loader2 className="mr-2 animate-spin" />}
-                    Xác nhận thanh toán
+                    Xác nhận
                   </Button>
                 </div>
               </div>
