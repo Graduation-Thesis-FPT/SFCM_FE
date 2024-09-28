@@ -43,7 +43,6 @@ export function DetailPermission({ onOpenChange, role = {}, revalidate }) {
     let data = [];
     permissionData.forEach(menu => {
       menu.child.forEach(submenu => {
-        console.log(submenu);
         data.push({
           ROWGUID: submenu.ROWGUID,
           ROLE_ID: role.ID,
@@ -77,7 +76,6 @@ export function DetailPermission({ onOpenChange, role = {}, revalidate }) {
       <CustomSheet.Content title="Phân quyền" className="flex flex-col overflow-hidden">
         <Accordion type="multiple" className="h-full w-full overflow-auto px-2">
           {permissionData?.map((menu, parentIndex) => {
-            console.log(menu);
             if (menu.child?.length === 0) return null;
             return (
               <AccordionItem value={menu.MENU_ID} className="border-none" key={parentIndex}>

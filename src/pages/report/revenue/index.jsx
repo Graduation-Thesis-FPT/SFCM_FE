@@ -4,7 +4,10 @@ import { getPayment } from "@/apis/payment.api";
 import { getReportRevenue } from "@/apis/report.api";
 import { getAllUser } from "@/apis/user.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
+import {
+  DateTimeByTextRender,
+  StatusOrderPaymentRender
+} from "@/components/common/aggridreact/cellRender";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -54,6 +57,7 @@ export function Revenue() {
   });
 
   const [rowData, setRowData] = useState([]);
+  console.log("🚀 ~ Revenue ~ rowData:", rowData);
   const pinnedBottomRowData = useMemo(() => {
     return [
       {
@@ -149,6 +153,18 @@ export function Revenue() {
           return "bg-gray-200 text-end font-bold ";
         }
       },
+      headerName: "Trạng thái thanh toán",
+      field: "STATUS",
+      minWidth: 180,
+      maxWidth: 180,
+      cellRenderer: StatusOrderPaymentRender
+    },
+    {
+      cellClass: params => {
+        if (params.node.rowPinned) {
+          return "bg-gray-200 text-end font-bold ";
+        }
+      },
       headerName: "Người thu tiền",
       field: "cashier",
       flex: 1,
@@ -169,6 +185,7 @@ export function Revenue() {
         }
       }
     },
+
     {
       cellClass: "text-end",
       headerClass: "number-header",
@@ -179,6 +196,7 @@ export function Revenue() {
         return formatVnd(params.value).replace("VND", "");
       }
     },
+
     {
       cellClass: params => {
         if (params.node.rowPinned) {

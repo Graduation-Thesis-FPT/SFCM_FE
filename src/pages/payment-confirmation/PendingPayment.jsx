@@ -135,7 +135,6 @@ export function PendingPayment() {
               size={16}
               className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
-                console.log("aa", paymentInfo);
                 setPaymentInfo(params.data);
                 setOpenPrint(true);
               }}
