@@ -15,35 +15,40 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useCustomToast } from "../common/custom-toast";
 import { socket } from "@/config/socket";
+import { Loader2 } from "lucide-react";
 
 export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePayments }) {
   const [open, setOpen] = useToggle();
   const dispatch = useDispatch();
   const toast = useCustomToast();
+  const [isConfirming, setIsConfirming] = useToggle();
 
   const handleConfirmPayment = async () => {
+    setIsConfirming(true);
     dispatch(setGlobalLoading(true));
     updatePaymentStatus({ paymentInfo })
       .then(res => {
         socket.emit("send-package-export");
-        dispatch(setGlobalLoading(false));
         revalidatePayments();
         toast.success(res);
         setOpen(false);
         setSheetOpen(false);
       })
       .catch(err => {
-        dispatch(setGlobalLoading(false));
         toast.error(err);
+      })
+      .finally(() => {
+        setIsConfirming(false);
+        dispatch(setGlobalLoading(false));
       });
   };
 
-  useEffect(() => {
-    socket.connect();
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  // useEffect(() => {
+  //   socket.connect();
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   return (
     <>
@@ -91,10 +96,17 @@ export default function ConfirmPopup({ paymentInfo, setSheetOpen, revalidatePaym
                 setOpen(false);
               }}
               variant="outline"
+              disabled={isConfirming}
             >
               Đóng
             </Button>
-            <Button className="h-[36px] w-fit" variant="blue" onClick={handleConfirmPayment}>
+            <Button
+              className="h-[36px] w-fit"
+              variant="blue"
+              onClick={handleConfirmPayment}
+              disabled={isConfirming}
+            >
+              {isConfirming && <Loader2 className="mr-2 animate-spin" />}
               Xác nhận thanh toán
             </Button>
           </DialogFooter>
