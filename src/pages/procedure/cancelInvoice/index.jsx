@@ -1,9 +1,6 @@
 import { getAllCustomer } from "@/apis/customer.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import {
-  DateTimeByTextRender,
-  StatusOrderPaymentRender
-} from "@/components/common/aggridreact/cellRender";
+import { StatusOrderPaymentRender } from "@/components/common/aggridreact/cellRender";
 import { BtnExportExcel } from "@/components/common/aggridreact/tableTools/BtnExportExcel";
 import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutTool";
 import { useCustomToast } from "@/components/common/custom-toast";
@@ -29,6 +26,8 @@ import {
 import { Input } from "@/components/common/ui/input";
 import { loadCancelOrder } from "@/apis/cancel-order.api";
 import { DialogDetail } from "./DialogDetail";
+import { Badge } from "@/components/common/ui/badge";
+import { ArrowRightToLine } from "lucide-react";
 
 const initFilter = {
   from: addDays(new Date(), -30),
@@ -63,9 +62,33 @@ export function CancelInvoice() {
       filter: true
     },
     {
-      headerName: "Mã khách hàng",
-      field: "cus_ID",
-      flex: 1,
+      headerName: "Loại lệnh",
+      field: "TYPE",
+      minWidth: 110,
+      maxWidth: 110,
+      cellRenderer: params => {
+        if (!!params.value) {
+          if (params.value === "XK")
+            return (
+              <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
+                Xuất
+                <ArrowRightToLine className="ml-1" size={16} />
+              </Badge>
+            );
+          else if (params.value === "NK")
+            return (
+              <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
+                <ArrowRightToLine className="mr-1" size={16} />
+                Nhập
+              </Badge>
+            );
+        }
+      }
+    },
+    {
+      headerName: "Tên khách hàng",
+      field: "FULLNAME",
+      flex: 3,
       filter: true
     },
     {
@@ -173,8 +196,8 @@ export function CancelInvoice() {
 
   return (
     <Section>
-      <Section.Header className="grid grid-cols-6 items-end gap-3">
-        <div className="col-span-1">
+      <Section.Header className="flex items-end gap-3">
+        <div>
           <Label htmlFor="ORDER_ID">Mã đơn hàng</Label>
           <Input
             className="hover:cursor-pointer"
@@ -186,7 +209,7 @@ export function CancelInvoice() {
           />
         </div>
 
-        <div className="col-span-2">
+        <div>
           <Label htmlFor="CUSTOMER_ID">Khách hàng</Label>
           <SelectSearch
             id="CUSTOMER_ID"
@@ -204,7 +227,7 @@ export function CancelInvoice() {
             }}
           />
         </div>
-        <div className="col-span-1">
+        <div>
           <Label htmlFor="TYPE">Loại lệnh *</Label>
           <Select
             id="TYPE"
@@ -224,7 +247,7 @@ export function CancelInvoice() {
             </SelectContent>
           </Select>
         </div>
-        <div className="col-span-2">
+        <div>
           <Label htmlFor="from-to">Ngày làm lệnh *</Label>
           <DatePickerWithRangeInForm
             className="w-full"
@@ -237,9 +260,13 @@ export function CancelInvoice() {
         </div>
       </Section.Header>
       <Section.Content>
-        <LayoutTool>
-          <BtnExportExcel gridRef={gridRef} />
-        </LayoutTool>
+        <span className="flex items-end justify-between">
+          <span className="text-lg font-bold">Danh sách các lệnh</span>
+          <LayoutTool>
+            <BtnExportExcel gridRef={gridRef} />
+          </LayoutTool>
+        </span>
+
         <Section.Table>
           <AgGrid
             setRowData={data => {

@@ -110,6 +110,15 @@ export function EditPayment({ paymentInfo, open, setOpen, revalidatePayments, re
                     </Badge>
                   )}
                 </div>
+                {paymentInfo?.PAYMENT?.STATUS === "CANCELLED" && (
+                  <>
+                    <p className="text-14 font-semibold">Lý do hủy</p>
+                    <p className="text-end text-14 font-normal">
+                      {paymentInfo?.PAYMENT?.CANCEL_REMARK} - (
+                      {moment(paymentInfo?.PAYMENT?.CANCEL_DATE).format("DD/MM/YYYY")})
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <div className="space-y-2">

@@ -106,7 +106,7 @@ export function DialogBillInfo({
     };
     saveImportOrder(selectedContIdList, paymentInfo, noteImportOrder)
       .then(res => {
-        socket.emit("saveInOrderSuccess");
+        socket.emit("send-save-order");
         toast.success(res);
         onSaveImportOrderSuccess(res.data.metadata);
       })
