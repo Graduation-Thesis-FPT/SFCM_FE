@@ -69,7 +69,7 @@ export const ROUTE_TITLE_PAGE = {
   [PATH_NAME.inputData]: "Dữ liệu đầu vào",
   [PATH_NAME.goodManifest]: "Kê khai hàng hóa",
   [PATH_NAME.manifestLoadingList]: "Kê khai container",
-  [PATH_NAME.vesselInfo]: "Kê khai tàu chuyến",
+  [PATH_NAME.vesselInfo]: "Kê khai chuyến tàu",
 
   [PATH_NAME.tariff]: "Biểu cước",
   [PATH_NAME.configAttachService]: "Cấu hình dịch vụ đính kèm",

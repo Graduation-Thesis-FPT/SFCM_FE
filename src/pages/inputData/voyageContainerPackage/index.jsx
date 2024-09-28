@@ -238,7 +238,7 @@ export function VoyageContainerPackage() {
 
   const handleAddRow = () => {
     if (!voyageSelected.ID) {
-      toast.warning("Vui lòng chọn tàu chuyến");
+      toast.warning("Vui lòng chọn chuyến tàu");
       return;
     }
     if (!containerSelected.ID) {
@@ -309,7 +309,7 @@ export function VoyageContainerPackage() {
 
   const handleFileUpload = rowDataFileUpload => {
     if (!voyageSelected.ID) {
-      toast.warning("Vui lòng chọn tàu chuyến");
+      toast.warning("Vui lòng chọn chuyến tàu");
       return;
     }
     if (!containerSelected.ID) {
@@ -318,6 +318,8 @@ export function VoyageContainerPackage() {
     }
     const finalRowData = rowDataFileUpload?.map(item => {
       return {
+        status: item.status,
+        key: item.key,
         TOTAL_ITEMS: Number(item?.TOTAL_ITEMS),
         CBM: Number(item?.CBM),
         HOUSE_BILL: item.HOUSE_BILL?.toString(),

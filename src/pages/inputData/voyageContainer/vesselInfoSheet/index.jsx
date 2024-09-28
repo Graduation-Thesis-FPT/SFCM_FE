@@ -58,7 +58,7 @@ export function VesselInfoSheet({ open, onOpenChange, onChangeVesselInfo }) {
   const handleSelectRow = () => {
     let rowSelected = gridRef.current.api.getSelectedRows();
     if (rowSelected.length === 0) {
-      toast.warning("Vui lòng chọn tàu chuyến");
+      toast.warning("Vui lòng chọn chuyến tàu");
       return;
     }
     onChangeVesselInfo(rowSelected);

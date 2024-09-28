@@ -106,7 +106,7 @@ export function VoyageContainerSelect({
               <div className="text-lg font-bold">Chọn container</div>
               <div className="space-x-3">
                 <Button onClick={onGoBack} variant="outline">
-                  Chọn lại tàu chuyến
+                  Chọn lại chuyến tàu
                 </Button>
                 {voyageContainerList?.length > 0 && (
                   <Button onClick={handleSelectRow} variant="blue">
