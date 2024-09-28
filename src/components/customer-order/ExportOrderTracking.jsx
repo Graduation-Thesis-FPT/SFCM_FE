@@ -11,14 +11,7 @@ export function ExportOrderTracking() {
         <OrderList
           title="Đã xác nhận"
           status={CustomerOrderStatus.isPending}
-          service={getCustomerOrders}
-        />
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel className="h-full">
-        <OrderList
-          title="Đã thanh toán"
-          status={CustomerOrderStatus.isPaid}
+          orderType="EXPORT"
           service={getCustomerOrders}
         />
       </ResizablePanel>
@@ -27,6 +20,7 @@ export function ExportOrderTracking() {
         <OrderList
           title="Đang lấy hàng"
           status={CustomerOrderStatus.isInProgress}
+          orderType="EXPORT"
           service={getCustomerOrders}
         />
       </ResizablePanel>
@@ -35,6 +29,7 @@ export function ExportOrderTracking() {
         <OrderList
           title="Đang xuất kho"
           status={CustomerOrderStatus.isCompleted}
+          orderType="EXPORT"
           service={getCustomerOrders}
         />
       </ResizablePanel>
@@ -43,6 +38,7 @@ export function ExportOrderTracking() {
         <OrderList
           title="Đã huỷ"
           status={CustomerOrderStatus.isCanceled}
+          orderType="EXPORT"
           service={getCustomerOrders}
         />
       </ResizablePanel>

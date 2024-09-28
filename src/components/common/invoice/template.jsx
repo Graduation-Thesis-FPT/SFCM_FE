@@ -12,7 +12,7 @@ import React, { forwardRef } from "react";
 import { useSelector } from "react-redux";
 import logo from "@/assets/image/Logo_128x128.svg";
 
-export const InvoiceTemplate = forwardRef(({ paymentInfo = {} }, ref) => {
+export const InvoiceTemplate = forwardRef(({ paymentInfo = {}, isCustomer = false }, ref) => {
   const user = useSelector(state => state.userSlice.user);
   return (
     <div ref={ref} className="uk-width-large-3-4 invoice hidden-to-print">
@@ -243,10 +243,13 @@ export const InvoiceTemplate = forwardRef(({ paymentInfo = {} }, ref) => {
                         height: "140px"
                       }}
                     >
-                      <p>Ký bởi: {user?.userInfo?.FULLNAME}</p>
+                      <p>Ký bởi: Thay mặt kế toán</p>
+
                       <p>
                         Ký ngày:
-                        {moment(new Date()).format("DD/MM/YYYY") ?? "N/A"}
+                        {isCustomer
+                          ? moment(new Date(paymentInfo?.PAYMENT?.UPDATED_AT)).format("DD/MM/YYYY")
+                          : moment(new Date()).format("DD/MM/YYYY")}
                       </p>
                     </div>
                   </div>

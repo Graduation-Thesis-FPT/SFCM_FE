@@ -151,6 +151,10 @@ export function EditPayment({ paymentInfo, open, setOpen, revalidatePayments, re
             </div>
           </div>
         </CustomSheet.Content>
+        <p className="px-6 py-4 text-14">
+          <strong className="space-x-2">Ngày tạo lệnh:</strong>{" "}
+          {moment(paymentInfo?.ORDER?.CREATED_AT ?? new Date()).format("DD/MM/YYYY")}
+        </p>
         <CustomSheet.Footer className="flex justify-end bg-white px-6 py-4">
           <Button
             onClick={() => {

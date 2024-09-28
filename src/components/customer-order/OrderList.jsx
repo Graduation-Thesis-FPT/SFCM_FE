@@ -4,6 +4,7 @@ import { Skeleton } from "../common/ui/skeleton";
 import { OrderCard } from "./OrderCard";
 
 export function OrderList({
+  orderType = "IMPORT",
   status = CustomerOrderStatus.isPending,
   title = "Đã xác nhận",
   service
@@ -14,13 +15,13 @@ export function OrderList({
     error
   } = useFetchData({
     service: service,
-    params: { status }
+    params: { status, orderType }
   });
 
   if (loading) {
     return (
       <div className="flex h-full flex-col pb-2">
-        <p className="text-16 mb-6 flex-none px-6 font-medium text-blue-950">{title}</p>
+        <p className="mb-6 flex-none px-6 text-16 font-medium text-blue-950">{title}</p>
         <div className="flex flex-1 flex-col gap-4 overflow-auto px-6">
           {Array.from({ length: 3 }).map((_, index) => (
             <Skeleton key={index} className="h-24 w-64" />
@@ -29,8 +30,8 @@ export function OrderList({
       </div>
     );
   }
-  
-  return  orders?.length === 0 ? (
+
+  return orders?.length === 0 ? (
     <div className="flex h-full flex-col pb-2">
       <p className="text-18 mb-6 flex-none px-6 font-medium text-blue-950">{title}</p>
       <div className="flex flex-1 flex-col gap-4 overflow-auto px-6">
@@ -39,7 +40,7 @@ export function OrderList({
     </div>
   ) : (
     <div className="flex h-full flex-col pb-2">
-      <p className="text-16 mb-6 flex-none px-6 font-medium text-blue-950">{title}</p>
+      <p className="mb-6 flex-none px-6 text-16 font-medium text-blue-950">{title}</p>
       <div className="flex flex-1 flex-col gap-4 overflow-auto px-6">
         {Array.isArray(orders) &&
           orders.map((order, idx) => <OrderCard key={idx} order={order} status={status} />)}

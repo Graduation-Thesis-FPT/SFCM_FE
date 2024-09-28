@@ -1,13 +1,14 @@
 import { axiosCache, axiosPrivate } from "@/config/axios";
 
 const getCustomerOrders = async ({ status, orderId, orderType, from, to }) => {
+  console.log({ status, orderId, orderType, from, to });
   return await axiosPrivate.get(`customer-order/all-orders`, {
     params: {
-      status: status || "",
-      orderId: orderId || "",
-      orderType: orderType || "",
-      from: from || "",
-      to: to || ""
+      status: status,
+      orderId: orderId,
+      orderType: orderType,
+      from: from,
+      to: to
     }
   });
 };
