@@ -2,7 +2,7 @@ import { getExportOrderForDocById } from "@/apis/export-order.api";
 import { getImportOrderForDocById } from "@/apis/import-order.api";
 import { getPayment } from "@/apis/payment.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { payment_confirmation } from "@/components/common/aggridreact/dbColumns";
+import { PaymentConfirmation } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
@@ -45,7 +45,7 @@ const formSchema = z.object({
   orderId: z.string().optional()
 });
 
-const PAYMENT_CONFIRMATION = new payment_confirmation();
+const PAYMENT_CONFIRMATION = new PaymentConfirmation();
 
 export function InExOrder() {
   const gridRef = useRef(null);

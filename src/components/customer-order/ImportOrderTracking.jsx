@@ -1,41 +1,49 @@
-import { ImportOrderStatus } from "@/constants/order-status";
+import { getCustomerOrders } from "@/apis/customer-order.api";
+import { CustomerOrderStatus } from "@/constants/order-status";
 import React from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../common/ui/resizable";
 import { OrderList } from "./OrderList";
-import { getImportedOrders } from "@/apis/customer-order.api";
 
 export function ImportOrderTracking() {
   return (
-    <ResizablePanelGroup className="h-full py-2" direction="horizontal">
+    <ResizablePanelGroup className="h-full w-full py-2" direction="horizontal">
       <ResizablePanel className="h-full">
         <OrderList
           title="Đã xác nhận"
-          status={ImportOrderStatus.isConfirmed}
-          service={getImportedOrders}
+          status={CustomerOrderStatus.isPending}
+          service={getCustomerOrders}
+        />
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel className="h-full">
+        <OrderList
+          title="Đã thanh toán"
+          status={CustomerOrderStatus.isPaid}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel>
         <OrderList
-          title="Đã kiểm đếm"
-          status={ImportOrderStatus.isChecked}
-          service={getImportedOrders}
+          title="Đang kiểm đếm"
+          status={CustomerOrderStatus.isInProgress}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel>
         <OrderList
           title="Đã lưu kho"
-          status={ImportOrderStatus.isStored}
-          service={getImportedOrders}
+          status={CustomerOrderStatus.isCompleted}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel>
         <OrderList
           title="Đã huỷ"
-          status={ImportOrderStatus.isCanceled}
-          service={getImportedOrders}
+          status={CustomerOrderStatus.isCanceled}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
     </ResizablePanelGroup>

@@ -295,7 +295,7 @@ export class bs_order_tracking extends CommonColumns {
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
 }
 
-export class payment_confirmation {
+export class PaymentConfirmation {
   ORDER = {
     ID: { field: "ORDER.ID", headerName: "Mã đơn hàng" },
     PAYMENT_ID: { field: "ORDER.PAYMENT_ID", headerName: "Mã thanh toán" },
@@ -354,4 +354,8 @@ export class payment_confirmation {
     UPDATED_BY: { field: "PAYMENT.UPDATED_BY", headerName: "Người cập nhật" },
     UPDATED_AT: { field: "PAYMENT.UPDATED_AT", headerName: "Ngày cập nhật" }
   };
+}
+
+export class CustomerOrder extends PaymentConfirmation {
+  ORDER_STATUS = { field: "ORDER_STATUS", headerName: "Trạng thái" };
 }

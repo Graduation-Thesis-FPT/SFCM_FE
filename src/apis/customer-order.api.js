@@ -1,13 +1,16 @@
-import { axiosCache } from "@/config/axios";
+import { axiosCache, axiosPrivate } from "@/config/axios";
 
-const getCustomerOrders = async () =>
-  await axiosCache.get(`customer-order`, {
-    id: "customer-order",
-    cache: {
-      ttl: 5 * 60 * 1000,
-      interpretHeader: false
+const getCustomerOrders = async ({ status, orderId, orderType, from, to }) => {
+  return await axiosPrivate.get(`customer-order/all-orders`, {
+    params: {
+      status: status || "",
+      orderId: orderId || "",
+      orderType: orderType || "",
+      from: from || "",
+      to: to || ""
     }
   });
+};
 
 const getCustomerOrdersByFilter = async ({ from_date, to_date }) =>
   await axiosCache.get(`customer-order?from=${from_date}&to=${to_date}`);
