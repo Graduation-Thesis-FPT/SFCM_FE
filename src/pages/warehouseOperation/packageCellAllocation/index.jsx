@@ -287,7 +287,7 @@ export function ImportTally() {
                   >
                     <div className="w-2/3 space-y-2">
                       <div>
-                        Số Housebill: <b>{item?.HOUSE_BILL}</b>
+                        Số House Bill: <b>{item?.HOUSE_BILL}</b>
                       </div>
                       <div>
                         Mã chủ hàng: <b>{item?.CONSIGNEE_ID}</b>
@@ -356,7 +356,7 @@ export function ImportTally() {
                       </b>
                     </span>
                     <span>
-                      Số Housebill: <b>{selectedPackage.HOUSE_BILL}</b>
+                      Số House Bill: <b>{selectedPackage.HOUSE_BILL}</b>
                     </span>
                   </div>
 
@@ -368,6 +368,8 @@ export function ImportTally() {
                       </div>
                     ) : (
                       <LayoutTool>
+                        <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
+                        <BtnSave onClick={handleSaveJobQuantityCheck} />
                         <TooltipProvider delayDuration={200}>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -384,8 +386,6 @@ export function ImportTally() {
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        <BtnAddRow onAddRow={handleAddNewJobQuantityCheck} />
-                        <BtnSave onClick={handleSaveJobQuantityCheck} />
                       </LayoutTool>
                     )}
                   </div>

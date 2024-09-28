@@ -84,7 +84,6 @@ export const InvoiceTemplate = forwardRef(({ paymentInfo = {}, isCustomer = fals
                       </label>
                     </div>
                   </div>
-                  <img src={logo} className="ml-20 mt-[25px] size-[90px]" />
                 </div>
 
                 {/* Info Seller */}
@@ -122,6 +121,7 @@ export const InvoiceTemplate = forwardRef(({ paymentInfo = {}, isCustomer = fals
                       </p>
                     </div>
                   </div>
+                  {/* <img src={logo} className="ml-20 mt-[25px] size-[90px]" /> */}
                 </div>
 
                 {/* Info Buyer */}

@@ -3,7 +3,7 @@ import { useToggle } from "@/hooks/useToggle";
 import { cn, formatVnd } from "@/lib/utils";
 import { ArrowRightToLine, Container, PackageOpen, Printer } from "lucide-react";
 import moment from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useCustomToast } from "../common/custom-toast";
 import { Badge } from "../common/ui/badge";
@@ -11,11 +11,34 @@ import { Card, CardContent } from "../common/ui/card";
 import { Separator } from "../common/ui/separator";
 import { ViewOrderDetail } from "./ViewOrderDetail";
 import { Button } from "../common/ui/button";
+import { useReactToPrint } from "react-to-print";
+import { InvoiceTemplate } from "../common/invoice/template";
+import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 
 export function OrderCard({ order, status }) {
   const [expandContainerId, _c, toggleExpandContainerId] = useToggle();
   const [openSheet, setOpen] = useToggle(false);
+  const [openPrint, setOpenPrint] = useToggle(false);
+  const [paymentInfo, setPaymentInfo] = useState({});
+  const paymentRef = React.useRef(null);
+  const dispatch = useDispatch();
   const today = new Date();
+  const handlePrintInvoice = useReactToPrint({
+    content: () => paymentRef.current,
+    onBeforePrint: () => {
+      dispatch(setGlobalLoading(true));
+    },
+    onAfterPrint: () => {
+      dispatch(setGlobalLoading(false));
+    }
+  });
+
+  useEffect(() => {
+    if (openPrint) {
+      handlePrintInvoice();
+      setOpenPrint(false);
+    }
+  }, [openPrint, handlePrintInvoice]);
 
   const toast = useCustomToast();
   const getColor = status => {
@@ -35,6 +58,7 @@ export function OrderCard({ order, status }) {
 
   return (
     <>
+      <InvoiceTemplate key={order?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
       <ViewOrderDetail open={openSheet} setOpen={setOpen} paymentInfo={order} />
       <Card className={cn(getColor(status), "min-w-fit")}>
         <CardContent className="flex flex-col gap-2 px-4 py-2">
@@ -116,8 +140,8 @@ export function OrderCard({ order, status }) {
               size={16}
               className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
-                // setPaymentInfo(params.data);
-                // setOpenPrint(true);
+                setPaymentInfo(order);
+                setOpenPrint(true);
               }}
             />
           </div>

@@ -51,12 +51,12 @@ export function DialogSaveBillSuccess({ open = false, dataBillAfterSave = {}, on
               Trạng thái: <span className="font-semibold">Chờ thanh toán</span>
             </div>
             <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={onMakeNewOrder} disabled={loading}>
+                Quay lại
+              </Button>
               <Button onClick={handlePrint} variant="blue" disabled={loading}>
                 {loading && <Loader2 className="mr-2 animate-spin" />}
                 In lệnh nhập kho
-              </Button>
-              <Button variant="outline" onClick={onMakeNewOrder} disabled={loading}>
-                Quay lại
               </Button>
               <ComponentPrintOrder
                 ref={printRef}

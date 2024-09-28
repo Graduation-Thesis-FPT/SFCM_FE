@@ -88,7 +88,7 @@ export function CancelInvoice() {
     {
       headerName: "Tên khách hàng",
       field: "FULLNAME",
-      flex: 3,
+      flex: 1,
       filter: true
     },
     {

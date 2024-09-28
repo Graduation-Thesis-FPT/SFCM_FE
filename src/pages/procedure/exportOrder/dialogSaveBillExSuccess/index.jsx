@@ -59,12 +59,12 @@ export function DialogSaveBillExSuccess({
                 Trạng thái: <span className="font-semibold">Chờ thanh toán</span>
               </div>
               <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={onMakeNewExOrder} disabled={loading}>
+                  Quay lại
+                </Button>
                 <Button onClick={handlePrint} variant="blue" disabled={loading}>
                   {loading && <Loader2 className="mr-2 animate-spin" />}
                   In lệnh xuất kho
-                </Button>
-                <Button variant="outline" onClick={onMakeNewExOrder} disabled={loading}>
-                  Quay lại
                 </Button>
               </div>
             </DialogTitle>

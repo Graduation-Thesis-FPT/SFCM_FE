@@ -1,5 +1,6 @@
 import { getPayment } from "@/apis/payment.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { PaymentConfirmation } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { InvoiceTemplate } from "@/components/common/invoice/template";
@@ -182,6 +183,13 @@ export function CancelledPayment() {
           );
         }
       }
+    },
+    {
+      headerName: PAYMENT_CONFIRMATION.PAYMENT.CREATED_AT.headerName,
+      field: PAYMENT_CONFIRMATION.PAYMENT.CREATED_AT.field,
+      flex: 0.75,
+      filter: true,
+      cellRenderer: DateTimeByTextRender
     },
     {
       headerName: "",

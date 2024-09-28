@@ -35,6 +35,7 @@ import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 import { z } from "zod";
 import { socket } from "@/config/socket";
+import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 
 const formSchema = z.object({
   status: z.enum(["PENDING", "PAID", "CANCELLED", "all"]).optional(),
@@ -183,6 +184,13 @@ export function PendingPayment() {
           );
         }
       }
+    },
+    {
+      headerName: PAYMENT_CONFIRMATION.PAYMENT.CREATED_AT.headerName,
+      field: PAYMENT_CONFIRMATION.PAYMENT.CREATED_AT.field,
+      flex: 0.75,
+      filter: true,
+      cellRenderer: DateTimeByTextRender
     },
     {
       headerName: "",
