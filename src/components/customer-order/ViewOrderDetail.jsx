@@ -25,10 +25,15 @@ export function ViewOrderDetail({ paymentInfo, open, setOpen }) {
       }}
       title="Thông tin đơn hàng"
     >
-      <div className="flex flex-1 flex-col  overflow-y-auto">
+      <div className="flex flex-1 flex-col overflow-y-auto">
         <CustomSheet.Content>
-          <div className="h-fit space-y-4">
-            <Label className="text-sm font-medium">Thông tin đơn hàng</Label>
+          <div className="flex-1 space-y-4">
+            <div className="flex justify-between ">
+              <Label className="text-sm font-medium">Thông tin đơn hàng</Label>
+              <p className="text-14">
+                <strong className="space-x-2">Mã đơn hàng: </strong> {paymentInfo?.ORDER?.ID}
+              </p>
+            </div>
             <Table className="border text-xs">
               <TableHeader>
                 <TableRow>
@@ -76,7 +81,13 @@ export function ViewOrderDetail({ paymentInfo, open, setOpen }) {
               </TableBody>
             </Table>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Thông tin thanh toán</Label>
+              <div className="flex justify-between ">
+                <Label className="items-end text-sm font-medium">Thông tin thanh toán</Label>
+                <p className="text-14">
+                  <strong className="space-x-2">Số hoá đơn: </strong>{" "}
+                  {paymentInfo?.ORDER?.PAYMENT_ID}
+                </p>
+              </div>
               <Separator />
               <div className="grid grid-cols-2 gap-y-2 font-semibold">
                 <p className="text-14 font-semibold">Tổng tiền trước thuế</p>
@@ -126,7 +137,7 @@ export function ViewOrderDetail({ paymentInfo, open, setOpen }) {
               <Separator />
               <div className="grid grid-cols-1 gap-x-2 gap-y-2 rounded bg-neutral-100 p-2 text-14">
                 <p>
-                  <strong className="space-x-2">Mã số thuế:</strong>{" "}
+                  <strong className="space-x-2">Mã số thuế: </strong>{" "}
                   {paymentInfo?.ORDER?.USER?.TAX_CODE}
                 </p>
                 <p>
@@ -150,6 +161,10 @@ export function ViewOrderDetail({ paymentInfo, open, setOpen }) {
             </div>
           </div>
         </CustomSheet.Content>
+        <p className="px-6 py-4 text-14">
+          <strong className="space-x-2">Ngày tạo lệnh:</strong>{" "}
+          {moment(paymentInfo?.ORDER?.CREATED_AT ?? new Date()).format("DD/MM/YYYY")}
+        </p>
         <CustomSheet.Footer className="flex justify-end bg-white px-6 py-4">
           <Button
             onClick={() => {

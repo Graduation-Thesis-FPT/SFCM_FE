@@ -1,5 +1,6 @@
 import { getCustomerOrders } from "@/apis/customer-order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
+import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
 import { CustomerOrder } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
@@ -70,6 +71,7 @@ export function Order() {
 
   const { data: orders, loading } = useFetchData({ service: getCustomerOrders });
   const [rowData, setRowData] = useSetData(orders);
+  console.log("rowData", rowData);
   // const [rowData, setRowData] = useSetData([]);
   const dispatch = useDispatch();
 
@@ -92,10 +94,11 @@ export function Order() {
       filter: true
     },
     {
-      headerName: CUSTOMER_ORDER.ORDER.USER.FULLNAME.headerName,
-      field: CUSTOMER_ORDER.ORDER.USER.FULLNAME.field,
-      flex: 0.5,
-      filter: true
+      headerName: CUSTOMER_ORDER.ORDER.CREATED_AT.headerName,
+      field: CUSTOMER_ORDER.ORDER.CREATED_AT.field,
+      flex: 0.75,
+      filter: true,
+      cellRenderer: DateTimeByTextRender
     },
     {
       headerName: CUSTOMER_ORDER.ORDER_TYPE.headerName,
@@ -161,13 +164,7 @@ export function Order() {
       minWidth: 175,
       maxWidth: 175,
       cellRenderer: params => {
-        if (params.data.ORDER_STATUS === "PAID") {
-          return (
-            <Badge className="rounded-sm border-transparent bg-purple-100 font-normal text-purple-800 hover:bg-purple-200">
-              Đã thanh toán
-            </Badge>
-          );
-        } else if (params.data.ORDER_STATUS === "CANCELLED") {
+        if (params.data.ORDER_STATUS === "CANCELLED") {
           return (
             <Badge className="rounded-sm border-transparent bg-red-100 font-normal text-red-800 hover:bg-red-200">
               Đã hủy
@@ -243,8 +240,6 @@ export function Order() {
   const onSubmit = values => {
     dispatch(setGlobalLoading(true));
     let { status, orderType, orderId, from, to } = form.getValues();
-    from = from.toISOString();
-    to = to.toISOString();
     //exclude empty value from { status, orderType, searchBy, orderId } = form.getValues()
     const filteredValues = Object.fromEntries(
       Object.entries({ status, orderType, orderId, from, to }).filter(
@@ -266,7 +261,12 @@ export function Order() {
   return (
     <>
       <ViewOrderDetail open={openSheet} setOpen={setOpen} paymentInfo={paymentInfo} />
-      <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
+      <InvoiceTemplate
+        key={paymentInfo?.PAYMENT?.ID}
+        ref={paymentRef}
+        paymentInfo={paymentInfo}
+        isCustomer
+      />
       <Section>
         <Section.Header title="Danh sách đơn hàng" />
         <Section.Content>
@@ -280,7 +280,7 @@ export function Order() {
                 name="orderId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tìm mã đơn hàng</FormLabel>
+                    <FormLabel>Nhập mã đơn hàng</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="Nhập tên mã đơn hàng" className="w-[300px]" />
                     </FormControl>
@@ -307,9 +307,6 @@ export function Order() {
                           <SelectItem value="PENDING" className="text-yellow-800">
                             Chờ thanh toán
                           </SelectItem>
-                          <SelectItem value="PAID" className="text-purple-800">
-                            Đã thanh toán
-                          </SelectItem>
                           <SelectItem value="IN_PROGRESS" className="text-blue-800">
                             Đang xử lý
                           </SelectItem>
@@ -322,7 +319,6 @@ export function Order() {
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <FormMessage>{form.formState.errors?.status?.message} </FormMessage>
                   </FormItem>
                 )}
               />
@@ -379,12 +375,7 @@ export function Order() {
             </form>
           </Form>
           <Section.Table>
-            <AgGrid
-              ref={gridRef}
-              colDefs={colDefs}
-              // loading={loading}
-              rowData={rowData}
-            />
+            <AgGrid ref={gridRef} colDefs={colDefs} loading={loading} rowData={rowData} />
           </Section.Table>
         </Section.Content>
       </Section>

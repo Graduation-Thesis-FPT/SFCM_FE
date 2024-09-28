@@ -1,32 +1,27 @@
 import { CustomerOrderStatus } from "@/constants/order-status";
 import { useToggle } from "@/hooks/useToggle";
-import { cn, formatVnd, getType } from "@/lib/utils";
+import { cn, formatVnd } from "@/lib/utils";
 import { ArrowRightToLine, Container, PackageOpen, Printer } from "lucide-react";
 import moment from "moment";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useCustomToast } from "../common/custom-toast";
 import { Badge } from "../common/ui/badge";
-import { Button } from "../common/ui/button";
 import { Card, CardContent } from "../common/ui/card";
 import { Separator } from "../common/ui/separator";
-import { OrderDetail } from "./OrderDetail";
+import { ViewOrderDetail } from "./ViewOrderDetail";
+import { Button } from "../common/ui/button";
 
 export function OrderCard({ order, status }) {
   const [expandContainerId, _c, toggleExpandContainerId] = useToggle();
-  const [expandPackageId, _p, toggleExpandPackageId] = useToggle();
-  const dispatch = useDispatch();
+  const [openSheet, setOpen] = useToggle(false);
   const today = new Date();
-  const checkOverEpireDate = date => {
-    return new Date(date) < today;
-  };
+
   const toast = useCustomToast();
   const getColor = status => {
     switch (status) {
       case CustomerOrderStatus.isPending:
         return "border-yellow-100 bg-yellow-50";
-      case CustomerOrderStatus.isPaid:
-        return "border-purple-100 bg-purple-50";
       case CustomerOrderStatus.isInProgress:
         return "border-blue-100 bg-blue-50";
       case CustomerOrderStatus.isCompleted:
@@ -40,6 +35,7 @@ export function OrderCard({ order, status }) {
 
   return (
     <>
+      <ViewOrderDetail open={openSheet} setOpen={setOpen} paymentInfo={order} />
       <Card className={cn(getColor(status), "min-w-fit")}>
         <CardContent className="flex flex-col gap-2 px-4 py-2">
           <div className="flex flex-row items-center justify-between gap-2">
@@ -81,7 +77,7 @@ export function OrderCard({ order, status }) {
                       className={`flex-1 cursor-pointer pl-2 font-medium text-blue-950 ${expandContainerId ? "" : "line-clamp-1"}`}
                       onClick={() => toggleExpandContainerId()}
                     >
-                      {order?.ORDER_TYPE === "IMPORT" && item.VOYAGE_CONTAINER_ID}
+                      {index + 1}. {order?.ORDER_TYPE === "IMPORT" && item.VOYAGE_CONTAINER_ID}
                       {order?.ORDER_TYPE === "EXPORT" && item.VOYAGE_CONTAINER_PACKAGE_ID}
                     </p>
                   ))}
@@ -99,6 +95,16 @@ export function OrderCard({ order, status }) {
             <p className="flex flex-row gap-1 text-12 font-extralight text-gray-700">
               <span>{moment(new Date(order?.ORDER?.CREATED_AT)).format("DD/MM/YYYY")}</span>
             </p>
+            <Button
+              variant="link"
+              size="xs"
+              className="text-xs text-blue-700 hover:text-blue-800"
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
+              Chi tiết
+            </Button>
           </div>
           <Separator orientation="horizontal" />
           <div className="flex flex-row items-center justify-between gap-2">
@@ -106,17 +112,14 @@ export function OrderCard({ order, status }) {
               <p className="text-nowrap font-light">Số hoá đơn:</p>
               <p className="font-medium text-blue-950">{order?.ORDER?.PAYMENT_ID || "N/A"}</p>
             </div>
-            <Button
-              variant="blue"
-              size="xs"
-              className="text-[10px] text-white"
+            <Printer
+              size={16}
+              className="mr-1 flex-none cursor-pointer text-blue-600"
               onClick={() => {
-                {
-                }
+                // setPaymentInfo(params.data);
+                // setOpenPrint(true);
               }}
-            >
-              Xem hoá đơn
-            </Button>
+            />
           </div>
         </CardContent>
       </Card>
