@@ -21,18 +21,6 @@ const VOYAGE = new voyage();
 
 const filterList = [
   {
-    name: VOYAGE.ID.headerName,
-    field: VOYAGE.ID.field
-  },
-  {
-    name: VOYAGE.VESSEL_NAME.headerName,
-    field: VOYAGE.VESSEL_NAME.field
-  },
-  {
-    name: VOYAGE.ETA.headerName,
-    field: VOYAGE.ETA.field
-  },
-  {
     name: "Mã đại lý",
     field: "SHIPPER_ID"
   },
@@ -43,6 +31,18 @@ const filterList = [
   {
     name: "Mã số thuế",
     field: "TAX_CODE"
+  },
+  {
+    name: VOYAGE.ID.headerName,
+    field: VOYAGE.ID.field
+  },
+  {
+    name: VOYAGE.VESSEL_NAME.headerName,
+    field: VOYAGE.VESSEL_NAME.field
+  },
+  {
+    name: VOYAGE.ETA.headerName,
+    field: VOYAGE.ETA.field
   }
 ];
 
