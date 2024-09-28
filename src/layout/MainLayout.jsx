@@ -83,7 +83,7 @@ export function MainLayout() {
               <MessageCircle size={20} />
             </div> */}
             <div className="mx-3 space-y-1 text-center">
-              <div className="text-sm font-bold text-gray-900">{user?.userInfo?.FULLNAME}</div>
+              <div className="text-sm font-bold text-gray-900 line-clamp-1 w-40">{user?.userInfo?.FULLNAME}</div>
               <div className="text-xs font-normal text-gray-600">{user?.userInfo?.ROLE_NAME}</div>
             </div>
             <DropdownMenu>

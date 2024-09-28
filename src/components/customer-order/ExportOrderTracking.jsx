@@ -1,8 +1,8 @@
-import { ExportOrderStatus } from "@/constants/order-status";
+import { getCustomerOrders } from "@/apis/customer-order.api";
+import { CustomerOrderStatus } from "@/constants/order-status";
 import React from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../common/ui/resizable";
 import { OrderList } from "./OrderList";
-import { getExportedOrders } from "@/apis/customer-order.api";
 
 export function ExportOrderTracking() {
   return (
@@ -10,24 +10,40 @@ export function ExportOrderTracking() {
       <ResizablePanel className="h-full">
         <OrderList
           title="Đã xác nhận"
-          status={ExportOrderStatus.isConfirmed}
-          service={getExportedOrders}
+          status={CustomerOrderStatus.isPending}
+          service={getCustomerOrders}
+        />
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel className="h-full">
+        <OrderList
+          title="Đã thanh toán"
+          status={CustomerOrderStatus.isPaid}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel>
         <OrderList
-          title="Đã xuất kho"
-          status={ExportOrderStatus.isReleased}
-          service={getExportedOrders}
+          title="Đang lấy hàng"
+          status={CustomerOrderStatus.isInProgress}
+          service={getCustomerOrders}
+        />
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel>
+        <OrderList
+          title="Đang xuất kho"
+          status={CustomerOrderStatus.isCompleted}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel>
         <OrderList
           title="Đã huỷ"
-          status={ExportOrderStatus.isCanceled}
-          service={getExportedOrders}
+          status={CustomerOrderStatus.isCanceled}
+          service={getCustomerOrders}
         />
       </ResizablePanel>
     </ResizablePanelGroup>

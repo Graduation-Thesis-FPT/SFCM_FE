@@ -1,6 +1,6 @@
-import { getPayment } from "@/apis/payment.api";
+import { getPayment as getPayments } from "@/apis/payment.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { payment_confirmation } from "@/components/common/aggridreact/dbColumns";
+import { PaymentConfirmation } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { InvoiceTemplate } from "@/components/common/invoice/template";
 import { Section } from "@/components/common/section";
@@ -50,7 +50,7 @@ export function AllPayment() {
   const [openPrint, setOpenPrint] = useToggle(false);
   const [paymentInfo, setPaymentInfo] = useState({});
   const onBeforeGetContentResolve = useRef();
-  const PAYMENT_CONFIRMATION = new payment_confirmation();
+  const PAYMENT_CONFIRMATION = new PaymentConfirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,7 +64,7 @@ export function AllPayment() {
     data: payments,
     loading,
     revalidate: revalidatePayments
-  } = useFetchData({ service: getPayment });
+  } = useFetchData({ service: getPayments });
   const [rowData, setRowData] = useSetData(payments);
   const dispatch = useDispatch();
 
@@ -232,7 +232,7 @@ export function AllPayment() {
       )
     );
 
-    getPayment(filteredValues)
+    getPayments(filteredValues)
       .then(res => {
         setRowData(res.data.metadata);
       })

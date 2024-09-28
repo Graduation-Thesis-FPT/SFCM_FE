@@ -1,14 +1,9 @@
-export const ImportOrderStatus = {
-  isConfirmed: "isConfirmed",
-  isChecked: "isChecked",
-  isStored: "isStored",
-  isCanceled: "isCanceled"
-};
-
-export const ExportOrderStatus = {
-  isConfirmed: "isConfirmed",
-  isReleased: "isReleased",
-  isCanceled: "isCanceled"
+export const CustomerOrderStatus = {
+  isPending: "PENDING",
+  isPaid: "PAID",
+  isCanceled: "CANCELLED",
+  isInProgress: "IN_PROGRESS",
+  isCompleted: "COMPLETED"
 };
 
 export const OrderStatus = {

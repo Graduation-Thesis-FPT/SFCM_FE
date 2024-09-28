@@ -1,14 +1,9 @@
-import {
-  getCustomerOrders,
-  getCustomerOrdersByFilter,
-  getOrderByOrderNo
-} from "@/apis/customer-order.api";
-import { viewInvoice } from "@/apis/order.api";
+import { getCustomerOrders } from "@/apis/customer-order.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { DateTimeByTextRender } from "@/components/common/aggridreact/cellRender";
-import { bs_order_tracking } from "@/components/common/aggridreact/dbColumns";
+import { CustomerOrder } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { DatePickerWithRangeInForm } from "@/components/common/date-range-picker";
+import { InvoiceTemplate } from "@/components/common/invoice/template";
 import { Section } from "@/components/common/section";
 import { Badge } from "@/components/common/ui/badge";
 import { Button } from "@/components/common/ui/button";
@@ -20,23 +15,23 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/common/ui/form";
+import { Input } from "@/components/common/ui/input";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/common/ui/tooltip";
-import { OrderDetail } from "@/components/customer-order";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/common/ui/select";
+import { ViewOrderDetail } from "@/components/customer-order/ViewOrderDetail";
 import useFetchData from "@/hooks/useRefetchData";
 import { useSetData } from "@/hooks/useSetData";
 import { useToggle } from "@/hooks/useToggle";
-import { getType } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays } from "date-fns";
 import { ArrowRightToLine, Printer, Search } from "lucide-react";
-import moment from "moment";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useReactToPrint } from "react-to-print";
@@ -44,33 +39,38 @@ import { z } from "zod";
 
 const formSchema = z
   .object({
-    from_date: z.date({
+    from: z.date({
       required_error: "Vui lòng chọn khoảng thời gian!"
     }),
-    to_date: z.date({
+    to: z.date({
       required_error: "Vui lòng chọn khoảng thời gian!"
     })
   })
-  .refine(data => data.from_date <= data.to_date, {
+  .refine(data => data.from <= data.to, {
     message: "Ngày bắt đầu không được lớn hơn ngày kết thúc!",
     path: ["to_date"]
   });
 export function Order() {
   const gridRef = useRef(null);
   const toast = useCustomToast();
-  const orderDetailRef = useRef();
-  const [order, setOrder] = useToggle();
-  const BS_ORDER_TRACKING = new bs_order_tracking();
+  const paymentRef = useRef(null);
+  const [openSheet, setOpen] = useToggle(false);
+  const [openPrint, setOpenPrint] = useToggle(false);
+  const [paymentInfo, setPaymentInfo] = useState({});
+  const CUSTOMER_ORDER = new CustomerOrder();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      from_date: addDays(new Date(), -30),
-      to_date: addDays(new Date(), 30)
+      status: "all",
+      orderType: "all",
+      from: addDays(new Date(), -30),
+      to: addDays(new Date(), 30)
     }
   });
-  const { data: orders, loading } = useFetchData({ service: getCustomerOrders });
 
+  const { data: orders, loading } = useFetchData({ service: getCustomerOrders });
   const [rowData, setRowData] = useSetData(orders);
+  // const [rowData, setRowData] = useSetData([]);
   const dispatch = useDispatch();
 
   const colDefs = [
@@ -84,30 +84,40 @@ export function Order() {
         return Number(params.node.id) + 1;
       }
     },
+
     {
-      headerName: BS_ORDER_TRACKING.DE_ORDER_NO.headerName,
-      field: BS_ORDER_TRACKING.DE_ORDER_NO.field,
-      flex: 1,
+      headerName: CUSTOMER_ORDER.ORDER.ID.headerName,
+      field: CUSTOMER_ORDER.ORDER.ID.field,
+      flex: 0.75,
       filter: true
     },
     {
-      headerName: "Loại lệnh",
-      field: "ORDER_TYPE",
+      headerName: CUSTOMER_ORDER.ORDER.USER.FULLNAME.headerName,
+      field: CUSTOMER_ORDER.ORDER.USER.FULLNAME.field,
+      flex: 0.5,
+      filter: true
+    },
+    {
+      headerName: CUSTOMER_ORDER.ORDER_TYPE.headerName,
+      field: CUSTOMER_ORDER.ORDER_TYPE.field,
       flex: 0.5,
       filter: true,
       cellRenderer: params => {
-        if (!!params.data.CONTAINER_ID) {
-          return !!params.data.PACKAGE_ID ? (
-            <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
-              Xuất
-              <ArrowRightToLine className="ml-1" size={16} />
-            </Badge>
-          ) : (
-            <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
-              <ArrowRightToLine className="mr-1" size={16} />
-              Nhập
-            </Badge>
-          );
+        if (!!params.data.ORDER_TYPE) {
+          if (params.data.ORDER_TYPE === "EXPORT")
+            return (
+              <Badge className="rounded-sm border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200">
+                Xuất
+                <ArrowRightToLine className="ml-1" size={16} />
+              </Badge>
+            );
+          else if (params.data.ORDER_TYPE === "IMPORT")
+            return (
+              <Badge className="rounded-sm border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200">
+                <ArrowRightToLine className="mr-1" size={16} />
+                Nhập
+              </Badge>
+            );
         }
         return (
           <Badge className="rounded-sm border-transparent bg-orange-100 text-orange-800 hover:bg-orange-200">
@@ -116,130 +126,133 @@ export function Order() {
         );
       }
     },
-    {
-      headerName: BS_ORDER_TRACKING.TOTAL_CBM.headerName,
-      field: BS_ORDER_TRACKING.TOTAL_CBM.field,
-      flex: 0.5,
-      filter: true
-    },
 
     {
-      headerName: BS_ORDER_TRACKING.ISSUE_DATE.headerName,
-      field: BS_ORDER_TRACKING.ISSUE_DATE.field,
-      flex: 1,
-      cellRenderer: DateTimeByTextRender
-    },
-    {
-      headerName: BS_ORDER_TRACKING.INV_ID.headerName,
-      field: BS_ORDER_TRACKING.INV_ID.field,
-      flex: 1,
+      headerName: CUSTOMER_ORDER.PAYMENT.ID.headerName,
+      field: CUSTOMER_ORDER.PAYMENT.ID.field,
+      flex: 0.75,
       filter: true,
       cellRenderer: params => {
         return (
-          <TooltipProvider>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger
-                onClick={() => {
-                  handleViewInvoice(params.data.DE_ORDER_NO);
-                }}
-                className="text-xs text-gray-500 hover:text-gray-800 hover:underline"
-              >
-                {params.data.INV_ID}
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p className="text-12">Xem hoá đơn</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-2">
+            <Printer
+              size={16}
+              className="mr-1 flex-none cursor-pointer text-blue-600"
+              onClick={() => {
+                setPaymentInfo(params.data);
+                setOpenPrint(true);
+              }}
+            />
+            <p className="flex-1">{params.data.PAYMENT.ID}</p>
+          </div>
         );
       }
     },
+
     {
-      headerName: "Trạng thái",
-      field: "IS_VALID",
-      minWidth: 150,
-      maxWidth: 150,
+      headerName: CUSTOMER_ORDER.PAYMENT.TOTAL_AMOUNT.headerName,
+      field: CUSTOMER_ORDER.PAYMENT.TOTAL_AMOUNT.field,
+      flex: 0.5
+    },
+
+    {
+      headerName: CUSTOMER_ORDER.ORDER_STATUS.headerName,
+      field: CUSTOMER_ORDER.ORDER_STATUS.field,
+      minWidth: 175,
+      maxWidth: 175,
       cellRenderer: params => {
-        if (params.value) {
+        if (params.data.ORDER_STATUS === "PAID") {
           return (
-            <Badge className="rounded-sm border-transparent bg-green-100 text-green-800 hover:bg-green-200">
+            <Badge className="rounded-sm border-transparent bg-purple-100 font-normal text-purple-800 hover:bg-purple-200">
               Đã thanh toán
             </Badge>
           );
+        } else if (params.data.ORDER_STATUS === "CANCELLED") {
+          return (
+            <Badge className="rounded-sm border-transparent bg-red-100 font-normal text-red-800 hover:bg-red-200">
+              Đã hủy
+            </Badge>
+          );
+        } else if (params.data.ORDER_STATUS === "PENDING") {
+          return (
+            <Badge className="rounded-sm border-transparent  bg-yellow-100 font-normal text-yellow-800 hover:bg-yellow-200">
+              Chờ thanh toán
+            </Badge>
+          );
+        } else if (params.data.ORDER_STATUS === "IN_PROGRESS") {
+          return (
+            <Badge className="rounded-sm border-transparent bg-blue-100 font-normal text-blue-800 hover:bg-blue-200">
+              Đang xử lý
+            </Badge>
+          );
+        } else if (params.data.ORDER_STATUS === "COMPLETED") {
+          return (
+            <Badge className="rounded-sm border-transparent bg-green-100 font-normal text-green-800 hover:bg-green-200">
+              {params.data.ORDER_TYPE === "EXPORT" && "Đã xuất kho"}
+              {params.data.ORDER_TYPE === "IMPORT" && "Đã nhập kho"}
+            </Badge>
+          );
+        } else {
+          return (
+            <Badge className="rounded-sm border-transparent bg-gray-100 font-normal text-gray-800 hover:bg-gray-200">
+              Không xác định
+            </Badge>
+          );
         }
-        return (
-          <Badge className="rounded-sm border-transparent bg-red-100 text-red-800 hover:bg-red-200">
-            Đã hủy
-          </Badge>
-        );
       }
     },
     {
       headerName: "",
-      field: "ORDER_DETAIL",
-      flex: 0.5,
+      flex: 0.45,
       filter: true,
       cellStyle: { alignContent: "space-evenly" },
       cellRenderer: params => {
         return (
           <Button
-            variant="ghost"
+            variant="link"
             size="xs"
-            className="text-xs"
-            onClick={async () => {
-              await handleGetOrder(params.data.DE_ORDER_NO);
-              handlePrint();
+            className="text-xs text-blue-700 hover:text-blue-800"
+            onClick={() => {
+              setPaymentInfo(params.data);
+              setOpen(true);
             }}
           >
-            <Printer size={16} className="mr-1 text-blue-950" />
-            In phiếu
+            Chi tiết
           </Button>
         );
       }
     }
   ];
-  const handlePrint = useReactToPrint({
-    content: () => orderDetailRef.current,
-    onBeforePrint: () => dispatch(setGlobalLoading(true)),
-    onAfterPrint: () => dispatch(setGlobalLoading(false))
+  const handlePrintInvoice = useReactToPrint({
+    content: () => paymentRef.current,
+    onBeforePrint: () => {
+      dispatch(setGlobalLoading(true));
+    },
+    onAfterPrint: () => {
+      dispatch(setGlobalLoading(false));
+    }
   });
 
-  const handleViewInvoice = deliveryOrderNO => {
-    dispatch(setGlobalLoading(true));
-    viewInvoice(deliveryOrderNO)
-      .then(res => {
-        let base64Data = res.data.metadata.content.data;
-        const blob = new Blob([new Uint8Array(base64Data).buffer], { type: "application/pdf" });
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, "_blank");
-      })
-      .catch(err => {
-        toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
-      });
-  };
+  useEffect(() => {
+    if (openPrint) {
+      handlePrintInvoice();
+      setOpenPrint(false);
+    }
+  }, [openPrint, handlePrintInvoice]);
 
-  const handleGetOrder = async orderNo => {
+  const onSubmit = values => {
     dispatch(setGlobalLoading(true));
-    await getOrderByOrderNo({ orderNo: orderNo })
-      .then(async res => {
-        await setOrder(res.data.metadata);
-      })
-      .catch(err => {
-        toast.error(err);
-      })
-      .finally(() => {
-        dispatch(setGlobalLoading(false));
-      });
-  };
-  const onSubmit = () => {
-    dispatch(setGlobalLoading(true));
-    getCustomerOrdersByFilter({
-      from_date: moment(form.getValues("from_date")).startOf("day").format("Y-MM-DD HH:mm:ss"),
-      to_date: moment(form.getValues("to_date")).endOf("day").format("Y-MM-DD HH:mm:ss")
-    })
+    let { status, orderType, orderId, from, to } = form.getValues();
+    from = from.toISOString();
+    to = to.toISOString();
+    //exclude empty value from { status, orderType, searchBy, orderId } = form.getValues()
+    const filteredValues = Object.fromEntries(
+      Object.entries({ status, orderType, orderId, from, to }).filter(
+        ([_, v]) => v != null && v !== "" && v !== "all"
+      )
+    );
+
+    getCustomerOrders(filteredValues)
       .then(res => {
         setRowData(res.data.metadata);
       })
@@ -251,49 +264,130 @@ export function Order() {
       });
   };
   return (
-    <Section>
-      <Section.Header title="Danh sách đơn hàng" />
+    <>
+      <ViewOrderDetail open={openSheet} setOpen={setOpen} paymentInfo={paymentInfo} />
+      <InvoiceTemplate key={paymentInfo?.PAYMENT?.ID} ref={paymentRef} paymentInfo={paymentInfo} />
+      <Section>
+        <Section.Header title="Danh sách đơn hàng" />
+        <Section.Content>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex items-end justify-start gap-2"
+            >
+              <FormField
+                control={form.control}
+                name="orderId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tìm mã đơn hàng</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Nhập tên mã đơn hàng" className="w-[300px]" />
+                    </FormControl>
+                    <FormMessage>{form.formState.errors?.orderId?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
 
-      <Section.Content>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex items-end justify-start gap-2"
-          >
-            <FormField
-              control={form.control}
-              name="from_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tìm kiếm theo ngày</FormLabel>
-                  <FormControl>
-                    <DatePickerWithRangeInForm
-                      date={{ from: form.getValues("from_date"), to: form.getValues("to_date") }}
-                      onSelected={value => {
-                        form.setValue("from_date", value?.from, { shouldValidate: true });
-                        form.setValue("to_date", value?.to, { shouldValidate: true });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors?.from_date?.message ||
-                      form.formState.errors?.to_date?.message}
-                  </FormMessage>
-                </FormItem>
-              )}
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Trạng thái</FormLabel>
+                    <FormControl>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-[200px]">
+                          <SelectValue placeholder="Chọn trạng thái" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all" className="text-gray-800">
+                            Tất cả
+                          </SelectItem>
+                          <SelectItem value="PENDING" className="text-yellow-800">
+                            Chờ thanh toán
+                          </SelectItem>
+                          <SelectItem value="PAID" className="text-purple-800">
+                            Đã thanh toán
+                          </SelectItem>
+                          <SelectItem value="IN_PROGRESS" className="text-blue-800">
+                            Đang xử lý
+                          </SelectItem>
+                          <SelectItem value="COMPLETED" className="text-green-800">
+                            Đã hoàn thành
+                          </SelectItem>
+                          <SelectItem value="CANCELLED" className="text-red-800">
+                            Đã hủy
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage>{form.formState.errors?.status?.message} </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="orderType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Loại lệnh</FormLabel>
+                    <FormControl>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-[150px]">
+                          <SelectValue placeholder="Chọn loại lệnh" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all" className="text-gray-800">
+                            Tất cả
+                          </SelectItem>
+                          <SelectItem value="IMPORT">Nhập</SelectItem>
+                          <SelectItem value="EXPORT">Xuất</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage>{form.formState.errors?.orderType?.message}</FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="from"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tìm kiếm theo ngày</FormLabel>
+                    <FormControl>
+                      <DatePickerWithRangeInForm
+                        className="h-9 [&_div]:text-[14px]"
+                        date={{ from: form.getValues("from"), to: form.getValues("to") }}
+                        onSelected={value => {
+                          form.setValue("from", value?.from, { shouldValidate: true });
+                          form.setValue("to", value?.to, { shouldValidate: true });
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors?.from?.message || form.formState.errors?.to?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <Button className="h-[36px] text-xs" type="submit">
+                Tìm kiếm
+                <Search className="ml-2 size-4" />
+              </Button>
+            </form>
+          </Form>
+          <Section.Table>
+            <AgGrid
+              ref={gridRef}
+              colDefs={colDefs}
+              // loading={loading}
+              rowData={rowData}
             />
-
-            <Button className="h-[36px] text-xs" type="submit">
-              Tìm kiếm
-              <Search className="ml-2 size-4" />
-            </Button>
-          </form>
-        </Form>
-        <Section.Table>
-          <AgGrid ref={gridRef} colDefs={colDefs} loading={loading} rowData={rowData} />
-        </Section.Table>
-      </Section.Content>
-      <OrderDetail ref={orderDetailRef} data={order} status={getType(order)} />
-    </Section>
+          </Section.Table>
+        </Section.Content>
+      </Section>
+    </>
   );
 }

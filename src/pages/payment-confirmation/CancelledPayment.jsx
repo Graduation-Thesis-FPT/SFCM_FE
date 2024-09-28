@@ -1,6 +1,6 @@
 import { getPayment } from "@/apis/payment.api";
 import { AgGrid } from "@/components/common/aggridreact/AgGrid";
-import { payment_confirmation } from "@/components/common/aggridreact/dbColumns";
+import { PaymentConfirmation } from "@/components/common/aggridreact/dbColumns";
 import { useCustomToast } from "@/components/common/custom-toast";
 import { InvoiceTemplate } from "@/components/common/invoice/template";
 import { Section } from "@/components/common/section";
@@ -50,7 +50,7 @@ export function CancelledPayment() {
   const [openPrint, setOpenPrint] = useToggle(false);
   const [paymentInfo, setPaymentInfo] = useState({});
   const onBeforeGetContentResolve = useRef();
-  const PAYMENT_CONFIRMATION = new payment_confirmation();
+  const PAYMENT_CONFIRMATION = new PaymentConfirmation();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
