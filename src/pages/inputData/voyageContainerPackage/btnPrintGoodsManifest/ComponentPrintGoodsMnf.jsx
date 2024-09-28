@@ -33,8 +33,8 @@ export const ComponentPrintGoodsMnf = forwardRef(
         <div className="flex justify-between text-sm">
           <div className="flex flex-col items-center">
             <div className="text-center">
-              <div>Cảng quốc tế SFCM</div>
-              <div>Kho SFCM</div>
+              <div>CÔNG TY TNHH CẢNG QUỐC TẾ SFCM</div>
+              <div>KHO SFCM</div>
             </div>
             <div>
               <img src={logo} className="size-[64px]" />

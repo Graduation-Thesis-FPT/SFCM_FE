@@ -25,8 +25,8 @@ export const ComponentPrintOrder = forwardRef(
           <div className="w-full">
             <span>
               <div className="text-center">
-                <div>Cảng quốc tế SFCM</div>
-                <div>Kho SFCM</div>
+                <div>CÔNG TY TNHH CẢNG QUỐC TẾ SFCM</div>
+                <div>KHO SFCM</div>
               </div>
               <Separator className="my-2" />
               <div className="text-center">
@@ -143,7 +143,7 @@ const ImportTable = ({ detail }) => {
           <tr key={index}>
             <td>{index + 1}</td>
             <td>{row.CNTR_NO}</td>
-            <td>{row.CNTR_SIZE}</td>
+            <td>{row.CNTR_SIZE}ft</td>
             <td>{row.SEAL_NO}</td>
             <td>{row.cntr_NOTE}</td>
           </tr>

@@ -100,8 +100,8 @@ export class user extends CommonColumns {
 export class container_tariff extends CommonColumns {
   ID = { field: "ID", headerName: "Mã biểu cước *" };
   NAME = { field: "NAME", headerName: "Tên biểu cước *" };
-  CNTR_SIZE = { field: "CNTR_SIZE", headerName: "Kích thước cont *" };
-  UNIT_PRICE = { field: "UNIT_PRICE", headerName: "Tổng tiền (VND) *" };
+  CNTR_SIZE = { field: "CNTR_SIZE", headerName: "Kích thước cont (ft)*" };
+  UNIT_PRICE = { field: "UNIT_PRICE", headerName: "Đơn giá (VND) *" };
   VAT_RATE = { field: "VAT_RATE", headerName: "VAT (%) *" };
   VALID_FROM = { field: "VALID_FROM", headerName: "Sử dụng từ ngày *" };
   VALID_UNTIL = { field: "VALID_UNTIL", headerName: "Sử dụng đến ngày *" };
@@ -141,7 +141,7 @@ export class voyage_container extends CommonColumns {
   VOYAGE_ID = { field: "VOYAGE_ID", headerName: "Mã chuyến tàu *" };
   CNTR_NO = { field: "CNTR_NO", headerName: "Số container *" };
   SHIPPER_ID = { field: "SHIPPER_ID", headerName: "Mã đại lý *" };
-  CNTR_SIZE = { field: "CNTR_SIZE", headerName: "Kích thước container *" };
+  CNTR_SIZE = { field: "CNTR_SIZE", headerName: "Kích thước container (ft)*" };
   SEAL_NO = { field: "SEAL_NO", headerName: "Số seal" };
   STATUS = { field: "STATUS", headerName: "Trạng thái container *" };
   NOTE = { field: "NOTE", headerName: "Ghi chú" };
@@ -205,7 +205,7 @@ export class package_tariff_detail extends CommonColumns {
     headerName: "Mô tả chi tiết *"
   };
   UNIT = { field: "UNIT", headerName: "Đơn vị tính *" };
-  UNIT_PRICE = { field: "UNIT_PRICE", headerName: "Tổng tiền *" };
+  UNIT_PRICE = { field: "UNIT_PRICE", headerName: "Đơn giá *" };
   VAT_RATE = { field: "VAT_RATE", headerName: "VAT (%) *" };
   STATUS = { field: "STATUS", headerName: "Trạng thái *" };
 }

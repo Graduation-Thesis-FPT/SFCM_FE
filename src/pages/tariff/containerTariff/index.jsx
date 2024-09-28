@@ -3,7 +3,6 @@ import { AgGrid } from "@/components/common/aggridreact/AgGrid";
 import { UpperCase } from "@/components/common/aggridreact/cellFunction";
 import {
   CntrSizeRender,
-  ContainerTariffStatusRender,
   OnlyEditWithInsertCell,
   PackageTariffDetailStatusRender
 } from "@/components/common/aggridreact/cellRender";
@@ -14,10 +13,9 @@ import { LayoutTool } from "@/components/common/aggridreact/tableTools/LayoutToo
 import { useCustomToast } from "@/components/common/custom-toast";
 import { GrantPermission } from "@/components/common/grant-permission";
 import { Section } from "@/components/common/section";
-import { Label } from "@/components/common/ui/label";
-import { Switch } from "@/components/common/ui/switch";
+
 import { actionGrantPermission } from "@/constants";
-import { fnAddRowsVer2, fnDeleteRows, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
+import { fnAddRowsVer2, fnFilterInsertAndUpdateData } from "@/lib/fnTable";
 import { formatVnd } from "@/lib/utils";
 import { setGlobalLoading } from "@/redux/slice/globalLoadingSlice";
 import { useRef, useState } from "react";

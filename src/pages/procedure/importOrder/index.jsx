@@ -84,7 +84,7 @@ export function ImportOrder() {
       filter: true
     },
     {
-      headerName: "Kích thước container",
+      headerName: "Kích thước container (ft)",
       field: "CNTR_SIZE",
       flex: 1
     },

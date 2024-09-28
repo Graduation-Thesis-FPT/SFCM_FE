@@ -10,6 +10,7 @@ import { formatVnd } from "@/lib/utils";
 import moment from "moment";
 import React, { forwardRef } from "react";
 import { useSelector } from "react-redux";
+import logo from "@/assets/image/Logo_128x128.svg";
 
 export const InvoiceTemplate = forwardRef(({ paymentInfo = {} }, ref) => {
   const user = useSelector(state => state.userSlice.user);
@@ -19,6 +20,14 @@ export const InvoiceTemplate = forwardRef(({ paymentInfo = {} }, ref) => {
         <div id="border2">
           <div className="VATTEMP" id="VATTEMP">
             <div className="content">
+              {paymentInfo?.PAYMENT?.STATUS === "CANCELLED" && (
+                <div className="absolute-center -rotate-12">
+                  <span className="border-4 border-red-500 p-5 text-6xl font-bold text-red-500">
+                    ĐÃ HỦY
+                  </span>
+                </div>
+              )}
+
               <div id="main-content">
                 <div id="header">
                   <div
@@ -75,6 +84,7 @@ export const InvoiceTemplate = forwardRef(({ paymentInfo = {} }, ref) => {
                       </label>
                     </div>
                   </div>
+                  <img src={logo} className="ml-20 mt-[25px] size-[90px]" />
                 </div>
 
                 {/* Info Seller */}

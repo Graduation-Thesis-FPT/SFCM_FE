@@ -70,8 +70,8 @@ const ComponentPrint = forwardRef(({ data = {}, dataForPrint = {} }, ref) => {
         <div className="w-full">
           <span>
             <div className="text-center">
-              <div>Cảng quốc tế SFCM</div>
-              <div>Kho SFCM</div>
+              <div>CÔNG TY TNHH CẢNG QUỐC TẾ SFCM</div>
+              <div>KHO SFCM</div>
             </div>
             <Separator className="my-2" />
             <div className="text-center font-bold">
@@ -102,7 +102,7 @@ const ComponentPrint = forwardRef(({ data = {}, dataForPrint = {} }, ref) => {
             Số container: <span>{dataForPrint?.cont_CNTR_NO} </span>
           </div>
           <div>
-            Kích thước container: <span>{dataForPrint?.cont_CNTR_SIZE} </span>
+            Kích thước container: <span>{dataForPrint?.cont_CNTR_SIZE}ft</span>
           </div>
         </div>
         <Separator className="my-4" />

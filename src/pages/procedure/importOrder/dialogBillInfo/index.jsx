@@ -45,7 +45,7 @@ export function DialogBillInfo({
       flex: 1
     },
     {
-      headerName: "Kích thước cont",
+      headerName: "Kích thước cont (ft)",
       field: "CNTR_SIZE",
       flex: 1
     },

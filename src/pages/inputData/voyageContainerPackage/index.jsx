@@ -318,7 +318,6 @@ export function VoyageContainerPackage() {
     }
     const finalRowData = rowDataFileUpload?.map(item => {
       return {
-        ...item,
         TOTAL_ITEMS: Number(item?.TOTAL_ITEMS),
         CBM: Number(item?.CBM),
         HOUSE_BILL: item.HOUSE_BILL?.toString(),
