@@ -52,7 +52,7 @@ export function ContainerTariff() {
       field: CONTAINER_TARIFF.NAME.field,
       flex: 1,
       filter: true,
-      editable: true
+      editable: OnlyEditWithInsertCell
     },
     {
       headerName: CONTAINER_TARIFF.CNTR_SIZE.headerName,
@@ -63,7 +63,9 @@ export function ContainerTariff() {
         alignItems: "center",
         display: "flex"
       },
-      cellRenderer: CntrSizeRender
+      cellRenderer: params => {
+        return params.data.status === "insert" ? CntrSizeRender(params) : params.value;
+      }
     },
 
     {
@@ -71,7 +73,7 @@ export function ContainerTariff() {
       field: CONTAINER_TARIFF.VALID_FROM.field,
       flex: 1,
       filter: true,
-      editable: true,
+      editable: OnlyEditWithInsertCell,
       cellDataType: "date"
     },
     {
@@ -79,7 +81,7 @@ export function ContainerTariff() {
       field: CONTAINER_TARIFF.VALID_UNTIL.field,
       flex: 1,
       filter: true,
-      editable: true,
+      editable: OnlyEditWithInsertCell,
       cellDataType: "date"
     },
     {
@@ -87,7 +89,7 @@ export function ContainerTariff() {
       field: CONTAINER_TARIFF.VAT_RATE.field,
       flex: 1,
       filter: true,
-      editable: true,
+      editable: OnlyEditWithInsertCell,
       cellDataType: "number",
       cellEditorParams: {
         min: 0,
@@ -101,7 +103,7 @@ export function ContainerTariff() {
       field: CONTAINER_TARIFF.UNIT_PRICE.field,
       flex: 1,
       filter: true,
-      editable: true,
+      editable: OnlyEditWithInsertCell,
       cellDataType: "number",
       cellEditorParams: {
         min: 10000,
